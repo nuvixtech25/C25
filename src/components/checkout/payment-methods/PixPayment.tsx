@@ -1,13 +1,16 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { PixPaymentData, PaymentStatus } from '@/types/checkout';
-import { Copy, Check, Loader2, RefreshCw } from 'lucide-react';
-import { formatCurrency } from '@/utils/formatters';
 import { checkPaymentStatus } from '@/services/asaasService';
 import { useNavigate } from 'react-router-dom';
+import { formatCurrency } from '@/utils/formatters';
+import { PixQRCode } from './qr-code/PixQRCode';
+import { PixCopyPaste } from './qr-code/PixCopyPaste';
+import { PixExpirationTimer } from './qr-code/PixExpirationTimer';
+import { PixStatusCheck } from './qr-code/PixStatusCheck';
+import { PixConfirmation } from './qr-code/PixConfirmation';
 
 interface PixPaymentProps {
   paymentData: PixPaymentData;
@@ -16,58 +19,8 @@ interface PixPaymentProps {
 export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState<PaymentStatus>(paymentData.status);
   const [checking, setChecking] = useState(false);
-  const [timeLeft, setTimeLeft] = useState('');
-  
-  // Format expiration date and set countdown timer
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const expirationTime = new Date(paymentData.expirationDate).getTime();
-      const now = new Date().getTime();
-      const difference = expirationTime - now;
-      
-      if (difference <= 0) {
-        return '00:00:00';
-      }
-      
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000).toString().padStart(2, '0');
-      
-      return `${hours}:${minutes}:${seconds}`;
-    };
-    
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-    
-    setTimeLeft(calculateTimeLeft());
-    
-    return () => clearInterval(timer);
-  }, [paymentData.expirationDate]);
-  
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(paymentData.copyPasteKey).then(
-      () => {
-        setCopied(true);
-        toast({
-          title: "Código PIX copiado!",
-          description: "Cole no app do seu banco para pagar",
-        });
-        
-        setTimeout(() => setCopied(false), 3000);
-      },
-      () => {
-        toast({
-          title: "Erro ao copiar",
-          description: "Não foi possível copiar o código",
-          variant: "destructive",
-        });
-      }
-    );
-  };
   
   const checkStatus = async () => {
     setChecking(true);
@@ -122,76 +75,17 @@ export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
       
       <CardContent className="space-y-6">
         {status === "CONFIRMED" ? (
-          <div className="text-center p-8 bg-green-50 rounded-lg border border-green-200">
-            <Check className="w-16 h-16 mx-auto text-green-500 mb-2" />
-            <h3 className="text-xl font-semibold text-green-700">Pagamento Confirmado!</h3>
-            <p className="text-green-600">Seu pagamento foi processado com sucesso.</p>
-          </div>
+          <PixConfirmation />
         ) : (
           <>
-            <div className="flex justify-center">
-              {paymentData.qrCodeImage ? (
-                <img 
-                  src={paymentData.qrCodeImage} 
-                  alt="QR Code PIX" 
-                  className="w-48 h-48 border-4 border-white shadow-md rounded-lg" 
-                />
-              ) : (
-                <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg">
-                  <Loader2 className="h-8 w-8 animate-spin text-asaas-primary" />
-                </div>
-              )}
-            </div>
+            <PixQRCode qrCodeImage={paymentData.qrCodeImage} />
             
             <div className="flex flex-col gap-2">
-              <p className="text-sm text-center text-muted-foreground">
-                {timeLeft ? (
-                  <span>Expira em: <span className="font-semibold">{timeLeft}</span></span>
-                ) : (
-                  <span>Carregando tempo restante...</span>
-                )}
-              </p>
-              
-              <div className="flex items-center justify-between p-2 bg-white rounded border">
-                <div className="text-xs truncate flex-1 mr-2 font-mono">
-                  {paymentData.copyPasteKey}
-                </div>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={copyToClipboard}
-                  className="min-w-[100px]"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 mr-1" />
-                      Copiado
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4 mr-1" />
-                      Copiar
-                    </>
-                  )}
-                </Button>
-              </div>
+              <PixExpirationTimer expirationDate={paymentData.expirationDate} />
+              <PixCopyPaste copyPasteKey={paymentData.copyPasteKey} />
             </div>
             
-            <div className="pt-2">
-              <Button 
-                onClick={checkStatus} 
-                disabled={checking}
-                variant="outline"
-                className="w-full"
-              >
-                {checking ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                )}
-                Verificar pagamento
-              </Button>
-            </div>
+            <PixStatusCheck checking={checking} onCheck={checkStatus} />
           </>
         )}
       </CardContent>
