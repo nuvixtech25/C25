@@ -1,31 +1,68 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { PixPaymentData, PaymentStatus } from '@/types/checkout';
+import { Button } from '@/components/ui/button';
+import { Copy, Check, RefreshCw, Loader2 } from 'lucide-react';
 import { checkPaymentStatus } from '@/services/asaasService';
-import { useNavigate } from 'react-router-dom';
-import { formatCurrency } from '@/utils/formatters';
-import { PixQRCode } from './qr-code/PixQRCode';
-import { PixCopyPaste } from './qr-code/PixCopyPaste';
-import { PixExpirationTimer } from './qr-code/PixExpirationTimer';
-import { PixStatusCheck } from './qr-code/PixStatusCheck';
-import { PixConfirmation } from './qr-code/PixConfirmation';
+import { PaymentStatus } from '@/types/checkout';
 
 interface PixPaymentProps {
-  paymentData: PixPaymentData;
+  orderId: string;
+  qrCode: string;
+  qrCodeImage: string;
+  copyPasteKey: string;
+  expirationDate: string;
+  value: number;
+  description: string;
 }
 
-export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
+export const PixPayment: React.FC<PixPaymentProps> = ({
+  orderId,
+  qrCode,
+  qrCodeImage,
+  copyPasteKey,
+  expirationDate,
+  value,
+  description
+}) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<PaymentStatus>(paymentData.status);
+  const [status, setStatus] = useState<PaymentStatus>("PENDING");
   const [checking, setChecking] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [timeLeft, setTimeLeft] = useState('');
   
+  // Function to copy PIX code to clipboard
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(copyPasteKey).then(
+      () => {
+        setCopied(true);
+        toast({
+          title: "Código PIX copiado!",
+          description: "Cole no app do seu banco para pagar",
+        });
+        
+        setTimeout(() => setCopied(false), 3000);
+      },
+      () => {
+        toast({
+          title: "Erro ao copiar",
+          description: "Não foi possível copiar o código",
+          variant: "destructive",
+        });
+      }
+    );
+  };
+  
+  // Polling function to check payment status
   const checkStatus = async () => {
+    if (checking) return;
+    
     setChecking(true);
     try {
-      const newStatus = await checkPaymentStatus(paymentData.paymentId);
+      const newStatus = await checkPaymentStatus(orderId);
       setStatus(newStatus);
       
       if (newStatus === "CONFIRMED") {
@@ -34,13 +71,17 @@ export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
           description: "Seu pagamento foi processado com sucesso.",
         });
         
-        // In a real app, redirect to success page
-        setTimeout(() => navigate("/success"), 2000);
-      } else {
+        // Redirect to success page
+        setTimeout(() => navigate("/payment-success"), 2000);
+      } else if (["CANCELLED", "REFUNDED", "OVERDUE"].includes(newStatus)) {
         toast({
-          title: "Pagamento pendente",
-          description: "Ainda não recebemos a confirmação do seu pagamento.",
+          title: "Pagamento não aprovado",
+          description: "Houve um problema com seu pagamento.",
+          variant: "destructive",
         });
+        
+        // Redirect to failed page
+        setTimeout(() => navigate("/payment-failed"), 2000);
       }
     } catch (error) {
       toast({
@@ -53,17 +94,45 @@ export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
     }
   };
   
-  // Auto-check status every 15 seconds
+  // Calculate time left for expiration
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const expirationTime = new Date(expirationDate).getTime();
+      const now = new Date().getTime();
+      const difference = expirationTime - now;
+      
+      if (difference <= 0) {
+        return '00:00:00';
+      }
+      
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000).toString().padStart(2, '0');
+      
+      return `${hours}:${minutes}:${seconds}`;
+    };
+    
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+    
+    setTimeLeft(calculateTimeLeft());
+    
+    return () => clearInterval(timer);
+  }, [expirationDate]);
+  
+  // Auto-check status every 5 seconds
   useEffect(() => {
     if (status === "PENDING") {
       const interval = setInterval(() => {
         checkStatus();
-      }, 15000);
+      }, 5000); // Poll every 5 seconds
       
       return () => clearInterval(interval);
     }
   }, [status]);
   
+  // Render payment confirmation or QR code based on status
   return (
     <Card className="max-w-md mx-auto shadow-lg pix-container">
       <CardHeader>
@@ -75,17 +144,78 @@ export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
       
       <CardContent className="space-y-6">
         {status === "CONFIRMED" ? (
-          <PixConfirmation />
+          <div className="text-center p-8 bg-green-50 rounded-lg border border-green-200">
+            <Check className="w-16 h-16 mx-auto text-green-500 mb-2" />
+            <h3 className="text-xl font-semibold text-green-700">Pagamento Confirmado!</h3>
+            <p className="text-green-600">Seu pagamento foi processado com sucesso.</p>
+          </div>
         ) : (
           <>
-            <PixQRCode qrCodeImage={paymentData.qrCodeImage} />
-            
-            <div className="flex flex-col gap-2">
-              <PixExpirationTimer expirationDate={paymentData.expirationDate} />
-              <PixCopyPaste copyPasteKey={paymentData.copyPasteKey} />
+            {/* QR Code Display */}
+            <div className="flex justify-center">
+              {qrCodeImage ? (
+                <img 
+                  src={qrCodeImage} 
+                  alt="QR Code PIX" 
+                  className="w-48 h-48 border-4 border-white shadow-md rounded-lg" 
+                />
+              ) : (
+                <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg">
+                  <Loader2 className="h-8 w-8 animate-spin text-asaas-primary" />
+                </div>
+              )}
             </div>
             
-            <PixStatusCheck checking={checking} onCheck={checkStatus} />
+            {/* Expiration Timer */}
+            <p className="text-sm text-center text-muted-foreground">
+              {timeLeft ? (
+                <span>Expira em: <span className="font-semibold">{timeLeft}</span></span>
+              ) : (
+                <span>Carregando tempo restante...</span>
+              )}
+            </p>
+            
+            {/* Copy/Paste Code */}
+            <div className="flex items-center justify-between p-2 bg-white rounded border">
+              <div className="text-xs truncate flex-1 mr-2 font-mono">
+                {copyPasteKey}
+              </div>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={copyToClipboard}
+                className="min-w-[100px]"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4 mr-1" />
+                    Copiado
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4 mr-1" />
+                    Copiar
+                  </>
+                )}
+              </Button>
+            </div>
+            
+            {/* Check Payment Status Button */}
+            <div className="pt-2">
+              <Button 
+                onClick={checkStatus} 
+                disabled={checking}
+                variant="outline"
+                className="w-full"
+              >
+                {checking ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                )}
+                Verificar pagamento
+              </Button>
+            </div>
           </>
         )}
       </CardContent>
@@ -93,9 +223,9 @@ export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
       <CardFooter className="flex justify-between bg-white rounded-lg">
         <div>
           <p className="text-sm font-medium">Total</p>
-          <p className="text-muted-foreground text-xs">{paymentData.description}</p>
+          <p className="text-muted-foreground text-xs">{description}</p>
         </div>
-        <p className="font-bold text-lg">{formatCurrency(paymentData.value)}</p>
+        <p className="font-bold text-lg">{value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
       </CardFooter>
     </Card>
   );
