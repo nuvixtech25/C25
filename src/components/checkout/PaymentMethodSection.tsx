@@ -76,9 +76,10 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
         />
       ) : (
         <SimplifiedPixOption
-          onSubmit={() => onSubmit()}
+          onSubmit={() => onSubmit()} // Ensuring we pass a function that calls onSubmit with no parameters
           isLoading={isSubmitting}
           buttonColor={buttonColor}
+          buttonText="Pagar com PIX" // Adding the missing buttonText prop
         />
       )}
     </section>
