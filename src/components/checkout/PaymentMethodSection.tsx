@@ -10,7 +10,7 @@ interface PaymentMethodSectionProps {
   id: string;
   paymentMethod: PaymentMethod;
   onPaymentMethodChange: (method: PaymentMethod) => void;
-  onSubmit: (data: any) => void;
+  onSubmit: (data?: any) => void;
   isSubmitting: boolean;
   headingColor: string;
   buttonColor: string;
@@ -76,7 +76,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
         />
       ) : (
         <SimplifiedPixOption
-          onSubmit={onSubmit}
+          onSubmit={() => onSubmit()}
           isLoading={isSubmitting}
           buttonColor={buttonColor}
         />

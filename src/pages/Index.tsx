@@ -1,15 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { CheckoutLayout } from '@/components/CheckoutLayout';
-import { CustomerForm } from '@/components/CustomerForm';
-import { TestimonialsSection } from '@/components/TestimonialsSection';
-import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
-import { CreditCardForm } from '@/components/CreditCardForm';
-import { OrderSummary } from '@/components/OrderSummary';
-import { CountdownBanner } from '@/components/CountdownBanner';
-import { useToast } from '@/hooks/use-toast';
-import { BillingData, CheckoutCustomization, PaymentMethod, Product } from '@/types/checkout';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
+import { PersonalInfoSection } from '@/components/checkout/PersonalInfoSection';
+import { TestimonialSection } from '@/components/checkout/TestimonialSection';
+import { PaymentMethodSection } from '@/components/checkout/PaymentMethodSection';
+import { OrderSummary } from '@/components/checkout/OrderSummary';
+import { CountdownBanner } from '@/components/CountdownBanner';
+import { BillingData, CheckoutCustomization, CustomerData, PaymentMethod, Product } from '@/types/checkout';
 
 // Mock data - In a real app, this would come from Supabase
 const mockProduct: Product = {
@@ -52,7 +51,7 @@ const Index = () => {
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
   };
   
-  const handlePaymentSubmit = (paymentData: any) => {
+  const handlePaymentSubmit = (paymentData?: any) => {
     setIsSubmitting(true);
     
     // Create billing data
@@ -71,7 +70,7 @@ const Index = () => {
         toast({
           title: "Pagamento processado",
           description: "Seu pagamento foi processado com sucesso!",
-          variant: "success",
+          variant: "default",
         });
         navigate('/success');
       }
@@ -80,7 +79,7 @@ const Index = () => {
   };
   
   return (
-    <CheckoutLayout>
+    <CheckoutContainer>
       {customization.topMessage && customization.countdownEndTime && (
         <CountdownBanner 
           message={customization.topMessage}
@@ -90,50 +89,26 @@ const Index = () => {
       
       <div className="grid md:grid-cols-12 gap-6 mt-6">
         <div className="md:col-span-7 space-y-8">
-          <section id="customer-section" className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-semibold mb-6" style={{ color: customization.headingColor }}>
-              Informações pessoais
-            </h2>
-            <CustomerForm onSubmit={handleCustomerSubmit} />
-          </section>
+          <PersonalInfoSection 
+            onSubmit={handleCustomerSubmit}
+            headingColor={customization.headingColor}
+          />
           
-          <section id="testimonials-section" className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-semibold mb-6" style={{ color: customization.headingColor }}>
-              O que dizem nossos clientes
-            </h2>
-            <TestimonialsSection />
-          </section>
+          <TestimonialSection
+            headingColor={customization.headingColor}
+          />
           
           {customerData && (
-            <section id="payment-section" className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-2xl font-semibold mb-6" style={{ color: customization.headingColor }}>
-                Forma de pagamento
-              </h2>
-              <PaymentMethodSelector 
-                selectedMethod={paymentMethod} 
-                onChange={setPaymentMethod} 
-              />
-              
-              {paymentMethod === 'creditCard' ? (
-                <CreditCardForm 
-                  onSubmit={handlePaymentSubmit} 
-                  isLoading={isSubmitting}
-                  buttonColor={customization.buttonColor}
-                  buttonText={customization.buttonText}
-                />
-              ) : (
-                <div className="mt-6">
-                  <button
-                    onClick={handlePaymentSubmit}
-                    className="w-full py-3 px-4 rounded-lg text-white font-medium transition-colors"
-                    style={{ backgroundColor: customization.buttonColor }}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Processando...' : 'Pagar com PIX'}
-                  </button>
-                </div>
-              )}
-            </section>
+            <PaymentMethodSection
+              id="payment-section"
+              paymentMethod={paymentMethod}
+              onPaymentMethodChange={setPaymentMethod}
+              onSubmit={handlePaymentSubmit}
+              isSubmitting={isSubmitting}
+              headingColor={customization.headingColor}
+              buttonColor={customization.buttonColor}
+              buttonText={customization.buttonText}
+            />
           )}
         </div>
         
@@ -146,7 +121,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-    </CheckoutLayout>
+    </CheckoutContainer>
   );
 };
 
