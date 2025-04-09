@@ -92,19 +92,25 @@ const Checkout = () => {
     setIsSubmitting(true);
     
     try {
-      // Create order in the database
+      // 1. Create order in the database
       const order = await createOrder(customerData, product, paymentMethod);
       
-      // Create billing data for payment processing
+      // 2. Create billing data for payment processing
       const billingData: BillingData = {
         customer: customerData,
         value: product.price,
         description: product.name,
       };
       
+      // 3. Process payment based on the selected method
       if (paymentMethod === 'pix') {
         // Redirect to PIX payment page with billing data and order
-        navigate('/payment', { state: { billingData, order } });
+        navigate('/payment', { 
+          state: { 
+            billingData, 
+            order 
+          } 
+        });
       } else {
         // Process credit card payment
         // In a real app, this would integrate with Asaas API

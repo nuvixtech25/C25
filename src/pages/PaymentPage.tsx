@@ -83,8 +83,16 @@ const PaymentPage = () => {
             <p className="text-muted-foreground">Gerando pagamento PIX...</p>
           </div>
         </div>
-      ) : paymentData ? (
-        <PixPayment paymentData={paymentData} />
+      ) : (paymentData && order) ? (
+        <PixPayment 
+          orderId={order.id || ''} 
+          qrCode={paymentData.qrCode}
+          qrCodeImage={paymentData.qrCodeImage}
+          copyPasteKey={paymentData.copyPasteKey}
+          expirationDate={paymentData.expirationDate}
+          value={paymentData.value}
+          description={paymentData.description}
+        />
       ) : (
         <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg text-center">
           <p className="text-red-500">Erro ao carregar dados do pagamento</p>
