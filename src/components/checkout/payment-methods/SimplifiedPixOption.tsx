@@ -6,7 +6,7 @@ interface SimplifiedPixOptionProps {
   onSubmit: () => void;
   isLoading: boolean;
   buttonColor: string;
-  buttonText: string; // Adding the missing buttonText prop
+  buttonText: string;
 }
 
 export const SimplifiedPixOption: React.FC<SimplifiedPixOptionProps> = ({
@@ -43,7 +43,7 @@ export const SimplifiedPixOption: React.FC<SimplifiedPixOptionProps> = ({
             Processando...
           </>
         ) : (
-          buttonText // Using the buttonText prop instead of hardcoded text
+          buttonText
         )}
       </button>
     </div>
