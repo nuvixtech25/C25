@@ -13,7 +13,9 @@ export interface BillingData {
 }
 
 export interface PixPaymentData {
+  paymentId: string;
   qrCode: string;
+  qrCodeImage: string;
   copyPasteKey: string;
   expirationDate: string;
   status: PaymentStatus;
@@ -64,3 +66,20 @@ export interface Product {
 }
 
 export type PaymentMethod = "creditCard" | "pix";
+
+export interface Order {
+  id?: string;
+  customerId: string;
+  customerName: string;
+  customerEmail: string;
+  customerCpfCnpj: string;
+  customerPhone: string;
+  productId: string;
+  productName: string;
+  productPrice: number;
+  status: PaymentStatus;
+  paymentMethod: PaymentMethod;
+  asaasPaymentId?: string;
+  createdAt: string;
+  updatedAt: string;
+}

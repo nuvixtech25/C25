@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { BillingData, PixPaymentData } from '@/types/checkout';
+import { BillingData, PixPaymentData, Order } from '@/types/checkout';
 import { generatePixPayment } from '@/services/asaasService';
 import { PixPayment } from '@/components/checkout/payment-methods/PixPayment';
 import { ArrowLeft, Loader2 } from 'lucide-react';
@@ -14,11 +14,13 @@ const PaymentPage = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [paymentData, setPaymentData] = useState<PixPaymentData | null>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   
   useEffect(() => {
     const billingData = location.state?.billingData as BillingData;
+    const orderData = location.state?.order as Order;
     
-    if (!billingData) {
+    if (!billingData || !orderData) {
       toast({
         title: "Erro",
         description: "Informações de pagamento não encontradas. Por favor, volte e tente novamente.",
@@ -28,11 +30,22 @@ const PaymentPage = () => {
       return;
     }
     
+    setOrder(orderData);
+    
     const fetchPixPayment = async () => {
       setLoading(true);
       try {
         const data = await generatePixPayment(billingData);
         setPaymentData(data);
+        
+        // In a real application, we would update the order with the payment ID
+        // This would be done through a Supabase call or another API
+        /* 
+        await supabase
+          .from('orders')
+          .update({ asaasPaymentId: data.paymentId })
+          .eq('id', orderData.id);
+        */
       } catch (error) {
         console.error('Erro ao gerar pagamento PIX:', error);
         toast({

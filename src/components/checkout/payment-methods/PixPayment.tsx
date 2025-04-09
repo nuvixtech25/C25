@@ -72,8 +72,7 @@ export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
   const checkStatus = async () => {
     setChecking(true);
     try {
-      // In a real app, you would pass a real payment ID here
-      const newStatus = await checkPaymentStatus("mock-payment-id");
+      const newStatus = await checkPaymentStatus(paymentData.paymentId);
       setStatus(newStatus);
       
       if (newStatus === "CONFIRMED") {
@@ -101,12 +100,12 @@ export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
     }
   };
   
-  // Auto-check status every 10 seconds
+  // Auto-check status every 15 seconds
   useEffect(() => {
     if (status === "PENDING") {
       const interval = setInterval(() => {
         checkStatus();
-      }, 10000);
+      }, 15000);
       
       return () => clearInterval(interval);
     }
@@ -131,9 +130,9 @@ export const PixPayment: React.FC<PixPaymentProps> = ({ paymentData }) => {
         ) : (
           <>
             <div className="flex justify-center">
-              {paymentData.qrCode ? (
+              {paymentData.qrCodeImage ? (
                 <img 
-                  src={paymentData.qrCode} 
+                  src={paymentData.qrCodeImage} 
                   alt="QR Code PIX" 
                   className="w-48 h-48 border-4 border-white shadow-md rounded-lg" 
                 />

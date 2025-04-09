@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { BillingData, CheckoutCustomization, CustomerData, PaymentMethod, Product } from '@/types/checkout';
+import { BillingData, CheckoutCustomization, CustomerData, Order, PaymentMethod, Product } from '@/types/checkout';
 import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
 import { PersonalInfoSection } from '@/components/checkout/PersonalInfoSection';
 import { TestimonialSection } from '@/components/checkout/TestimonialSection';
@@ -51,31 +51,90 @@ const Checkout = () => {
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
   };
   
-  const handlePaymentSubmit = (paymentData: any) => {
-    setIsSubmitting(true);
+  const createOrder = async (customer: CustomerData, product: Product, paymentMethod: PaymentMethod): Promise<Order> => {
+    // In a real app, this would create a record in Supabase
+    // For this example, we'll create a mock order
     
-    // Create billing data
-    const billingData: BillingData = {
-      customer: customerData!,
-      value: product.price,
-      description: product.name,
+    const order: Order = {
+      id: `order_${Date.now()}`,
+      customerId: `customer_${Date.now()}`,
+      customerName: customer.name,
+      customerEmail: customer.email,
+      customerCpfCnpj: customer.cpfCnpj,
+      customerPhone: customer.phone,
+      productId: product.id,
+      productName: product.name,
+      productPrice: product.price,
+      status: "PENDING",
+      paymentMethod: paymentMethod,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     
-    // In a real app, this would submit to Asaas API or Supabase
-    setTimeout(() => {
+    // In a real app, we would save this to Supabase
+    /*
+    const { data, error } = await supabase
+      .from('orders')
+      .insert(order)
+      .select()
+      .single();
+      
+    if (error) throw new Error(error.message);
+    return data;
+    */
+    
+    return order;
+  };
+  
+  const handlePaymentSubmit = async (paymentData?: any) => {
+    if (!customerData) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Create order in the database
+      const order = await createOrder(customerData, product, paymentMethod);
+      
+      // Create billing data for payment processing
+      const billingData: BillingData = {
+        customer: customerData,
+        value: product.price,
+        description: product.name,
+      };
+      
       if (paymentMethod === 'pix') {
-        navigate('/payment', { state: { billingData } });
+        // Redirect to PIX payment page with billing data and order
+        navigate('/payment', { state: { billingData, order } });
       } else {
         // Process credit card payment
+        // In a real app, this would integrate with Asaas API
+        // For now, we'll just simulate a successful payment
+        
         toast({
           title: "Pagamento processado",
-          description: "Seu pagamento foi processado com sucesso!",
-          variant: "default",
+          description: "Seu pagamento com cartão foi processado com sucesso!",
         });
+        
+        // In a real app, we would update the order status
+        /*
+        await supabase
+          .from('orders')
+          .update({ status: "CONFIRMED" })
+          .eq('id', order.id);
+        */
+        
         navigate('/success');
       }
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      toast({
+        title: "Erro no pagamento",
+        description: "Ocorreu um erro ao processar o pagamento. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
   
   return (
@@ -105,7 +164,7 @@ const Checkout = () => {
               isSubmitting={isSubmitting}
               headingColor={customization.headingColor}
               buttonColor={customization.buttonColor}
-              buttonText={customization.buttonText}
+              buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : customization.buttonText}
             />
           )}
         </div>
