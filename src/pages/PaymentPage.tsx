@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BillingData, PixPaymentData } from '@/types/checkout';
 import { generatePixPayment } from '@/services/asaasService';
-import PixPayment from '@/components/PixPayment';
+import { PixPayment } from '@/components/checkout/payment-methods/PixPayment';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
