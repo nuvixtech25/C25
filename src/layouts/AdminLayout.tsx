@@ -1,7 +1,20 @@
 
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, LayoutDashboard, CreditCard, Settings, CreditCard as AsaasIcon, Webhook, ShoppingCart, CreditCard as CreditCardIcon, Palette, BarChart, LineChart } from 'lucide-react';
+import { 
+  LogOut, 
+  LayoutDashboard, 
+  CreditCard, 
+  Settings, 
+  CreditCard as AsaasIcon, 
+  Webhook, 
+  ShoppingCart, 
+  CreditCard as CreditCardIcon, 
+  Palette, 
+  BarChart, 
+  LineChart,
+  Database
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
@@ -144,6 +157,17 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 >
                   <Palette className="h-4 w-4" />
                   <span>Personalização do Checkout</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin/api-information"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/api-information') ? 'bg-primary/10 font-medium' : ''
+                  }`}
+                >
+                  <Database className="h-4 w-4" />
+                  <span>Informações de API</span>
                 </Link>
               </li>
             </ul>

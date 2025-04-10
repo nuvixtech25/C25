@@ -15,6 +15,7 @@ import PixSettings from './pages/admin/PixSettings';
 import PixelSettings from './pages/admin/PixelSettings';
 import AsaasSettings from './pages/admin/AsaasSettings';
 import WebhookSimulator from './pages/admin/WebhookSimulator';
+import ApiInformation from './pages/admin/ApiInformation'; // Import the new ApiInformation component
 import ProductsAdmin from './pages/admin/products'; // Import the ProductsAdmin component
 import NewProductPage from './pages/admin/products/new'; // Import the NewProductPage component
 import EditProductPage from './pages/admin/products/edit'; // Import the EditProductPage component
@@ -137,6 +138,13 @@ const AppWithPixels = () => {
         <RequireAuth>
           <AdminLayout>
             <WebhookSimulator />
+          </AdminLayout>
+        </RequireAuth>
+      } />
+      <Route path="/admin/api-information" element={
+        <RequireAuth>
+          <AdminLayout>
+            <ApiInformation />
           </AdminLayout>
         </RequireAuth>
       } />
