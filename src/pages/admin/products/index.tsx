@@ -5,11 +5,10 @@ import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Product } from '@/types/checkout';
 import ProductList from './ProductList';
+import { fetchProducts, handleDeleteProduct } from '@/services/productAdminService';
 
 const ProductsPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -17,20 +16,7 @@ const ProductsPage = () => {
 
   const { data: products, isLoading, error, refetch } = useQuery({
     queryKey: ['products'],
-    queryFn: async () => {
-      // Use type assertion to tell TypeScript we know what we're doing
-      const { data, error } = await supabase
-        .from('products' as any)
-        .select('id, name, price, status, type')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      // Explicitly cast the data to Product[] to resolve type mismatch
-      return (data as unknown) as Product[];
-    },
+    queryFn: fetchProducts,
   });
 
   const handleDeleteClick = (product: Product) => {
@@ -41,33 +27,11 @@ const ProductsPage = () => {
   const confirmDelete = async () => {
     if (!productToDelete) return;
 
-    try {
-      // Use type assertion to tell TypeScript we know what we're doing
-      const { error } = await supabase
-        .from('products' as any)
-        .delete()
-        .eq('id', productToDelete.id);
-
-      if (error) {
-        throw error;
-      }
-
-      toast({
-        title: "Produto excluído",
-        description: `${productToDelete.name} foi removido com sucesso.`,
-      });
-      
+    await handleDeleteProduct(productToDelete, () => {
       refetch();
       setDeleteDialogOpen(false);
       setProductToDelete(null);
-    } catch (error) {
-      console.error("Erro ao excluir produto:", error);
-      toast({
-        title: "Erro ao excluir produto",
-        description: "Ocorreu um erro ao tentar excluir o produto. Tente novamente.",
-        variant: "destructive",
-      });
-    }
+    });
   };
 
   if (error) {

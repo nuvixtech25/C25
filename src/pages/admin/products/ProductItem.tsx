@@ -17,10 +17,10 @@ const ProductItem = ({ product, onDeleteClick }: ProductItemProps) => {
       <TableCell className="font-medium">{product.name}</TableCell>
       <TableCell>{formatCurrency(product.price)}</TableCell>
       <TableCell>
-        {product.type === 'digital' ? 'Digital' : 'Físico'}
+        {product.isDigital ? 'Digital' : 'Físico'}
       </TableCell>
       <TableCell>
-        {product.status ? (
+        {product.isDigital !== undefined ? (
           <span className="flex items-center text-green-600">
             <CheckCircle className="mr-1 h-4 w-4" />
             Ativo
