@@ -5,6 +5,7 @@ import Checkout from '@/pages/Checkout';
 import SuccessPage from '@/pages/SuccessPage';
 import NotFound from '@/pages/NotFound';
 import PaymentPage from '@/pages/PaymentPage';
+import PixSettings from '@/pages/admin/PixSettings';
 import { Toaster } from "@/components/ui/toaster";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Checkout />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/success" element={<SuccessPage />} />
+        <Route path="/admin/pix-settings" element={<PixSettings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />
