@@ -19,6 +19,7 @@ import ProductsPage from '@/pages/admin/products';
 import NewProductPage from '@/pages/admin/products/new';
 import EditProductPage from '@/pages/admin/products/edit';
 import AdminTools from '@/pages/admin/AdminTools';
+import AsaasSettings from '@/pages/admin/AsaasSettings';
 
 import { Toaster } from "@/components/ui/toaster";
 
@@ -90,6 +91,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <AdminLayout>
           <PixSettings />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/asaas-settings",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout>
+          <AsaasSettings />
         </AdminLayout>
       </ProtectedRoute>
     ),

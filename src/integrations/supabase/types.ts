@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      asaas_config: {
+        Row: {
+          active: boolean | null
+          card_enabled: boolean | null
+          id: number
+          pix_enabled: boolean | null
+          production_key: string | null
+          sandbox: boolean
+          sandbox_key: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          card_enabled?: boolean | null
+          id?: number
+          pix_enabled?: boolean | null
+          production_key?: string | null
+          sandbox?: boolean
+          sandbox_key?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          card_enabled?: boolean | null
+          id?: number
+          pix_enabled?: boolean | null
+          production_key?: string | null
+          sandbox?: boolean
+          sandbox_key?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       pix_config: {
         Row: {
           beneficiario: string
