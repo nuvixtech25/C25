@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2, UserPlus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -17,11 +17,12 @@ const Login = () => {
   const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // If user is already logged in, redirect to admin
+  // If user is already logged in, redirect to admin dashboard
   useEffect(() => {
     if (session) {
-      navigate('/admin/products');
+      navigate('/admin/dashboard');
     }
   }, [session, navigate]);
 
@@ -29,8 +30,7 @@ const Login = () => {
     setIsSubmitting(true);
     try {
       await signIn(data.email, data.password);
-      // No need to navigate here as the useEffect will handle this
-      // when the session is updated
+      // The useEffect will handle redirection when the session is updated
     } catch (error) {
       // Error is handled in the signIn function
       setIsSubmitting(false);
