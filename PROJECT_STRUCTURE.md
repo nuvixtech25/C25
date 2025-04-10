@@ -25,6 +25,7 @@ Components for different payment methods.
 
 - **CardForm.tsx** - Credit card payment form
 - **SimplifiedPixOption.tsx** - Simplified PIX payment option component
+- **PixPayment.tsx** - Main PIX payment component that orchestrates the subcomponents
 
 ###### 📁 qr-code/
 Components for PIX QR code display and management.
@@ -190,21 +191,81 @@ Supabase configuration and database setup.
      - Production Mode: Uses Netlify serverless functions
    - `asaasService.ts` routes requests based on current mode
 
-2. **Database Structure**:
+2. **How `asaasService.ts` Alternates Between Modes**:
+   - Checks the `use_netlify_functions` flag in the `asaas_config` table
+   - If `true`, uses Netlify function endpoints (`/.netlify/functions/...`)
+   - If `false`, uses local mock endpoints (`/api/...`)
+   - Provides consistent data format regardless of mode, ensuring smooth toggles between environments
+   - Encapsulates mode-specific logic to keep components agnostic of the actual implementation
+
+3. **Database Structure**:
    - Supabase tables include:
-     - `orders`
-     - `asaas_payments`
-     - `asaas_webhook_logs`
-     - `asaas_config`
-     - `products`
+     - `orders`: Stores order information and status
+     - `asaas_payments`: Stores PIX QR code data and payment details
+     - `asaas_webhook_logs`: Logs webhook events for debugging
+     - `asaas_config`: Contains configuration settings including mode toggle
+     - `products`: Product catalog and details
+     - `pix_config`: PIX-specific configuration settings
 
-3. **Admin Section**:
-   - Complete product management
-   - Asaas and PIX configuration settings
-   - Webhook simulator
+4. **Refactored Components**:
+   - **PixPayment Components**:
+     - Main component split into smaller, focused subcomponents in `qr-code/` directory
+     - Each subcomponent handles a specific aspect (status, QR code, expiration timer)
+     - Promotes reusability and easier maintenance
+   
+   - **Checkout Flow**:
+     - Split into logical sections (PersonalInfo, PaymentMethod)
+     - Uses container/presentation pattern for better separation of concerns
+     - State management extracted to custom hooks
 
-4. **Error Handling**:
-   - Centralized error handling
-   - Consistent toast notifications
+5. **Custom Hooks**:
+   - **`usePixPaymentStatus.ts`**:
+     - Manages PIX payment status tracking
+     - Handles expiration time calculation
+     - Manages auto-redirects based on payment outcome
+     - Implements exponential backoff for API calls
+   
+   - **`usePaymentPolling.ts`**:
+     - Generic polling mechanism for checking payment status
+     - Configurable interval and retry logic
+     - Manages loading states and error handling
+   
+   - **`useCheckoutState.ts`**:
+     - Manages the entire checkout process state
+     - Handles form submission and validation
+     - Orchestrates transitions between checkout steps
+
+6. **Admin Section**:
+   - **Product Management**:
+     - Complete CRUD operations for products
+     - List, create, edit, delete functionality
+     - Form validation with Zod schema
+   
+   - **Configuration Settings**:
+     - Asaas API configuration (sandbox/production)
+     - PIX payment settings
+     - Toggle between mock and Netlify functions mode
+   
+   - **Webhook Simulator**:
+     - Tool for simulating payment status updates
+     - Useful for testing the payment flow without actual payments
+     - Updates database directly to test status transitions
+
+7. **Utility Files, Hooks, Types**:
+   - **Utils**: Centralized error handling, formatting functions
+   - **Hooks**: Shared functionality extracted for reuse
+   - **Types**: Strong TypeScript typing throughout the application
+   - **Layouts**: Consistent layout patterns for different sections
+
+8. **Modular Organization and Best Practices**:
+   - **Separation of Concerns**: Each component and function has a single responsibility
+   - **Component Composition**: Complex UI built from smaller, reusable pieces
+   - **DRY Principle**: Shared logic extracted to utilities and hooks
+   - **Error Handling**: Centralized error handling with user-friendly messages
+   - **Loading States**: Consistent loading indicators throughout the app
+   - **Responsive Design**: Mobile-friendly UI with Tailwind CSS
+   - **Type Safety**: Comprehensive TypeScript typing
+   - **Environment Flexibility**: Works in both development and production
 
 This structure demonstrates a well-organized React application with clear separation of concerns, modular components, and support for both development and production environments.
+
