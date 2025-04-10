@@ -44,7 +44,23 @@ export const orderAdminService = {
       throw new Error(`Failed to fetch orders: ${error.message}`);
     }
 
-    return data as Order[];
+    // Map snake_case from database to camelCase for Order type
+    return (data || []).map(order => ({
+      id: order.id,
+      customerId: order.customer_id,
+      customerName: order.customer_name,
+      customerEmail: order.customer_email,
+      customerCpfCnpj: order.customer_cpf_cnpj,
+      customerPhone: order.customer_phone,
+      productId: order.product_id,
+      productName: order.product_name,
+      productPrice: order.product_price,
+      status: order.status as PaymentStatus,
+      paymentMethod: order.payment_method as Order['paymentMethod'],
+      asaasPaymentId: order.asaas_payment_id,
+      createdAt: order.created_at,
+      updatedAt: order.updated_at
+    }));
   },
 
   async updateOrderStatus(
