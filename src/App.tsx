@@ -29,6 +29,10 @@ const router = createBrowserRouter([
   // Public routes
   {
     path: "/",
+    element: <Navigate to="/checkout/curso-de-marketing-digital" replace />,
+  },
+  {
+    path: "/checkout/:slug",
     element: <Checkout />,
   },
   {

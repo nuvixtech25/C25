@@ -1,6 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { BillingData, CheckoutCustomization, CustomerData, Order, PaymentMethod, Product } from '@/types/checkout';
 import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
@@ -9,17 +10,10 @@ import { TestimonialSection } from '@/components/checkout/TestimonialSection';
 import { PaymentMethodSection } from '@/components/checkout/PaymentMethodSection';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { CountdownBanner } from '@/components/CountdownBanner';
+import { fetchProductBySlug } from '@/services/productService';
+import { Loader2 } from 'lucide-react';
 
-// Mock data - In a real app, this would come from Supabase
-const mockProduct: Product = {
-  id: '1',
-  name: 'Curso de Marketing Digital',
-  description: 'Curso completo de marketing digital para iniciantes e profissionais',
-  price: 79.90,
-  isDigital: true,
-  imageUrl: 'https://via.placeholder.com/300x200'
-};
-
+// Mock customization data - In a real app, this would come from Supabase
 const mockCustomization: CheckoutCustomization = {
   buttonColor: '#6E59A5', // Default Asaas primary color
   buttonText: 'Finalizar Compra',
@@ -33,17 +27,27 @@ const mockCustomization: CheckoutCustomization = {
 const Checkout = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { slug } = useParams<{ slug: string }>();
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('creditCard');
-  const [product] = useState<Product>(mockProduct);
   const [customization] = useState<CheckoutCustomization>(mockCustomization);
   
-  // In a real app, we would fetch the product and customization from Supabase
-  useEffect(() => {
-    // This would be a fetch from Supabase
-    // fetchProductAndCustomization();
-  }, []);
+  // Fetch product data by slug
+  const { data: product, isLoading, error } = useQuery({
+    queryKey: ['product', slug],
+    queryFn: () => fetchProductBySlug(slug || ''),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  // If the product is not found, redirect to the 404 page
+  React.useEffect(() => {
+    if (!isLoading && !product && !error) {
+      navigate('/not-found', { replace: true });
+    }
+  }, [product, isLoading, error, navigate]);
   
   const handleCustomerSubmit = (data: CustomerData) => {
     setCustomerData(data);
@@ -87,7 +91,7 @@ const Checkout = () => {
   };
   
   const handlePaymentSubmit = async (paymentData?: any) => {
-    if (!customerData) return;
+    if (!customerData || !product) return;
     
     setIsSubmitting(true);
     
@@ -142,13 +146,38 @@ const Checkout = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Show loading state while fetching product
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Carregando produto...</span>
+      </div>
+    );
+  }
+  
+  // If there's an error or product is not found but haven't redirected yet
+  if (error || !product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-500">Erro ao carregar o produto.</p>
+      </div>
+    );
+  }
+
+  // Update customization based on product type
+  const productCustomization = {
+    ...customization,
+    isDigitalProduct: product.isDigital
+  };
   
   return (
     <CheckoutContainer>
-      {customization.topMessage && customization.countdownEndTime && (
+      {productCustomization.topMessage && productCustomization.countdownEndTime && (
         <CountdownBanner 
-          message={customization.topMessage}
-          endTime={new Date(customization.countdownEndTime)}
+          message={productCustomization.topMessage}
+          endTime={new Date(productCustomization.countdownEndTime)}
         />
       )}
       
@@ -156,10 +185,10 @@ const Checkout = () => {
         <div className="md:col-span-7 space-y-8">
           <PersonalInfoSection 
             onSubmit={handleCustomerSubmit} 
-            headingColor={customization.headingColor}
+            headingColor={productCustomization.headingColor}
           />
           
-          <TestimonialSection headingColor={customization.headingColor} />
+          <TestimonialSection headingColor={productCustomization.headingColor} />
           
           {customerData && (
             <PaymentMethodSection
@@ -168,9 +197,9 @@ const Checkout = () => {
               onPaymentMethodChange={setPaymentMethod}
               onSubmit={handlePaymentSubmit}
               isSubmitting={isSubmitting}
-              headingColor={customization.headingColor}
-              buttonColor={customization.buttonColor}
-              buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : customization.buttonText}
+              headingColor={productCustomization.headingColor}
+              buttonColor={productCustomization.buttonColor}
+              buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : productCustomization.buttonText}
             />
           )}
         </div>
@@ -179,7 +208,7 @@ const Checkout = () => {
           <div className="sticky top-4">
             <OrderSummary 
               product={product}
-              isDigitalProduct={customization.isDigitalProduct}
+              isDigitalProduct={productCustomization.isDigitalProduct}
             />
           </div>
         </div>
