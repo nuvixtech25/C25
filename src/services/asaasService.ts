@@ -1,3 +1,4 @@
+
 import { BillingData, PaymentStatus, PixPaymentData } from "@/types/checkout";
 import { supabase } from "@/integrations/supabase/client";
 
