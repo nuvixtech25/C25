@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/checkout';
 import { toast } from '@/hooks/use-toast';
@@ -9,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 export const fetchProducts = async (): Promise<Product[]> => {
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, price, status, type, slug')
+    .select('id, name, price, status, type, slug, description')
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -24,7 +23,9 @@ export const fetchProducts = async (): Promise<Product[]> => {
     description: item.description || '',
     price: Number(item.price),
     isDigital: item.type === 'digital',
-    type: item.type,
+    type: (item.type === 'digital' || item.type === 'physical') 
+      ? item.type as 'digital' | 'physical'
+      : 'physical',
     status: item.status,
     slug: item.slug
   }));

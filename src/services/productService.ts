@@ -28,6 +28,11 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
     description: data.description || '',
     price: Number(data.price),
     isDigital: data.type === 'digital',
+    type: (data.type === 'digital' || data.type === 'physical') 
+      ? data.type as 'digital' | 'physical' 
+      : 'physical',
     imageUrl: data.image_url || undefined,
+    status: data.status,
+    slug: data.slug
   };
 };
