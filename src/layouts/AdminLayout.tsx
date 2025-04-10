@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, LayoutDashboard, CreditCard, Settings, CreditCard as AsaasIcon, Webhook, ShoppingCart, CreditCard as CreditCardIcon, Palette } from 'lucide-react';
+import { LogOut, LayoutDashboard, CreditCard, Settings, CreditCard as AsaasIcon, Webhook, ShoppingCart, CreditCard as CreditCardIcon, Palette, BarChart } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
@@ -23,7 +23,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/admin/products" className="font-bold text-xl text-primary">
+          <Link to="/admin/dashboard" className="font-bold text-xl text-primary">
             Painel Administrativo
           </Link>
           <div className="flex items-center gap-4">
@@ -47,6 +47,17 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <h3 className="font-medium">Menu</h3>
             </div>
             <ul className="p-2">
+              <li>
+                <Link
+                  to="/admin/dashboard"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/dashboard') ? 'bg-primary/10 font-medium' : ''
+                  }`}
+                >
+                  <BarChart className="h-4 w-4" />
+                  <span>Dashboard</span>
+                </Link>
+              </li>
               <li>
                 <Link
                   to="/admin/products"

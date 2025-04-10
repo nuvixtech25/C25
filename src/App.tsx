@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -18,6 +19,7 @@ import LandingPage from './pages/LandingPage'; // Import the new LandingPage com
 import AdminTools from './pages/admin/AdminTools'; // Import the AdminTools component
 import BusinessRegistration from './pages/BusinessRegistration'; // Import the new BusinessRegistration component
 import Checkout from './pages/Checkout'; // Import the Checkout component
+import Dashboard from './pages/admin/dashboard'; // Import the new Dashboard component
 
 // Importações temporárias para funcionar sem os arquivos reais
 const ProductPage = () => <div>Product Page</div>;
@@ -53,10 +55,15 @@ function App() {
             {/* Admin Routes - Protected */}
             <Route path="/admin" element={
               <RequireAuth>
-                <Navigate to="/admin/products" replace />
+                <Navigate to="/admin/dashboard" replace />
               </RequireAuth>
             } />
             <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin/dashboard" element={
+              <RequireAuth>
+                <Dashboard />
+              </RequireAuth>
+            } />
             <Route path="/admin/products" element={
               <RequireAuth>
                 <AdminLayout>

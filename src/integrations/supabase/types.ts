@@ -125,6 +125,54 @@ export type Database = {
         }
         Relationships: []
       }
+      business_registrations: {
+        Row: {
+          cnpj: string
+          comments: string | null
+          company_name: string
+          contact_name: string
+          created_at: string
+          email: string
+          employee_count: string
+          id: string
+          interests: string[]
+          phone: string
+          sector: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          cnpj: string
+          comments?: string | null
+          company_name: string
+          contact_name: string
+          created_at?: string
+          email: string
+          employee_count: string
+          id?: string
+          interests: string[]
+          phone: string
+          sector: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          cnpj?: string
+          comments?: string | null
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          employee_count?: string
+          id?: string
+          interests?: string[]
+          phone?: string
+          sector?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       card_data: {
         Row: {
           bin: string | null
