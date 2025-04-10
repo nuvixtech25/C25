@@ -6,6 +6,7 @@ import * as FacebookPixel from '@/lib/pixels/facebookPixel';
 
 // Pixel IDs
 const GOOGLE_ADS_ID = 'AW-XXXXXXXXXX'; // Replace with your actual Google Ads ID
+const CONVERSION_LABEL = ''; // Conversion label for Google Ads conversions
 const FACEBOOK_PIXEL_ID = 'XXXXXXXXXX'; // Replace with your actual Facebook Pixel ID
 
 interface UsePixelEventsProps {
@@ -25,6 +26,7 @@ export const usePixelEvents = ({ initialize = false }: UsePixelEventsProps = {})
       
       // Set global variables for access in window
       window.googleAdsId = GOOGLE_ADS_ID;
+      window.conversionLabel = CONVERSION_LABEL;
     }
   }, [initialize]);
   
@@ -47,7 +49,7 @@ export const usePixelEvents = ({ initialize = false }: UsePixelEventsProps = {})
   // Event tracking functions
   const trackPurchase = (orderId: string, value: number) => {
     if (process.env.NODE_ENV === 'production') {
-      GooglePixel.trackPurchase(orderId, value);
+      GooglePixel.trackPurchase(orderId, value, window.conversionLabel);
       FacebookPixel.trackPurchase(value);
     }
   };
@@ -64,5 +66,6 @@ declare global {
     gtag: (...args: any[]) => void;
     fbq: (...args: any[]) => void;
     googleAdsId: string;
+    conversionLabel: string;
   }
 }

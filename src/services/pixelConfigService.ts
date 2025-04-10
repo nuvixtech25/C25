@@ -1,9 +1,11 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 // Define the Pixel configuration type
 export interface PixelConfig {
   id?: number;
   googleAdsId: string;
+  conversionLabel?: string;
   facebookPixelId: string;
   enabled: boolean;
 }
@@ -22,6 +24,7 @@ export const fetchPixelConfig = async (): Promise<PixelConfig> => {
     
     return data || {
       googleAdsId: '',
+      conversionLabel: '',
       facebookPixelId: '',
       enabled: false
     };
@@ -29,6 +32,7 @@ export const fetchPixelConfig = async (): Promise<PixelConfig> => {
     console.error('Error fetching pixel config:', error);
     return {
       googleAdsId: '',
+      conversionLabel: '',
       facebookPixelId: '',
       enabled: false
     };

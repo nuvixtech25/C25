@@ -53,15 +53,27 @@ export const trackBeginCheckout = (value?: number, currency: string = 'BRL'): vo
 export const trackPurchase = (
   transactionId: string, 
   value: number, 
+  conversionLabel?: string,
   currency: string = 'BRL'
 ): void => {
   if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
   if (!window.gtag) return;
   
+  // Standard purchase event
   window.gtag('event', 'purchase', {
     transaction_id: transactionId,
     value,
     currency,
     send_to: window.googleAdsId
   });
+  
+  // If conversion label is provided, trigger a conversion event
+  if (conversionLabel) {
+    window.gtag('event', 'conversion', {
+      send_to: `${window.googleAdsId}/${conversionLabel}`,
+      value,
+      currency,
+      transaction_id: transactionId
+    });
+  }
 };

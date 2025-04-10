@@ -6,6 +6,7 @@ import { PixelConfig } from '@/services/pixelConfigService';
 export const pixelConfigSchema = z.object({
   id: z.number().optional(),
   googleAdsId: z.string().min(3, 'ID do Google Ads é obrigatório'),
+  conversionLabel: z.string().optional(),
   facebookPixelId: z.string().min(3, 'ID do Facebook Pixel é obrigatório'),
   enabled: z.boolean().default(false),
 });

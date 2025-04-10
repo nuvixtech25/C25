@@ -31,6 +31,7 @@ export const PixelSettingsForm = () => {
     resolver: zodResolver(pixelConfigSchema),
     defaultValues: {
       googleAdsId: '',
+      conversionLabel: '',
       facebookPixelId: '',
       enabled: false,
     },
@@ -130,6 +131,23 @@ export const PixelSettingsForm = () => {
                     </FormControl>
                     <FormDescription>
                       O ID do Google Ads começa com 'AW-' seguido por números.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="conversionLabel"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Label de Conversão do Google Ads</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Exemplo: AbCdEfGhIjK-123" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      O label de conversão é usado para rastrear conversões específicas no Google Ads.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
