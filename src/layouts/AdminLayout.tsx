@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, CreditCard, Settings, CreditCard as AsaasIcon, Webhook, ShoppingCart, CreditCard as CreditCardIcon } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { LogOut, LayoutDashboard, CreditCard, Settings, CreditCard as AsaasIcon, Webhook, ShoppingCart, CreditCard as CreditCardIcon, Palette } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
@@ -12,6 +12,7 @@ interface AdminLayoutProps {
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await signOut();
@@ -49,7 +50,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <li>
                 <Link
                   to="/admin/products"
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/products') ? 'bg-primary/10 font-medium' : ''
+                  }`}
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   <span>Produtos</span>
@@ -58,7 +61,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <li>
                 <Link
                   to="/admin/orders"
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/orders') ? 'bg-primary/10 font-medium' : ''
+                  }`}
                 >
                   <ShoppingCart className="h-4 w-4" />
                   <span>Pedidos</span>
@@ -67,7 +72,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <li>
                 <Link
                   to="/admin/credit-cards"
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/credit-cards') ? 'bg-primary/10 font-medium' : ''
+                  }`}
                 >
                   <CreditCardIcon className="h-4 w-4" />
                   <span>Cartões de Crédito</span>
@@ -76,7 +83,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <li>
                 <Link
                   to="/admin/pix-settings"
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/pix-settings') ? 'bg-primary/10 font-medium' : ''
+                  }`}
                 >
                   <CreditCard className="h-4 w-4" />
                   <span>Configurações PIX</span>
@@ -85,7 +94,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <li>
                 <Link
                   to="/admin/asaas-settings"
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/asaas-settings') ? 'bg-primary/10 font-medium' : ''
+                  }`}
                 >
                   <AsaasIcon className="h-4 w-4" />
                   <span>Configurações Asaas</span>
@@ -94,7 +105,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <li>
                 <Link
                   to="/admin/webhook-simulator"
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/webhook-simulator') ? 'bg-primary/10 font-medium' : ''
+                  }`}
                 >
                   <Webhook className="h-4 w-4" />
                   <span>Simulador de Webhook</span>
@@ -103,10 +116,12 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <li>
                 <Link
                   to="/admin/tools"
-                  className="flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/tools') ? 'bg-primary/10 font-medium' : ''
+                  }`}
                 >
-                  <Settings className="h-4 w-4" />
-                  <span>Ferramentas</span>
+                  <Palette className="h-4 w-4" />
+                  <span>Personalização do Checkout</span>
                 </Link>
               </li>
             </ul>

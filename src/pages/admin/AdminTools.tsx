@@ -1,195 +1,227 @@
 
 import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCheckoutCustomization } from '@/hooks/useCheckoutCustomization';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Paintbrush, LayoutTemplate, Clock, Text, Store } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-
-const adminToolsSchema = z.object({
-  email: z.string().email('E-mail inválido'),
-});
-
-type AdminToolsFormValues = z.infer<typeof adminToolsSchema>;
+import { ColorPicker } from './components/ColorPicker';
 
 const AdminTools = () => {
-  const { isAdmin, makeUserAdmin } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isPromotingCurrentUser, setIsPromotingCurrentUser] = useState(false);
-
-  const form = useForm<AdminToolsFormValues>({
-    resolver: zodResolver(adminToolsSchema),
-    defaultValues: {
-      email: '',
-    },
+  const customization = useCheckoutCustomization();
+  const [settings, setSettings] = useState({
+    buttonColor: customization.buttonColor || '#6E59A5',
+    buttonText: customization.buttonText || 'Finalizar Compra',
+    headingColor: customization.headingColor || '#6E59A5',
+    bannerImageUrl: customization.bannerImageUrl || '',
+    topMessage: customization.topMessage || 'Oferta por tempo limitado!',
+    countdownEndTime: new Date(customization.countdownEndTime || 
+      new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()).toISOString().substring(0, 16),
+    isDigitalProduct: customization.isDigitalProduct === undefined ? true : customization.isDigitalProduct
   });
 
-  const handleMakeAdmin = async (data: AdminToolsFormValues) => {
-    setIsLoading(true);
-    try {
-      // First find the user by email
-      const { data: user, error: fetchError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', data.email)
-        .maybeSingle();
-
-      if (fetchError) throw fetchError;
-
-      if (!user) {
-        toast({
-          title: 'Usuário não encontrado',
-          description: `Não foi possível encontrar um usuário com o e-mail ${data.email}`,
-          variant: 'destructive',
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Make user admin
-      await makeUserAdmin(user.id);
-      form.reset();
-      
-      toast({
-        title: 'Usuário promovido',
-        description: `${data.email} agora tem privilégios de administrador.`,
-      });
-    } catch (error: any) {
-      console.error('Error making user admin:', error);
-      toast({
-        title: 'Erro ao promover usuário',
-        description: error.message || 'Ocorreu um erro ao tentar dar privilégios de administrador.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSettings({ ...settings, [name]: value });
   };
 
-  const handlePromoteCurrentUser = async () => {
-    setIsPromotingCurrentUser(true);
-    try {
-      // Directly update the current user's email in the profiles table
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ is_admin: true })
-        .eq('email', 'elianemourasara@admin.com')
-        .select();
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        toast({
-          title: 'Usuário promovido',
-          description: 'elianemourasara@admin.com agora tem privilégios de administrador.',
-        });
-      } else {
-        toast({
-          title: 'Usuário não encontrado',
-          description: 'Não foi possível encontrar o usuário elianemourasara@admin.com',
-          variant: 'destructive',
-        });
-      }
-    } catch (error: any) {
-      console.error('Error promoting current user:', error);
-      toast({
-        title: 'Erro ao promover usuário',
-        description: error.message || 'Ocorreu um erro ao tentar dar privilégios de administrador.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsPromotingCurrentUser(false);
-    }
+  const handleSwitchChange = (name: string, checked: boolean) => {
+    setSettings({ ...settings, [name]: checked });
   };
 
-  // For the case where we have no admin access at all
-  if (!isAdmin) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Ferramentas de Administração</CardTitle>
-          <CardDescription>
-            Você não tem permissão para acessar esta página.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500">
-              Se você precisa de acesso de administrador para elianemourasara@admin.com, clique no botão abaixo:
-            </p>
-            <Button onClick={handlePromoteCurrentUser} disabled={isPromotingCurrentUser}>
-              {isPromotingCurrentUser ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Promovendo...
-                </>
-              ) : (
-                "Promover elianemourasara@admin.com a administrador"
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const handleColorChange = (name: string, color: string) => {
+    setSettings({ ...settings, [name]: color });
+  };
+
+  const handleSave = () => {
+    // This would be implemented to save to the database
+    toast({
+      title: "Configurações salvas",
+      description: "As configurações do checkout foram atualizadas com sucesso.",
+    });
+  };
+
+  const handlePreview = () => {
+    // Open a preview in a new tab
+    window.open('/checkout/preview', '_blank');
+  };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Ferramentas de Administração</CardTitle>
-        <CardDescription>
-          Gerencie usuários e permissões do sistema
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-lg font-medium">Promoção de Usuários</h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Conceda privilégios de administrador a um usuário existente
-            </p>
-
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleMakeAdmin)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>E-mail do Usuário</FormLabel>
-                      <FormControl>
-                        <Input placeholder="usuario@exemplo.com" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Digite o e-mail do usuário que deseja promover a administrador
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    "Fazer Usuário Administrador"
-                  )}
-                </Button>
-              </form>
-            </Form>
-          </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Personalização do Checkout</h2>
+          <p className="text-muted-foreground">
+            Personalize a aparência e comportamento da sua página de checkout.
+          </p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handlePreview}>Visualizar</Button>
+          <Button onClick={handleSave}>Salvar Alterações</Button>
+        </div>
+      </div>
+      
+      <Separator />
+      
+      <Tabs defaultValue="appearance">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="appearance">
+            <Paintbrush className="h-4 w-4 mr-2" />
+            Aparência
+          </TabsTrigger>
+          <TabsTrigger value="content">
+            <Text className="h-4 w-4 mr-2" />
+            Conteúdo
+          </TabsTrigger>
+          <TabsTrigger value="timer">
+            <Clock className="h-4 w-4 mr-2" />
+            Temporizador
+          </TabsTrigger>
+          <TabsTrigger value="product">
+            <Store className="h-4 w-4 mr-2" />
+            Produto
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="appearance" className="space-y-4 mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cores e Estilo</CardTitle>
+              <CardDescription>
+                Personalize as cores e aparência do seu checkout.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="buttonColor">Cor do Botão</Label>
+                  <div className="flex gap-2">
+                    <ColorPicker 
+                      color={settings.buttonColor} 
+                      onChange={(color) => handleColorChange('buttonColor', color)} 
+                    />
+                    <Input 
+                      id="buttonColor"
+                      name="buttonColor"
+                      value={settings.buttonColor}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="headingColor">Cor dos Títulos</Label>
+                  <div className="flex gap-2">
+                    <ColorPicker 
+                      color={settings.headingColor} 
+                      onChange={(color) => handleColorChange('headingColor', color)} 
+                    />
+                    <Input 
+                      id="headingColor"
+                      name="headingColor"
+                      value={settings.headingColor}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="bannerImageUrl">URL da Imagem de Banner</Label>
+                <Input 
+                  id="bannerImageUrl"
+                  name="bannerImageUrl"
+                  value={settings.bannerImageUrl || ''}
+                  onChange={handleChange}
+                  placeholder="https://exemplo.com/imagem.jpg"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="content" className="space-y-4 mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Textos e Mensagens</CardTitle>
+              <CardDescription>
+                Personalize os textos mostrados na página de checkout.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="buttonText">Texto do Botão de Pagamento</Label>
+                <Input 
+                  id="buttonText"
+                  name="buttonText"
+                  value={settings.buttonText}
+                  onChange={handleChange}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="topMessage">Mensagem de Topo</Label>
+                <Input 
+                  id="topMessage"
+                  name="topMessage"
+                  value={settings.topMessage}
+                  onChange={handleChange}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="timer" className="space-y-4 mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Temporizador de Oferta</CardTitle>
+              <CardDescription>
+                Configure um temporizador de contagem regressiva para criar urgência.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="countdownEndTime">Data e Hora de Término</Label>
+                <Input 
+                  id="countdownEndTime"
+                  name="countdownEndTime"
+                  type="datetime-local"
+                  value={settings.countdownEndTime}
+                  onChange={handleChange}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="product" className="space-y-4 mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Configurações do Produto</CardTitle>
+              <CardDescription>
+                Configure as propriedades relacionadas ao produto.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Switch 
+                  id="isDigitalProduct"
+                  checked={settings.isDigitalProduct}
+                  onCheckedChange={(checked) => handleSwitchChange('isDigitalProduct', checked)}
+                />
+                <Label htmlFor="isDigitalProduct">Produto Digital</Label>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

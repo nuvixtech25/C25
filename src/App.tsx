@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,6 +16,7 @@ import WebhookSimulator from './pages/admin/WebhookSimulator';
 import ProductsAdmin from './pages/admin/products'; // Import the ProductsAdmin component
 import OrdersPage from './pages/admin/orders'; // Import the OrdersPage component
 import LandingPage from './pages/LandingPage'; // Import the new LandingPage component
+import AdminTools from './pages/admin/AdminTools'; // Import the AdminTools component
 
 // Importações temporárias para funcionar sem os arquivos reais
 const CheckoutPage = () => <div>Checkout Page</div>;
@@ -91,6 +93,13 @@ function App() {
               <RequireAuth>
                 <AdminLayout>
                   <WebhookSimulator />
+                </AdminLayout>
+              </RequireAuth>
+            } />
+            <Route path="/admin/tools" element={
+              <RequireAuth>
+                <AdminLayout>
+                  <AdminTools />
                 </AdminLayout>
               </RequireAuth>
             } />
