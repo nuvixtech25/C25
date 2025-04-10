@@ -92,6 +92,31 @@ export const useWebhookSimulator = () => {
     }
   };
 
+  // Function to delete all webhook logs
+  const deleteAllWebhookLogs = async () => {
+    try {
+      // Delete records from asaas_webhook_logs table
+      const { error } = await supabase
+        .from('asaas_webhook_logs')
+        .delete()
+        .not('id', 'is', null); // Delete all records
+      
+      if (error) throw error;
+      
+      toast({
+        title: 'Registros excluídos',
+        description: 'Todos os registros de webhook foram excluídos com sucesso.',
+      });
+    } catch (error) {
+      console.error('Erro ao excluir registros:', error);
+      toast({
+        title: 'Erro ao excluir registros',
+        description: error instanceof Error ? error.message : 'Ocorreu um erro desconhecido',
+        variant: 'destructive'
+      });
+    }
+  };
+
   return {
     orders,
     isLoading,
@@ -99,6 +124,7 @@ export const useWebhookSimulator = () => {
     statusFilter,
     setStatusFilter,
     simulatePaymentConfirmed,
+    deleteAllWebhookLogs,
     refetch
   };
 };

@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Filter } from 'lucide-react';
+import { RefreshCw, Filter, Trash2 } from 'lucide-react';
 import { useWebhookSimulator } from '@/hooks/admin/useWebhookSimulator';
 import OrdersTable from '@/components/admin/webhook/OrdersTable';
 import { 
@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { PaymentStatus } from '@/types/checkout';
+import { DeleteConfirmModal } from '@/components/admin/orders/OrderModals';
 
 const WebhookSimulator = () => {
   const {
@@ -21,8 +22,11 @@ const WebhookSimulator = () => {
     statusFilter,
     setStatusFilter,
     simulatePaymentConfirmed,
-    refetch
+    refetch,
+    deleteAllWebhookLogs
   } = useWebhookSimulator();
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const statusOptions: Array<{ value: PaymentStatus | 'ALL', label: string }> = [
     { value: 'ALL', label: 'Todos os status' },
@@ -31,6 +35,12 @@ const WebhookSimulator = () => {
     { value: 'RECEIVED', label: 'Recebido' },
     { value: 'CANCELLED', label: 'Cancelado' }
   ];
+
+  const handleDeleteAll = async () => {
+    await deleteAllWebhookLogs();
+    setIsDeleteModalOpen(false);
+    refetch();
+  };
 
   return (
     <div className="space-y-6">
@@ -59,6 +69,13 @@ const WebhookSimulator = () => {
             <RefreshCw className="h-4 w-4 mr-2" />
             Atualizar
           </Button>
+          <Button 
+            onClick={() => setIsDeleteModalOpen(true)} 
+            variant="destructive"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Apagar Tudo
+          </Button>
         </div>
       </div>
 
@@ -67,6 +84,14 @@ const WebhookSimulator = () => {
         isLoading={isLoading}
         processingOrders={processingOrders}
         onSimulatePayment={simulatePaymentConfirmed}
+      />
+
+      <DeleteConfirmModal
+        open={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteAll}
+        isDeleteAll={true}
+        paymentMethod="pix"
       />
     </div>
   );
