@@ -39,15 +39,18 @@ export const generatePixPayment = async (billingData: BillingData): Promise<PixP
       description: billingData.description
     };
 
-    // Check if we're running in a preview environment (lovable.app domain)
-    const isPreviewEnvironment = window.location.hostname.includes('lovable.app') || 
-                                 window.location.hostname.includes('lovableproject.com');
+    // Check if we're running in a preview environment
+    const isPreviewEnvironment = 
+      window.location.hostname.includes('lovable.app') || 
+      window.location.hostname.includes('lovableproject.com') ||
+      window.location.hostname.includes('lovable.dev');
     
     // Define fetch options with appropriate CORS settings
     const fetchOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Origin': window.location.origin
       },
       // Use no-cors mode in preview environments to prevent CORS errors
       ...(isPreviewEnvironment && { mode: 'no-cors' as RequestMode }),
@@ -140,14 +143,17 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     console.log(`Checking payment status at: ${endpoint}`);
     
     // Check if we're running in a preview environment
-    const isPreviewEnvironment = window.location.hostname.includes('lovable.app') || 
-                               window.location.hostname.includes('lovableproject.com');
+    const isPreviewEnvironment = 
+      window.location.hostname.includes('lovable.app') || 
+      window.location.hostname.includes('lovableproject.com') ||
+      window.location.hostname.includes('lovable.dev');
     
     // Define fetch options with appropriate CORS settings
     const fetchOptions = {
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Origin': window.location.origin
       },
       // Use no-cors mode in preview environments to prevent CORS errors
       ...(isPreviewEnvironment && { mode: 'no-cors' as RequestMode })
