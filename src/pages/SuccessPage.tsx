@@ -1,11 +1,26 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle } from 'lucide-react';
+import { usePixelEvents } from '@/hooks/usePixelEvents';
 
 const SuccessPage = () => {
+  const location = useLocation();
+  const { trackPurchase } = usePixelEvents();
+  
+  useEffect(() => {
+    // Track purchase event if we have order data from location state
+    if (location.state?.order) {
+      const { order } = location.state;
+      trackPurchase(
+        order.id || 'unknown-order',
+        order.productPrice || 0
+      );
+    }
+  }, [location.state, trackPurchase]);
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-asaas-light/30">
       <Card className="max-w-md w-full shadow-xl border-t-4 border-t-green-500">

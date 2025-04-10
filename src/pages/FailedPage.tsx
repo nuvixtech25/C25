@@ -5,18 +5,25 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { AlertCircle, RefreshCcw } from 'lucide-react';
 import { Order, PaymentMethod } from '@/types/checkout';
+import { usePixelEvents } from '@/hooks/usePixelEvents';
 
 const FailedPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
+  const { trackPurchase } = usePixelEvents();
 
   useEffect(() => {
     // Get order from location state if available
     if (state?.order) {
       setOrder(state.order);
+      
+      // We can still track failed purchases for remarketing
+      if (state.order.id && state.order.productPrice) {
+        trackPurchase(state.order.id, 0); // Value 0 for failed payment
+      }
     }
-  }, [state]);
+  }, [state, trackPurchase]);
 
   const handleRetry = () => {
     if (order) {

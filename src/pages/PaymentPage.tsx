@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { handleApiError } from '@/utils/errorHandling';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { CheckoutError } from '@/components/checkout/CheckoutError';
+import { usePixelEvents } from '@/hooks/usePixelEvents';
 
 const PaymentPage = () => {
   const location = useLocation();
@@ -20,6 +21,7 @@ const PaymentPage = () => {
   const [paymentData, setPaymentData] = useState<PixPaymentData | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { trackPurchase } = usePixelEvents();
   
   useEffect(() => {
     const billingData = location.state?.billingData as BillingData;

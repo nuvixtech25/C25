@@ -1,16 +1,20 @@
 
 /// <reference types="vite/client" />
 
-// Add global ExtendedFetchEvent interface
-interface ExtendedFetchEvent extends Event {
-  request: Request;
-  respondWith(response: Response | Promise<Response>): void;
+interface ImportMetaEnv {
+  readonly VITE_APP_TITLE: string;
+  // more env variables...
 }
 
-// Add service worker extensions to make TypeScript happy
-interface ServiceWorkerGlobalScope {
-  addEventListener(
-    type: 'fetch',
-    listener: (event: ExtendedFetchEvent) => void
-  ): void;
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
+// Global window interface for pixel tracking
+interface Window {
+  dataLayer: any[];
+  gtag: (...args: any[]) => void;
+  fbq: (...args: any[]) => void;
+  googleAdsId: string;
+  _fbq: any;
 }

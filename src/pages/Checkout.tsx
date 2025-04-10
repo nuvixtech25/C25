@@ -10,10 +10,12 @@ import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { CheckoutError } from '@/components/checkout/CheckoutError';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { usePixelEvents } from '@/hooks/usePixelEvents';
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
+  const { trackPurchase } = usePixelEvents();
   
   // Fetch product data by slug
   const { data: product, isLoading, error } = useQuery({
