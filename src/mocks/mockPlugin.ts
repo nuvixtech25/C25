@@ -1,12 +1,19 @@
 
 import { Plugin } from 'vite';
+import { IncomingMessage, ServerResponse } from 'http';
 import { apiRoutesMiddleware } from './apiRoutes';
+
+// Extend IncomingMessage type to allow for body property
+interface ExtendedIncomingMessage extends IncomingMessage {
+  body?: any;
+}
 
 export const mockApiPlugin = (): Plugin => {
   return {
     name: 'mock-api-plugin',
     configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
+      // Middleware to parse request body
+      server.middlewares.use(async (req: ExtendedIncomingMessage, res: ServerResponse, next) => {
         // Parse request body for API routes
         if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
           try {

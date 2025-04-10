@@ -45,13 +45,8 @@ export const useWebhookSimulator = () => {
     setProcessingOrders(prev => ({ ...prev, [orderId]: true }));
 
     try {
-      // First, check if running in Netlify environment or locally
-      const isNetlify = window.location.hostname.includes('netlify.app');
-      
-      // Choose the appropriate webhook endpoint
-      const webhookEndpoint = isNetlify 
-        ? '/.netlify/functions/asaas-webhook'
-        : '/api/webhook-simulator';
+      // Using relative path which works in both Vite dev server and production
+      const webhookEndpoint = '/api/webhook-simulator';
       
       console.log(`Using webhook endpoint: ${webhookEndpoint}`);
       
