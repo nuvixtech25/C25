@@ -13,7 +13,7 @@ export const useCheckoutState = (product: Product | undefined) => {
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('creditCard');
   
-  const { isSubmitting, setIsSubmitting, createOrder, prepareBillingData } = useCheckoutOrder();
+  const { isSubmitting, setIsSubmitting, createOrder, prepareBillingData, saveCardData } = useCheckoutOrder();
   
   const handleCustomerSubmit = (data: CustomerData) => {
     setCustomerData(data);
@@ -39,7 +39,7 @@ export const useCheckoutState = (product: Product | undefined) => {
         
         // Update the payment data for the existing order
         if (paymentData) {
-          await useCheckoutOrder().saveCardData(existingOrderId, paymentData);
+          await saveCardData(existingOrderId, paymentData);
         }
         
         // Prepare billing data

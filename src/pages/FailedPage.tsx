@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, RefreshCcw } from 'lucide-react';
-import { Order } from '@/types/checkout';
+import { Order, PaymentMethod } from '@/types/checkout';
 
 const FailedPage = () => {
   const { state } = useLocation();

@@ -92,6 +92,7 @@ export const useCheckoutOrder = () => {
     isSubmitting,
     setIsSubmitting,
     createOrder,
-    prepareBillingData
+    prepareBillingData,
+    saveCardData // Make sure to export the saveCardData function
   };
 };

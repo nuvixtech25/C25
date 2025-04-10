@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CardForm } from '@/components/checkout/payment-methods/CardForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CreditCardData, Order } from '@/types/checkout';
+import { CreditCardData, Order, PaymentMethod, PaymentStatus } from '@/types/checkout';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -70,8 +71,8 @@ const RetryPaymentPage = () => {
           productId: data.product_id,
           productName: data.product_name,
           productPrice: data.product_price,
-          status: data.status,
-          paymentMethod: data.payment_method,
+          status: data.status as PaymentStatus,
+          paymentMethod: data.payment_method as PaymentMethod,
           asaasPaymentId: data.asaas_payment_id,
           createdAt: data.created_at,
           updatedAt: data.updated_at
