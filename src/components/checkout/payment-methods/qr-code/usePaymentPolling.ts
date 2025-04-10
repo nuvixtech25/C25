@@ -34,6 +34,7 @@ export const usePaymentPolling = (
       setStatus(currentStatus);
     } catch (err: any) {
       setError(err instanceof Error ? err : new Error(String(err)));
+      console.error("Erro ao verificar status:", err);
     } finally {
       setIsCheckingStatus(false);
     }
@@ -60,7 +61,7 @@ export const usePaymentPolling = (
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [paymentId, status]);
+  }, [paymentId, status, intervalMs]);
 
   return { status, isCheckingStatus, error, forceCheck };
 };

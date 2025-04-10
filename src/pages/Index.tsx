@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -8,7 +7,8 @@ import { TestimonialSection } from '@/components/checkout/TestimonialSection';
 import { PaymentMethodSection } from '@/components/checkout/PaymentMethodSection';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { CountdownBanner } from '@/components/CountdownBanner';
-import { BillingData, CheckoutCustomization, CustomerData, PaymentMethod, Product } from '@/types/checkout';
+import { BillingData, CheckoutCustomization, CustomerData, PaymentMethod, PaymentStatus, Product } from '@/types/checkout';
+import { supabase } from '@/integrations/supabase/client';
 
 // Mock data - In a real app, this would come from Supabase
 const mockProduct: Product = {
@@ -51,18 +51,21 @@ const Index = () => {
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
   };
   
-  const handlePaymentSubmit = (paymentData?: any) => {
+  const handlePaymentSubmit = async (paymentData?: any) => {
     setIsSubmitting(true);
     
-    // Create billing data
-    const billingData: BillingData = {
-      customer: customerData!,
-      value: product.price,
-      description: product.name,
-    };
-    
-    // In a real app, this would submit to Asaas API or Supabase
-    setTimeout(() => {
+    try {
+      // Criar um ordem temporária para emular o fluxo real
+      const mockOrderId = `mock_order_${Date.now()}`;
+      
+      // Create billing data
+      const billingData: BillingData = {
+        customer: customerData!,
+        value: product.price,
+        description: product.name,
+        orderId: mockOrderId
+      };
+      
       if (paymentMethod === 'pix') {
         navigate('/payment', { state: { billingData } });
       } else {
@@ -74,8 +77,16 @@ const Index = () => {
         });
         navigate('/success');
       }
+    } catch (error) {
+      console.error("Erro ao processar pagamento:", error);
+      toast({
+        title: "Erro no pagamento",
+        description: "Ocorreu um erro ao processar o pagamento. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
   
   return (

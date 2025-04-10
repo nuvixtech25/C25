@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { BillingData, CheckoutCustomization, CustomerData, Order, PaymentMethod, Product } from '@/types/checkout';
+import { BillingData, CheckoutCustomization, CustomerData, Order, PaymentMethod, PaymentStatus, Product } from '@/types/checkout';
 import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
 import { PersonalInfoSection } from '@/components/checkout/PersonalInfoSection';
 import { TestimonialSection } from '@/components/checkout/TestimonialSection';
@@ -67,7 +67,7 @@ const Checkout = () => {
       product_id: product.id,
       product_name: product.name,
       product_price: product.price,
-      status: "PENDING",
+      status: "PENDING" as PaymentStatus,
       payment_method: paymentMethod,
     };
     
@@ -90,8 +90,8 @@ const Checkout = () => {
       productId: data.product_id,
       productName: data.product_name,
       productPrice: data.product_price,
-      status: data.status,
-      paymentMethod: data.payment_method,
+      status: data.status as PaymentStatus,
+      paymentMethod: data.payment_method as PaymentMethod,
       asaasPaymentId: data.asaas_payment_id,
       createdAt: data.created_at,
       updatedAt: data.updated_at

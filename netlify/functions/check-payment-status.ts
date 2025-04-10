@@ -16,6 +16,7 @@ export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'GET') {
     return {
       statusCode: 405,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ error: 'Método não permitido. Use GET.' }),
     };
   }
@@ -26,6 +27,7 @@ export const handler: Handler = async (event) => {
   if (!paymentId) {
     return {
       statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ error: 'ID do pagamento não fornecido.' }),
     };
   }
@@ -41,7 +43,13 @@ export const handler: Handler = async (event) => {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = { message: errorText };
+      }
       throw new Error(`Erro ao consultar pagamento no Asaas: ${JSON.stringify(errorData)}`);
     }
     
@@ -81,6 +89,7 @@ export const handler: Handler = async (event) => {
     
     return {
       statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         paymentId,
         status,
@@ -88,10 +97,11 @@ export const handler: Handler = async (event) => {
       }),
     };
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('Erro na função:', error);
     return {
       statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ error: error.message || 'Erro interno no servidor' }),
     };
   }
