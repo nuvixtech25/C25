@@ -1,12 +1,12 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import RetryPaymentPage from './pages/RetryPaymentPage';
+import RequireAuth from './contexts/auth/RequireAuth'; // Corrected import
 import { AuthProvider } from './contexts/AuthContext';
-import RequireAuth from './contexts/auth/RequireAuth';
+import RetryPaymentPage from './pages/RetryPaymentPage';
 import AdminLayout from './layouts/AdminLayout';
 import CreditCardsPage from './pages/admin/credit-cards';
 import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics";
+import NotFound from './pages/NotFound'; // Add NotFound import
 
 // Importações temporárias para funcionar sem os arquivos reais
 const CheckoutPage = () => <div>Checkout Page</div>;
@@ -26,6 +26,7 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Existing routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/product/:slug" element={<ProductPage />} />
           <Route path="/checkout/:slug" element={<CheckoutPage />} />
@@ -43,6 +44,7 @@ function App() {
               </AdminLayout>
             </RequireAuth>
           } />
+          <Route path="/admin/login" element={<LoginPage />} />
           <Route path="/admin/products" element={
             <RequireAuth>
               <AdminLayout>
@@ -78,6 +80,9 @@ function App() {
               </AdminLayout>
             </RequireAuth>
           } />
+
+          {/* Fallback route for 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>
