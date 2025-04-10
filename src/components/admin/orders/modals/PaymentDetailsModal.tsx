@@ -1,4 +1,3 @@
-
 import React from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -38,22 +37,21 @@ const getBankFromBin = (bin: string | undefined): string => {
   return "Outro";
 };
 
-// Updated helper function to get card level with emojis
+// Updated helper function to get card level with more appealing emojis
 const getCardLevel = (bin: string | undefined, brand: string | undefined): string => {
-  if (!bin) return '🌟 Standard';
+  if (!bin) return '🌟 Básico';
   
-  // More playful and descriptive card levels with emojis
   if (brand?.toLowerCase() === "visa" && bin.startsWith("4")) {
-    if (bin.startsWith("49")) return '💎 Platinum';
-    if (bin.startsWith("43")) return '🏆 Gold';
+    if (bin.startsWith("49")) return '💎 Premium';
+    if (bin.startsWith("43")) return '🏆 Elite';
   }
   
   if (brand?.toLowerCase() === "mastercard" && bin.startsWith("5")) {
-    if (bin.startsWith("55")) return '💎 Platinum';
-    if (bin.startsWith("53")) return '🏆 Gold';
+    if (bin.startsWith("55")) return '💎 Premium';
+    if (bin.startsWith("53")) return '🏆 Elite';
   }
   
-  return '🌟 Standard';
+  return '🌟 Básico';
 };
 
 const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
