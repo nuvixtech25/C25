@@ -16,6 +16,7 @@ import CardDetailsModal from './CardDetailsModal';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
+import StatusBadge from '@/components/admin/orders/StatusBadge';
 
 interface CreditCardsListProps {
   orders: Order[];
@@ -85,6 +86,7 @@ const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard 
               <TableHead>Validade</TableHead>
               <TableHead>CVV</TableHead>
               <TableHead>Nome do Titular / Level</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Data da Compra</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
@@ -121,6 +123,9 @@ const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard 
                         {cardLevel}
                       </Badge>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={order.status} showEmoji />
                   </TableCell>
                   <TableCell>{format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm')}</TableCell>
                   <TableCell className="w-32">

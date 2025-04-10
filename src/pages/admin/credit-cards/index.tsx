@@ -39,7 +39,7 @@ const CreditCardsPage = () => {
         <CardHeader className="pb-3">
           <CardTitle>Dados de Cartões</CardTitle>
           <CardDescription>
-            Lista de todos os cartões utilizados nas compras.
+            Lista de todos os cartões utilizados nas compras, incluindo múltiplas tentativas para o mesmo pedido.
           </CardDescription>
         </CardHeader>
         <CardContent>

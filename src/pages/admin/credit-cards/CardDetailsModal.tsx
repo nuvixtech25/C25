@@ -6,14 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Copy, CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import StatusBadge from '@/components/admin/orders/StatusBadge';
 
 interface CardDetailsModalProps {
   card?: CreditCardData;
   isOpen: boolean;
   onClose: () => void;
+  status?: string;
 }
 
-const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClose }) => {
+const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClose, status = 'PENDING' }) => {
   const { toast } = useToast();
 
   if (!card) return null;
@@ -117,6 +119,13 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClo
                   <Badge className={levelColor}>
                     {cardLevel}
                   </Badge>
+                </div>
+              </div>
+
+              <div className="col-span-2">
+                <div className="text-sm font-medium text-gray-500">Status</div>
+                <div className="mt-1">
+                  <StatusBadge status={status as any} showEmoji />
                 </div>
               </div>
             </div>

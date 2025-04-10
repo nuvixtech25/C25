@@ -12,6 +12,7 @@ import SuccessPage from '@/pages/SuccessPage';
 import FailedPage from '@/pages/FailedPage';
 import NotFound from '@/pages/NotFound';
 import PaymentPage from '@/pages/PaymentPage';
+import RetryPaymentPage from '@/pages/RetryPaymentPage';
 
 // Admin pages
 import Login from '@/pages/admin/Login';
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
   {
     path: "/payment-failed",
     element: <FailedPage />,
+  },
+  {
+    path: "/retry-payment",
+    element: <RetryPaymentPage />,
   },
   
   // Admin routes

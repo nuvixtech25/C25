@@ -20,15 +20,45 @@ export const useCheckoutState = (product: Product | undefined) => {
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
   };
   
-  const handlePaymentSubmit = async (paymentData?: CreditCardData) => {
-    if (!customerData || !product) return;
+  const handlePaymentSubmit = async (paymentData?: CreditCardData, existingOrderId?: string) => {
+    if (!customerData && !existingOrderId) return;
+    if (!product) return;
     
     setIsSubmitting(true);
     
     try {
-      const order = await createOrder(customerData, product, paymentMethod, paymentData);
+      let order;
+      let billingData;
       
-      const billingData = prepareBillingData(customerData, product, order.id as string);
+      if (existingOrderId) {
+        // If we have an existing order ID, this is a retry payment
+        // We need to fetch the order data
+        const { data, error } = await fetch(`/api/orders/${existingOrderId}`).then(res => res.json());
+        if (error) throw new Error(error.message);
+        order = data;
+        
+        // Update the payment data for the existing order
+        if (paymentData) {
+          await useCheckoutOrder().saveCardData(existingOrderId, paymentData);
+        }
+        
+        // Prepare billing data
+        billingData = {
+          customer: {
+            name: order.customerName,
+            email: order.customerEmail,
+            cpfCnpj: order.customerCpfCnpj,
+            phone: order.customerPhone
+          },
+          value: order.productPrice,
+          description: order.productName,
+          orderId: existingOrderId
+        };
+      } else {
+        // Create a new order
+        order = await createOrder(customerData!, product, paymentMethod, paymentData);
+        billingData = prepareBillingData(customerData!, product, order.id as string);
+      }
       
       if (paymentMethod === 'pix') {
         navigate('/payment', { 
