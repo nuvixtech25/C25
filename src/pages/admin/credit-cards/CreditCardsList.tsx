@@ -11,7 +11,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Trash2, CreditCard } from 'lucide-react';
 import { Order } from '@/types/checkout';
-import StatusBadge from '@/components/admin/orders/StatusBadge';
 import { format } from 'date-fns';
 import CardDetailsModal from './CardDetailsModal';
 
@@ -51,14 +50,13 @@ const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard 
               <TableHead>BIN</TableHead>
               <TableHead>Bandeira</TableHead>
               <TableHead>Data da Compra</TableHead>
-              <TableHead>Status</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {orders.map((order) => (
               <TableRow key={order.id}>
-                <TableCell>{order.cardData?.holderName || '-'}</TableCell>
+                <TableCell>{order.cardData?.holderName?.toLowerCase() || '-'}</TableCell>
                 <TableCell>
                   <Button 
                     variant="link" 
@@ -78,9 +76,6 @@ const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard 
                   </div>
                 </TableCell>
                 <TableCell>{format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm')}</TableCell>
-                <TableCell>
-                  <StatusBadge status={order.status} showEmoji />
-                </TableCell>
                 <TableCell className="text-right">
                   <Button 
                     variant="ghost" 
@@ -109,3 +104,4 @@ const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard 
 };
 
 export default CreditCardsList;
+
