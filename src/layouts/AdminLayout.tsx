@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, CreditCard, Settings, CreditCard as AsaasIcon, Webhook, ShoppingCart } from 'lucide-react';
+import { LogOut, LayoutDashboard, CreditCard, Settings, CreditCard as AsaasIcon, Webhook, ShoppingCart, CreditCard as CreditCardIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
@@ -62,6 +62,15 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 >
                   <ShoppingCart className="h-4 w-4" />
                   <span>Pedidos</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin/credit-cards"
+                  className="flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors"
+                >
+                  <CreditCardIcon className="h-4 w-4" />
+                  <span>Cartões de Crédito</span>
                 </Link>
               </li>
               <li>

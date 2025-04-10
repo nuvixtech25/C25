@@ -23,6 +23,7 @@ import AdminTools from '@/pages/admin/AdminTools';
 import AsaasSettings from '@/pages/admin/AsaasSettings';
 import WebhookSimulator from '@/pages/admin/WebhookSimulator';
 import OrdersPage from '@/pages/admin/orders';
+import CreditCardsPage from '@/pages/admin/credit-cards';
 
 import { Toaster } from "@/components/ui/toaster";
 
@@ -98,6 +99,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <AdminLayout>
           <OrdersPage />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/credit-cards",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout>
+          <CreditCardsPage />
         </AdminLayout>
       </ProtectedRoute>
     ),
