@@ -13,6 +13,7 @@ import PixSettings from './pages/admin/PixSettings';
 import AsaasSettings from './pages/admin/AsaasSettings';
 import WebhookSimulator from './pages/admin/WebhookSimulator';
 import ProductsAdmin from './pages/admin/products'; // Import the ProductsAdmin component
+import OrdersPage from './pages/admin/orders'; // Import the OrdersPage component
 
 // Importações temporárias para funcionar sem os arquivos reais
 const CheckoutPage = () => <div>Checkout Page</div>;
@@ -22,7 +23,7 @@ const ConfirmationPage = () => <div>Confirmation Page</div>;
 const PaymentPendingPage = () => <div>Payment Pending Page</div>;
 const TestimonialsPage = () => <div>Testimonials Page</div>;
 // const ProductsAdmin = () => <div>Products Admin Page</div>; // Removed as we're now importing the real component
-const OrdersAdmin = () => <div>Orders Admin Page</div>;
+// const OrdersAdmin = () => <div>Orders Admin Page</div>; // Removed as we're now importing the real component
 const CheckoutCustomizationPage = () => <div>Checkout Customization Page</div>;
 
 // Create a client
@@ -61,7 +62,7 @@ function App() {
             <Route path="/admin/orders" element={
               <RequireAuth>
                 <AdminLayout>
-                  <OrdersAdmin />
+                  <OrdersPage />
                 </AdminLayout>
               </RequireAuth>
             } />
