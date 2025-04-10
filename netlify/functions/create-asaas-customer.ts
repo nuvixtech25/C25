@@ -1,6 +1,5 @@
-
 import { Handler } from '@netlify/functions';
-import { createClient } from '@supabase/supabase-js';
+import { createServerSupabaseClient } from '../../src/integrations/supabase/server';
 
 // Tipos para o request e response
 interface AsaasCustomerRequest {
@@ -75,11 +74,11 @@ export const handler: Handler = async (event) => {
     };
   }
   
-  // Inicializar cliente Supabase com as variáveis validadas
+  // Inicializar cliente Supabase com as variáveis validadas usando o createServerSupabaseClient
   console.log('Inicializando cliente Supabase...');
   console.log(`URL Supabase: ${supabaseUrl.substring(0, 10)}...`); // Log parcial por segurança
   
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const supabase = createServerSupabaseClient(supabaseUrl, supabaseServiceKey);
 
   try {
     // Parsear o corpo da requisição

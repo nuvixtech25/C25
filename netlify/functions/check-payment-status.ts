@@ -1,17 +1,18 @@
-
 import { Handler } from '@netlify/functions';
-import { createClient } from '@supabase/supabase-js';
-
-// Inicializar cliente Supabase
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-// Configuração da API Asaas
-const ASAAS_API_URL = 'https://sandbox.asaas.com/api/v3';
-const ASAAS_API_KEY = process.env.ASAAS_API_KEY || '';
+import { createServerSupabaseClient } from '../../src/integrations/supabase/server';
 
 export const handler: Handler = async (event) => {
+  // Verificar variáveis de ambiente
+  const supabaseUrl = process.env.SUPABASE_URL || '';
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  
+  // Inicializar cliente Supabase com o método seguro
+  const supabase = createServerSupabaseClient(supabaseUrl, supabaseServiceKey);
+
+  // Configuração da API Asaas
+  const ASAAS_API_URL = 'https://sandbox.asaas.com/api/v3';
+  const ASAAS_API_KEY = process.env.ASAAS_API_KEY || '';
+
   // Verificar se o método é GET
   if (event.httpMethod !== 'GET') {
     return {
@@ -33,6 +34,7 @@ export const handler: Handler = async (event) => {
   }
 
   try {
+    
     // Consultar o status do pagamento no Asaas
     const response = await fetch(`${ASAAS_API_URL}/payments/${paymentId}`, {
       method: 'GET',

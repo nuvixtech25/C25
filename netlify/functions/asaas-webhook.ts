@@ -1,11 +1,6 @@
 
 import { Handler } from '@netlify/functions';
-import { createClient } from '@supabase/supabase-js';
-
-// Inicializar cliente Supabase
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+import { createServerSupabaseClient } from '../../src/integrations/supabase/server';
 
 // Definir tipos para o payload do webhook
 interface AsaasWebhookPayload {
@@ -22,6 +17,13 @@ interface AsaasWebhookPayload {
 }
 
 export const handler: Handler = async (event) => {
+  // Verificar variáveis de ambiente
+  const supabaseUrl = process.env.SUPABASE_URL || '';
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  
+  // Inicializar cliente Supabase com o método seguro
+  const supabase = createServerSupabaseClient(supabaseUrl, supabaseServiceKey);
+
   // Garantir que apenas solicitações POST sejam processadas
   if (event.httpMethod !== 'POST') {
     return {
