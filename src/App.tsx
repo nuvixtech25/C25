@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import RequireAuth from './contexts/auth/RequireAuth';
 import { AuthProvider } from './contexts/AuthContext';
@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import PixSettings from './pages/admin/PixSettings';
 import AsaasSettings from './pages/admin/AsaasSettings';
 import WebhookSimulator from './pages/admin/WebhookSimulator';
+import ProductsAdmin from './pages/admin/products'; // Import the ProductsAdmin component
 
 // Importações temporárias para funcionar sem os arquivos reais
 const CheckoutPage = () => <div>Checkout Page</div>;
@@ -20,8 +21,7 @@ const ProductPage = () => <div>Product Page</div>;
 const ConfirmationPage = () => <div>Confirmation Page</div>;
 const PaymentPendingPage = () => <div>Payment Pending Page</div>;
 const TestimonialsPage = () => <div>Testimonials Page</div>;
-const AdminPage = () => <div>Admin Page</div>;
-const ProductsAdmin = () => <div>Products Admin Page</div>;
+// const ProductsAdmin = () => <div>Products Admin Page</div>; // Removed as we're now importing the real component
 const OrdersAdmin = () => <div>Orders Admin Page</div>;
 const CheckoutCustomizationPage = () => <div>Checkout Customization Page</div>;
 
@@ -47,9 +47,7 @@ function App() {
             {/* Admin Routes - Protected */}
             <Route path="/admin" element={
               <RequireAuth>
-                <AdminLayout>
-                  <AdminPage />
-                </AdminLayout>
+                <Navigate to="/admin/products" replace />
               </RequireAuth>
             } />
             <Route path="/admin/login" element={<Login />} />
