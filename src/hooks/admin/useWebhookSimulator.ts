@@ -97,23 +97,47 @@ export const useWebhookSimulator = () => {
     try {
       console.log('Attempting to delete all webhook logs');
       
-      // Delete records from asaas_webhook_logs table with an explicit condition
-      const { error, count } = await supabase
+      // First, check if there are any records
+      const { data: records, error: checkError } = await supabase
         .from('asaas_webhook_logs')
-        .delete({ count: 'exact' })
-        .gt('id', '00000000-0000-0000-0000-000000000000'); // This ensures we delete all records
+        .select('id', { count: 'exact' });
       
-      if (error) {
-        console.error('Error deleting records:', error);
-        throw error;
+      if (checkError) {
+        console.error('Error checking webhook logs:', checkError);
+        throw checkError;
       }
       
-      console.log(`Successfully deleted ${count} webhook logs`);
+      const recordCount = records?.length || 0;
+      console.log(`Found ${recordCount} webhook logs to delete`);
+      
+      if (recordCount === 0) {
+        toast({
+          title: 'Nenhum registro encontrado',
+          description: 'Não há registros de webhook para excluir.',
+        });
+        return;
+      }
+      
+      // Use a different approach to delete all records
+      const { error: deleteError } = await supabase
+        .from('asaas_webhook_logs')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Will match all valid UUIDs
+      
+      if (deleteError) {
+        console.error('Error deleting records:', deleteError);
+        throw deleteError;
+      }
+      
+      console.log(`Successfully deleted ${recordCount} webhook logs`);
       
       toast({
         title: 'Registros excluídos',
-        description: `${count} registros de webhook foram excluídos com sucesso.`,
+        description: `${recordCount} registros de webhook foram excluídos com sucesso.`,
       });
+      
+      // Refresh the orders list
+      await refetch();
     } catch (error) {
       console.error('Erro ao excluir registros:', error);
       toast({
