@@ -15,10 +15,13 @@ interface OrderTimeData {
 }
 
 interface RevenueChartProps {
-  data: OrderTimeData[];
+  data: Array<OrderTimeData | any>;
 }
 
 const RevenueChart = ({ data }: RevenueChartProps) => {
+  // Safely cast the data to ensure it matches the expected structure
+  const chartData = Array.isArray(data) ? data : [];
+
   return (
     <Card className="col-span-2">
       <CardHeader>
@@ -33,7 +36,7 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
         }}>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart
-              data={data || []}
+              data={chartData}
               margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
             >
               <defs>
