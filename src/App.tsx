@@ -14,16 +14,14 @@ import AsaasSettings from './pages/admin/AsaasSettings';
 import WebhookSimulator from './pages/admin/WebhookSimulator';
 import ProductsAdmin from './pages/admin/products'; // Import the ProductsAdmin component
 import OrdersPage from './pages/admin/orders'; // Import the OrdersPage component
+import LandingPage from './pages/LandingPage'; // Import the new LandingPage component
 
 // Importações temporárias para funcionar sem os arquivos reais
 const CheckoutPage = () => <div>Checkout Page</div>;
-const HomePage = () => <div>Home Page</div>;
 const ProductPage = () => <div>Product Page</div>;
 const ConfirmationPage = () => <div>Confirmation Page</div>;
 const PaymentPendingPage = () => <div>Payment Pending Page</div>;
 const TestimonialsPage = () => <div>Testimonials Page</div>;
-// const ProductsAdmin = () => <div>Products Admin Page</div>; // Removed as we're now importing the real component
-// const OrdersAdmin = () => <div>Orders Admin Page</div>; // Removed as we're now importing the real component
 const CheckoutCustomizationPage = () => <div>Checkout Customization Page</div>;
 
 // Create a client
@@ -35,8 +33,10 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
+            {/* Landing Page as the default route */}
+            <Route path="/" element={<LandingPage />} />
+            
             {/* Existing routes */}
-            <Route path="/" element={<HomePage />} />
             <Route path="/product/:slug" element={<ProductPage />} />
             <Route path="/checkout/:slug" element={<CheckoutPage />} />
             <Route path="/confirmation" element={<ConfirmationPage />} />

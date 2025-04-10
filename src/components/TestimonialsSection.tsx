@@ -3,45 +3,45 @@ import React from 'react';
 import { Testimonial } from '@/types/checkout';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Mock testimonials data - In a real app, this would come from Supabase
+// Testimonials data for the landing page
 const testimonials: Testimonial[] = [
   {
     id: '1',
-    name: 'Ana Silva',
-    photo: 'https://randomuser.me/api/portraits/women/12.jpg',
+    name: 'Ana S.',
+    photo: 'https://randomuser.me/api/portraits/women/44.jpg',
     rating: 5,
-    comment: 'Excelente curso! O conteúdo é muito bem explicado e aplicável imediatamente. Superei minhas expectativas!'
+    comment: 'Usei o Checkout Seguro e recebi meu acesso em segundos! Processo super rápido e confiável.'
   },
   {
     id: '2',
-    name: 'Carlos Oliveira',
-    photo: 'https://randomuser.me/api/portraits/men/22.jpg',
+    name: 'Carlos M.',
+    photo: 'https://randomuser.me/api/portraits/men/32.jpg',
     rating: 5,
-    comment: 'Incrível a qualidade do material. Em apenas uma semana já consegui aplicar vários conhecimentos no meu negócio.'
+    comment: 'Rápido, direto e sem enrolação. 10/10! Recomendo para todos que querem um checkout eficiente.'
   },
   {
     id: '3',
-    name: 'Mariana Costa',
-    photo: 'https://randomuser.me/api/portraits/women/32.jpg',
-    rating: 4,
-    comment: 'Material muito completo e equipe sempre disponível para tirar dúvidas. Vale muito a pena o investimento!'
+    name: 'Fernanda R.',
+    photo: 'https://randomuser.me/api/portraits/women/68.jpg',
+    rating: 5,
+    comment: 'Pagamento via PIX caiu na hora, muito bom. Interface intuitiva e segura, adorei a experiência.'
   }
 ];
 
 export const TestimonialsSection: React.FC = () => {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {testimonials.map((testimonial) => (
         <Card key={testimonial.id} className="border-gray-200 hover:shadow-md transition-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center mb-3">
+          <CardContent className="p-6">
+            <div className="flex items-center mb-4">
               <img 
                 src={testimonial.photo} 
                 alt={testimonial.name} 
                 className="w-12 h-12 rounded-full object-cover mr-3"
               />
               <div>
-                <h4 className="font-medium">{testimonial.name}</h4>
+                <h4 className="font-medium text-[#1E3A8A]">{testimonial.name}</h4>
                 <div className="flex">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <svg 
@@ -56,7 +56,7 @@ export const TestimonialsSection: React.FC = () => {
                 </div>
               </div>
             </div>
-            <p className="text-gray-600 text-sm">{testimonial.comment}</p>
+            <p className="text-gray-700">{testimonial.comment}</p>
           </CardContent>
         </Card>
       ))}
