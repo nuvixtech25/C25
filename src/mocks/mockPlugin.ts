@@ -31,11 +31,13 @@ export function mockApiPlugin(): Plugin {
             const mockResponse = {
               paymentId: 'mock_payment_' + Date.now(),
               qrCode: '00020101021226890014br.gov.bcb.pix2554qrcodepix.exemplo.bcb.gov.br/teste12345678901234567890204000053039865802BR5924Mock Pagador6009Sao Paulo62070503***6304B13E',
-              qrCodeImage: 'https://via.placeholder.com/300x300.png?text=QR+PIX',
-              qrCodeImageUrl: 'https://via.placeholder.com/300x300.png?text=QR+PIX',
+              qrCodeImage: '/placeholder.svg', // Use local placeholder SVG
+              qrCodeImageUrl: '/placeholder.svg', // Use local placeholder SVG
               copyPasteKey: '00020101021226890014br.gov.bcb.pix2554qrcodepix.exemplo.bcb.gov.br/teste12345678901234567890204000053039865802BR5924Mock Pagador6009Sao Paulo62070503***6304B13E',
               expirationDate: new Date(Date.now() + 30 * 60000).toISOString(),
-              status: 'PENDING'
+              status: 'PENDING',
+              value: parsedBody?.value || 99.90,
+              description: parsedBody?.description || 'Pagamento de teste'
             };
             
             // Log for debugging

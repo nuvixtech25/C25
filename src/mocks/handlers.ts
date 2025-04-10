@@ -5,8 +5,8 @@ import { PaymentStatus } from "@/types/checkout";
 export const mockAsaasPaymentResponse = {
   paymentId: 'mock_payment_123',
   qrCode: '00020101021226890014br.gov.bcb.pix2554qrcodepix.exemplo.bcb.gov.br/teste12345678901234567890204000053039865802BR5924Mock Pagador6009Sao Paulo62070503***6304B13E',
-  qrCodeImage: 'https://via.placeholder.com/300x300.png?text=QR+PIX',
-  qrCodeImageUrl: 'https://via.placeholder.com/300x300.png?text=QR+PIX',
+  qrCodeImage: '/placeholder.svg', // Use local placeholder SVG
+  qrCodeImageUrl: '/placeholder.svg', // Use local placeholder SVG
   copyPasteKey: '00020101021226890014br.gov.bcb.pix2554qrcodepix.exemplo.bcb.gov.br/teste12345678901234567890204000053039865802BR5924Mock Pagador6009Sao Paulo62070503***6304B13E',
   expirationDate: new Date(Date.now() + 30 * 60000).toISOString(), // 30 minutes from now
   status: 'PENDING' as PaymentStatus,
@@ -26,7 +26,11 @@ export async function mockAsaasPaymentHandler(req: Request) {
     const responseData = {
       ...mockAsaasPaymentResponse,
       paymentId: 'mock_payment_' + Date.now(),
+      qrCodeImage: '/placeholder.svg', // Ensure we use local asset
+      qrCodeImageUrl: '/placeholder.svg', // Ensure we use local asset
       expirationDate: new Date(Date.now() + 30 * 60000).toISOString(), // Always 30 minutes from now
+      value: body?.value || 99.90, // Use the value from the request or a default
+      description: body?.description || 'Pagamento de teste' // Use description from request or default
     };
     
     // Return mock response
