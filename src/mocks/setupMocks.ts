@@ -1,21 +1,29 @@
 
 import { mockAsaasPaymentHandler, mockCheckPaymentStatusHandler } from './handlers';
 
+// Define FetchEvent interface since it's not available in standard TypeScript types
+interface ExtendedFetchEvent extends Event {
+  request: Request;
+  respondWith(response: Response | Promise<Response>): void;
+}
+
 // Setup mock API routes for Vite development server
 export function setupMocks() {
   // Register the handler for all /api/* routes
   self.addEventListener('fetch', (event) => {
-    const url = new URL(event.request.url);
+    // Cast event to our extended type
+    const fetchEvent = event as unknown as ExtendedFetchEvent;
+    const url = new URL(fetchEvent.request.url);
     
     // Handle mock payment API
     if (url.pathname === '/api/mock-asaas-payment') {
-      event.respondWith(mockAsaasPaymentHandler(event.request));
+      fetchEvent.respondWith(mockAsaasPaymentHandler(fetchEvent.request));
       return;
     }
     
     // Handle mock payment status check (for local testing)
     if (url.pathname === '/api/check-payment-status') {
-      event.respondWith(mockCheckPaymentStatusHandler(event.request));
+      fetchEvent.respondWith(mockCheckPaymentStatusHandler(fetchEvent.request));
       return;
     }
     
