@@ -8,12 +8,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LoginForm from './admin/LoginForm';
 import RegisterForm from './admin/RegisterForm';
+import { supabase } from '@/integrations/supabase/client'; // Import supabase client
+import { useToast } from '@/hooks/use-toast'; // Import toast
 
 const Login = () => {
   const { signIn, session } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const navigate = useNavigate();
+  const { toast } = useToast(); // Use the toast hook
 
   // Se o usuário já estiver logado, redireciona para home
   useEffect(() => {

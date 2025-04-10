@@ -7,8 +7,9 @@ import RetryPaymentPage from './pages/RetryPaymentPage';
 import AdminLayout from './layouts/AdminLayout';
 import CreditCardsPage from './pages/admin/credit-cards';
 import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics";
-import NotFound from './pages/NotFound'; // Add NotFound import
-import Login from './pages/Login'; // Import the real Login component
+import NotFound from './pages/NotFound';
+import Login from './pages/Login';
+import PixSettings from './pages/admin/PixSettings'; // Import the PixSettings component
 
 // Importações temporárias para funcionar sem os arquivos reais
 const CheckoutPage = () => <div>Checkout Page</div>;
@@ -64,6 +65,13 @@ function App() {
             <RequireAuth>
               <AdminLayout>
                 <CreditCardsPage />
+              </AdminLayout>
+            </RequireAuth>
+          } />
+          <Route path="/admin/pix-settings" element={
+            <RequireAuth>
+              <AdminLayout>
+                <PixSettings />
               </AdminLayout>
             </RequireAuth>
           } />
