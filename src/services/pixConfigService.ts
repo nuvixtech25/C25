@@ -4,12 +4,12 @@ import { Database } from '@/integrations/supabase/types';
 
 // Define the PixConfig type based on the database schema
 export interface PixConfig {
-  id?: string;
+  id?: number; // Changed from string to number to match the database schema
   chavepix: string;
   tipochave: string;
   beneficiario: string;
   copiaecola: string;
-  mensagemopcional: string;
+  mensagemopcional: string | null; // Added null to match the database schema
 }
 
 // Function to fetch PIX configuration from Supabase

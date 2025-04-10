@@ -21,14 +21,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchPixConfig, updatePixConfig, PixConfig } from '@/services/pixConfigService';
 
-// Schema for form validation
+// Schema for form validation - updated to match the database schema
 const pixConfigSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(), // Changed from string to number
   chavepix: z.string().min(1, 'Chave PIX é obrigatória'),
   tipochave: z.string().min(1, 'Tipo de chave é obrigatório'),
   beneficiario: z.string().min(1, 'Nome do beneficiário é obrigatório'),
   copiaecola: z.string().min(1, 'Código copia e cola é obrigatório'),
-  mensagemopcional: z.string().optional(),
+  mensagemopcional: z.string().nullable().optional(), // Allow null values
 });
 
 type PixConfigFormValues = z.infer<typeof pixConfigSchema>;
@@ -57,6 +57,7 @@ const PixSettings = () => {
         setLoading(true);
         const config = await fetchPixConfig();
         form.reset(config);
+        console.log('PIX Config loaded:', config);
       } catch (error) {
         console.error('Erro ao carregar configurações PIX:', error);
         toast({
@@ -76,7 +77,8 @@ const PixSettings = () => {
   const onSubmit = async (values: PixConfigFormValues) => {
     try {
       setSaving(true);
-      await updatePixConfig(values as PixConfig);
+      const updatedConfig = await updatePixConfig(values as PixConfig);
+      console.log('PIX Config updated:', updatedConfig);
       toast({
         title: 'Sucesso',
         description: 'Configurações PIX atualizadas com sucesso!',
@@ -195,7 +197,11 @@ const PixSettings = () => {
                     <FormItem>
                       <FormLabel>Mensagem Opcional</FormLabel>
                       <FormControl>
-                        <Input placeholder="Mensagem para o pagador (opcional)" {...field} />
+                        <Input 
+                          placeholder="Mensagem para o pagador (opcional)" 
+                          {...field}
+                          value={field.value || ''} // Handle null values
+                        />
                       </FormControl>
                       <FormDescription>
                         Aparecerá para o pagador durante a transação.
