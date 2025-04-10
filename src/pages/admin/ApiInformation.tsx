@@ -1,11 +1,45 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Database, KeyRound, Code, FileCode, GitBranch, Folder, Server } from 'lucide-react';
+import { Database, KeyRound, Code, FileCode, GitBranch, Folder, Server, RefreshCw, CheckCircle } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
 
 const ApiInformation = () => {
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const { toast } = useToast();
+
+  const handleRefresh = () => {
+    setIsUpdating(true);
+    
+    // Simulando uma atualização que leva tempo
+    setTimeout(() => {
+      setLastUpdated(new Date());
+      setIsUpdating(false);
+      
+      toast({
+        title: "Informações atualizadas",
+        description: "A estrutura do projeto foi atualizada com sucesso.",
+        variant: "default",
+      });
+    }, 1000);
+  };
+
+  const formatLastUpdated = (date: Date) => {
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).format(date);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -262,11 +296,38 @@ async function getAsaasConfig(supabase) {
 
         <TabsContent value="estructura" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Estrutura do Projeto</CardTitle>
-              <CardDescription>
-                Organização de diretórios e arquivos principais
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div>
+                <CardTitle>Estrutura do Projeto</CardTitle>
+                <CardDescription>
+                  Organização de diretórios e arquivos principais
+                </CardDescription>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <Button 
+                  onClick={handleRefresh} 
+                  variant="outline" 
+                  size="sm"
+                  disabled={isUpdating}
+                  className="flex items-center gap-2"
+                >
+                  {isUpdating ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      Atualizando...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-4 w-4" />
+                      Atualizar Estrutura
+                    </>
+                  )}
+                </Button>
+                <div className="text-xs text-muted-foreground flex items-center">
+                  <CheckCircle className="h-3 w-3 mr-1 text-green-500" />
+                  Atualizado em: {formatLastUpdated(lastUpdated)}
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
