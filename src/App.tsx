@@ -1,179 +1,83 @@
-
 import React from 'react';
-import { RouterProvider, createBrowserRouter, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/contexts/AuthContext';
-import ProtectedRoute from '@/components/ProtectedRoute';
-import AdminLayout from '@/layouts/AdminLayout';
-
-// Public pages
-import Checkout from '@/pages/Checkout';
-import SuccessPage from '@/pages/SuccessPage';
-import FailedPage from '@/pages/FailedPage';
-import NotFound from '@/pages/NotFound';
-import PaymentPage from '@/pages/PaymentPage';
-import RetryPaymentPage from '@/pages/RetryPaymentPage';
-
-// Admin pages
-import Login from '@/pages/admin/Login';
-import PixSettings from '@/pages/admin/PixSettings';
-import ProductsPage from '@/pages/admin/products';
-import NewProductPage from '@/pages/admin/products/new';
-import EditProductPage from '@/pages/admin/products/edit';
-import AdminTools from '@/pages/admin/AdminTools';
-import AsaasSettings from '@/pages/admin/AsaasSettings';
-import WebhookSimulator from '@/pages/admin/WebhookSimulator';
-import OrdersPage from '@/pages/admin/orders';
-import CreditCardsPage from '@/pages/admin/credit-cards';
-
-import { Toaster } from "@/components/ui/toaster";
-
-// Create a client
-const queryClient = new QueryClient();
-
-// Create router with protected routes
-const router = createBrowserRouter([
-  // Public routes
-  {
-    path: "/",
-    element: <Navigate to="/checkout/curso-de-marketing-digital" replace />,
-  },
-  {
-    path: "/checkout/:slug",
-    element: <Checkout />,
-  },
-  {
-    path: "/payment",
-    element: <PaymentPage />,
-  },
-  {
-    path: "/success",
-    element: <SuccessPage />,
-  },
-  {
-    path: "/payment-failed",
-    element: <FailedPage />,
-  },
-  {
-    path: "/retry-payment",
-    element: <RetryPaymentPage />,
-  },
-  
-  // Admin routes
-  {
-    path: "/admin",
-    element: <Navigate to="/admin/products" replace />,
-  },
-  {
-    path: "/admin/login",
-    element: <Login />,
-  },
-  {
-    path: "/admin/products",
-    element: (
-      <ProtectedRoute>
-        <AdminLayout>
-          <ProductsPage />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/products/new",
-    element: (
-      <ProtectedRoute>
-        <AdminLayout>
-          <NewProductPage />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/products/edit/:id",
-    element: (
-      <ProtectedRoute>
-        <AdminLayout>
-          <EditProductPage />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/orders",
-    element: (
-      <ProtectedRoute>
-        <AdminLayout>
-          <OrdersPage />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/credit-cards",
-    element: (
-      <ProtectedRoute>
-        <AdminLayout>
-          <CreditCardsPage />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/pix-settings",
-    element: (
-      <ProtectedRoute>
-        <AdminLayout>
-          <PixSettings />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/asaas-settings",
-    element: (
-      <ProtectedRoute>
-        <AdminLayout>
-          <AsaasSettings />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/webhook-simulator",
-    element: (
-      <ProtectedRoute requireAdmin={false}>
-        <AdminLayout>
-          <WebhookSimulator />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/tools",
-    element: (
-      <ProtectedRoute requireAdmin={false}>
-        <AdminLayout>
-          <AdminTools />
-        </AdminLayout>
-      </ProtectedRoute>
-    ),
-  },
-  
-  // 404 route
-  {
-    path: "*",
-    element: <NotFound />,
-  },
-]);
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import CheckoutPage from './pages/CheckoutPage';
+import HomePage from './pages/HomePage';
+import ProductPage from './pages/ProductPage';
+import ConfirmationPage from './pages/ConfirmationPage';
+import PaymentPendingPage from './pages/PaymentPendingPage';
+import RetryPaymentPage from './pages/RetryPaymentPage';
+import TestimonialsPage from './pages/TestimonialsPage';
+import AdminPage from './pages/AdminPage';
+import ProductsAdmin from './pages/admin/products';
+import OrdersAdmin from './pages/admin/orders';
+import LoginPage from './pages/LoginPage';
+import { AuthProvider } from './contexts/AuthContext';
+import { RequireAuth } from './components/RequireAuth';
+import AdminLayout from './components/AdminLayout';
+import CreditCardsPage from './pages/admin/credit-cards';
+import CheckoutCustomizationPage from './pages/admin/checkout';
+import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics";
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/product/:slug" element={<ProductPage />} />
+          <Route path="/checkout/:slug" element={<CheckoutPage />} />
+          <Route path="/confirmation" element={<ConfirmationPage />} />
+          <Route path="/payment-pending" element={<PaymentPendingPage />} />
+          <Route path="/retry-payment" element={<RetryPaymentPage />} />
+          <Route path="/testimonials" element={<TestimonialsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          
+          {/* Admin Routes - Protected */}
+          <Route path="/admin" element={
+            <RequireAuth>
+              <AdminLayout>
+                <AdminPage />
+              </AdminLayout>
+            </RequireAuth>
+          } />
+          <Route path="/admin/products" element={
+            <RequireAuth>
+              <AdminLayout>
+                <ProductsAdmin />
+              </AdminLayout>
+            </RequireAuth>
+          } />
+          <Route path="/admin/orders" element={
+            <RequireAuth>
+              <AdminLayout>
+                <OrdersAdmin />
+              </AdminLayout>
+            </RequireAuth>
+          } />
+          <Route path="/admin/credit-cards" element={
+            <RequireAuth>
+              <AdminLayout>
+                <CreditCardsPage />
+              </AdminLayout>
+            </RequireAuth>
+          } />
+          <Route path="/admin/checkout-customization" element={
+            <RequireAuth>
+              <AdminLayout>
+                <CheckoutCustomizationPage />
+              </AdminLayout>
+            </RequireAuth>
+          } />
+          <Route path="/admin/analytics/payment-retry" element={
+            <RequireAuth>
+              <AdminLayout>
+                <PaymentRetryAnalytics />
+              </AdminLayout>
+            </RequireAuth>
+          } />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

@@ -6,7 +6,14 @@ import { CreditCardData } from "@/types/checkout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, Calendar, KeyRound, Building2, Tag, Star, Clock } from "lucide-react";
-import { getBankFromBin, getCardLevel, getCardBrandIcon } from "@/utils/cardUtils";
+import { 
+  getBankFromBin, 
+  getCardLevel, 
+  getCardBrandIcon, 
+  getCardLevelDetails, 
+  getCardSecurityAssessment,
+  getAttemptNumberLabel 
+} from "@/utils/cardUtils";
 
 interface CardAttemptDetailsProps {
   cardData: CreditCardData;
@@ -38,6 +45,15 @@ const CardAttemptDetails: React.FC<CardAttemptDetailsProps> = ({
   attemptNumber,
   status
 }) => {
+  // Get card level details for enhanced display
+  const levelDetails = getCardLevelDetails(cardData.bin, cardData.brand);
+  
+  // Get security assessment based on status
+  const securityAssessment = getCardSecurityAssessment(cardData.bin, status);
+  
+  // Get attempt label
+  const attemptLabel = getAttemptNumberLabel(attemptNumber);
+
   return (
     <Card className="shadow-md hover:shadow-lg transition-shadow duration-200 border border-slate-100">
       <CardHeader className="pb-2">
@@ -46,7 +62,7 @@ const CardAttemptDetails: React.FC<CardAttemptDetailsProps> = ({
             <span className="inline-flex items-center justify-center bg-purple-100 text-purple-800 rounded-full w-6 h-6 text-xs font-semibold">
               #{attemptNumber}
             </span>
-            <span>Tentativa de Pagamento</span>
+            <span>{attemptLabel}</span>
           </CardTitle>
           {status && (
             <Badge variant={getStatusBadgeVariant(status)}>
@@ -111,9 +127,27 @@ const CardAttemptDetails: React.FC<CardAttemptDetailsProps> = ({
             <div className="grid grid-cols-12 items-center gap-2">
               <Star className="h-4 w-4 text-slate-500 col-span-1" />
               <div className="font-medium col-span-3">Nível:</div>
-              <div className="col-span-8">{getCardLevel(cardData.bin, cardData.brand)}</div>
+              <div className="col-span-8 flex items-center">
+                {getCardLevel(cardData.bin, cardData.brand)}
+                <span className="ml-2 text-xs text-muted-foreground">
+                  ({levelDetails.description})
+                </span>
+              </div>
             </div>
           )}
+          
+          {/* Status assessment information */}
+          <div className="mt-4 pt-3 border-t border-slate-100">
+            <div className="flex items-center">
+              <div className={`mr-2 ${securityAssessment.color}`}>
+                {React.createElement(securityAssessment.icon, { size: 16 })}
+              </div>
+              <div className="font-medium">{securityAssessment.label}</div>
+              <div className="ml-2 text-xs text-muted-foreground">
+                {securityAssessment.description}
+              </div>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
