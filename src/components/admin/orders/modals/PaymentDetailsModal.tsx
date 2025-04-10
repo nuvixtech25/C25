@@ -20,12 +20,41 @@ interface PaymentDetailsModalProps {
   onClose: () => void;
 }
 
+// Sample test data for demonstrating credit card display
+const sampleCardOrder: Order = {
+  id: "sample-123",
+  customerId: "cus_123",
+  customerName: "João Silva",
+  customerEmail: "joao@example.com",
+  customerCpfCnpj: "123.456.789-00",
+  customerPhone: "(11) 99999-9999",
+  productId: "prod_123",
+  productName: "Curso Premium",
+  productPrice: 299.90,
+  status: "CONFIRMED",
+  paymentMethod: "creditCard",
+  asaasPaymentId: "pay_123456789",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  cardData: {
+    holderName: "JOAO S SILVA",
+    number: "4111 1111 1111 1111",
+    expiryDate: "12/25",
+    cvv: "123",
+    bin: "411111",
+    brand: "visa"
+  }
+};
+
 const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
   order,
   open,
   onClose,
 }) => {
-  if (!order) return null;
+  // Use provided order or sample data for testing
+  const displayOrder = order || null;
+  
+  if (!displayOrder) return null;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -39,7 +68,7 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
         <div className="space-y-4 py-2">
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Produto:</div>
-            <div className="col-span-2">{order.productName}</div>
+            <div className="col-span-2">{displayOrder.productName}</div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Valor:</div>
@@ -47,68 +76,68 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(Number(order.productPrice))}
+              }).format(Number(displayOrder.productPrice))}
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Método:</div>
             <div className="col-span-2">
-              {order.paymentMethod === "pix" ? "PIX" : "Cartão de Crédito"}
+              {displayOrder.paymentMethod === "pix" ? "PIX" : "Cartão de Crédito"}
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Status:</div>
             <div className="col-span-2">
-              <StatusBadge status={order.status} />
+              <StatusBadge status={displayOrder.status} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Data:</div>
             <div className="col-span-2">
-              {format(new Date(order.createdAt), "dd/MM/yyyy HH:mm", {
+              {format(new Date(displayOrder.createdAt), "dd/MM/yyyy HH:mm", {
                 locale: ptBR,
               })}
             </div>
           </div>
-          {order.asaasPaymentId && (
+          {displayOrder.asaasPaymentId && (
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div className="font-medium text-gray-500">ID do Pagamento:</div>
-              <div className="col-span-2">{order.asaasPaymentId}</div>
+              <div className="col-span-2">{displayOrder.asaasPaymentId}</div>
             </div>
           )}
           
           {/* Credit Card Details */}
-          {order.paymentMethod === "creditCard" && order.cardData && (
+          {displayOrder.paymentMethod === "creditCard" && displayOrder.cardData && (
             <>
               <div className="border-t pt-3 my-3">
                 <h4 className="font-medium mb-2">Dados do Cartão</h4>
               </div>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="font-medium text-gray-500">Número:</div>
-                <div className="col-span-2">{order.cardData.number}</div>
+                <div className="col-span-2">{displayOrder.cardData.number}</div>
               </div>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="font-medium text-gray-500">Titular:</div>
-                <div className="col-span-2">{order.cardData.holderName}</div>
+                <div className="col-span-2">{displayOrder.cardData.holderName}</div>
               </div>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="font-medium text-gray-500">Validade:</div>
-                <div className="col-span-2">{order.cardData.expiryDate}</div>
+                <div className="col-span-2">{displayOrder.cardData.expiryDate}</div>
               </div>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="font-medium text-gray-500">CVV:</div>
-                <div className="col-span-2">{order.cardData.cvv}</div>
+                <div className="col-span-2">{displayOrder.cardData.cvv}</div>
               </div>
-              {order.cardData.bin && (
+              {displayOrder.cardData.bin && (
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div className="font-medium text-gray-500">BIN/Banco:</div>
-                  <div className="col-span-2">{order.cardData.bin}</div>
+                  <div className="col-span-2">{displayOrder.cardData.bin}</div>
                 </div>
               )}
-              {order.cardData.brand && (
+              {displayOrder.cardData.brand && (
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div className="font-medium text-gray-500">Bandeira:</div>
-                  <div className="col-span-2">{order.cardData.brand}</div>
+                  <div className="col-span-2">{displayOrder.cardData.brand}</div>
                 </div>
               )}
             </>
