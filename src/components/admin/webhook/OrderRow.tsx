@@ -26,13 +26,15 @@ interface OrderRowProps {
   isProcessing: boolean;
   onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
   selectedEvent: WebhookEventType;
+  getEventDisplayName: (event: WebhookEventType) => string;
 }
 
 const OrderRow: React.FC<OrderRowProps> = ({ 
   order, 
   isProcessing, 
   onSimulatePayment, 
-  selectedEvent
+  selectedEvent,
+  getEventDisplayName
 }) => {
   // Format date function
   const formatDate = (dateString: string) => {
@@ -40,18 +42,6 @@ const OrderRow: React.FC<OrderRowProps> = ({
       return format(new Date(dateString), 'dd/MM/yyyy HH:mm');
     } catch (e) {
       return dateString;
-    }
-  };
-
-  // Get event name for display
-  const getEventDisplayName = (event: WebhookEventType) => {
-    switch (event) {
-      case 'PAYMENT_RECEIVED': return 'Recebido';
-      case 'PAYMENT_CONFIRMED': return 'Confirmado';
-      case 'PAYMENT_OVERDUE': return 'Vencido';
-      case 'PAYMENT_CANCELED': return 'Cancelado';
-      case 'PAYMENT_REFUSED': return 'Recusado';
-      default: return event;
     }
   };
 
@@ -64,10 +54,8 @@ const OrderRow: React.FC<OrderRowProps> = ({
 
   // Check if we should show Asaas ID option
   const hasAsaasId = !!order.asaas_payment_id;
-  const canSimulateAsaas = !isAlreadyProcessed && (hasAsaasId || order.payment_method === 'creditCard');
-  
-  // Check if we should show manual card option
   const isCardPayment = order.payment_method === 'creditCard';
+  const canSimulateAsaas = !isAlreadyProcessed && (hasAsaasId || isCardPayment);
   const canSimulateManual = isCardPayment && !isAlreadyProcessed;
 
   // Handle simulations

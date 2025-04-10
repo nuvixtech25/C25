@@ -14,15 +14,20 @@ export const useWebhookSimulator = () => {
     statusFilter,
     setStatusFilter,
     selectedEvent,
-    setSelectedEvent
+    setSelectedEvent,
+    eventOptions,
+    statusOptions
   } = useWebhookState();
 
   // Get data with the current filters
   const { data: orders, isLoading, refetch } = useWebhookData(statusFilter);
 
   // Get actions with the required dependencies
-  const { simulatePaymentWebhook: rawSimulatePaymentWebhook, deleteAllWebhookLogs } = 
-    useWebhookActions(setProcessingOrders, refetch);
+  const { 
+    simulatePaymentWebhook: rawSimulatePaymentWebhook, 
+    deleteAllWebhookLogs,
+    getEventDisplayName 
+  } = useWebhookActions(setProcessingOrders, refetch);
 
   // Wrap the simulatePaymentWebhook to include the selectedEvent
   const simulatePaymentWebhook = (
@@ -43,9 +48,14 @@ export const useWebhookSimulator = () => {
     selectedEvent,
     setSelectedEvent,
     
+    // Options
+    eventOptions,
+    statusOptions,
+    
     // Actions
     simulatePaymentWebhook,
     deleteAllWebhookLogs,
+    getEventDisplayName,
     refetch
   };
 };

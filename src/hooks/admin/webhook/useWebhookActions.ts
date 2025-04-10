@@ -10,6 +10,34 @@ export const useWebhookActions = (
 ) => {
   const { toast } = useToast();
 
+  // Get event display name for notifications
+  const getEventDisplayName = (event: WebhookEventType): string => {
+    switch (event) {
+      case 'PAYMENT_RECEIVED': return 'Recebido';
+      case 'PAYMENT_CONFIRMED': return 'Confirmado';
+      case 'PAYMENT_OVERDUE': return 'Vencido';
+      case 'PAYMENT_CANCELED': return 'Cancelado';
+      case 'PAYMENT_REFUSED': return 'Recusado';
+      default: return event;
+    }
+  };
+
+  // Map webhook event to new order status
+  const mapEventToStatus = (event: WebhookEventType): PaymentStatus => {
+    switch (event) {
+      case 'PAYMENT_RECEIVED':
+      case 'PAYMENT_CONFIRMED':
+        return 'CONFIRMED';
+      case 'PAYMENT_OVERDUE':
+        return 'OVERDUE';
+      case 'PAYMENT_CANCELED':
+      case 'PAYMENT_REFUSED':
+        return 'CANCELLED';
+      default:
+        return 'PENDING';
+    }
+  };
+
   // Function to simulate a webhook with the selected event
   const simulatePaymentWebhook = async (
     asaasPaymentId: string | null, 
@@ -37,20 +65,7 @@ export const useWebhookActions = (
       console.log(`Selected event: ${selectedEvent}`);
       
       // Determine the new status based on the event
-      let newStatus: PaymentStatus = 'PENDING';
-      switch (selectedEvent) {
-        case 'PAYMENT_RECEIVED':
-        case 'PAYMENT_CONFIRMED':
-          newStatus = 'CONFIRMED';
-          break;
-        case 'PAYMENT_OVERDUE':
-          newStatus = 'OVERDUE';
-          break;
-        case 'PAYMENT_CANCELED':
-        case 'PAYMENT_REFUSED':
-          newStatus = 'CANCELLED';
-          break;
-      }
+      const newStatus = mapEventToStatus(selectedEvent);
       
       // Prepare payload based on whether this is a manual card or asaas payment
       const payload = isManualCard 
@@ -89,7 +104,7 @@ export const useWebhookActions = (
       
       toast({
         title: 'Webhook simulado com sucesso',
-        description: `O status do pedido foi atualizado para ${newStatus}.`,
+        description: `O status do pedido foi atualizado para ${getEventDisplayName(selectedEvent)}.`,
       });
       
       // Update the orders list
@@ -164,6 +179,7 @@ export const useWebhookActions = (
 
   return {
     simulatePaymentWebhook,
-    deleteAllWebhookLogs
+    deleteAllWebhookLogs,
+    getEventDisplayName
   };
 };

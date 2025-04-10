@@ -4,7 +4,6 @@ import { Table, TableBody, TableHeader, TableRow, TableHead } from '@/components
 import { Skeleton } from '@/components/ui/skeleton';
 import OrderRow from './OrderRow';
 import { WebhookEventType } from '@/hooks/admin/webhook/types';
-import { Badge } from '@/components/ui/badge';
 
 interface OrdersTableProps {
   orders: any[] | null;
@@ -12,6 +11,7 @@ interface OrdersTableProps {
   processingOrders: Record<string, boolean>;
   onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
   selectedEvent: WebhookEventType;
+  getEventDisplayName: (event: WebhookEventType) => string;
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ 
@@ -19,7 +19,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   isLoading, 
   processingOrders, 
   onSimulatePayment,
-  selectedEvent
+  selectedEvent,
+  getEventDisplayName
 }) => {
   // Render loading skeletons
   if (isLoading) {
@@ -105,6 +106,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
               isProcessing={processingOrders[order.id] || false}
               onSimulatePayment={onSimulatePayment}
               selectedEvent={selectedEvent}
+              getEventDisplayName={getEventDisplayName}
             />
           ))}
         </TableBody>
