@@ -8,7 +8,7 @@ import PaymentPage from '@/pages/PaymentPage';
 import PixSettings from '@/pages/admin/PixSettings';
 import ProductsPage from '@/pages/admin/products';
 import NewProductPage from '@/pages/admin/products/new';
-import EditProductPage from '@/pages/admin/products/edit/:id';
+import EditProductPage from '@/pages/admin/products/edit';
 import { Toaster } from "@/components/ui/toaster";
 
 function App() {

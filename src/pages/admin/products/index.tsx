@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -33,8 +32,9 @@ const ProductsPage = () => {
   const { data: products, isLoading, error, refetch } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
+      // Use type assertion to tell TypeScript we know what we're doing
       const { data, error } = await supabase
-        .from('products')
+        .from('products' as any)
         .select('id, name, price, status, type')
         .order('created_at', { ascending: false });
 
@@ -54,8 +54,9 @@ const ProductsPage = () => {
     if (!productToDelete) return;
 
     try {
+      // Use type assertion to tell TypeScript we know what we're doing
       const { error } = await supabase
-        .from('products')
+        .from('products' as any)
         .delete()
         .eq('id', productToDelete.id);
 

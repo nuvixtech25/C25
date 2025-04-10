@@ -28,7 +28,8 @@ const NewProductPage = () => {
       // Generate slug from name if not provided
       const slug = data.slug || generateSlug(data.name);
       
-      const { error } = await supabase.from('products').insert({
+      // Use type assertion to tell TypeScript we know what we're doing
+      const { error } = await supabase.from('products' as any).insert({
         name: data.name,
         description: data.description || null,
         price: data.price,
@@ -36,7 +37,7 @@ const NewProductPage = () => {
         type: data.type,
         status: data.status,
         slug: slug,
-      });
+      } as any);
 
       if (error) {
         if (error.code === '23505') {

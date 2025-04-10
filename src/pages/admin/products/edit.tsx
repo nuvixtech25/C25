@@ -10,6 +10,18 @@ import { productSchema, ProductFormValues, generateSlug } from './ProductSchema'
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
+// Define a type for the product from the database
+type ProductData = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  image_url: string | null;
+  type: 'digital' | 'physical';
+  status: boolean;
+  slug: string;
+}
+
 const EditProductPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -31,8 +43,9 @@ const EditProductPage = () => {
     queryFn: async () => {
       if (!id) throw new Error('ID do produto não fornecido');
 
+      // Use type assertion to tell TypeScript we know what we're doing
       const { data, error } = await supabase
-        .from('products')
+        .from('products' as any)
         .select('*')
         .eq('id', id)
         .single();
@@ -45,18 +58,21 @@ const EditProductPage = () => {
         throw new Error('Produto não encontrado');
       }
 
+      // Cast data to ProductData type
+      const productData = data as unknown as ProductData;
+
       // Set form values
       form.reset({
-        name: data.name,
-        description: data.description || '',
-        price: data.price,
-        image_url: data.image_url || '',
-        type: data.type,
-        status: data.status,
-        slug: data.slug,
+        name: productData.name,
+        description: productData.description || '',
+        price: productData.price,
+        image_url: productData.image_url || '',
+        type: productData.type,
+        status: productData.status,
+        slug: productData.slug,
       });
 
-      return data;
+      return productData;
     },
     retry: false,
   });
@@ -68,8 +84,9 @@ const EditProductPage = () => {
       // Generate slug from name if not provided
       const slug = data.slug || generateSlug(data.name);
       
+      // Use type assertion to tell TypeScript we know what we're doing
       const { error } = await supabase
-        .from('products')
+        .from('products' as any)
         .update({
           name: data.name,
           description: data.description || null,
@@ -78,7 +95,7 @@ const EditProductPage = () => {
           type: data.type,
           status: data.status,
           slug: slug,
-        })
+        } as any)
         .eq('id', id);
 
       if (error) {
