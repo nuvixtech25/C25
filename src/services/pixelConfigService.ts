@@ -7,6 +7,7 @@ export interface PixelConfig {
   googleAdsId: string;
   conversionLabel?: string;
   facebookPixelId: string;
+  facebookToken?: string;
   enabled: boolean;
 }
 
@@ -26,6 +27,7 @@ export const fetchPixelConfig = async (): Promise<PixelConfig> => {
       googleAdsId: '',
       conversionLabel: '',
       facebookPixelId: '',
+      facebookToken: '',
       enabled: false
     };
   } catch (error) {
@@ -34,6 +36,7 @@ export const fetchPixelConfig = async (): Promise<PixelConfig> => {
       googleAdsId: '',
       conversionLabel: '',
       facebookPixelId: '',
+      facebookToken: '',
       enabled: false
     };
   }

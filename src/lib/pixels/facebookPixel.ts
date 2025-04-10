@@ -1,13 +1,13 @@
 
 /**
- * Facebook Ads (Meta Pixel) implementation
+ * Facebook Pixel implementation
  */
 
 // Initialize Facebook Pixel
-export const initFacebookPixel = (pixelId: string): void => {
+export const initFacebookPixel = (pixelId: string, accessToken?: string): void => {
   if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
   
-  // Add Facebook Pixel script to document head
+  // Add Facebook Pixel base code
   const script = document.createElement('script');
   script.innerHTML = `
     !function(f,b,e,v,n,t,s)
@@ -18,7 +18,8 @@ export const initFacebookPixel = (pixelId: string): void => {
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '${pixelId}');
+    
+    fbq('init', '${pixelId}'${accessToken ? `, {access_token: '${accessToken}'}` : ''});
     fbq('track', 'PageView');
   `;
   
@@ -51,10 +52,12 @@ export const trackInitiateCheckout = (value?: number, currency: string = 'BRL'):
   if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
   if (!window.fbq) return;
   
-  window.fbq('track', 'InitiateCheckout', {
-    value,
-    currency
-  });
+  const eventParams: any = {
+    currency,
+    value
+  };
+  
+  window.fbq('track', 'InitiateCheckout', eventParams);
 };
 
 // Track purchase event

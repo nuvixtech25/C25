@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { fetchPixelConfig, updatePixelConfig, PixelConfig } from '@/services/pixelConfigService';
 import { pixelConfigSchema, PixelConfigFormValues } from './PixelSettingsSchema';
 
@@ -33,6 +34,7 @@ export const PixelSettingsForm = () => {
       googleAdsId: '',
       conversionLabel: '',
       facebookPixelId: '',
+      facebookToken: '',
       enabled: false,
     },
   });
@@ -120,58 +122,91 @@ export const PixelSettingsForm = () => {
                 )}
               />
               
-              <FormField
-                control={form.control}
-                name="googleAdsId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ID do Google Ads</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Exemplo: AW-123456789" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      O ID do Google Ads começa com 'AW-' seguido por números.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Google Ads Section */}
+              <div className="mt-8">
+                <h3 className="text-lg font-medium">Configurações do Google Ads</h3>
+                <Separator className="my-4" />
+                
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="googleAdsId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ID do Google Ads</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Exemplo: AW-123456789" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          O ID do Google Ads começa com 'AW-' seguido por números.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="conversionLabel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Label de Conversão do Google Ads</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Exemplo: AbCdEfGhIjK-123" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          O label de conversão é usado para rastrear conversões específicas no Google Ads.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
               
-              <FormField
-                control={form.control}
-                name="conversionLabel"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Label de Conversão do Google Ads</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Exemplo: AbCdEfGhIjK-123" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      O label de conversão é usado para rastrear conversões específicas no Google Ads.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Facebook Pixel Section */}
+              <div className="mt-8">
+                <h3 className="text-lg font-medium">Configurações do Facebook Pixel</h3>
+                <Separator className="my-4" />
+                
+                <div className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="facebookPixelId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ID do Facebook Pixel</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Exemplo: 123456789012345" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          O ID do Facebook Pixel é um número de 15 dígitos.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="facebookToken"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Token de Acesso do Facebook</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Exemplo: EAAxxxxxxxxxxxxx" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          O token de acesso do Facebook é usado para autenticação avançada com o Facebook Pixel.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
               
-              <FormField
-                control={form.control}
-                name="facebookPixelId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ID do Facebook Pixel</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Exemplo: 123456789012345" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      O ID do Facebook Pixel é um número de 15 dígitos.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <Button type="submit" className="w-full" disabled={saving}>
+              <Button type="submit" className="w-full mt-8" disabled={saving}>
                 {saving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
