@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Database, KeyRound, Code, FileCode, GitBranch, FileTree, Server } from 'lucide-react';
+import { Database, KeyRound, Code, FileCode, GitBranch, Folder, Server } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const ApiInformation = () => {
@@ -27,7 +26,7 @@ const ApiInformation = () => {
             Asaas
           </TabsTrigger>
           <TabsTrigger value="estructura">
-            <FileTree className="h-4 w-4 mr-2" />
+            <Folder className="h-4 w-4 mr-2" />
             Estrutura do Projeto
           </TabsTrigger>
         </TabsList>
@@ -273,7 +272,7 @@ async function getAsaasConfig(supabase) {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="font-medium">
-                    <FileTree className="h-4 w-4 mr-2 inline" /> Estrutura de Diretórios
+                    <Folder className="h-4 w-4 mr-2 inline" /> Estrutura de Diretórios
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="p-4 bg-primary/5 rounded-md font-mono text-xs">
