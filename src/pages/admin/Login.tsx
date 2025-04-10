@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2, UserPlus } from 'lucide-react';
@@ -19,7 +18,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // If user is already logged in, redirect to admin dashboard
+  // Se o usuário já estiver autenticado, redireciona para o dashboard administrativo
   useEffect(() => {
     if (session) {
       navigate('/admin/dashboard');
@@ -30,9 +29,9 @@ const Login = () => {
     setIsSubmitting(true);
     try {
       await signIn(data.email, data.password);
-      // The useEffect will handle redirection when the session is updated
+      // O useEffect tratará do redirecionamento quando a sessão for atualizada
     } catch (error) {
-      // Error is handled in the signIn function
+      // Erro é tratado na função signIn
       setIsSubmitting(false);
     }
   };

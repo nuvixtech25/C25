@@ -44,15 +44,18 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
   };
   
   // Determine if buttons should be disabled
-  const isAlreadyProcessed = orderStatus === 'CONFIRMED' && 
-    (selectedEvent === 'PAYMENT_RECEIVED' || selectedEvent === 'PAYMENT_CONFIRMED');
+  const isAlreadyProcessed = 
+    (orderStatus === 'CONFIRMED' && 
+     (selectedEvent === 'PAYMENT_RECEIVED' || selectedEvent === 'PAYMENT_CONFIRMED')) ||
+    (orderStatus === 'CANCELLED' && selectedEvent === 'PAYMENT_CANCELED') ||
+    (orderStatus === 'OVERDUE' && selectedEvent === 'PAYMENT_OVERDUE');
   
   const hasAsaasId = !!asaasPaymentId || isCreditCard;
   
   // Determine reason for disable
   const getDisabledReason = (isAsaasButton: boolean) => {
     if (isProcessing) return 'Processando...';
-    if (isAlreadyProcessed) return 'Status já aplicado';
+    if (isAlreadyProcessed) return `Status '${getEventDisplayName(selectedEvent)}' já aplicado`;
     if (!hasAsaasId && isAsaasButton) return 'Sem ID de pagamento Asaas';
     return '';
   };
@@ -64,6 +67,16 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
   const canSimulateManual = isCreditCard && !isAlreadyProcessed;
   const disabledReasonManual = !canSimulateManual ? 'Opção disponível apenas para cartão' : '';
 
+  const handleSimulateAsaas = () => {
+    if (asaasPaymentId || isCreditCard) {
+      onSimulate(asaasPaymentId, orderId, false);
+    }
+  };
+
+  const handleSimulateManual = () => {
+    onSimulate(null, orderId, true);
+  };
+
   return (
     <div className="flex space-x-2 justify-end">
       {/* Button for Asaas ID simulation */}
@@ -72,7 +85,7 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
           <TooltipTrigger asChild>
             <span>
               <Button
-                onClick={() => onSimulate(asaasPaymentId, orderId, false)}
+                onClick={handleSimulateAsaas}
                 disabled={!!disabledReasonAsaas || isProcessing}
                 size="sm"
                 variant={isCreditCard ? "outline" : "default"}
@@ -119,7 +132,7 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
             <TooltipTrigger asChild>
               <span>
                 <Button
-                  onClick={() => onSimulate(null, orderId, true)}
+                  onClick={handleSimulateManual}
                   disabled={!canSimulateManual || isProcessing}
                   size="sm"
                   variant="default"

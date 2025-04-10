@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface AsaasConfigData {
@@ -9,7 +10,7 @@ export interface AsaasConfigData {
   card_enabled: boolean | null;
   active: boolean | null;
   updated_at?: string | null;
-  use_netlify_functions?: boolean | null; // Added this line
+  use_netlify_functions?: boolean | null;
   manual_card_redirect_page?: string | null;
 }
 
