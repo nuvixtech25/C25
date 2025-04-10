@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Filter, Trash2 } from 'lucide-react';
-import { useWebhookSimulator, WebhookEventType } from '@/hooks/admin/useWebhookSimulator';
+import { useWebhookSimulator } from '@/hooks/admin/useWebhookSimulator';
 import OrdersTable from '@/components/admin/webhook/OrdersTable';
 import { 
   Select,

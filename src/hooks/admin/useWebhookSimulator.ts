@@ -1,195 +1,44 @@
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { PaymentStatus } from '@/types/checkout';
+import { useWebhookState } from './webhook/useWebhookState';
+import { useWebhookData } from './webhook/useWebhookData';
+import { useWebhookActions } from './webhook/useWebhookActions';
+import { WebhookEventType } from './webhook/types';
 
-export type WebhookEventType = 'PAYMENT_RECEIVED' | 'PAYMENT_CONFIRMED' | 'PAYMENT_OVERDUE' | 'PAYMENT_CANCELED' | 'PAYMENT_REFUSED';
+export type { WebhookEventType };
 
 export const useWebhookSimulator = () => {
-  const { toast } = useToast();
-  const [processingOrders, setProcessingOrders] = useState<Record<string, boolean>>({});
-  const [statusFilter, setStatusFilter] = useState<PaymentStatus | 'ALL'>('ALL');
-  const [selectedEvent, setSelectedEvent] = useState<WebhookEventType>('PAYMENT_RECEIVED');
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'creditCard'>('pix');
+  // Get state management
+  const {
+    processingOrders,
+    setProcessingOrders,
+    statusFilter,
+    setStatusFilter,
+    selectedEvent,
+    setSelectedEvent,
+    paymentMethod,
+    setPaymentMethod
+  } = useWebhookState();
 
-  // Fetch all orders
-  const { data: orders, isLoading, refetch } = useQuery({
-    queryKey: ['orders', statusFilter, paymentMethod],
-    queryFn: async () => {
-      let query = supabase
-        .from('orders')
-        .select('*')
-        .eq('payment_method', paymentMethod)
-        .order('created_at', { ascending: false });
-      
-      // Apply status filter if not set to ALL
-      if (statusFilter !== 'ALL') {
-        query = query.eq('status', statusFilter);
-      }
-      
-      const { data, error } = await query;
-      
-      if (error) throw error;
-      return data;
-    }
-  });
+  // Get data with the current filters
+  const { data: orders, isLoading, refetch } = useWebhookData(statusFilter, paymentMethod);
 
-  // Function to simulate a webhook with the selected event
-  const simulatePaymentWebhook = async (
+  // Get actions with the required dependencies
+  const { simulatePaymentWebhook: rawSimulatePaymentWebhook, deleteAllWebhookLogs } = 
+    useWebhookActions(setProcessingOrders, refetch);
+
+  // Wrap the simulatePaymentWebhook to include the selectedEvent
+  const simulatePaymentWebhook = (
     asaasPaymentId: string | null, 
     orderId: string, 
     isManualCard: boolean = false
-  ) => {
-    if (!asaasPaymentId && !isManualCard) {
-      toast({
-        title: 'Erro',
-        description: 'Este pedido não possui um ID de pagamento do Asaas.',
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    setProcessingOrders(prev => ({ ...prev, [orderId]: true }));
-
-    try {
-      // Using relative path which works in both Vite dev server and production
-      const webhookEndpoint = '/api/webhook-simulator';
-      
-      console.log(`Using webhook endpoint: ${webhookEndpoint} for order ID: ${orderId}`);
-      console.log(`Is manual card: ${isManualCard}, Asaas Payment ID: ${asaasPaymentId || 'None'}`);
-      console.log(`Selected event: ${selectedEvent}`);
-      
-      // Determine the new status based on the event
-      let newStatus: PaymentStatus = 'PENDING';
-      switch (selectedEvent) {
-        case 'PAYMENT_RECEIVED':
-        case 'PAYMENT_CONFIRMED':
-          newStatus = 'CONFIRMED';
-          break;
-        case 'PAYMENT_OVERDUE':
-          newStatus = 'OVERDUE';
-          break;
-        case 'PAYMENT_CANCELED':
-        case 'PAYMENT_REFUSED':
-          newStatus = 'CANCELLED';
-          break;
-      }
-      
-      // Prepare payload based on whether this is a manual card or asaas payment
-      const payload = isManualCard 
-        ? {
-            event: selectedEvent,
-            payment: {
-              id: "manual_card_payment",
-              status: newStatus
-            },
-            orderId: orderId // Include orderId for manual card payments
-          }
-        : {
-            event: selectedEvent,
-            payment: {
-              id: asaasPaymentId,
-              status: newStatus
-            }
-          };
-      
-      // Send the simulated webhook
-      const response = await fetch(webhookEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erro ao simular webhook: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('Webhook simulation result:', result);
-      
-      toast({
-        title: 'Webhook simulado com sucesso',
-        description: `O status do pedido foi atualizado para ${newStatus}.`,
-      });
-      
-      // Update the orders list
-      await refetch();
-    } catch (error) {
-      console.error('Erro ao simular webhook:', error);
-      toast({
-        title: 'Erro ao simular webhook',
-        description: error instanceof Error ? error.message : 'Ocorreu um erro desconhecido',
-        variant: 'destructive'
-      });
-    } finally {
-      setProcessingOrders(prev => ({ ...prev, [orderId]: false }));
-    }
-  };
-
-  // Function to delete all webhook logs
-  const deleteAllWebhookLogs = async () => {
-    try {
-      console.log('Attempting to delete all webhook logs');
-      
-      // First, check if there are any records
-      const { data: records, error: checkError } = await supabase
-        .from('asaas_webhook_logs')
-        .select('id', { count: 'exact' });
-      
-      if (checkError) {
-        console.error('Error checking webhook logs:', checkError);
-        throw checkError;
-      }
-      
-      const recordCount = records?.length || 0;
-      console.log(`Found ${recordCount} webhook logs to delete`);
-      
-      if (recordCount === 0) {
-        toast({
-          title: 'Nenhum registro encontrado',
-          description: 'Não há registros de webhook para excluir.',
-        });
-        return;
-      }
-      
-      // Use a different approach to delete all records
-      const { error: deleteError } = await supabase
-        .from('asaas_webhook_logs')
-        .delete()
-        .neq('id', '00000000-0000-0000-0000-000000000000'); // Will match all valid UUIDs
-      
-      if (deleteError) {
-        console.error('Error deleting records:', deleteError);
-        throw deleteError;
-      }
-      
-      console.log(`Successfully deleted ${recordCount} webhook logs`);
-      
-      toast({
-        title: 'Registros excluídos',
-        description: `${recordCount} registros de webhook foram excluídos com sucesso.`,
-      });
-      
-      // Refresh the orders list
-      await refetch();
-    } catch (error) {
-      console.error('Erro ao excluir registros:', error);
-      toast({
-        title: 'Erro ao excluir registros',
-        description: error instanceof Error ? error.message : 'Ocorreu um erro desconhecido',
-        variant: 'destructive'
-      });
-    }
-  };
+  ) => rawSimulatePaymentWebhook(asaasPaymentId, orderId, selectedEvent, isManualCard);
 
   return {
+    // Data
     orders,
     isLoading,
+    
+    // State
     processingOrders,
     statusFilter,
     setStatusFilter,
@@ -197,6 +46,8 @@ export const useWebhookSimulator = () => {
     setSelectedEvent,
     paymentMethod,
     setPaymentMethod,
+    
+    // Actions
     simulatePaymentWebhook,
     deleteAllWebhookLogs,
     refetch

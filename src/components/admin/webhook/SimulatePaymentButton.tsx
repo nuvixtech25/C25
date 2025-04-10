@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle, AlertCircle, CreditCard, QrCode } from 'lucide-react';
@@ -8,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { WebhookEventType } from '@/hooks/admin/useWebhookSimulator';
+import { WebhookEventType } from '@/hooks/admin/webhook/types';
 
 interface SimulatePaymentButtonProps {
   asaasPaymentId: string | null;
