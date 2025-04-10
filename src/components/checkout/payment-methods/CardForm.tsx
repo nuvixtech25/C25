@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { CreditCardData } from '@/types/checkout';
+import { useToast } from '@/hooks/use-toast';
 
 // Card validation schema
 const cardSchema = z.object({
@@ -30,6 +31,7 @@ export const CardForm: React.FC<CardFormProps> = ({
   buttonColor = '#6E59A5',
   buttonText = 'Finalizar Pagamento'
 }) => {
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof cardSchema>>({
     resolver: zodResolver(cardSchema),
     defaultValues: {
@@ -55,10 +57,16 @@ export const CardForm: React.FC<CardFormProps> = ({
       brand = 'discover';
     }
     
-    onSubmit({
-      ...values,
+    // Ensure all required properties are available and create a properly typed object
+    const cardData: CreditCardData = {
+      holderName: values.holderName,
+      number: values.number,
+      expiryDate: values.expiryDate,
+      cvv: values.cvv,
       brand
-    });
+    };
+    
+    onSubmit(cardData);
   };
 
   return (
