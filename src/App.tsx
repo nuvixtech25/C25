@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import RetryPaymentPage from './pages/RetryPaymentPage';
 import { AuthProvider } from './contexts/AuthContext';
-import RequireAuth from './contexts/auth/RequireAuth'; // Usamos default import
+import RequireAuth from './contexts/auth/RequireAuth'; // Fixed import
 import AdminLayout from './layouts/AdminLayout';
 import CreditCardsPage from './pages/admin/credit-cards';
 import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics";
@@ -111,7 +111,6 @@ function App() {
                 </AdminLayout>
               </RequireAuth>
             } />
-            {/* Adicionar as rotas que estão faltando */}
             <Route path="/admin/pix-settings" element={
               <RequireAuth>
                 <AdminLayout>
