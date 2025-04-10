@@ -4,6 +4,7 @@ import { Table, TableBody, TableHeader, TableRow, TableHead } from '@/components
 import { Skeleton } from '@/components/ui/skeleton';
 import OrderRow from './OrderRow';
 import { WebhookEventType } from '@/hooks/admin/webhook/types';
+import { Badge } from '@/components/ui/badge';
 
 interface OrdersTableProps {
   orders: any[] | null;
@@ -11,7 +12,6 @@ interface OrdersTableProps {
   processingOrders: Record<string, boolean>;
   onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
   selectedEvent: WebhookEventType;
-  paymentMethod: 'pix' | 'creditCard';
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ 
@@ -19,8 +19,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   isLoading, 
   processingOrders, 
   onSimulatePayment,
-  selectedEvent,
-  paymentMethod
+  selectedEvent
 }) => {
   // Render loading skeletons
   if (isLoading) {
@@ -34,6 +33,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
               <TableHead className="text-right">Valor</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Método</TableHead>
+              <TableHead>Tipo Webhook</TableHead>
               <TableHead>Data</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
@@ -41,7 +41,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
           <TableBody>
             {Array.from({ length: 5 }).map((_, index) => (
               <TableRow key={index}>
-                <td colSpan={7} className="p-2">
+                <td colSpan={8} className="p-2">
                   <Skeleton className="h-12 w-full" />
                 </td>
               </TableRow>
@@ -64,13 +64,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
               <TableHead className="text-right">Valor</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Método</TableHead>
+              <TableHead>Tipo Webhook</TableHead>
               <TableHead>Data</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow>
-              <td colSpan={7} className="h-24 text-center">
+              <td colSpan={8} className="h-24 text-center">
                 Nenhum pedido encontrado.
               </td>
             </TableRow>
@@ -91,6 +92,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
             <TableHead className="text-right">Valor</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Método</TableHead>
+            <TableHead>Tipo Webhook</TableHead>
             <TableHead>Data</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
@@ -103,7 +105,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
               isProcessing={processingOrders[order.id] || false}
               onSimulatePayment={onSimulatePayment}
               selectedEvent={selectedEvent}
-              currentTabPaymentMethod={paymentMethod}
             />
           ))}
         </TableBody>

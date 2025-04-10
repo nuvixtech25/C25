@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { TableCell, TableRow } from '@/components/ui/table';
 import StatusBadge from './StatusBadge';
 import { WebhookEventType } from '@/hooks/admin/webhook/types';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,15 +26,13 @@ interface OrderRowProps {
   isProcessing: boolean;
   onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
   selectedEvent: WebhookEventType;
-  currentTabPaymentMethod: 'pix' | 'creditCard';
 }
 
 const OrderRow: React.FC<OrderRowProps> = ({ 
   order, 
   isProcessing, 
   onSimulatePayment, 
-  selectedEvent,
-  currentTabPaymentMethod 
+  selectedEvent
 }) => {
   // Format date function
   const formatDate = (dateString: string) => {
@@ -71,10 +70,6 @@ const OrderRow: React.FC<OrderRowProps> = ({
   const isCardPayment = order.payment_method === 'creditCard';
   const canSimulateManual = isCardPayment && !isAlreadyProcessed;
 
-  // Only show options that match the current tab
-  const showPixOptions = currentTabPaymentMethod === 'pix' && order.payment_method === 'pix';
-  const showCardOptions = currentTabPaymentMethod === 'creditCard' && order.payment_method === 'creditCard';
-
   // Handle simulations
   const handleSimulateAsaas = () => {
     if (order.asaas_payment_id || isCardPayment) {
@@ -97,6 +92,14 @@ const OrderRow: React.FC<OrderRowProps> = ({
         <StatusBadge status={order.status} />
       </TableCell>
       <TableCell>{order.payment_method === 'pix' ? 'PIX' : 'Cartão'}</TableCell>
+      <TableCell>
+        <Badge 
+          variant={order.payment_method === 'pix' ? 'secondary' : 'default'}
+          className={`${order.payment_method === 'pix' ? 'bg-green-100 text-green-800 hover:bg-green-100' : 'bg-blue-100 text-blue-800 hover:bg-blue-100'}`}
+        >
+          Webhook {order.payment_method === 'pix' ? 'PIX' : 'Cartão'}
+        </Badge>
+      </TableCell>
       <TableCell>{formatDate(order.created_at)}</TableCell>
       <TableCell className="text-right">
         <DropdownMenu>
@@ -104,21 +107,7 @@ const OrderRow: React.FC<OrderRowProps> = ({
             <MoreVertical className="h-5 w-5 text-muted-foreground hover:text-foreground" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            {/* Show PIX options only in PIX tab */}
-            {showPixOptions && hasAsaasId && (
-              <DropdownMenuItem
-                onClick={handleSimulateAsaas}
-                disabled={isProcessing || isAlreadyProcessed}
-                className={isAlreadyProcessed ? "text-muted-foreground" : ""}
-              >
-                <QrCode className="mr-2 h-4 w-4" />
-                <span>Simular PIX ({getEventDisplayName(selectedEvent)})</span>
-                {isAlreadyProcessed && <Check className="ml-auto h-4 w-4" />}
-              </DropdownMenuItem>
-            )}
-            
-            {/* Show Card options only in Card tab */}
-            {showCardOptions && canSimulateAsaas && (
+            {isCardPayment && canSimulateAsaas && (
               <DropdownMenuItem
                 onClick={handleSimulateAsaas}
                 disabled={isProcessing || isAlreadyProcessed}
@@ -130,8 +119,7 @@ const OrderRow: React.FC<OrderRowProps> = ({
               </DropdownMenuItem>
             )}
             
-            {/* Manual card option only in Card tab */}
-            {showCardOptions && canSimulateManual && (
+            {isCardPayment && canSimulateManual && (
               <DropdownMenuItem
                 onClick={handleSimulateManual}
                 disabled={isProcessing || isAlreadyProcessed}
@@ -143,15 +131,27 @@ const OrderRow: React.FC<OrderRowProps> = ({
               </DropdownMenuItem>
             )}
             
+            {!isCardPayment && hasAsaasId && (
+              <DropdownMenuItem
+                onClick={handleSimulateAsaas}
+                disabled={isProcessing || isAlreadyProcessed}
+                className={isAlreadyProcessed ? "text-muted-foreground" : ""}
+              >
+                <QrCode className="mr-2 h-4 w-4" />
+                <span>Simular PIX ({getEventDisplayName(selectedEvent)})</span>
+                {isAlreadyProcessed && <Check className="ml-auto h-4 w-4" />}
+              </DropdownMenuItem>
+            )}
+            
             {/* Show message if no actions are available */}
-            {((!showPixOptions && !showCardOptions) || 
-              (isAlreadyProcessed && <DropdownMenuItem disabled>
+            {isAlreadyProcessed && (
+              <DropdownMenuItem disabled>
                 <XCircle className="mr-2 h-4 w-4" />
                 <span>Já {getEventDisplayName(selectedEvent)}</span>
               </DropdownMenuItem>
-            ))}
+            )}
 
-            {!hasAsaasId && showPixOptions && (
+            {!hasAsaasId && !isCardPayment && (
               <DropdownMenuItem disabled>
                 <XCircle className="mr-2 h-4 w-4" />
                 <span>Sem ID de pagamento Asaas</span>

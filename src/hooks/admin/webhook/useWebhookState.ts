@@ -10,7 +10,6 @@ export const useWebhookState = () => {
   // Filters and event selection
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | 'ALL'>('ALL');
   const [selectedEvent, setSelectedEvent] = useState<WebhookEventType>('PAYMENT_RECEIVED');
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'creditCard'>('pix');
 
   return {
     // Processing state
@@ -22,7 +21,5 @@ export const useWebhookState = () => {
     setStatusFilter,
     selectedEvent,
     setSelectedEvent,
-    paymentMethod,
-    setPaymentMethod,
   };
 };
