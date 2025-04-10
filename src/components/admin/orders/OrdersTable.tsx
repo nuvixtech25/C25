@@ -1,8 +1,7 @@
-
 import React from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Eye, Trash2, Edit } from "lucide-react";
+import { Eye, Trash2, Edit, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Order } from "@/types/checkout";
 import StatusBadge from "./StatusBadge";
@@ -98,9 +97,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                       variant="ghost" 
                       size="icon" 
                       onClick={() => onViewPayment(order)}
-                      title="Ver dados do pagamento"
+                      title="Ver dados de pagamento"
                     >
-                      <Eye className="h-4 w-4 text-blue-600" />
+                      <DollarSign className="h-4 w-4 text-green-600" />
                     </Button>
                     <Button 
                       variant="ghost" 
