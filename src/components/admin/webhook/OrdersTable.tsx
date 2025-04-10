@@ -3,7 +3,7 @@ import React from 'react';
 import { Table, TableBody, TableHeader, TableRow, TableHead } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import OrderRow from './OrderRow';
-import { WebhookEventType } from '@/hooks/admin/useWebhookSimulator';
+import { WebhookEventType } from '@/hooks/admin/webhook/types';
 
 interface OrdersTableProps {
   orders: any[] | null;
@@ -11,6 +11,7 @@ interface OrdersTableProps {
   processingOrders: Record<string, boolean>;
   onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
   selectedEvent: WebhookEventType;
+  paymentMethod: 'pix' | 'creditCard';
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ 
@@ -18,7 +19,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   isLoading, 
   processingOrders, 
   onSimulatePayment,
-  selectedEvent
+  selectedEvent,
+  paymentMethod
 }) => {
   // Render loading skeletons
   if (isLoading) {
@@ -101,6 +103,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
               isProcessing={processingOrders[order.id] || false}
               onSimulatePayment={onSimulatePayment}
               selectedEvent={selectedEvent}
+              currentTabPaymentMethod={paymentMethod}
             />
           ))}
         </TableBody>

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Filter, Trash2 } from 'lucide-react';
-import { useWebhookSimulator } from '@/hooks/admin/useWebhookSimulator';
+import { useWebhookSimulator, WebhookEventType } from '@/hooks/admin/useWebhookSimulator';
 import OrdersTable from '@/components/admin/webhook/OrdersTable';
 import { 
   Select,
@@ -134,6 +134,7 @@ const WebhookSimulator = () => {
             processingOrders={processingOrders}
             onSimulatePayment={simulatePaymentWebhook}
             selectedEvent={selectedEvent}
+            paymentMethod="pix"
           />
         </TabsContent>
         
@@ -144,6 +145,7 @@ const WebhookSimulator = () => {
             processingOrders={processingOrders}
             onSimulatePayment={simulatePaymentWebhook}
             selectedEvent={selectedEvent}
+            paymentMethod="creditCard"
           />
         </TabsContent>
       </Tabs>
