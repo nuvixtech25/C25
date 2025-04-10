@@ -29,7 +29,9 @@ export async function mockAsaasPaymentHandler(req: Request) {
     let body: Record<string, any> = {};
     if (req.method === 'POST') {
       try {
-        body = await req.json();
+        const jsonData = await req.json();
+        // Explicitly cast the unknown type to Record<string, any>
+        body = jsonData as Record<string, any>;
         console.log('Request body:', body);
       } catch (e) {
         console.error('Failed to parse request body:', e);
