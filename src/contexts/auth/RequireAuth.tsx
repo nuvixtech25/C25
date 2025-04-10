@@ -9,7 +9,7 @@ interface RequireAuthProps {
   requireAdmin?: boolean;
 }
 
-export const RequireAuth: React.FC<RequireAuthProps> = ({ 
+const RequireAuth: React.FC<RequireAuthProps> = ({ 
   children, 
   requireAdmin = false 
 }) => {
@@ -54,3 +54,5 @@ export const RequireAuth: React.FC<RequireAuthProps> = ({
   // If all checks pass, render the protected content
   return <>{children}</>;
 };
+
+export default RequireAuth;

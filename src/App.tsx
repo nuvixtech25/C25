@@ -3,12 +3,10 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import RetryPaymentPage from './pages/RetryPaymentPage';
 import { AuthProvider } from './contexts/AuthContext';
-import { RequireAuth } from '@/contexts/auth/RequireAuth'; // Updated import
+import { RequireAuth } from './contexts/auth/RequireAuth';
 import AdminLayout from './layouts/AdminLayout';
 import CreditCardsPage from './pages/admin/credit-cards';
 import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics";
-import Login from './pages/admin/Login';
-import NotFound from './pages/NotFound';
 
 // Importações temporárias para funcionar sem os arquivos reais
 const CheckoutPage = () => <div>Checkout Page</div>;
@@ -20,6 +18,7 @@ const TestimonialsPage = () => <div>Testimonials Page</div>;
 const AdminPage = () => <div>Admin Page</div>;
 const ProductsAdmin = () => <div>Products Admin Page</div>;
 const OrdersAdmin = () => <div>Orders Admin Page</div>;
+const LoginPage = () => <div>Login Page</div>;
 const CheckoutCustomizationPage = () => <div>Checkout Customization Page</div>;
 
 function App() {
@@ -34,8 +33,7 @@ function App() {
           <Route path="/payment-pending" element={<PaymentPendingPage />} />
           <Route path="/retry-payment" element={<RetryPaymentPage />} />
           <Route path="/testimonials" element={<TestimonialsPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/admin/login" element={<Login />} />
+          <Route path="/login" element={<LoginPage />} />
           
           {/* Admin Routes - Protected */}
           <Route path="/admin" element={
@@ -80,9 +78,6 @@ function App() {
               </AdminLayout>
             </RequireAuth>
           } />
-          
-          {/* Rota para página não encontrada */}
-          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>

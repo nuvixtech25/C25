@@ -1,109 +1,94 @@
 
 import { IncomingMessage, ServerResponse } from 'http';
-import { mockAsaasPaymentHandler, mockCheckPaymentStatusHandler } from './handlers';
+import { handler as webhookSimulatorHandler } from '../pages/api/webhook-simulator';
+import { handler as mockAsaasPaymentHandler } from '../pages/api/mock-asaas-payment';
+import { handler as checkPaymentStatusHandler } from '../pages/api/check-payment-status';
 
-// Extend IncomingMessage type to allow for body property
-interface ExtendedIncomingMessage extends IncomingMessage {
-  body?: any;
-}
-
-// CORS headers to allow access from various domains
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization, x-client-info, apikey',
-  'Access-Control-Max-Age': '86400', // 24 hours
+// This is a mapping of API routes to their handlers
+export const apiRoutes: Record<string, (req: Request) => Promise<Response>> = {
+  '/api/webhook-simulator': webhookSimulatorHandler,
+  '/api/mock-asaas-payment': mockAsaasPaymentHandler,
+  '/api/check-payment-status': checkPaymentStatusHandler
 };
 
+// Custom type for middleware
+type NextFunction = () => void;
+
+// Middleware for Vite server to handle API routes
 export const apiRoutesMiddleware = async (
-  req: ExtendedIncomingMessage, 
+  req: IncomingMessage, 
   res: ServerResponse, 
-  next: () => void
+  next: NextFunction
 ) => {
-  const url = new URL(req.url || '', `http://${req.headers.host}`);
+  const path = req.url || '';
   
-  // Set CORS headers for all API routes
-  Object.entries(corsHeaders).forEach(([key, value]) => {
-    res.setHeader(key, value);
-  });
-  
-  // Handle OPTIONS preflight requests
-  if (req.method === 'OPTIONS') {
-    res.statusCode = 204;
-    res.end();
+  // Check if we have a handler for this route - exact match first
+  if (path in apiRoutes) {
+    console.log(`Handling API route (exact match): ${path}`);
+    await handleApiRoute(path, req, res, next);
     return;
   }
   
-  // Process API routes
+  // Check for path match with query params
+  for (const route in apiRoutes) {
+    if (path.startsWith(route + '?')) {
+      console.log(`Handling API route (with query params): ${path}`);
+      await handleApiRoute(route, req, res, next);
+      return;
+    }
+  }
+  
+  // Not an API route we handle, continue with normal request processing
+  next();
+};
+
+// Helper function to handle API routes
+async function handleApiRoute(
+  route: string,
+  req: IncomingMessage, 
+  res: ServerResponse, 
+  next: NextFunction
+) {
   try {
-    // Log incoming request details for debugging
-    console.log(`Processing API request: ${req.method} ${url.pathname}`);
-    console.log(`Request headers:`, req.headers);
+    // Get the original full URL
+    const originalUrl = req.url || '';
     
-    // Mock Asaas payment endpoint
-    if (url.pathname === '/api/mock-asaas-payment') {
-      console.log('Processing request to /api/mock-asaas-payment');
-      
-      // Convert Node.js request to Fetch API Request for our handler
-      const requestInit: RequestInit = {
-        method: req.method,
-        headers: req.headers as Record<string, string>,
-      };
-      
-      if (req.body) {
-        requestInit.body = JSON.stringify(req.body);
-      }
-      
-      const request = new Request(`http://${req.headers.host}${req.url}`, requestInit);
-      const response = await mockAsaasPaymentHandler(request);
-      
-      // Set status code
-      res.statusCode = response.status;
-      
-      // Set headers from response
-      response.headers.forEach((value, key) => {
-        res.setHeader(key, value);
-      });
-      
-      // Write response body
-      const body = await response.text();
-      res.end(body);
-      return;
+    // Parse body if it wasn't already parsed
+    let body = undefined;
+    
+    // If req has already parsed body (added by our mockPlugin middleware)
+    if ('body' in req && typeof (req as any).body !== 'undefined') {
+      body = JSON.stringify((req as any).body);
     }
     
-    // Mock payment status check endpoint
-    if (url.pathname === '/api/check-payment-status') {
-      console.log('Processing request to /api/check-payment-status');
-      
-      // Convert Node.js request to Fetch API Request
-      const request = new Request(`http://${req.headers.host}${req.url}`, {
-        method: req.method,
-        headers: req.headers as Record<string, string>,
-      });
-      
-      const response = await mockCheckPaymentStatusHandler(request);
-      
-      // Set status code
-      res.statusCode = response.status;
-      
-      // Set headers from response
-      response.headers.forEach((value, key) => {
-        res.setHeader(key, value);
-      });
-      
-      // Write response body
-      const body = await response.text();
-      res.end(body);
-      return;
-    }
+    // Build the request URL (preserve the full path with query params)
+    const url = new URL(originalUrl, 'http://localhost');
+    
+    // Convert node http request to a fetch API Request
+    const request = new Request(url.toString(), {
+      method: req.method || 'GET',
+      headers: req.headers as any,
+      body: req.method !== 'GET' && req.method !== 'HEAD' ? body : undefined,
+    });
+    
+    // Call the handler with our Request object
+    const response = await apiRoutes[route](request);
+    
+    // Send the response status
+    res.statusCode = response.status;
+    
+    // Set the response headers
+    response.headers.forEach((value, key) => {
+      res.setHeader(key, value);
+    });
+    
+    // Send the response body
+    const responseBody = await response.text();
+    res.end(responseBody);
   } catch (error) {
-    console.error('Error handling API route:', error);
+    console.error(`Error handling API route ${route}:`, error);
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({ error: 'Internal Server Error' }));
-    return;
   }
-  
-  // If no API route matched, continue
-  next();
-};
+}

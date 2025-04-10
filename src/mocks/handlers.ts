@@ -1,12 +1,5 @@
 
-// Import PaymentStatus type directly to avoid missing module error
-export type PaymentStatus = 
-  | "PENDING" 
-  | "RECEIVED" 
-  | "CONFIRMED" 
-  | "OVERDUE" 
-  | "REFUNDED" 
-  | "CANCELLED";
+import { PaymentStatus } from "@/types/checkout";
 
 // Mock Asaas API response data with all necessary fields
 export const mockAsaasPaymentResponse = {
@@ -26,18 +19,8 @@ export async function mockAsaasPaymentHandler(req: Request) {
   
   try {
     // Parse the request body if it exists
-    let body: Record<string, any> = {};
-    if (req.method === 'POST') {
-      try {
-        const jsonData = await req.json();
-        // Explicitly cast the unknown type to Record<string, any>
-        body = jsonData as Record<string, any>;
-        console.log('Request body:', body);
-      } catch (e) {
-        console.error('Failed to parse request body:', e);
-        body = {};
-      }
-    }
+    const body = req.method === 'POST' ? await req.json() : null;
+    console.log('Request body:', body);
     
     // Generate a unique payment ID with prefix and timestamp
     const uniquePaymentId = `pay_${Math.random().toString(36).substring(2, 12)}`;

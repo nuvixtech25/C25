@@ -1,6 +1,6 @@
 
 import { BillingData, PaymentStatus, PixPaymentData } from "@/types/checkout";
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Generate a PIX payment through Netlify function or local mock
@@ -39,38 +39,14 @@ export const generatePixPayment = async (billingData: BillingData): Promise<PixP
       description: billingData.description
     };
 
-    // Define fetch options with appropriate CORS settings
-    const isPreviewEnvironment = isPreviewOrDevelopmentEnvironment();
-    
-    const fetchOptions = {
+    // Make the API request
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Origin': window.location.origin
       },
-      // Use no-cors mode in preview environments to prevent CORS errors
-      ...(isPreviewEnvironment && { mode: 'no-cors' as RequestMode }),
       body: JSON.stringify(paymentPayload)
-    };
-
-    // Make the API request
-    const response = await fetch(endpoint, fetchOptions);
-
-    // If using no-cors, we won't get a proper response, so handle it differently
-    if (isPreviewEnvironment && fetchOptions.mode === 'no-cors') {
-      console.log("Using no-cors mode for preview environment, cannot access response details");
-      // Return mock data for preview environments when using no-cors
-      return {
-        paymentId: `preview_${new Date().getTime()}`,
-        qrCode: 'mock_qr_code_data',
-        qrCodeImage: '/placeholder.svg',
-        copyPasteKey: 'mock_copy_paste_key',
-        expirationDate: new Date(Date.now() + 30 * 60000).toISOString(),
-        status: 'PENDING' as PaymentStatus,
-        value: billingData.value,
-        description: billingData.description
-      };
-    }
+    });
 
     // Check if the response is successful
     if (!response.ok) {
@@ -138,28 +114,12 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     
     console.log(`Checking payment status at: ${endpoint}`);
     
-    // Define fetch options with appropriate CORS settings
-    const isPreviewEnvironment = isPreviewOrDevelopmentEnvironment();
-    
-    // Define fetch options with appropriate CORS settings
-    const fetchOptions = {
+    const response = await fetch(endpoint, {
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Origin': window.location.origin
-      },
-      // Use no-cors mode in preview environments to prevent CORS errors
-      ...(isPreviewEnvironment && { mode: 'no-cors' as RequestMode })
-    };
-    
-    const response = await fetch(endpoint, fetchOptions);
-    
-    // If using no-cors, we won't get a proper response, so handle it differently
-    if (isPreviewEnvironment && fetchOptions.mode === 'no-cors') {
-      console.log("Using no-cors mode for preview environment, cannot access response details");
-      // Return mock status for preview environments
-      return 'PENDING';
-    }
+        'Content-Type': 'application/json'
+      }
+    });
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -192,17 +152,3 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     throw new Error("Failed to check payment status. Please try again.");
   }
 };
-
-/**
- * Detect if we're running in a preview or development environment
- */
-function isPreviewOrDevelopmentEnvironment(): boolean {
-  const hostname = window.location.hostname;
-  return (
-    hostname.includes('lovable.app') || 
-    hostname.includes('lovableproject.com') ||
-    hostname.includes('lovable.dev') ||
-    hostname === 'localhost' ||
-    hostname === '127.0.0.1'
-  );
-}

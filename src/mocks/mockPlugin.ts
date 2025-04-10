@@ -8,14 +8,6 @@ interface ExtendedIncomingMessage extends IncomingMessage {
   body?: any;
 }
 
-// CORS headers to allow access from various domains
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization, x-client-info, apikey',
-  'Access-Control-Max-Age': '86400', // 24 hours
-};
-
 export const mockApiPlugin = (): Plugin => {
   return {
     name: 'mock-api-plugin',
@@ -23,28 +15,10 @@ export const mockApiPlugin = (): Plugin => {
       // Add debug logging
       console.log('Configuring mock API plugin...');
       
-      // Handle CORS preflight requests
-      server.middlewares.use((req: ExtendedIncomingMessage, res: ServerResponse, next) => {
-        console.log(`Request received for: ${req.url}`);
-        console.log(`Request headers:`, req.headers);
-        
-        // Add CORS headers to all responses
-        Object.entries(corsHeaders).forEach(([key, value]) => {
-          res.setHeader(key, value);
-        });
-        
-        // Handle OPTIONS requests for CORS preflight
-        if (req.method === 'OPTIONS') {
-          res.statusCode = 204;
-          res.end();
-          return;
-        }
-        
-        next();
-      });
-      
       // Middleware to parse request body
       server.middlewares.use(async (req: ExtendedIncomingMessage, res: ServerResponse, next) => {
+        console.log(`Request received for: ${req.url}`);
+        
         // Parse request body for API routes
         if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
           try {
