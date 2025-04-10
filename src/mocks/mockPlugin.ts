@@ -12,8 +12,13 @@ export const mockApiPlugin = (): Plugin => {
   return {
     name: 'mock-api-plugin',
     configureServer(server) {
+      // Add debug logging
+      console.log('Configuring mock API plugin...');
+      
       // Middleware to parse request body
       server.middlewares.use(async (req: ExtendedIncomingMessage, res: ServerResponse, next) => {
+        console.log(`Request received for: ${req.url}`);
+        
         // Parse request body for API routes
         if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
           try {

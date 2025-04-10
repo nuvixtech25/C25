@@ -17,12 +17,14 @@ export function setupMocks() {
     
     // Handle mock payment API
     if (url.pathname === '/api/mock-asaas-payment') {
+      console.log('Intercepting request to /api/mock-asaas-payment');
       fetchEvent.respondWith(mockAsaasPaymentHandler(fetchEvent.request));
       return;
     }
     
     // Handle mock payment status check (for local testing)
     if (url.pathname === '/api/check-payment-status') {
+      console.log('Intercepting request to /api/check-payment-status');
       fetchEvent.respondWith(mockCheckPaymentStatusHandler(fetchEvent.request));
       return;
     }

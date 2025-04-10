@@ -15,7 +15,7 @@ export const mockAsaasPaymentResponse = {
 // Handler function for mock Asaas payment API
 export async function mockAsaasPaymentHandler(req: Request) {
   // Log the request for debugging
-  console.log('Mock API request received:', req.url, req.method);
+  console.log('Mock payment API request received:', req.url, req.method);
   
   try {
     // Parse the request body if it exists
@@ -61,9 +61,13 @@ export async function mockCheckPaymentStatusHandler(req: Request) {
   
   console.log('Mock payment status check for ID:', paymentId);
   
-  // Always return PENDING for mock (you could add logic to simulate other states if needed)
+  // Return a proper JSON response with status
   return new Response(
-    JSON.stringify({ status: 'PENDING' }),
+    JSON.stringify({ 
+      status: 'PENDING',
+      paymentId: paymentId,
+      updatedAt: new Date().toISOString()
+    }),
     {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
