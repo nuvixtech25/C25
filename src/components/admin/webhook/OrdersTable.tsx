@@ -1,43 +1,87 @@
 
 import React from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { Loader2 } from 'lucide-react';
+import { Table, TableBody, TableHeader, TableRow, TableHead } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 import OrderRow from './OrderRow';
 
 interface OrdersTableProps {
   orders: any[] | null;
   isLoading: boolean;
   processingOrders: Record<string, boolean>;
-  onSimulatePayment: (asaasPaymentId: string, orderId: string) => Promise<void>;
+  onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ 
-  orders,
-  isLoading,
-  processingOrders,
-  onSimulatePayment
+  orders, 
+  isLoading, 
+  processingOrders, 
+  onSimulatePayment 
 }) => {
+  // Render loading skeletons
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Cliente</TableHead>
+              <TableHead className="text-right">Valor</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Método</TableHead>
+              <TableHead>Data</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={index}>
+                <td colSpan={7} className="p-2">
+                  <Skeleton className="h-12 w-full" />
+                </td>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     );
   }
 
+  // Handle empty state
+  if (!orders || orders.length === 0) {
+    return (
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Cliente</TableHead>
+              <TableHead className="text-right">Valor</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Método</TableHead>
+              <TableHead>Data</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <td colSpan={7} className="h-24 text-center">
+                Nenhum pedido encontrado.
+              </td>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+
+  // Render orders table
   return (
-    <div className="bg-white rounded-md shadow">
+    <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID do Pedido</TableHead>
+            <TableHead>ID</TableHead>
             <TableHead>Cliente</TableHead>
             <TableHead className="text-right">Valor</TableHead>
             <TableHead>Status</TableHead>
@@ -47,22 +91,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {orders && orders.length > 0 ? (
-            orders.map((order) => (
-              <OrderRow
-                key={order.id}
-                order={order}
-                isProcessing={!!processingOrders[order.id]}
-                onSimulatePayment={onSimulatePayment}
-              />
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                Nenhum pedido encontrado.
-              </TableCell>
-            </TableRow>
-          )}
+          {orders.map((order) => (
+            <OrderRow
+              key={order.id}
+              order={order}
+              isProcessing={processingOrders[order.id] || false}
+              onSimulatePayment={onSimulatePayment}
+            />
+          ))}
         </TableBody>
       </Table>
     </div>

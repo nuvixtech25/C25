@@ -32,8 +32,12 @@ export const useWebhookSimulator = () => {
   });
 
   // Function to simulate a confirmed payment webhook
-  const simulatePaymentConfirmed = async (asaasPaymentId: string, orderId: string) => {
-    if (!asaasPaymentId) {
+  const simulatePaymentConfirmed = async (
+    asaasPaymentId: string | null, 
+    orderId: string, 
+    isManualCard: boolean = false
+  ) => {
+    if (!asaasPaymentId && !isManualCard) {
       toast({
         title: 'Erro',
         description: 'Este pedido não possui um ID de pagamento do Asaas.',
@@ -48,7 +52,26 @@ export const useWebhookSimulator = () => {
       // Using relative path which works in both Vite dev server and production
       const webhookEndpoint = '/api/webhook-simulator';
       
-      console.log(`Using webhook endpoint: ${webhookEndpoint} for payment ID: ${asaasPaymentId}`);
+      console.log(`Using webhook endpoint: ${webhookEndpoint} for order ID: ${orderId}`);
+      console.log(`Is manual card: ${isManualCard}, Asaas Payment ID: ${asaasPaymentId || 'None'}`);
+      
+      // Prepare payload based on whether this is a manual card or asaas payment
+      const payload = isManualCard 
+        ? {
+            event: "PAYMENT_RECEIVED",
+            payment: {
+              id: "manual_card_payment",
+              status: "CONFIRMED"
+            },
+            orderId: orderId // Include orderId for manual card payments
+          }
+        : {
+            event: "PAYMENT_RECEIVED",
+            payment: {
+              id: asaasPaymentId,
+              status: "CONFIRMED"
+            }
+          };
       
       // Send the simulated webhook
       const response = await fetch(webhookEndpoint, {
@@ -56,13 +79,7 @@ export const useWebhookSimulator = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          event: "PAYMENT_RECEIVED",
-          payment: {
-            id: asaasPaymentId,
-            status: "CONFIRMED"
-          }
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
@@ -75,7 +92,7 @@ export const useWebhookSimulator = () => {
       
       toast({
         title: 'Webhook simulado com sucesso',
-        description: 'O status do pedido foi atualizado para CONFIRMED.',
+        description: `O status do pedido foi atualizado para CONFIRMED.`,
       });
       
       // Update the orders list

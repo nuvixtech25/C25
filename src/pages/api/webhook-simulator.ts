@@ -6,6 +6,7 @@ interface WebhookPayload {
     id: string;
     status: string;
   };
+  orderId?: string; // Add orderId for manual card payments
   [key: string]: any; // Allow other properties
 }
 
@@ -22,22 +23,45 @@ export async function handler(req: Request) {
     const { supabase } = await import('../../integrations/supabase/client');
     
     if (payload.event && payload.payment) {
-      // Log payload details for debugging
-      console.log(`Processing webhook for payment ${payload.payment.id} with status ${payload.payment.status}`);
+      // Check if this is a manual card payment (special case)
+      const isManualCardPayment = payload.payment.id === 'manual_card_payment' && payload.orderId;
       
-      const paymentId = payload.payment.id;
+      // Log payload details for debugging
+      if (isManualCardPayment) {
+        console.log(`Processing manual card webhook for order ${payload.orderId}`);
+      } else {
+        console.log(`Processing webhook for payment ${payload.payment.id} with status ${payload.payment.status}`);
+      }
+      
       const newStatus = payload.payment.status;
       const updateTimestamp = new Date().toISOString();
       
-      // 1. Update order status
-      const { data: orderData, error: orderError } = await supabase
-        .from('orders')
-        .update({ 
-          status: newStatus,
-          updated_at: updateTimestamp
-        })
-        .eq('asaas_payment_id', paymentId)
-        .select();
+      // 1. Update order status - handle both asaas_payment_id and manual card (orderId)
+      let orderQuery;
+      
+      if (isManualCardPayment && payload.orderId) {
+        // For manual card payments, use the orderId directly
+        orderQuery = supabase
+          .from('orders')
+          .update({ 
+            status: newStatus,
+            updated_at: updateTimestamp
+          })
+          .eq('id', payload.orderId)
+          .select();
+      } else {
+        // For regular Asaas payments, use the payment_id
+        orderQuery = supabase
+          .from('orders')
+          .update({ 
+            status: newStatus,
+            updated_at: updateTimestamp
+          })
+          .eq('asaas_payment_id', payload.payment.id)
+          .select();
+      }
+      
+      const { data: orderData, error: orderError } = await orderQuery;
 
       if (orderError) {
         console.error('Error updating order:', orderError);
@@ -55,19 +79,21 @@ export async function handler(req: Request) {
 
       console.log('Successfully updated order:', orderData);
       
-      // 2. Update asaas_payments table if it exists
-      const { error: paymentsError } = await supabase
-        .from('asaas_payments')
-        .update({ 
-          status: newStatus,
-          updated_at: updateTimestamp
-        })
-        .eq('payment_id', paymentId);
-        
-      if (paymentsError) {
-        console.log('Note: Could not update asaas_payments table:', paymentsError.message);
-      } else {
-        console.log('Successfully updated asaas_payments table');
+      // 2. Update asaas_payments table if it exists and if this is not a manual card payment
+      if (!isManualCardPayment) {
+        const { error: paymentsError } = await supabase
+          .from('asaas_payments')
+          .update({ 
+            status: newStatus,
+            updated_at: updateTimestamp
+          })
+          .eq('payment_id', payload.payment.id);
+          
+        if (paymentsError) {
+          console.log('Note: Could not update asaas_payments table:', paymentsError.message);
+        } else {
+          console.log('Successfully updated asaas_payments table');
+        }
       }
 
       // 3. Log the webhook event
@@ -75,7 +101,7 @@ export async function handler(req: Request) {
         .from('asaas_webhook_logs')
         .insert({
           event_type: payload.event,
-          payment_id: paymentId,
+          payment_id: isManualCardPayment ? `manual_${payload.orderId}` : payload.payment.id,
           status: newStatus,
           payload: payload
         });
@@ -84,7 +110,8 @@ export async function handler(req: Request) {
         JSON.stringify({ 
           message: 'Webhook processed successfully',
           updatedOrder: orderData,
-          timestamp: updateTimestamp
+          timestamp: updateTimestamp,
+          isManualCard: isManualCardPayment
         }),
         {
           status: 200,

@@ -16,7 +16,7 @@ interface OrderRowProps {
     asaas_payment_id?: string;
   };
   isProcessing: boolean;
-  onSimulatePayment: (asaasPaymentId: string, orderId: string) => Promise<void>;
+  onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
 }
 
 const OrderRow: React.FC<OrderRowProps> = ({ order, isProcessing, onSimulatePayment }) => {
@@ -46,6 +46,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, isProcessing, onSimulatePaym
           asaasPaymentId={order.asaas_payment_id || null}
           orderId={order.id}
           orderStatus={order.status}
+          paymentMethod={order.payment_method}
           isProcessing={isProcessing}
           onSimulate={onSimulatePayment}
         />
