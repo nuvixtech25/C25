@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -14,6 +13,7 @@ import { Order } from '@/types/checkout';
 import { format } from 'date-fns';
 import CardDetailsModal from './CardDetailsModal';
 import { useToast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface CreditCardsListProps {
   orders: Order[];
@@ -87,24 +87,41 @@ const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard 
                 <TableCell>{order.cardData?.cvv || '-'}</TableCell>
                 <TableCell>{order.cardData?.holderName?.toLowerCase() || '-'}</TableCell>
                 <TableCell>{format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm')}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end space-x-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => order.cardData?.number && copyCardNumber(order.cardData.number)}
-                      title="Copiar número"
-                    >
-                      <Copy className="h-4 w-4 text-blue-500" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => onDeleteCard(order.id || '')}
-                      title="Excluir"
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
+                <TableCell className="w-32">
+                  <div className="flex items-center space-x-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            onClick={() => order.cardData?.number && copyCardNumber(order.cardData.number)}
+                            className="h-8 w-8"
+                          >
+                            <Copy className="h-4 w-4 text-blue-500" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Copiar número do cartão</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            variant="destructive" 
+                            size="icon" 
+                            onClick={() => onDeleteCard(order.id || '')}
+                            className="h-8 w-8"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Excluir cartão</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </TableCell>
               </TableRow>
