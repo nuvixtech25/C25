@@ -7,8 +7,8 @@ export async function handler(req: Request) {
     const payload = await req.json();
     console.log('Webhook simulator payload:', payload);
 
-    // Update the order status in Supabase
-    const { supabase } = await import('@/integrations/supabase/client');
+    // We need to use a relative import path to avoid the vite error
+    const { supabase } = await import('../../integrations/supabase/client');
     
     if (payload.event && payload.payment) {
       // Update the status of the order in Supabase
