@@ -1,8 +1,16 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import type { Tables } from '@/integrations/supabase/types';
 
-export type AsaasConfigData = Tables<'asaas_config'>;
+export interface AsaasConfigData {
+  id?: number;
+  sandbox: boolean;
+  sandbox_key: string | null;
+  production_key: string | null;
+  pix_enabled: boolean | null;
+  card_enabled: boolean | null;
+  active: boolean | null;
+  updated_at?: string | null;
+}
 
 /**
  * Retrieves the Asaas configuration from the database
@@ -20,7 +28,7 @@ export async function getAsaasConfig(): Promise<AsaasConfigData | null> {
     throw error;
   }
 
-  return data;
+  return data as AsaasConfigData | null;
 }
 
 /**
@@ -52,7 +60,7 @@ export async function updateAsaasConfig(config: Partial<AsaasConfigData>): Promi
       throw error;
     }
 
-    result = data;
+    result = data as AsaasConfigData;
   } else {
     // Create new record if none exists
     const { data, error } = await supabase
@@ -69,7 +77,7 @@ export async function updateAsaasConfig(config: Partial<AsaasConfigData>): Promi
       throw error;
     }
 
-    result = data;
+    result = data as AsaasConfigData;
   }
 
   return result;
