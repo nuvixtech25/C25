@@ -10,6 +10,7 @@ import CreditCardsPage from './pages/admin/credit-cards';
 import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics";
 import NotFound from './pages/NotFound';
 import Login from './pages/Login';
+import AdminLogin from './pages/admin/Login'; // Import the admin-specific Login
 import PixSettings from './pages/admin/PixSettings';
 import PixelSettings from './pages/admin/PixelSettings';
 import AsaasSettings from './pages/admin/AsaasSettings';
@@ -68,7 +69,7 @@ const AppWithPixels = () => {
           <Navigate to="/admin/dashboard" replace />
         </RequireAuth>
       } />
-      <Route path="/admin/login" element={<Login />} />
+      <Route path="/admin/login" element={<AdminLogin />} /> {/* Use admin-specific login component */}
       <Route path="/admin/dashboard" element={
         <RequireAuth>
           <Dashboard />

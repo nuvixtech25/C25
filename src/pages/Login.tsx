@@ -8,31 +8,36 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LoginForm from './admin/LoginForm';
 import RegisterForm from './admin/RegisterForm';
-import { supabase } from '@/integrations/supabase/client'; // Import supabase client
-import { useToast } from '@/hooks/use-toast'; // Import toast
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
-  const { signIn, session } = useAuth();
+  const { signIn, session, isAdmin } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const navigate = useNavigate();
-  const { toast } = useToast(); // Use the toast hook
+  const { toast } = useToast();
 
-  // Se o usuário já estiver logado, redireciona para home
+  // Redirect user based on their role after login
   useEffect(() => {
     if (session) {
-      navigate('/');
+      // If user is admin, redirect to admin dashboard
+      if (isAdmin) {
+        navigate('/admin/dashboard');
+      } else {
+        // For regular users, redirect to homepage
+        navigate('/');
+      }
     }
-  }, [session, navigate]);
+  }, [session, navigate, isAdmin]);
 
   const handleSignIn = async (data: { email: string; password: string }) => {
     setIsSubmitting(true);
     try {
       await signIn(data.email, data.password);
-      // Não precisa navegar aqui, o useEffect vai lidar com isso
-      // quando a sessão for atualizada
+      // The useEffect will handle redirection when the session is updated
     } catch (error) {
-      // Erro é tratado na função signIn
+      // Error is handled in the signIn function
       setIsSubmitting(false);
     }
   };
