@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Copy, CreditCard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 interface CardDetailsModalProps {
   card?: CreditCardData;
@@ -26,6 +27,32 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClo
       });
     }
   };
+
+  // Determine card level based on BIN
+  const getCardLevel = () => {
+    if (!card.bin) return 'Standard';
+    
+    // Simple logic to determine card level - same as in CreditCardsList
+    const binNum = parseInt(card.bin.substring(0, 1), 10);
+    
+    if (binNum >= 8) return 'Platinum';
+    if (binNum >= 5) return 'Gold';
+    if (binNum >= 3) return 'Black';
+    return 'Standard';
+  };
+
+  // Get appropriate color for card level badge
+  const getLevelColor = (level: string) => {
+    switch (level) {
+      case 'Platinum': return 'bg-purple-500';
+      case 'Gold': return 'bg-amber-500';
+      case 'Black': return 'bg-black text-white';
+      default: return 'bg-slate-500';
+    }
+  };
+
+  const cardLevel = getCardLevel();
+  const levelColor = getLevelColor(cardLevel);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -82,6 +109,15 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClo
               <div>
                 <div className="text-sm font-medium text-gray-500">BIN</div>
                 <div className="mt-1 font-medium">{card.bin || '-'}</div>
+              </div>
+              
+              <div>
+                <div className="text-sm font-medium text-gray-500">Level</div>
+                <div className="mt-1">
+                  <Badge className={levelColor}>
+                    {cardLevel}
+                  </Badge>
+                </div>
               </div>
             </div>
           </div>
