@@ -11,9 +11,15 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const WebhookSimulator = () => {
   const { toast } = useToast();
@@ -109,6 +115,7 @@ const WebhookSimulator = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Simulador de Webhook</h1>
         <Button onClick={() => refetch()} variant="outline">
+          <RefreshCw className="h-4 w-4 mr-2" />
           Atualizar
         </Button>
       </div>
@@ -128,41 +135,71 @@ const WebhookSimulator = () => {
           </TableHeader>
           <TableBody>
             {orders && orders.length > 0 ? (
-              orders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-mono text-xs">{order.id.substring(0, 8)}...</TableCell>
-                  <TableCell>{order.customer_name}</TableCell>
-                  <TableCell className="text-right">
-                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.product_price)}
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={order.status} />
-                  </TableCell>
-                  <TableCell>{order.payment_method === 'pix' ? 'PIX' : 'Cartão'}</TableCell>
-                  <TableCell>{formatDate(order.created_at)}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      onClick={() => simulatePaymentConfirmed(order.asaas_payment_id, order.id)}
-                      disabled={processingOrders[order.id] || order.status === 'CONFIRMED' || !order.asaas_payment_id}
-                      size="sm"
-                    >
-                      {processingOrders[order.id] ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                          Processando...
-                        </>
-                      ) : order.status === 'CONFIRMED' ? (
-                        <>
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          Já confirmado
-                        </>
-                      ) : (
-                        "Simular Pagamento Confirmado"
-                      )}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
+              orders.map((order) => {
+                // Determinar o motivo do botão estar desabilitado
+                let disabledReason = '';
+                if (processingOrders[order.id]) {
+                  disabledReason = 'Processando...';
+                } else if (order.status === 'CONFIRMED') {
+                  disabledReason = 'Pagamento já confirmado';
+                } else if (!order.asaas_payment_id) {
+                  disabledReason = 'Sem ID de pagamento Asaas';
+                }
+                
+                return (
+                  <TableRow key={order.id}>
+                    <TableCell className="font-mono text-xs">{order.id.substring(0, 8)}...</TableCell>
+                    <TableCell>{order.customer_name}</TableCell>
+                    <TableCell className="text-right">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(order.product_price)}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={order.status} />
+                    </TableCell>
+                    <TableCell>{order.payment_method === 'pix' ? 'PIX' : 'Cartão'}</TableCell>
+                    <TableCell>{formatDate(order.created_at)}</TableCell>
+                    <TableCell className="text-right">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span>
+                              <Button
+                                onClick={() => simulatePaymentConfirmed(order.asaas_payment_id, order.id)}
+                                disabled={!!disabledReason}
+                                size="sm"
+                              >
+                                {processingOrders[order.id] ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    Processando...
+                                  </>
+                                ) : order.status === 'CONFIRMED' ? (
+                                  <>
+                                    <CheckCircle className="h-4 w-4 mr-2" />
+                                    Já confirmado
+                                  </>
+                                ) : !order.asaas_payment_id ? (
+                                  <>
+                                    <AlertCircle className="h-4 w-4 mr-2" />
+                                    Sem ID Asaas
+                                  </>
+                                ) : (
+                                  "Simular Pagamento Confirmado"
+                                )}
+                              </Button>
+                            </span>
+                          </TooltipTrigger>
+                          {disabledReason && (
+                            <TooltipContent>
+                              <p>{disabledReason}</p>
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8 text-gray-500">
@@ -204,3 +241,4 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 export default WebhookSimulator;
+
