@@ -42,6 +42,115 @@ export type Database = {
         }
         Relationships: []
       }
+      asaas_payments: {
+        Row: {
+          amount: number
+          copy_paste_key: string | null
+          created_at: string
+          expiration_date: string | null
+          id: string
+          order_id: string
+          payment_id: string
+          qr_code: string | null
+          qr_code_image: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          copy_paste_key?: string | null
+          created_at?: string
+          expiration_date?: string | null
+          id?: string
+          order_id: string
+          payment_id: string
+          qr_code?: string | null
+          qr_code_image?: string | null
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          copy_paste_key?: string | null
+          created_at?: string
+          expiration_date?: string | null
+          id?: string
+          order_id?: string
+          payment_id?: string
+          qr_code?: string | null
+          qr_code_image?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asaas_payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          asaas_payment_id: string | null
+          created_at: string
+          customer_cpf_cnpj: string
+          customer_email: string
+          customer_id: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          payment_method: string
+          product_id: string | null
+          product_name: string
+          product_price: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          asaas_payment_id?: string | null
+          created_at?: string
+          customer_cpf_cnpj: string
+          customer_email: string
+          customer_id: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          payment_method: string
+          product_id?: string | null
+          product_name: string
+          product_price: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          asaas_payment_id?: string | null
+          created_at?: string
+          customer_cpf_cnpj?: string
+          customer_email?: string
+          customer_id?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          payment_method?: string
+          product_id?: string | null
+          product_name?: string
+          product_price?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pix_config: {
         Row: {
           beneficiario: string

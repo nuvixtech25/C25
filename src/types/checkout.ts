@@ -9,6 +9,7 @@ export interface BillingData {
   customer: CustomerData;
   value: number;
   description: string;
+  orderId: string; // ID do pedido para referência
 }
 
 export interface PixPaymentData {

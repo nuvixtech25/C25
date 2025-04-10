@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BillingData, PixPaymentData, Order } from '@/types/checkout';
@@ -37,15 +36,6 @@ const PaymentPage = () => {
       try {
         const data = await generatePixPayment(billingData);
         setPaymentData(data);
-        
-        // In a real application, we would update the order with the payment ID
-        // This would be done through a Supabase call or another API
-        /* 
-        await supabase
-          .from('orders')
-          .update({ asaasPaymentId: data.paymentId })
-          .eq('id', orderData.id);
-        */
       } catch (error) {
         console.error('Erro ao gerar pagamento PIX:', error);
         toast({

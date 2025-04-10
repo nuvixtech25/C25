@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -12,6 +11,7 @@ import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { CountdownBanner } from '@/components/CountdownBanner';
 import { fetchProductBySlug } from '@/services/productService';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 // Mock customization data - In a real app, this would come from Supabase
 const mockCustomization: CheckoutCustomization = {
@@ -56,27 +56,21 @@ const Checkout = () => {
   };
   
   const createOrder = async (customer: CustomerData, product: Product, paymentMethod: PaymentMethod): Promise<Order> => {
-    // In a real app, this would create a record in Supabase
-    // For this example, we'll create a mock order
-    
-    const order: Order = {
-      id: `order_${Date.now()}`,
-      customerId: `customer_${Date.now()}`,
-      customerName: customer.name,
-      customerEmail: customer.email,
-      customerCpfCnpj: customer.cpfCnpj,
-      customerPhone: customer.phone,
-      productId: product.id,
-      productName: product.name,
-      productPrice: product.price,
+    // Criar pedido no Supabase
+    const order = {
+      customer_id: `customer_${Date.now()}`, // No futuro, usar ID real do cliente no Asaas
+      customer_name: customer.name,
+      customer_email: customer.email,
+      customer_cpf_cnpj: customer.cpfCnpj,
+      customer_phone: customer.phone,
+      product_id: product.id,
+      product_name: product.name,
+      product_price: product.price,
       status: "PENDING",
-      paymentMethod: paymentMethod,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      payment_method: paymentMethod,
     };
     
-    // In a real app, we would save this to Supabase
-    /*
+    // Salvar no Supabase
     const { data, error } = await supabase
       .from('orders')
       .insert(order)
@@ -84,10 +78,23 @@ const Checkout = () => {
       .single();
       
     if (error) throw new Error(error.message);
-    return data;
-    */
     
-    return order;
+    return {
+      id: data.id,
+      customerId: data.customer_id,
+      customerName: data.customer_name,
+      customerEmail: data.customer_email,
+      customerCpfCnpj: data.customer_cpf_cnpj,
+      customerPhone: data.customer_phone,
+      productId: data.product_id,
+      productName: data.product_name,
+      productPrice: data.product_price,
+      status: data.status,
+      paymentMethod: data.payment_method,
+      asaasPaymentId: data.asaas_payment_id,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    };
   };
   
   const handlePaymentSubmit = async (paymentData?: any) => {
@@ -96,19 +103,20 @@ const Checkout = () => {
     setIsSubmitting(true);
     
     try {
-      // 1. Create order in the database
+      // 1. Criar pedido no banco de dados
       const order = await createOrder(customerData, product, paymentMethod);
       
-      // 2. Create billing data for payment processing
+      // 2. Criar billing data para processamento do pagamento
       const billingData: BillingData = {
         customer: customerData,
         value: product.price,
         description: product.name,
+        orderId: order.id // Adicionar ID do pedido
       };
       
-      // 3. Process payment based on the selected method
+      // 3. Processar pagamento baseado no método selecionado
       if (paymentMethod === 'pix') {
-        // Redirect to PIX payment page with billing data and order
+        // Redirecionar para página de pagamento PIX com billing data e order
         navigate('/payment', { 
           state: { 
             billingData, 
@@ -116,27 +124,19 @@ const Checkout = () => {
           } 
         });
       } else {
-        // Process credit card payment
-        // In a real app, this would integrate with Asaas API
-        // For now, we'll just simulate a successful payment
+        // Processar pagamento de cartão
+        // Em uma aplicação real, isso integraria com a API do Asaas
+        // Por enquanto, simularemos um pagamento bem-sucedido
         
         toast({
           title: "Pagamento processado",
           description: "Seu pagamento com cartão foi processado com sucesso!",
         });
         
-        // In a real app, we would update the order status
-        /*
-        await supabase
-          .from('orders')
-          .update({ status: "CONFIRMED" })
-          .eq('id', order.id);
-        */
-        
         navigate('/success');
       }
     } catch (error) {
-      console.error("Error processing payment:", error);
+      console.error("Erro ao processar pagamento:", error);
       toast({
         title: "Erro no pagamento",
         description: "Ocorreu um erro ao processar o pagamento. Tente novamente.",
