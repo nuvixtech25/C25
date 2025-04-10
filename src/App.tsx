@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import RequireAuth from './contexts/auth/RequireAuth'; // Corrected import
+import RequireAuth from './contexts/auth/RequireAuth';
 import { AuthProvider } from './contexts/AuthContext';
 import RetryPaymentPage from './pages/RetryPaymentPage';
 import AdminLayout from './layouts/AdminLayout';
@@ -9,7 +8,9 @@ import CreditCardsPage from './pages/admin/credit-cards';
 import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics";
 import NotFound from './pages/NotFound';
 import Login from './pages/Login';
-import PixSettings from './pages/admin/PixSettings'; // Import the PixSettings component
+import PixSettings from './pages/admin/PixSettings';
+import AsaasSettings from './pages/admin/AsaasSettings';
+import WebhookSimulator from './pages/admin/WebhookSimulator';
 
 // Importações temporárias para funcionar sem os arquivos reais
 const CheckoutPage = () => <div>Checkout Page</div>;
@@ -72,6 +73,20 @@ function App() {
             <RequireAuth>
               <AdminLayout>
                 <PixSettings />
+              </AdminLayout>
+            </RequireAuth>
+          } />
+          <Route path="/admin/asaas-settings" element={
+            <RequireAuth>
+              <AdminLayout>
+                <AsaasSettings />
+              </AdminLayout>
+            </RequireAuth>
+          } />
+          <Route path="/admin/webhook-simulator" element={
+            <RequireAuth>
+              <AdminLayout>
+                <WebhookSimulator />
               </AdminLayout>
             </RequireAuth>
           } />
