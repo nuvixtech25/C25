@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { GoogleCircle } from 'lucide-react';
+import { Google } from 'lucide-react';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -17,7 +17,7 @@ export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({ form }) => {
     <div className="p-4 border rounded-lg">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <GoogleCircle className="h-5 w-5 text-red-500" />
+          <Google className="h-5 w-5 text-red-500" />
           <h3 className="text-lg font-medium">Google Ads</h3>
         </div>
         <FormField
@@ -76,3 +76,4 @@ export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({ form }) => {
     </div>
   );
 };
+
