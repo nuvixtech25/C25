@@ -1,6 +1,7 @@
 
-import { SupabaseError } from "@supabase/supabase-js";
-
+/**
+ * Handles API errors in a standardized way
+ */
 interface ErrorHandlerOptions {
   toast?: any;
   defaultMessage?: string;

@@ -4,11 +4,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BillingData, PixPaymentData, Order, PaymentStatus } from '@/types/checkout';
 import { generatePixPayment } from '@/services/asaasService';
 import { PixPayment } from '@/components/checkout/payment-methods/PixPayment';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { handleApiError } from '@/utils/errorHandling';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { CheckoutError } from '@/components/checkout/CheckoutError';
 
 const PaymentPage = () => {
   const location = useLocation();
@@ -96,10 +98,7 @@ const PaymentPage = () => {
       
       {loading ? (
         <div className="w-full max-w-md h-64 flex items-center justify-center bg-white rounded-xl shadow-lg">
-          <div className="text-center">
-            <Loader2 className="h-10 w-10 animate-spin text-asaas-primary mx-auto mb-4" />
-            <p className="text-muted-foreground">Gerando pagamento PIX...</p>
-          </div>
+          <LoadingSpinner message="Gerando pagamento PIX..." />
         </div>
       ) : error ? (
         <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg text-center">
@@ -124,15 +123,7 @@ const PaymentPage = () => {
           paymentId={paymentData.paymentId}
         />
       ) : (
-        <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg text-center">
-          <p className="text-red-500">Erro ao carregar dados do pagamento</p>
-          <Button 
-            onClick={() => navigate('/')} 
-            className="mt-4"
-          >
-            Tentar novamente
-          </Button>
-        </div>
+        <CheckoutError message="Erro ao carregar dados do pagamento" />
       )}
     </div>
   );
