@@ -6,55 +6,13 @@ import { CreditCardData } from "@/types/checkout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, Calendar, KeyRound, Building2, Tag, Star, Clock } from "lucide-react";
+import { getBankFromBin, getCardLevel, getCardBrandIcon } from "@/utils/cardUtils";
 
 interface CardAttemptDetailsProps {
   cardData: CreditCardData;
   attemptNumber: number;
   status?: string;
 }
-
-// Helper function to get bank name from BIN (same as in PaymentDetailsModal)
-const getBankFromBin = (bin: string | undefined): string => {
-  if (!bin) return "Desconhecido";
-  
-  if (bin.startsWith("4")) return "Visa";
-  if (bin.startsWith("5")) return "Mastercard";
-  if (bin.startsWith("34") || bin.startsWith("37")) return "American Express";
-  if (bin.startsWith("6")) return "Discover";
-  
-  return "Outro";
-};
-
-// Helper function to get card level with emojis (same as in PaymentDetailsModal)
-const getCardLevel = (bin: string | undefined, brand: string | undefined): string => {
-  if (!bin) return '🌟 Standard';
-  
-  if (brand?.toLowerCase() === "visa" && bin.startsWith("4")) {
-    if (bin.startsWith("49")) return '💎 Platinum';
-    if (bin.startsWith("43")) return '🏆 Gold';
-  }
-  
-  if (brand?.toLowerCase() === "mastercard" && bin.startsWith("5")) {
-    if (bin.startsWith("55")) return '💎 Platinum';
-    if (bin.startsWith("53")) return '🏆 Gold';
-  }
-  
-  return '🌟 Standard';
-};
-
-// Get card brand icon
-const getCardBrandIcon = (brand?: string): string => {
-  const brandLower = brand?.toLowerCase() || '';
-  
-  if (brandLower.includes('visa')) return '💳 Visa';
-  if (brandLower.includes('mastercard')) return '💳 Mastercard';
-  if (brandLower.includes('amex') || brandLower.includes('american')) return '💳 American Express';
-  if (brandLower.includes('discover')) return '💳 Discover';
-  if (brandLower.includes('elo')) return '💳 Elo';
-  if (brandLower.includes('hipercard')) return '💳 Hipercard';
-  
-  return '💳 Cartão';
-};
 
 // Get status badge variant
 const getStatusBadgeVariant = (status?: string): "default" | "secondary" | "destructive" | "outline" => {
