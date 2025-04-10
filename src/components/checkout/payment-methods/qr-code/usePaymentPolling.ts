@@ -30,7 +30,9 @@ export const usePaymentPolling = (
     setError(null);
     
     try {
+      console.log(`Iniciando verificação de status para pagamento: ${paymentId}`);
       const currentStatus = await checkPaymentStatus(paymentId);
+      console.log(`Status atualizado recebido: ${currentStatus}`);
       setStatus(currentStatus);
     } catch (err: any) {
       setError(err instanceof Error ? err : new Error(String(err)));
@@ -42,6 +44,7 @@ export const usePaymentPolling = (
   
   // Verificação manual do status
   const forceCheck = async () => {
+    console.log('Forçando verificação de status...');
     await checkStatus();
   };
 
@@ -54,12 +57,18 @@ export const usePaymentPolling = (
     let intervalId: NodeJS.Timeout | undefined;
     
     if (status === 'PENDING') {
+      console.log(`Configurando polling a cada ${intervalMs}ms para o pagamento: ${paymentId}`);
       intervalId = setInterval(checkStatus, intervalMs);
+    } else {
+      console.log(`Status não é mais PENDING, polling parado. Status atual: ${status}`);
     }
     
     // Limpar intervalo na desmontagem
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      if (intervalId) {
+        console.log('Limpando intervalo de polling');
+        clearInterval(intervalId);
+      }
     };
   }, [paymentId, status, intervalMs]);
 

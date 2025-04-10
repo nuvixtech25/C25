@@ -114,7 +114,12 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     
     console.log(`Checking payment status at: ${endpoint}`);
     
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -122,7 +127,10 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
       throw new Error(`Error checking payment status: ${errorText.substring(0, 200)}`);
     }
     
+    // Log the raw response for debugging
     const responseText = await response.text();
+    console.log('Raw response text:', responseText);
+    
     let data;
     
     try {
@@ -137,6 +145,7 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
       throw new Error("Incomplete status data in server response.");
     }
     
+    console.log("Successfully processed payment status:", data.status);
     return data.status as PaymentStatus;
   } catch (error) {
     console.error("Error checking payment status:", error);

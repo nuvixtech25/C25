@@ -11,7 +11,7 @@ export async function handler(req: Request) {
   console.log(`Checking payment status for ID: ${paymentId}`);
   
   // Create a proper JSON response
-  return new Response(
+  const response = new Response(
     JSON.stringify({
       status: 'PENDING',
       paymentId: paymentId,
@@ -22,4 +22,8 @@ export async function handler(req: Request) {
       headers: { 'Content-Type': 'application/json' },
     }
   );
+  
+  console.log('Sending payment status response:', await response.clone().text());
+  
+  return response;
 }
