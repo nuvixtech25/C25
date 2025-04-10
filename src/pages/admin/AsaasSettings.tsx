@@ -19,7 +19,7 @@ const AsaasSettings = () => {
     pix_enabled: false,
     card_enabled: false,
     active: false,
-    use_netlify_functions: false, // New field
+    use_netlify_functions: false, // Ensure this is included
   });
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const AsaasSettings = () => {
             pix_enabled: config.pix_enabled || false,
             card_enabled: config.card_enabled || false,
             active: config.active || false,
-            use_netlify_functions: config.use_netlify_functions || false, // New field
+            use_netlify_functions: config.use_netlify_functions || false, // Ensure this is included
           });
         }
       } catch (error) {
@@ -62,7 +62,7 @@ const AsaasSettings = () => {
         pix_enabled: data.pix_enabled,
         card_enabled: data.card_enabled,
         active: data.active,
-        use_netlify_functions: data.use_netlify_functions, // New field
+        use_netlify_functions: data.use_netlify_functions, // Ensure this is included
       });
       
       toast({
