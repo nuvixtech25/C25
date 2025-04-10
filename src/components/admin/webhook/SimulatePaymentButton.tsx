@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { WebhookEventType } from '@/hooks/admin/useWebhookSimulator';
 
 interface SimulatePaymentButtonProps {
   asaasPaymentId: string | null;
@@ -15,6 +16,7 @@ interface SimulatePaymentButtonProps {
   orderStatus: string;
   paymentMethod: string;
   isProcessing: boolean;
+  selectedEvent: WebhookEventType;
   onSimulate: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
 }
 
@@ -24,24 +26,44 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
   orderStatus,
   paymentMethod,
   isProcessing,
+  selectedEvent,
   onSimulate
 }) => {
   // Determine if it's a credit card payment
   const isCreditCard = paymentMethod === 'creditCard';
   
-  // Determine the reason the button is disabled for Asaas payments
-  let disabledReasonAsaas = '';
-  if (isProcessing) {
-    disabledReasonAsaas = 'Processando...';
-  } else if (orderStatus === 'CONFIRMED') {
-    disabledReasonAsaas = 'Pagamento já confirmado';
-  } else if (!asaasPaymentId && !isCreditCard) {
-    disabledReasonAsaas = 'Sem ID de pagamento Asaas';
-  }
-
-  // For manual credit card payments
-  const canSimulateManual = isCreditCard && orderStatus !== 'CONFIRMED';
+  // Get event name for display
+  const getEventDisplayName = (event: WebhookEventType) => {
+    switch (event) {
+      case 'PAYMENT_RECEIVED': return 'Recebido';
+      case 'PAYMENT_CONFIRMED': return 'Confirmado';
+      case 'PAYMENT_OVERDUE': return 'Vencido';
+      case 'PAYMENT_CANCELED': return 'Cancelado';
+      default: return event;
+    }
+  };
   
+  // Determine if buttons should be disabled
+  const isAlreadyProcessed = orderStatus === 'CONFIRMED' && 
+    (selectedEvent === 'PAYMENT_RECEIVED' || selectedEvent === 'PAYMENT_CONFIRMED');
+  
+  const hasAsaasId = !!asaasPaymentId || isCreditCard;
+  
+  // Determine reason for disable
+  const getDisabledReason = (isAsaasButton: boolean) => {
+    if (isProcessing) return 'Processando...';
+    if (isAlreadyProcessed) return 'Status já aplicado';
+    if (!hasAsaasId && isAsaasButton) return 'Sem ID de pagamento Asaas';
+    return '';
+  };
+  
+  // For Asaas ID simulation
+  const disabledReasonAsaas = getDisabledReason(true);
+  
+  // For manual credit card simulation
+  const canSimulateManual = isCreditCard && !isAlreadyProcessed;
+  const disabledReasonManual = !canSimulateManual ? 'Opção disponível apenas para cartão' : '';
+
   return (
     <div className="flex space-x-2 justify-end">
       {/* Button for Asaas ID simulation */}
@@ -51,7 +73,7 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
             <span>
               <Button
                 onClick={() => onSimulate(asaasPaymentId, orderId, false)}
-                disabled={!!disabledReasonAsaas}
+                disabled={!!disabledReasonAsaas || isProcessing}
                 size="sm"
                 variant={isCreditCard ? "outline" : "default"}
                 className={isCreditCard ? "border-amber-500 text-amber-600" : ""}
@@ -61,10 +83,10 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     Processando...
                   </>
-                ) : orderStatus === 'CONFIRMED' ? (
+                ) : isAlreadyProcessed ? (
                   <>
                     <CheckCircle className="h-4 w-4 mr-2" />
-                    Já confirmado
+                    Já {getEventDisplayName(selectedEvent)}
                   </>
                 ) : !asaasPaymentId && !isCreditCard ? (
                   <>
@@ -74,7 +96,9 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
                 ) : (
                   <>
                     <QrCode className="h-4 w-4 mr-2" />
-                    {isCreditCard ? "Simular com Asaas ID" : "Simular Pagamento"}
+                    {isCreditCard 
+                      ? `Simular Asaas (${getEventDisplayName(selectedEvent)})` 
+                      : `Simular PIX (${getEventDisplayName(selectedEvent)})`}
                   </>
                 )}
               </Button>
@@ -105,24 +129,24 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       Processando...
                     </>
-                  ) : orderStatus === 'CONFIRMED' ? (
+                  ) : isAlreadyProcessed ? (
                     <>
                       <CheckCircle className="h-4 w-4 mr-2" />
-                      Já confirmado
+                      Já {getEventDisplayName(selectedEvent)}
                     </>
                   ) : (
                     <>
                       <CreditCard className="h-4 w-4 mr-2" />
-                      Simular Cartão Manual
+                      Simular Cartão Manual ({getEventDisplayName(selectedEvent)})
                     </>
                   )}
                 </Button>
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{!canSimulateManual && orderStatus === 'CONFIRMED' 
-                ? 'Pagamento já confirmado' 
-                : 'Simular confirmação de cartão manual'}
+              <p>{!canSimulateManual && isAlreadyProcessed 
+                ? `Status já ${getEventDisplayName(selectedEvent)}` 
+                : disabledReasonManual || `Simular confirmação de cartão manual (${getEventDisplayName(selectedEvent)})`}
               </p>
             </TooltipContent>
           </Tooltip>

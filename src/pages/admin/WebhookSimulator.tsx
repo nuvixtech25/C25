@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Filter, Trash2 } from 'lucide-react';
-import { useWebhookSimulator } from '@/hooks/admin/useWebhookSimulator';
+import { useWebhookSimulator, WebhookEventType } from '@/hooks/admin/useWebhookSimulator';
 import OrdersTable from '@/components/admin/webhook/OrdersTable';
 import { 
   Select,
@@ -21,7 +21,9 @@ const WebhookSimulator = () => {
     processingOrders,
     statusFilter,
     setStatusFilter,
-    simulatePaymentConfirmed,
+    selectedEvent,
+    setSelectedEvent,
+    simulatePaymentWebhook,
     refetch,
     deleteAllWebhookLogs
   } = useWebhookSimulator();
@@ -34,6 +36,13 @@ const WebhookSimulator = () => {
     { value: 'CONFIRMED', label: 'Confirmado' },
     { value: 'RECEIVED', label: 'Recebido' },
     { value: 'CANCELLED', label: 'Cancelado' }
+  ];
+
+  const eventOptions: Array<{ value: WebhookEventType, label: string }> = [
+    { value: 'PAYMENT_RECEIVED', label: 'Pagamento Recebido' },
+    { value: 'PAYMENT_CONFIRMED', label: 'Pagamento Confirmado' },
+    { value: 'PAYMENT_OVERDUE', label: 'Pagamento Vencido' },
+    { value: 'PAYMENT_CANCELED', label: 'Pagamento Cancelado' }
   ];
 
   const handleDeleteAll = async () => {
@@ -65,6 +74,25 @@ const WebhookSimulator = () => {
               </SelectContent>
             </Select>
           </div>
+
+          <div className="flex items-center gap-2">
+            <Select 
+              value={selectedEvent} 
+              onValueChange={(value) => setSelectedEvent(value as WebhookEventType)}
+            >
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Selecionar evento" />
+              </SelectTrigger>
+              <SelectContent>
+                {eventOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button onClick={() => refetch()} variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
             Atualizar
@@ -83,7 +111,8 @@ const WebhookSimulator = () => {
         orders={orders}
         isLoading={isLoading}
         processingOrders={processingOrders}
-        onSimulatePayment={simulatePaymentConfirmed}
+        onSimulatePayment={simulatePaymentWebhook}
+        selectedEvent={selectedEvent}
       />
 
       <DeleteConfirmModal

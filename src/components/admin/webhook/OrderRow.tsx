@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { TableCell, TableRow } from '@/components/ui/table';
 import StatusBadge from './StatusBadge';
 import SimulatePaymentButton from './SimulatePaymentButton';
+import { WebhookEventType } from '@/hooks/admin/useWebhookSimulator';
 
 interface OrderRowProps {
   order: {
@@ -17,9 +18,10 @@ interface OrderRowProps {
   };
   isProcessing: boolean;
   onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
+  selectedEvent: WebhookEventType;
 }
 
-const OrderRow: React.FC<OrderRowProps> = ({ order, isProcessing, onSimulatePayment }) => {
+const OrderRow: React.FC<OrderRowProps> = ({ order, isProcessing, onSimulatePayment, selectedEvent }) => {
   // Format date function
   const formatDate = (dateString: string) => {
     try {
@@ -49,6 +51,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order, isProcessing, onSimulatePaym
           paymentMethod={order.payment_method}
           isProcessing={isProcessing}
           onSimulate={onSimulatePayment}
+          selectedEvent={selectedEvent}
         />
       </TableCell>
     </TableRow>

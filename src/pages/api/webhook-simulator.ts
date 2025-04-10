@@ -28,9 +28,9 @@ export async function handler(req: Request) {
       
       // Log payload details for debugging
       if (isManualCardPayment) {
-        console.log(`Processing manual card webhook for order ${payload.orderId}`);
+        console.log(`Processing manual card webhook for order ${payload.orderId} with event ${payload.event}`);
       } else {
-        console.log(`Processing webhook for payment ${payload.payment.id} with status ${payload.payment.status}`);
+        console.log(`Processing webhook for payment ${payload.payment.id} with event ${payload.event} and status ${payload.payment.status}`);
       }
       
       const newStatus = payload.payment.status;
@@ -111,7 +111,8 @@ export async function handler(req: Request) {
           message: 'Webhook processed successfully',
           updatedOrder: orderData,
           timestamp: updateTimestamp,
-          isManualCard: isManualCardPayment
+          isManualCard: isManualCardPayment,
+          event: payload.event
         }),
         {
           status: 200,

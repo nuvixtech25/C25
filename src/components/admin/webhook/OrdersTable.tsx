@@ -3,19 +3,22 @@ import React from 'react';
 import { Table, TableBody, TableHeader, TableRow, TableHead } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import OrderRow from './OrderRow';
+import { WebhookEventType } from '@/hooks/admin/useWebhookSimulator';
 
 interface OrdersTableProps {
   orders: any[] | null;
   isLoading: boolean;
   processingOrders: Record<string, boolean>;
   onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
+  selectedEvent: WebhookEventType;
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ 
   orders, 
   isLoading, 
   processingOrders, 
-  onSimulatePayment 
+  onSimulatePayment,
+  selectedEvent
 }) => {
   // Render loading skeletons
   if (isLoading) {
@@ -97,6 +100,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
               order={order}
               isProcessing={processingOrders[order.id] || false}
               onSimulatePayment={onSimulatePayment}
+              selectedEvent={selectedEvent}
             />
           ))}
         </TableBody>

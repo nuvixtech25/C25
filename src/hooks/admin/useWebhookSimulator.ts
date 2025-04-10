@@ -5,10 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { PaymentStatus } from '@/types/checkout';
 
+export type WebhookEventType = 'PAYMENT_RECEIVED' | 'PAYMENT_CONFIRMED' | 'PAYMENT_OVERDUE' | 'PAYMENT_CANCELED';
+
 export const useWebhookSimulator = () => {
   const { toast } = useToast();
   const [processingOrders, setProcessingOrders] = useState<Record<string, boolean>>({});
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | 'ALL'>('ALL');
+  const [selectedEvent, setSelectedEvent] = useState<WebhookEventType>('PAYMENT_RECEIVED');
 
   // Fetch all orders
   const { data: orders, isLoading, refetch } = useQuery({
@@ -31,8 +34,8 @@ export const useWebhookSimulator = () => {
     }
   });
 
-  // Function to simulate a confirmed payment webhook
-  const simulatePaymentConfirmed = async (
+  // Function to simulate a webhook with the selected event
+  const simulatePaymentWebhook = async (
     asaasPaymentId: string | null, 
     orderId: string, 
     isManualCard: boolean = false
@@ -54,22 +57,38 @@ export const useWebhookSimulator = () => {
       
       console.log(`Using webhook endpoint: ${webhookEndpoint} for order ID: ${orderId}`);
       console.log(`Is manual card: ${isManualCard}, Asaas Payment ID: ${asaasPaymentId || 'None'}`);
+      console.log(`Selected event: ${selectedEvent}`);
+      
+      // Determine the new status based on the event
+      let newStatus: PaymentStatus = 'PENDING';
+      switch (selectedEvent) {
+        case 'PAYMENT_RECEIVED':
+        case 'PAYMENT_CONFIRMED':
+          newStatus = 'CONFIRMED';
+          break;
+        case 'PAYMENT_OVERDUE':
+          newStatus = 'OVERDUE';
+          break;
+        case 'PAYMENT_CANCELED':
+          newStatus = 'CANCELLED';
+          break;
+      }
       
       // Prepare payload based on whether this is a manual card or asaas payment
       const payload = isManualCard 
         ? {
-            event: "PAYMENT_RECEIVED",
+            event: selectedEvent,
             payment: {
               id: "manual_card_payment",
-              status: "CONFIRMED"
+              status: newStatus
             },
             orderId: orderId // Include orderId for manual card payments
           }
         : {
-            event: "PAYMENT_RECEIVED",
+            event: selectedEvent,
             payment: {
               id: asaasPaymentId,
-              status: "CONFIRMED"
+              status: newStatus
             }
           };
       
@@ -92,7 +111,7 @@ export const useWebhookSimulator = () => {
       
       toast({
         title: 'Webhook simulado com sucesso',
-        description: `O status do pedido foi atualizado para CONFIRMED.`,
+        description: `O status do pedido foi atualizado para ${newStatus}.`,
       });
       
       // Update the orders list
@@ -171,7 +190,9 @@ export const useWebhookSimulator = () => {
     processingOrders,
     statusFilter,
     setStatusFilter,
-    simulatePaymentConfirmed,
+    selectedEvent,
+    setSelectedEvent,
+    simulatePaymentWebhook,
     deleteAllWebhookLogs,
     refetch
   };
