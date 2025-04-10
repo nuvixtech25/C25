@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 export const asaasSettingsSchema = z.object({
@@ -10,6 +9,7 @@ export const asaasSettingsSchema = z.object({
   active: z.boolean().default(false),
   // New field for Netlify functions toggle
   use_netlify_functions: z.boolean().default(false),
+  manual_card_redirect_page: z.string().default('/payment-pending'),
 });
 
 export type AsaasSettingsFormValues = z.infer<typeof asaasSettingsSchema>;

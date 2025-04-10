@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CustomerData, PaymentMethod, Product } from '@/types/checkout';
 import { useCheckoutOrder } from '@/hooks/useCheckoutOrder';
 import { handleApiError } from '@/utils/errorHandling';
+import { getAsaasConfig } from '@/services/asaasConfigService';
 
 export const useCheckoutState = (product: Product | undefined) => {
   const { toast } = useToast();
@@ -12,12 +13,10 @@ export const useCheckoutState = (product: Product | undefined) => {
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('creditCard');
   
-  // Use checkout order hook
   const { isSubmitting, setIsSubmitting, createOrder, prepareBillingData } = useCheckoutOrder();
   
   const handleCustomerSubmit = (data: CustomerData) => {
     setCustomerData(data);
-    // Auto-scroll to payment section
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
   };
   
@@ -27,15 +26,11 @@ export const useCheckoutState = (product: Product | undefined) => {
     setIsSubmitting(true);
     
     try {
-      // 1. Criar pedido no banco de dados
       const order = await createOrder(customerData, product, paymentMethod);
       
-      // 2. Criar billing data para processamento do pagamento
       const billingData = prepareBillingData(customerData, product, order.id as string);
       
-      // 3. Processar pagamento baseado no método selecionado
       if (paymentMethod === 'pix') {
-        // Redirecionar para página de pagamento PIX com billing data e order
         navigate('/payment', { 
           state: { 
             billingData, 
@@ -43,16 +38,21 @@ export const useCheckoutState = (product: Product | undefined) => {
           } 
         });
       } else {
-        // Processar pagamento de cartão
-        // Em uma aplicação real, isso integraria com a API do Asaas
-        // Por enquanto, simularemos um pagamento bem-sucedido
+        // Handle credit card payment with manual redirect
+        const config = await getAsaasConfig();
+        const redirectPage = config?.manual_card_redirect_page || '/payment-pending';
         
         toast({
-          title: "Pagamento processado",
-          description: "Seu pagamento com cartão foi processado com sucesso!",
+          title: "Pagamento com cartão processado",
+          description: "Redirecionando para a página configurada.",
         });
         
-        navigate('/success');
+        navigate(redirectPage, { 
+          state: { 
+            order,
+            billingData
+          } 
+        });
       }
     } catch (error) {
       handleApiError(error, {

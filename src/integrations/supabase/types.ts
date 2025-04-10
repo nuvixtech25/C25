@@ -14,6 +14,7 @@ export type Database = {
           active: boolean | null
           card_enabled: boolean | null
           id: number
+          manual_card_redirect_page: string | null
           pix_enabled: boolean | null
           production_key: string | null
           sandbox: boolean
@@ -25,6 +26,7 @@ export type Database = {
           active?: boolean | null
           card_enabled?: boolean | null
           id?: number
+          manual_card_redirect_page?: string | null
           pix_enabled?: boolean | null
           production_key?: string | null
           sandbox?: boolean
@@ -36,6 +38,7 @@ export type Database = {
           active?: boolean | null
           card_enabled?: boolean | null
           id?: number
+          manual_card_redirect_page?: string | null
           pix_enabled?: boolean | null
           production_key?: string | null
           sandbox?: boolean

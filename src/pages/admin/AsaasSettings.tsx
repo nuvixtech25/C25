@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +19,7 @@ const AsaasSettings = () => {
     card_enabled: false,
     active: false,
     use_netlify_functions: false, // Ensure this is included
+    manual_card_redirect_page: '/payment-pending', // Default value
   });
 
   useEffect(() => {
@@ -35,6 +35,7 @@ const AsaasSettings = () => {
             card_enabled: config.card_enabled || false,
             active: config.active || false,
             use_netlify_functions: config.use_netlify_functions || false, // Ensure this is included
+            manual_card_redirect_page: config.manual_card_redirect_page || '/payment-pending',
           });
         }
       } catch (error) {
@@ -63,6 +64,7 @@ const AsaasSettings = () => {
         card_enabled: data.card_enabled,
         active: data.active,
         use_netlify_functions: data.use_netlify_functions, // Ensure this is included
+        manual_card_redirect_page: data.manual_card_redirect_page,
       });
       
       toast({

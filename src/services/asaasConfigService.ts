@@ -10,6 +10,7 @@ export interface AsaasConfigData {
   active: boolean | null;
   updated_at?: string | null;
   use_netlify_functions?: boolean | null; // Added this line
+  manual_card_redirect_page?: string | null;
 }
 
 /**

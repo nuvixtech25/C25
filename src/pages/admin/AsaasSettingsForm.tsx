@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,12 +9,20 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface AsaasSettingsFormProps {
   defaultValues: AsaasSettingsFormValues;
   onSubmit: (data: AsaasSettingsFormValues) => Promise<void>;
   isLoading: boolean;
 }
+
+const MANUAL_REDIRECT_OPTIONS = [
+  { value: '/payment-success', label: 'Payment Success' },
+  { value: '/payment-pending', label: 'Payment Pending' },
+  { value: '/payment-failed', label: 'Payment Failed' },
+  { value: '/thank-you-card', label: 'Thank You (Card)' },
+] as const;
 
 const AsaasSettingsForm: React.FC<AsaasSettingsFormProps> = ({
   defaultValues,
@@ -201,6 +208,46 @@ const AsaasSettingsForm: React.FC<AsaasSettingsFormProps> = ({
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Redirecionamento Manual de Cartão</CardTitle>
+            <CardDescription>
+              Configure a página de redirecionamento após pagamentos com cartão
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormField
+              control={form.control}
+              name="manual_card_redirect_page"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Página de Redirecionamento para Cartão</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a página de redirecionamento" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {MANUAL_REDIRECT_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Escolha para onde os clientes serão redirecionados após o pagamento com cartão
+                  </FormDescription>
                 </FormItem>
               )}
             />
