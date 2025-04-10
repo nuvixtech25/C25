@@ -47,7 +47,7 @@ export const apiRoutesMiddleware = async (
       // Convert Node.js request to Fetch API Request for our handler
       const requestInit: RequestInit = {
         method: req.method,
-        headers: req.headers as HeadersInit,
+        headers: req.headers as Record<string, string>,
       };
       
       if (req.body) {
@@ -78,7 +78,7 @@ export const apiRoutesMiddleware = async (
       // Convert Node.js request to Fetch API Request
       const request = new Request(`http://${req.headers.host}${req.url}`, {
         method: req.method,
-        headers: req.headers as HeadersInit,
+        headers: req.headers as Record<string, string>,
       });
       
       const response = await mockCheckPaymentStatusHandler(request);
