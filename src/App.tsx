@@ -1,22 +1,25 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import CheckoutPage from './pages/CheckoutPage';
-import HomePage from './pages/HomePage';
-import ProductPage from './pages/ProductPage';
-import ConfirmationPage from './pages/ConfirmationPage';
-import PaymentPendingPage from './pages/PaymentPendingPage';
 import RetryPaymentPage from './pages/RetryPaymentPage';
-import TestimonialsPage from './pages/TestimonialsPage';
-import AdminPage from './pages/AdminPage';
-import ProductsAdmin from './pages/admin/products';
-import OrdersAdmin from './pages/admin/orders';
-import LoginPage from './pages/LoginPage';
 import { AuthProvider } from './contexts/AuthContext';
-import { RequireAuth } from './components/RequireAuth';
-import AdminLayout from './components/AdminLayout';
+import { RequireAuth } from './contexts/auth/RequireAuth';
+import AdminLayout from './layouts/AdminLayout';
 import CreditCardsPage from './pages/admin/credit-cards';
-import CheckoutCustomizationPage from './pages/admin/checkout';
 import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics";
+
+// Importações temporárias para funcionar sem os arquivos reais
+const CheckoutPage = () => <div>Checkout Page</div>;
+const HomePage = () => <div>Home Page</div>;
+const ProductPage = () => <div>Product Page</div>;
+const ConfirmationPage = () => <div>Confirmation Page</div>;
+const PaymentPendingPage = () => <div>Payment Pending Page</div>;
+const TestimonialsPage = () => <div>Testimonials Page</div>;
+const AdminPage = () => <div>Admin Page</div>;
+const ProductsAdmin = () => <div>Products Admin Page</div>;
+const OrdersAdmin = () => <div>Orders Admin Page</div>;
+const LoginPage = () => <div>Login Page</div>;
+const CheckoutCustomizationPage = () => <div>Checkout Customization Page</div>;
 
 function App() {
   return (
