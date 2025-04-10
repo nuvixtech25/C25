@@ -47,6 +47,7 @@ export interface CreditCardData {
   cvv: string;
   bin?: string;
   brand?: string;
+  createdAt?: string;
 }
 
 export interface CheckoutCustomization {
@@ -89,4 +90,5 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
   cardData?: CreditCardData;
+  allCardData?: CreditCardData[]; // Added for multiple card attempts
 }

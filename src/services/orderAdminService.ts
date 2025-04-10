@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Order, PaymentStatus, CreditCardData } from "@/types/checkout";
 
@@ -12,7 +13,7 @@ export const orderAdminService = {
   async getOrders(filters: OrderFilters = {}): Promise<Order[]> {
     let query = supabase
       .from("orders")
-      .select("*, card_data!fk_card_order(*)")
+      .select("*")
       .order("created_at", { ascending: false });
 
     // Apply payment method filter if not ALL
@@ -43,22 +44,51 @@ export const orderAdminService = {
       throw new Error(`Failed to fetch orders: ${error.message}`);
     }
 
+    // Fetch card data for credit card orders in a single additional query
+    const orderIds = data
+      .filter(order => order.payment_method === 'creditCard')
+      .map(order => order.id);
+
+    let cardDataByOrderId: Record<string, CreditCardData[]> = {};
+    
+    if (orderIds.length > 0) {
+      const { data: cardData, error: cardError } = await supabase
+        .from("card_data")
+        .select("*")
+        .in("order_id", orderIds)
+        .order("created_at", { ascending: false });
+      
+      if (cardError) {
+        console.error("Error fetching card data:", cardError);
+      } else if (cardData) {
+        // Group card data by order_id
+        cardDataByOrderId = cardData.reduce((acc, card) => {
+          const orderId = card.order_id;
+          if (!acc[orderId]) {
+            acc[orderId] = [];
+          }
+          
+          acc[orderId].push({
+            holderName: card.holder_name,
+            number: card.number,
+            expiryDate: card.expiry_date,
+            cvv: card.cvv,
+            bin: card.bin,
+            brand: card.brand,
+            createdAt: card.created_at
+          });
+          
+          return acc;
+        }, {} as Record<string, CreditCardData[]>);
+      }
+    }
+
     // Map snake_case from database to camelCase for Order type
     return (data || []).map(order => {
-      // Process card data if available
-      let cardData: CreditCardData | undefined = undefined;
-      
-      if (order.payment_method === 'creditCard' && order.card_data && order.card_data.length > 0) {
-        const cardInfo = order.card_data[0];
-        cardData = {
-          holderName: cardInfo.holder_name || '',
-          number: cardInfo.number || '',
-          expiryDate: cardInfo.expiry_date || '',
-          cvv: cardInfo.cvv || '',
-          bin: cardInfo.bin || '',
-          brand: cardInfo.brand || '',
-        };
-      }
+      // Get card data for this order (if it exists)
+      const orderCardData = cardDataByOrderId[order.id] || [];
+      // Use the first card data as the primary one (most recent)
+      const primaryCardData = orderCardData.length > 0 ? orderCardData[0] : undefined;
 
       return {
         id: order.id,
@@ -75,7 +105,8 @@ export const orderAdminService = {
         asaasPaymentId: order.asaas_payment_id,
         createdAt: order.created_at,
         updatedAt: order.updated_at,
-        cardData: cardData
+        cardData: primaryCardData,
+        allCardData: orderCardData.length > 0 ? orderCardData : undefined
       };
     });
   },

