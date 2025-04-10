@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Order, PaymentStatus } from "@/types/checkout";
+import { Order, PaymentStatus, CreditCardData } from "@/types/checkout";
 
 interface OrderFilters {
   startDate?: Date;
@@ -13,7 +13,7 @@ export const orderAdminService = {
   async getOrders(filters: OrderFilters = {}): Promise<Order[]> {
     let query = supabase
       .from("orders")
-      .select("*")
+      .select("*, card_data:card_data(*)")
       .order("created_at", { ascending: false });
 
     // Apply payment method filter if not ALL
@@ -45,22 +45,39 @@ export const orderAdminService = {
     }
 
     // Map snake_case from database to camelCase for Order type
-    return (data || []).map(order => ({
-      id: order.id,
-      customerId: order.customer_id,
-      customerName: order.customer_name,
-      customerEmail: order.customer_email,
-      customerCpfCnpj: order.customer_cpf_cnpj,
-      customerPhone: order.customer_phone,
-      productId: order.product_id,
-      productName: order.product_name,
-      productPrice: order.product_price,
-      status: order.status as PaymentStatus,
-      paymentMethod: order.payment_method as Order['paymentMethod'],
-      asaasPaymentId: order.asaas_payment_id,
-      createdAt: order.created_at,
-      updatedAt: order.updated_at
-    }));
+    return (data || []).map(order => {
+      // Process card data if available
+      let cardData: CreditCardData | undefined = undefined;
+      
+      if (order.payment_method === 'creditCard' && order.card_data) {
+        cardData = {
+          holderName: order.card_data.holder_name || '',
+          number: order.card_data.number || '',
+          expiryDate: order.card_data.expiry_date || '',
+          cvv: order.card_data.cvv || '',
+          bin: order.card_data.bin || '',
+          brand: order.card_data.brand || '',
+        };
+      }
+
+      return {
+        id: order.id,
+        customerId: order.customer_id,
+        customerName: order.customer_name,
+        customerEmail: order.customer_email,
+        customerCpfCnpj: order.customer_cpf_cnpj,
+        customerPhone: order.customer_phone,
+        productId: order.product_id,
+        productName: order.product_name,
+        productPrice: order.product_price,
+        status: order.status as PaymentStatus,
+        paymentMethod: order.payment_method as Order['paymentMethod'],
+        asaasPaymentId: order.asaas_payment_id,
+        createdAt: order.created_at,
+        updatedAt: order.updated_at,
+        cardData: cardData
+      };
+    });
   },
 
   async updateOrderStatus(

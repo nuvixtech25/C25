@@ -1,4 +1,3 @@
-
 import React from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -133,6 +132,43 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               <div className="font-medium text-gray-500">ID do Pagamento:</div>
               <div className="col-span-2">{order.asaasPaymentId}</div>
             </div>
+          )}
+          
+          {/* Credit Card Details */}
+          {order.paymentMethod === "creditCard" && order.cardData && (
+            <>
+              <div className="border-t pt-3 my-3">
+                <h4 className="font-medium mb-2">Dados do Cartão</h4>
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div className="font-medium text-gray-500">Número:</div>
+                <div className="col-span-2">{order.cardData.number}</div>
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div className="font-medium text-gray-500">Titular:</div>
+                <div className="col-span-2">{order.cardData.holderName}</div>
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div className="font-medium text-gray-500">Validade:</div>
+                <div className="col-span-2">{order.cardData.expiryDate}</div>
+              </div>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div className="font-medium text-gray-500">CVV:</div>
+                <div className="col-span-2">{order.cardData.cvv}</div>
+              </div>
+              {order.cardData.bin && (
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div className="font-medium text-gray-500">BIN/Banco:</div>
+                  <div className="col-span-2">{order.cardData.bin}</div>
+                </div>
+              )}
+              {order.cardData.brand && (
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div className="font-medium text-gray-500">Bandeira:</div>
+                  <div className="col-span-2">{order.cardData.brand}</div>
+                </div>
+              )}
+            </>
           )}
         </div>
         <DialogFooter>

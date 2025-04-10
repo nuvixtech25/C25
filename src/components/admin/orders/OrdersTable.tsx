@@ -1,7 +1,8 @@
+
 import React from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Eye, Trash2, Edit, DollarSign } from "lucide-react";
+import { Eye, Trash2, Edit, DollarSign, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Order } from "@/types/checkout";
 import StatusBadge from "./StatusBadge";
@@ -99,7 +100,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                       onClick={() => onViewPayment(order)}
                       title="Ver dados de pagamento"
                     >
-                      <DollarSign className="h-4 w-4 text-green-600" />
+                      {order.paymentMethod === "pix" ? (
+                        <DollarSign className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <CreditCard className="h-4 w-4 text-blue-600" />
+                      )}
                     </Button>
                     <Button 
                       variant="ghost" 

@@ -1,3 +1,4 @@
+
 export interface CustomerData {
   name: string;
   email: string;
@@ -44,6 +45,8 @@ export interface CreditCardData {
   number: string;
   expiryDate: string;
   cvv: string;
+  bin?: string;
+  brand?: string;
 }
 
 export interface CheckoutCustomization {
@@ -85,4 +88,5 @@ export interface Order {
   asaasPaymentId?: string;
   createdAt: string;
   updatedAt: string;
+  cardData?: CreditCardData;
 }
