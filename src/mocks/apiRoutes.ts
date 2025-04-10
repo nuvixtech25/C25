@@ -22,48 +22,73 @@ export const apiRoutesMiddleware = async (
 ) => {
   const path = req.url || '';
   
-  // Check if we have a handler for this route
+  // Check if we have a handler for this route - exact match first
   if (path in apiRoutes) {
-    console.log(`Handling API route: ${path}`);
-    
-    try {
-      // Parse body if it wasn't already parsed
-      let body = undefined;
-      
-      // If req has already parsed body (added by our mockPlugin middleware)
-      if ('body' in req && typeof (req as any).body !== 'undefined') {
-        body = JSON.stringify((req as any).body);
-      }
-      
-      // Convert node http request to a fetch API Request
-      const request = new Request(`http://localhost${path}`, {
-        method: req.method || 'GET',
-        headers: req.headers as any,
-        body: req.method !== 'GET' && req.method !== 'HEAD' ? body : undefined,
-      });
-      
-      // Call the handler with our Request object
-      const response = await apiRoutes[path](request);
-      
-      // Send the response status
-      res.statusCode = response.status;
-      
-      // Set the response headers
-      response.headers.forEach((value, key) => {
-        res.setHeader(key, value);
-      });
-      
-      // Send the response body
-      const responseBody = await response.text();
-      res.end(responseBody);
-    } catch (error) {
-      console.error(`Error handling API route ${path}:`, error);
-      res.statusCode = 500;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: 'Internal Server Error' }));
-    }
-  } else {
-    // Not an API route we handle, continue with normal request processing
-    next();
+    console.log(`Handling API route (exact match): ${path}`);
+    await handleApiRoute(path, req, res, next);
+    return;
   }
+  
+  // Check for path match with query params
+  for (const route in apiRoutes) {
+    if (path.startsWith(route + '?')) {
+      console.log(`Handling API route (with query params): ${path}`);
+      await handleApiRoute(route, req, res, next);
+      return;
+    }
+  }
+  
+  // Not an API route we handle, continue with normal request processing
+  next();
 };
+
+// Helper function to handle API routes
+async function handleApiRoute(
+  route: string,
+  req: IncomingMessage, 
+  res: ServerResponse, 
+  next: NextFunction
+) {
+  try {
+    // Get the original full URL
+    const originalUrl = req.url || '';
+    
+    // Parse body if it wasn't already parsed
+    let body = undefined;
+    
+    // If req has already parsed body (added by our mockPlugin middleware)
+    if ('body' in req && typeof (req as any).body !== 'undefined') {
+      body = JSON.stringify((req as any).body);
+    }
+    
+    // Build the request URL (preserve the full path with query params)
+    const url = new URL(originalUrl, 'http://localhost');
+    
+    // Convert node http request to a fetch API Request
+    const request = new Request(url.toString(), {
+      method: req.method || 'GET',
+      headers: req.headers as any,
+      body: req.method !== 'GET' && req.method !== 'HEAD' ? body : undefined,
+    });
+    
+    // Call the handler with our Request object
+    const response = await apiRoutes[route](request);
+    
+    // Send the response status
+    res.statusCode = response.status;
+    
+    // Set the response headers
+    response.headers.forEach((value, key) => {
+      res.setHeader(key, value);
+    });
+    
+    // Send the response body
+    const responseBody = await response.text();
+    res.end(responseBody);
+  } catch (error) {
+    console.error(`Error handling API route ${route}:`, error);
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: 'Internal Server Error' }));
+  }
+}

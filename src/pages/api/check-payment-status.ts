@@ -10,6 +10,16 @@ export async function handler(req: Request) {
   
   console.log(`Checking payment status for ID: ${paymentId}`);
   
-  // Delegate to our mock handler
-  return mockCheckPaymentStatusHandler(req);
+  // Create a proper JSON response
+  return new Response(
+    JSON.stringify({
+      status: 'PENDING',
+      paymentId: paymentId,
+      updatedAt: new Date().toISOString()
+    }),
+    {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }
+  );
 }
