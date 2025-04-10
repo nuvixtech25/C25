@@ -1,4 +1,3 @@
-
 import React from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -37,23 +36,22 @@ const getBankFromBin = (bin: string | undefined): string => {
   return "Outro";
 };
 
-// Helper function to get card level
+// Updated helper function to get card level with emojis
 const getCardLevel = (bin: string | undefined, brand: string | undefined): string => {
-  if (!bin) return "Standard";
+  if (!bin) return '🌟 Standard';
   
-  // This is a simplified example - in a real implementation,
-  // you would use a more complete BIN database
+  // More playful and descriptive card levels with emojis
   if (brand?.toLowerCase() === "visa" && bin.startsWith("4")) {
-    if (bin.startsWith("49")) return "Platinum";
-    if (bin.startsWith("43")) return "Gold";
+    if (bin.startsWith("49")) return '💎 Platinum';
+    if (bin.startsWith("43")) return '🏆 Gold';
   }
   
   if (brand?.toLowerCase() === "mastercard" && bin.startsWith("5")) {
-    if (bin.startsWith("55")) return "Platinum";
-    if (bin.startsWith("53")) return "Gold";
+    if (bin.startsWith("55")) return '💎 Platinum';
+    if (bin.startsWith("53")) return '🏆 Gold';
   }
   
-  return "Standard";
+  return '🌟 Standard';
 };
 
 const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
