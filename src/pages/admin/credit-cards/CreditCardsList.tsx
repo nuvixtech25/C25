@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -18,10 +17,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Badge } from '@/components/ui/badge';
 import StatusBadge from '@/components/admin/orders/StatusBadge';
 
-interface CreditCardsListProps {
-  orders: Order[];
-  onDeleteCard: (orderId: string) => void;
-}
+// Função para renderizar ícone da bandeira do cartão
+const renderCardBrandIcon = (brand?: string) => {
+  const brandIcons = {
+    'visa': '💳',
+    'mastercard': '💳',
+    'amex': '💳',
+    'elo': '💳',
+    'hipercard': '💳',
+    'diners': '💳'
+  };
+  
+  return brand ? brandIcons[brand.toLowerCase()] || '💳' : '💳';
+};
 
 const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard }) => {
   const [selectedCard, setSelectedCard] = useState<Order | null>(null);
@@ -100,11 +108,16 @@ const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard 
                 <TableRow key={order.id}>
                   <TableCell>
                     <div className="flex items-center">
-                      <span className="mr-1">💳</span>
+                      {renderCardBrandIcon(order.cardData?.brand)}
                       {order.cardData?.brand || '-'}
                     </div>
                   </TableCell>
-                  <TableCell>{order.cardData?.bin || '-'}</TableCell>
+                  <TableCell>
+                    {order.cardData?.bin || '-'}
+                    <Badge className={`ml-2 ${levelColor}`}>
+                      {cardLevel}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     <Button 
                       variant="link" 
@@ -119,9 +132,6 @@ const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard 
                   <TableCell>
                     <div className="flex flex-col">
                       <span>{order.cardData?.holderName?.toLowerCase() || '-'}</span>
-                      <Badge className={`mt-1 w-fit ${levelColor}`}>
-                        {cardLevel}
-                      </Badge>
                     </div>
                   </TableCell>
                   <TableCell>

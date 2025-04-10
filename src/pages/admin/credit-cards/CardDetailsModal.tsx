@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CreditCardData } from '@/types/checkout';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -8,12 +7,19 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import StatusBadge from '@/components/admin/orders/StatusBadge';
 
-interface CardDetailsModalProps {
-  card?: CreditCardData;
-  isOpen: boolean;
-  onClose: () => void;
-  status?: string;
-}
+// Função para renderizar ícone da bandeira do cartão
+const renderCardBrandIcon = (brand?: string) => {
+  const brandIcons = {
+    'visa': '💳',
+    'mastercard': '💳',
+    'amex': '💳',
+    'elo': '💳',
+    'hipercard': '💳',
+    'diners': '💳'
+  };
+  
+  return brand ? brandIcons[brand.toLowerCase()] || '💳' : '💳';
+};
 
 const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClose, status = 'PENDING' }) => {
   const { toast } = useToast();
@@ -77,7 +83,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClo
               <div>
                 <div className="text-sm font-medium text-gray-500">Bandeira</div>
                 <div className="mt-1 font-medium flex items-center">
-                  <span className="mr-1">💳</span>
+                  {renderCardBrandIcon(card.brand)}
                   {card.brand || 'Desconhecida'}
                 </div>
               </div>
@@ -110,13 +116,9 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClo
               
               <div>
                 <div className="text-sm font-medium text-gray-500">BIN</div>
-                <div className="mt-1 font-medium">{card.bin || '-'}</div>
-              </div>
-              
-              <div>
-                <div className="text-sm font-medium text-gray-500">Level</div>
-                <div className="mt-1">
-                  <Badge className={levelColor}>
+                <div className="mt-1 font-medium flex items-center">
+                  {card.bin || '-'}
+                  <Badge className={`ml-2 ${getLevelColor(cardLevel)}`}>
                     {cardLevel}
                   </Badge>
                 </div>
