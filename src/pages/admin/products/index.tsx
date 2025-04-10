@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -41,7 +42,9 @@ const ProductsPage = () => {
       if (error) {
         throw new Error(error.message);
       }
-      return data as Product[];
+      
+      // Explicitly cast the data to Product[] to resolve type mismatch
+      return (data as unknown) as Product[];
     },
   });
 
