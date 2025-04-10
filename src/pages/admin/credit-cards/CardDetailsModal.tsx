@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CreditCardData } from '@/types/checkout';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -21,6 +22,13 @@ const renderCardBrandIcon = (brand?: string) => {
   return brand ? brandIcons[brand.toLowerCase()] || '💳' : '💳';
 };
 
+interface CardDetailsModalProps {
+  card?: CreditCardData;
+  isOpen: boolean;
+  onClose: () => void;
+  status?: string;
+}
+
 const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClose, status = 'PENDING' }) => {
   const { toast } = useToast();
 
@@ -38,7 +46,7 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({ card, isOpen, onClo
 
   // Determine card level based on BIN
   const getCardLevel = () => {
-    if (!card.bin) return 'Standard';
+    if (!card?.bin) return 'Standard';
     
     // Simple logic to determine card level - same as in CreditCardsList
     const binNum = parseInt(card.bin.substring(0, 1), 10);

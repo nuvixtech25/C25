@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -30,6 +31,11 @@ const renderCardBrandIcon = (brand?: string) => {
   
   return brand ? brandIcons[brand.toLowerCase()] || '💳' : '💳';
 };
+
+interface CreditCardsListProps {
+  orders: Order[];
+  onDeleteCard: (orderId: string) => void;
+}
 
 const CreditCardsList: React.FC<CreditCardsListProps> = ({ orders, onDeleteCard }) => {
   const [selectedCard, setSelectedCard] = useState<Order | null>(null);
