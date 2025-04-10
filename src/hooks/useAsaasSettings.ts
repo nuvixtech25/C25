@@ -46,7 +46,7 @@ export const useAsaasSettings = () => {
     }
   };
 
-  const saveConfig = async (data: AsaasSettingsFormValues) => {
+  const saveConfig = async (data: AsaasSettingsFormValues): Promise<void> => {
     setIsSaving(true);
     try {
       await updateAsaasConfig({
@@ -64,7 +64,6 @@ export const useAsaasSettings = () => {
         title: 'Configurações salvas',
         description: 'As configurações do Asaas foram atualizadas com sucesso.',
       });
-      return true;
     } catch (error) {
       console.error('Error saving Asaas config:', error);
       toast({
@@ -72,7 +71,7 @@ export const useAsaasSettings = () => {
         description: 'Ocorreu um erro ao salvar as configurações do Asaas.',
         variant: 'destructive',
       });
-      return false;
+      throw error; // Re-throw to allow caller to handle if needed
     } finally {
       setIsSaving(false);
     }
