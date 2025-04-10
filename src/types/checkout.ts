@@ -61,8 +61,11 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  isDigital: boolean;
+  isDigital?: boolean;
   imageUrl?: string;
+  status?: boolean;
+  type?: 'digital' | 'physical';
+  slug?: string;
 }
 
 export type PaymentMethod = "creditCard" | "pix";

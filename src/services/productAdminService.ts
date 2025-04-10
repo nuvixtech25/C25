@@ -7,10 +7,9 @@ import { toast } from '@/hooks/use-toast';
  * Fetches all products from the database
  */
 export const fetchProducts = async (): Promise<Product[]> => {
-  // Use type assertion to tell TypeScript we know what we're doing
   const { data, error } = await supabase
-    .from('products' as any)
-    .select('id, name, price, status, type')
+    .from('products')
+    .select('id, name, price, status, type, slug')
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -18,8 +17,17 @@ export const fetchProducts = async (): Promise<Product[]> => {
     throw new Error(error.message);
   }
   
-  // Explicitly cast the data to Product[] to resolve type mismatch
-  return (data as unknown) as Product[];
+  // Map database products to our Product type
+  return data.map(item => ({
+    id: item.id,
+    name: item.name,
+    description: item.description || '',
+    price: Number(item.price),
+    isDigital: item.type === 'digital',
+    type: item.type,
+    status: item.status,
+    slug: item.slug
+  }));
 };
 
 /**
@@ -27,9 +35,8 @@ export const fetchProducts = async (): Promise<Product[]> => {
  */
 export const deleteProduct = async (productId: string): Promise<void> => {
   try {
-    // Use type assertion for the table name
     const { error } = await supabase
-      .from('products' as any)
+      .from('products')
       .delete()
       .eq('id', productId);
 

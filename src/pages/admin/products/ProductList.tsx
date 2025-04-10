@@ -52,7 +52,7 @@ const ProductList = ({ products, isLoading, onDeleteClick }: ProductListProps) =
           <TableHead>Preço</TableHead>
           <TableHead>Tipo</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead className="w-[100px]">Ações</TableHead>
+          <TableHead className="w-[150px]">Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
