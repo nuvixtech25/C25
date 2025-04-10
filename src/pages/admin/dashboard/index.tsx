@@ -9,6 +9,7 @@ import AdminLayout from '@/layouts/AdminLayout';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
+import { PaymentStatus } from '@/types/checkout';
 
 // Dashboard statistic card component
 const StatCard = ({ title, value, description, icon, className = "" }) => {
@@ -253,10 +254,21 @@ const DashboardPage = () => {
       }
       
       // Count by status
-      const counts = data.reduce((acc, order) => {
-        acc[order.status] = (acc[order.status] || 0) + 1;
-        return acc;
-      }, {});
+      const counts: Record<PaymentStatus, number> = {
+        PENDING: 0,
+        CONFIRMED: 0,
+        RECEIVED: 0,
+        CANCELLED: 0,
+        REFUNDED: 0,
+        OVERDUE: 0
+      };
+      
+      // Count occurrences of each status
+      data.forEach(order => {
+        if (order.status && counts.hasOwnProperty(order.status)) {
+          counts[order.status as PaymentStatus] += 1;
+        }
+      });
       
       // Format for bar chart
       return [
