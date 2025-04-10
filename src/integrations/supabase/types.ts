@@ -122,6 +122,53 @@ export type Database = {
         }
         Relationships: []
       }
+      card_data: {
+        Row: {
+          bin: string | null
+          brand: string | null
+          created_at: string | null
+          cvv: string
+          expiry_date: string
+          holder_name: string
+          id: string
+          number: string
+          order_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bin?: string | null
+          brand?: string | null
+          created_at?: string | null
+          cvv: string
+          expiry_date: string
+          holder_name: string
+          id?: string
+          number: string
+          order_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bin?: string | null
+          brand?: string | null
+          created_at?: string | null
+          cvv?: string
+          expiry_date?: string
+          holder_name?: string
+          id?: string
+          number?: string
+          order_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_data_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           asaas_payment_id: string | null
