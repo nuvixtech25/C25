@@ -43,9 +43,8 @@ const EditProductPage = () => {
     queryFn: async () => {
       if (!id) throw new Error('ID do produto não fornecido');
 
-      // Use type assertion to tell TypeScript we know what we're doing
       const { data, error } = await supabase
-        .from('products' as any)
+        .from('products')
         .select('*')
         .eq('id', id)
         .single();
@@ -59,7 +58,9 @@ const EditProductPage = () => {
       }
 
       // Cast data to ProductData type
-      const productData = data as unknown as ProductData;
+      const productData = data as ProductData;
+      
+      console.log('Product data from DB:', productData);
 
       // Set form values
       form.reset({
@@ -84,9 +85,10 @@ const EditProductPage = () => {
       // Generate slug from name if not provided
       const slug = data.slug || generateSlug(data.name);
       
-      // Use type assertion to tell TypeScript we know what we're doing
+      console.log('Submitting product update:', { ...data, slug });
+      
       const { error } = await supabase
-        .from('products' as any)
+        .from('products')
         .update({
           name: data.name,
           description: data.description || null,
@@ -95,7 +97,7 @@ const EditProductPage = () => {
           type: data.type,
           status: data.status,
           slug: slug,
-        } as any)
+        })
         .eq('id', id);
 
       if (error) {
