@@ -21,6 +21,7 @@ import NewProductPage from '@/pages/admin/products/new';
 import EditProductPage from '@/pages/admin/products/edit';
 import AdminTools from '@/pages/admin/AdminTools';
 import AsaasSettings from '@/pages/admin/AsaasSettings';
+import WebhookSimulator from '@/pages/admin/WebhookSimulator';
 
 import { Toaster } from "@/components/ui/toaster";
 
@@ -106,6 +107,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <AdminLayout>
           <AsaasSettings />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/webhook-simulator",
+    element: (
+      <ProtectedRoute requireAdmin={false}>
+        <AdminLayout>
+          <WebhookSimulator />
         </AdminLayout>
       </ProtectedRoute>
     ),

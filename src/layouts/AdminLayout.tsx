@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, CreditCard, Settings, CreditCard as AsaasIcon } from 'lucide-react';
+import { LogOut, LayoutDashboard, CreditCard, Settings, CreditCard as AsaasIcon, Webhook } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
@@ -71,6 +71,15 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 >
                   <AsaasIcon className="h-4 w-4" />
                   <span>Configurações Asaas</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin/webhook-simulator"
+                  className="flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors"
+                >
+                  <Webhook className="h-4 w-4" />
+                  <span>Simulador de Webhook</span>
                 </Link>
               </li>
               <li>
