@@ -48,7 +48,7 @@ export const useWebhookSimulator = () => {
       // Using relative path which works in both Vite dev server and production
       const webhookEndpoint = '/api/webhook-simulator';
       
-      console.log(`Using webhook endpoint: ${webhookEndpoint}`);
+      console.log(`Using webhook endpoint: ${webhookEndpoint} for payment ID: ${asaasPaymentId}`);
       
       // Send the simulated webhook
       const response = await fetch(webhookEndpoint, {
@@ -70,7 +70,8 @@ export const useWebhookSimulator = () => {
         throw new Error(`Erro ao simular webhook: ${errorText}`);
       }
 
-      await response.json();
+      const result = await response.json();
+      console.log('Webhook simulation result:', result);
       
       toast({
         title: 'Webhook simulado com sucesso',
@@ -78,7 +79,7 @@ export const useWebhookSimulator = () => {
       });
       
       // Update the orders list
-      refetch();
+      await refetch();
     } catch (error) {
       console.error('Erro ao simular webhook:', error);
       toast({

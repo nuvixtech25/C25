@@ -11,14 +11,18 @@ export async function handler(req: Request) {
     const { supabase } = await import('../../integrations/supabase/client');
     
     if (payload.event && payload.payment) {
+      // Log payload details for debugging
+      console.log(`Processing webhook for payment ${payload.payment.id} with status ${payload.payment.status}`);
+      
       // Update the status of the order in Supabase
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('orders')
         .update({ 
           status: payload.payment.status,
           updated_at: new Date().toISOString()
         })
-        .eq('asaas_payment_id', payload.payment.id);
+        .eq('asaas_payment_id', payload.payment.id)
+        .select();
 
       if (error) {
         console.error('Error updating order:', error);
@@ -34,6 +38,8 @@ export async function handler(req: Request) {
         );
       }
 
+      console.log('Successfully updated order:', data);
+
       // Log the webhook event
       await supabase
         .from('asaas_webhook_logs')
@@ -45,7 +51,10 @@ export async function handler(req: Request) {
         });
 
       return new Response(
-        JSON.stringify({ message: 'Webhook processed successfully' }),
+        JSON.stringify({ 
+          message: 'Webhook processed successfully',
+          updatedOrder: data
+        }),
         {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
