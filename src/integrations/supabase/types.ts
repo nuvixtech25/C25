@@ -9,7 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      pix_config: {
+        Row: {
+          beneficiario: string
+          chavepix: string
+          copiaecola: string
+          id: number
+          mensagemopcional: string | null
+          tipochave: string
+          updated_at: string | null
+        }
+        Insert: {
+          beneficiario: string
+          chavepix: string
+          copiaecola: string
+          id?: number
+          mensagemopcional?: string | null
+          tipochave: string
+          updated_at?: string | null
+        }
+        Update: {
+          beneficiario?: string
+          chavepix?: string
+          copiaecola?: string
+          id?: number
+          mensagemopcional?: string | null
+          tipochave?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
