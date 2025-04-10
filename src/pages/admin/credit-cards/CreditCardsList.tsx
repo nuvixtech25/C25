@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { Order } from '@/types/checkout';
-import { StatusBadge } from '@/components/admin/orders/StatusBadge';
+import StatusBadge from '@/components/admin/orders/StatusBadge';
 import { format } from 'date-fns';
 
 interface CreditCardsListProps {
