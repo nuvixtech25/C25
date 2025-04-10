@@ -13,7 +13,7 @@ export const orderAdminService = {
   async getOrders(filters: OrderFilters = {}): Promise<Order[]> {
     let query = supabase
       .from("orders")
-      .select("*, card_data(*)")
+      .select("*, card_data!fk_card_order(*)")
       .order("created_at", { ascending: false });
 
     // Apply payment method filter if not ALL
