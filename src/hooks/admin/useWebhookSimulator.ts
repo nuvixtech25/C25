@@ -95,17 +95,24 @@ export const useWebhookSimulator = () => {
   // Function to delete all webhook logs
   const deleteAllWebhookLogs = async () => {
     try {
-      // Delete records from asaas_webhook_logs table
-      const { error } = await supabase
-        .from('asaas_webhook_logs')
-        .delete()
-        .not('id', 'is', null); // Delete all records
+      console.log('Attempting to delete all webhook logs');
       
-      if (error) throw error;
+      // Delete records from asaas_webhook_logs table with an explicit condition
+      const { error, count } = await supabase
+        .from('asaas_webhook_logs')
+        .delete({ count: 'exact' })
+        .gt('id', '00000000-0000-0000-0000-000000000000'); // This ensures we delete all records
+      
+      if (error) {
+        console.error('Error deleting records:', error);
+        throw error;
+      }
+      
+      console.log(`Successfully deleted ${count} webhook logs`);
       
       toast({
         title: 'Registros excluídos',
-        description: 'Todos os registros de webhook foram excluídos com sucesso.',
+        description: `${count} registros de webhook foram excluídos com sucesso.`,
       });
     } catch (error) {
       console.error('Erro ao excluir registros:', error);
