@@ -1,5 +1,6 @@
 
-import { createClient } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 
 // Define the PixConfig type based on the database schema
 export interface PixConfig {
@@ -13,8 +14,6 @@ export interface PixConfig {
 
 // Function to fetch PIX configuration from Supabase
 export const fetchPixConfig = async (): Promise<PixConfig> => {
-  const supabase = createClient();
-  
   const { data, error } = await supabase
     .from('pix_config')
     .select('*')
@@ -30,8 +29,6 @@ export const fetchPixConfig = async (): Promise<PixConfig> => {
 
 // Function to update PIX configuration in Supabase
 export const updatePixConfig = async (config: PixConfig): Promise<PixConfig> => {
-  const supabase = createClient();
-  
   const { data, error } = await supabase
     .from('pix_config')
     .update({
