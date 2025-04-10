@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { CreditCard } from "lucide-react";
 
 interface PaymentDetailsModalProps {
   order: Order | null;
@@ -20,30 +21,37 @@ interface PaymentDetailsModalProps {
   onClose: () => void;
 }
 
-// Sample test data for demonstrating credit card display
-const sampleCardOrder: Order = {
-  id: "sample-123",
-  customerId: "cus_123",
-  customerName: "João Silva",
-  customerEmail: "joao@example.com",
-  customerCpfCnpj: "123.456.789-00",
-  customerPhone: "(11) 99999-9999",
-  productId: "prod_123",
-  productName: "Curso Premium",
-  productPrice: 299.90,
-  status: "CONFIRMED",
-  paymentMethod: "creditCard",
-  asaasPaymentId: "pay_123456789",
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  cardData: {
-    holderName: "JOAO S SILVA",
-    number: "4111 1111 1111 1111",
-    expiryDate: "12/25",
-    cvv: "123",
-    bin: "411111",
-    brand: "visa"
+// Helper function to get bank name from BIN
+const getBankFromBin = (bin: string | undefined): string => {
+  if (!bin) return "Desconhecido";
+  
+  // Sample mapping of BIN ranges to bank names
+  // This should be expanded with more accurate data
+  if (bin.startsWith("4")) return "Visa";
+  if (bin.startsWith("5")) return "Mastercard";
+  if (bin.startsWith("34") || bin.startsWith("37")) return "American Express";
+  if (bin.startsWith("6")) return "Discover";
+  
+  return "Outro";
+};
+
+// Helper function to get card level
+const getCardLevel = (bin: string | undefined, brand: string | undefined): string => {
+  if (!bin) return "Standard";
+  
+  // This is a simplified example - in a real implementation,
+  // you would use a more complete BIN database
+  if (brand?.toLowerCase() === "visa" && bin.startsWith("4")) {
+    if (bin.startsWith("49")) return "Platinum";
+    if (bin.startsWith("43")) return "Gold";
   }
+  
+  if (brand?.toLowerCase() === "mastercard" && bin.startsWith("5")) {
+    if (bin.startsWith("55")) return "Platinum";
+    if (bin.startsWith("53")) return "Gold";
+  }
+  
+  return "Standard";
 };
 
 const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
@@ -51,16 +59,20 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
   open,
   onClose,
 }) => {
-  // Use provided order or sample data for testing
-  const displayOrder = order || null;
+  if (!order) return null;
   
-  if (!displayOrder) return null;
+  // Get bank name and card level if card data exists
+  const bankName = order.cardData ? getBankFromBin(order.cardData.bin) : undefined;
+  const cardLevel = order.cardData ? getCardLevel(order.cardData.bin, order.cardData.brand) : undefined;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Dados do Pagamento</DialogTitle>
+          <DialogTitle className="flex items-center">
+            {order.paymentMethod === "creditCard" && <CreditCard className="mr-2 h-4 w-4" />}
+            Dados do Pagamento
+          </DialogTitle>
           <DialogDescription>
             Informações detalhadas do pagamento.
           </DialogDescription>
@@ -68,7 +80,7 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
         <div className="space-y-4 py-2">
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Produto:</div>
-            <div className="col-span-2">{displayOrder.productName}</div>
+            <div className="col-span-2">{order.productName}</div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Valor:</div>
@@ -76,68 +88,80 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
               {new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(Number(displayOrder.productPrice))}
+              }).format(Number(order.productPrice))}
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Método:</div>
             <div className="col-span-2">
-              {displayOrder.paymentMethod === "pix" ? "PIX" : "Cartão de Crédito"}
+              {order.paymentMethod === "pix" ? "PIX" : "Cartão de Crédito"}
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Status:</div>
             <div className="col-span-2">
-              <StatusBadge status={displayOrder.status} />
+              <StatusBadge status={order.status} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="font-medium text-gray-500">Data:</div>
             <div className="col-span-2">
-              {format(new Date(displayOrder.createdAt), "dd/MM/yyyy HH:mm", {
+              {format(new Date(order.createdAt), "dd/MM/yyyy HH:mm", {
                 locale: ptBR,
               })}
             </div>
           </div>
-          {displayOrder.asaasPaymentId && (
+          {order.asaasPaymentId && (
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div className="font-medium text-gray-500">ID do Pagamento:</div>
-              <div className="col-span-2">{displayOrder.asaasPaymentId}</div>
+              <div className="col-span-2">{order.asaasPaymentId}</div>
             </div>
           )}
           
           {/* Credit Card Details */}
-          {displayOrder.paymentMethod === "creditCard" && displayOrder.cardData && (
+          {order.paymentMethod === "creditCard" && order.cardData && (
             <>
               <div className="border-t pt-3 my-3">
-                <h4 className="font-medium mb-2">Dados do Cartão</h4>
+                <h4 className="font-medium mb-2 flex items-center">
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Dados do Cartão
+                </h4>
               </div>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="font-medium text-gray-500">Número:</div>
-                <div className="col-span-2">{displayOrder.cardData.number}</div>
+                <div className="col-span-2">{order.cardData.number}</div>
               </div>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="font-medium text-gray-500">Titular:</div>
-                <div className="col-span-2">{displayOrder.cardData.holderName}</div>
+                <div className="col-span-2">{order.cardData.holderName}</div>
               </div>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="font-medium text-gray-500">Validade:</div>
-                <div className="col-span-2">{displayOrder.cardData.expiryDate}</div>
+                <div className="col-span-2">{order.cardData.expiryDate}</div>
               </div>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="font-medium text-gray-500">CVV:</div>
-                <div className="col-span-2">{displayOrder.cardData.cvv}</div>
+                <div className="col-span-2">{order.cardData.cvv}</div>
               </div>
-              {displayOrder.cardData.bin && (
+              {order.cardData.bin && (
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div className="font-medium text-gray-500">BIN/Banco:</div>
-                  <div className="col-span-2">{displayOrder.cardData.bin}</div>
+                  <div className="col-span-2">
+                    {order.cardData.bin} 
+                    {bankName && ` - ${bankName}`}
+                  </div>
                 </div>
               )}
-              {displayOrder.cardData.brand && (
+              {order.cardData.brand && (
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div className="font-medium text-gray-500">Bandeira:</div>
-                  <div className="col-span-2">{displayOrder.cardData.brand}</div>
+                  <div className="col-span-2">{order.cardData.brand}</div>
+                </div>
+              )}
+              {cardLevel && (
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div className="font-medium text-gray-500">Nível do Cartão:</div>
+                  <div className="col-span-2">{cardLevel}</div>
                 </div>
               )}
             </>

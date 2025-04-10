@@ -8,7 +8,7 @@ import { Order } from "@/types/checkout";
 const TestPaymentModal: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   
-  // Sample credit card order data
+  // Sample credit card order data with enhanced BIN information
   const sampleOrder: Order = {
     id: "sample-123",
     customerId: "cus_123",
