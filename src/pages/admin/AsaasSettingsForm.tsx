@@ -18,10 +18,10 @@ interface AsaasSettingsFormProps {
 }
 
 const MANUAL_REDIRECT_OPTIONS = [
-  { value: '/payment-success', label: 'Payment Success' },
-  { value: '/payment-pending', label: 'Payment Pending' },
-  { value: '/payment-failed', label: 'Payment Failed' },
-  { value: '/thank-you-card', label: 'Thank You (Card)' },
+  { value: '/payment-success', label: '✅ Pagamento Concluído' },
+  { value: '/payment-pending', label: '⏳ Pagamento Pendente' },
+  { value: '/payment-failed', label: '❌ Pagamento Falhou' },
+  { value: '/thank-you-card', label: '🙏 Agradecimento (Cartão)' },
 ] as const;
 
 const AsaasSettingsForm: React.FC<AsaasSettingsFormProps> = ({
