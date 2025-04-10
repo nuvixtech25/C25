@@ -8,7 +8,7 @@ import {
   PaymentModal,
   StatusModal,
   DeleteConfirmModal,
-  TestPaymentModal,
+  // Remove a importação de TestPaymentModal
 } from "@/components/admin/orders/OrderModals";
 import { useFilteredOrders } from "@/hooks/admin/useFilteredOrders";
 
@@ -67,8 +67,8 @@ const OrdersPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Test Component - Add for demo purposes */}
-      <TestPaymentModal />
+      {/* Remover esta linha */}
+      {/* <TestPaymentModal /> */}
 
       <OrdersTabs 
         paymentMethod={paymentMethod}
