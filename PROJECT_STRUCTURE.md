@@ -1,4 +1,3 @@
-
 # Estrutura de Diretórios do Projeto Checkout Seguro
 
 ## 📁 src/
@@ -70,6 +69,7 @@ Custom React hooks for shared functionality.
 - **useCheckoutState.ts** - Hook for managing checkout state
 - **usePixPaymentStatus.ts** - Hook for PIX payment status polling
 - **usePaymentPolling.ts** - Hook for general payment status polling
+- **usePixelEvents.ts** - Hook for initializing and tracking pixel events
 
 #### 📁 admin/
 Admin-specific hooks.
@@ -94,6 +94,10 @@ Layout components that wrap pages.
 Utility library functions.
 
 - **utils.ts** - General utility functions
+
+#### 📁 pixels/
+- **googlePixel.ts** - Utility for Google Ads pixel tracking
+- **facebookPixel.ts** - Utility for Facebook Pixel tracking
 
 ### 📁 mocks/
 Mock implementations for local development.
@@ -120,6 +124,9 @@ Admin section pages.
 - **AsaasSettings.tsx** - Asaas integration settings
 - **Login.tsx** - Admin login page
 - **PixSettings.tsx** - PIX settings page
+- **PixelSettings.tsx** - Page for configuring tracking pixels
+- **PixelSettingsForm.tsx** - Form component for pixel configuration
+- **PixelSettingsSchema.ts** - Zod schema for pixel configuration validation
 - **WebhookSimulator.tsx** - Page for simulating webhooks
 
 ##### 📁 products/
@@ -147,6 +154,7 @@ Services for external API communication.
 - **asaasConfigService.ts** - Service for Asaas configuration
 - **asaasService.ts** - Handles Asaas integration with toggle between mock and Netlify functions
 - **pixConfigService.ts** - Service for PIX configuration
+- **pixelConfigService.ts** - Service for managing pixel configuration in Supabase
 - **productAdminService.ts** - Service for product administration
 - **productService.ts** - Service for product data
 
@@ -206,6 +214,7 @@ Supabase configuration and database setup.
      - `asaas_config`: Contains configuration settings including mode toggle
      - `products`: Product catalog and details
      - `pix_config`: PIX-specific configuration settings
+     - `pixel_config`: Contains tracking pixel configuration settings
 
 4. **Refactored Components**:
    - **PixPayment Components**:
@@ -234,6 +243,11 @@ Supabase configuration and database setup.
      - Manages the entire checkout process state
      - Handles form submission and validation
      - Orchestrates transitions between checkout steps
+   
+   - **`usePixelEvents.ts`**:
+     - Initializes tracking pixels based on configuration
+     - Handles page view and conversion tracking
+     - Supports conditional tracking based on environment
 
 6. **Admin Section**:
    - **Product Management**:
@@ -244,6 +258,7 @@ Supabase configuration and database setup.
    - **Configuration Settings**:
      - Asaas API configuration (sandbox/production)
      - PIX payment settings
+     - Pixel tracking configuration (Google Ads and Facebook)
      - Toggle between mock and Netlify functions mode
    
    - **Webhook Simulator**:
@@ -251,13 +266,31 @@ Supabase configuration and database setup.
      - Useful for testing the payment flow without actual payments
      - Updates database directly to test status transitions
 
-7. **Utility Files, Hooks, Types**:
+7. **Pixel Tracking Features**:
+   - **Independent Pixel Configuration**:
+     - Separate toggles for Google Ads and Facebook Pixel
+     - Optional configuration for each tracking platform
+     - Granular control over tracking activation
+   
+   - **Pixel Configuration Storage**:
+     - Stored in Supabase `pixel_config` table
+     - Supports storing:
+       - Google Ads ID and Conversion Label
+       - Facebook Pixel ID and Access Token
+       - Separate enable/disable flags for each platform
+   
+   - **Tracking Event Handling**:
+     - Conditional pixel initialization based on configuration
+     - Page view and conversion tracking
+     - Supports environment-specific tracking (production only)
+
+8. **Utility Files, Hooks, Types**:
    - **Utils**: Centralized error handling, formatting functions
    - **Hooks**: Shared functionality extracted for reuse
    - **Types**: Strong TypeScript typing throughout the application
    - **Layouts**: Consistent layout patterns for different sections
 
-8. **Modular Organization and Best Practices**:
+9. **Modular Organization and Best Practices**:
    - **Separation of Concerns**: Each component and function has a single responsibility
    - **Component Composition**: Complex UI built from smaller, reusable pieces
    - **DRY Principle**: Shared logic extracted to utilities and hooks
@@ -268,4 +301,3 @@ Supabase configuration and database setup.
    - **Environment Flexibility**: Works in both development and production
 
 This structure demonstrates a well-organized React application with clear separation of concerns, modular components, and support for both development and production environments.
-
