@@ -68,9 +68,13 @@ export const generatePixPayment = async (billingData: BillingData): Promise<PixP
 
     console.log("Payment response data:", data);
 
+    // Extract the payment ID correctly from the response
+    const paymentId = data.payment?.id || data.paymentId || 'unknown_payment_id';
+    console.log("Extracted payment ID:", paymentId);
+
     // Map response to a consistent format regardless of source (mock or Netlify function)
     return {
-      paymentId: data.paymentId || data.payment?.id || 'unknown_payment_id',
+      paymentId: paymentId,
       qrCode: data.qrCode || data.pixQrCode?.payload || '',
       qrCodeImage: data.qrCodeImage || data.qrCodeImageUrl || data.pixQrCode?.encodedImage || '',
       copyPasteKey: data.copyPasteKey || data.qrCode || data.pixQrCode?.payload || '',

@@ -2,11 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BillingData, PixPaymentData, Order, PaymentStatus } from '@/types/checkout';
-import { generatePixPayment, checkPaymentStatus } from '@/services/asaasService';
+import { generatePixPayment } from '@/services/asaasService';
 import { PixPayment } from '@/components/checkout/payment-methods/PixPayment';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const PaymentPage = () => {
   const location = useLocation();
@@ -41,6 +42,23 @@ const PaymentPage = () => {
         console.log("Generating PIX payment for order:", orderData.id);
         const data = await generatePixPayment(billingData);
         console.log("Payment data received:", data);
+        
+        // Update the order with the Asaas payment ID if it was generated
+        if (data.paymentId && orderData.id) {
+          const { error: updateError } = await supabase
+            .from('orders')
+            .update({ asaas_payment_id: data.paymentId })
+            .eq('id', orderData.id);
+            
+          if (updateError) {
+            console.error('Error updating order with Asaas payment ID:', updateError);
+          } else {
+            console.log('Order updated with Asaas payment ID:', data.paymentId);
+            // Update the local order state with the payment ID
+            setOrder(prev => prev ? { ...prev, asaasPaymentId: data.paymentId } : null);
+          }
+        }
+        
         setPaymentData(data);
       } catch (error) {
         console.error('Error generating PIX payment:', error);
