@@ -1,5 +1,4 @@
 
-import { mockCheckPaymentStatusHandler } from '../../mocks/handlers';
 import { supabase } from '../../integrations/supabase/client';
 
 export async function handler(req: Request) {
@@ -11,40 +10,78 @@ export async function handler(req: Request) {
   
   console.log(`Checking payment status for ID: ${paymentId}`);
   
-  // Check if we have the payment status in the database (this would happen after webhook call)
-  if (paymentId) {
-    try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('status')
-        .eq('asaas_payment_id', paymentId)
-        .maybeSingle();
-      
-      if (!error && data) {
-        console.log(`Found payment status in database: ${data.status}`);
-        
-        // Create a proper JSON response with the status from database
-        const response = new Response(
-          JSON.stringify({
-            status: data.status,
-            paymentId: paymentId,
-            updatedAt: new Date().toISOString()
-          }),
-          {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
-          }
-        );
-        
-        console.log('Sending payment status response:', await response.clone().text());
-        return response;
+  if (!paymentId) {
+    return new Response(
+      JSON.stringify({
+        error: 'Missing payment ID',
+        status: 'ERROR'
+      }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
       }
-    } catch (err) {
-      console.error('Error fetching payment status from database:', err);
-    }
+    );
   }
   
-  // If no status in database or error, return default PENDING status
+  try {
+    // First check orders table for the most up-to-date status
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .select('status, updated_at')
+      .eq('asaas_payment_id', paymentId)
+      .maybeSingle();
+    
+    if (!orderError && orderData) {
+      console.log(`Found payment status in orders table: ${orderData.status}`);
+      
+      // Return status from orders table
+      const response = new Response(
+        JSON.stringify({
+          status: orderData.status,
+          paymentId: paymentId,
+          updatedAt: orderData.updated_at
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      
+      console.log('Sending payment status response:', await response.clone().text());
+      return response;
+    }
+    
+    // If not found in orders, try the asaas_payments table
+    const { data: paymentData, error: paymentError } = await supabase
+      .from('asaas_payments')
+      .select('status, updated_at')
+      .eq('payment_id', paymentId)
+      .maybeSingle();
+    
+    if (!paymentError && paymentData) {
+      console.log(`Found payment status in asaas_payments table: ${paymentData.status}`);
+      
+      // Return status from asaas_payments table
+      const response = new Response(
+        JSON.stringify({
+          status: paymentData.status,
+          paymentId: paymentId,
+          updatedAt: paymentData.updated_at
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+      
+      console.log('Sending payment status response:', await response.clone().text());
+      return response;
+    }
+  } catch (err) {
+    console.error('Error fetching payment status from database:', err);
+  }
+  
+  // If no status found in either table or error occurred, return default PENDING status
   const response = new Response(
     JSON.stringify({
       status: 'PENDING',

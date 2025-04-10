@@ -14,22 +14,26 @@ export async function handler(req: Request) {
       // Log payload details for debugging
       console.log(`Processing webhook for payment ${payload.payment.id} with status ${payload.payment.status}`);
       
-      // Update the status of the order in Supabase
-      const { data, error } = await supabase
+      const paymentId = payload.payment.id;
+      const newStatus = payload.payment.status;
+      const updateTimestamp = new Date().toISOString();
+      
+      // 1. Update order status
+      const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .update({ 
-          status: payload.payment.status,
-          updated_at: new Date().toISOString()
+          status: newStatus,
+          updated_at: updateTimestamp
         })
-        .eq('asaas_payment_id', payload.payment.id)
+        .eq('asaas_payment_id', paymentId)
         .select();
 
-      if (error) {
-        console.error('Error updating order:', error);
+      if (orderError) {
+        console.error('Error updating order:', orderError);
         return new Response(
           JSON.stringify({ 
             message: 'Error updating order', 
-            error: error.message 
+            error: orderError.message 
           }),
           {
             status: 500,
@@ -38,22 +42,38 @@ export async function handler(req: Request) {
         );
       }
 
-      console.log('Successfully updated order:', data);
+      console.log('Successfully updated order:', orderData);
+      
+      // 2. Update asaas_payments table if it exists
+      const { error: paymentsError } = await supabase
+        .from('asaas_payments')
+        .update({ 
+          status: newStatus,
+          updated_at: updateTimestamp
+        })
+        .eq('payment_id', paymentId);
+        
+      if (paymentsError) {
+        console.log('Note: Could not update asaas_payments table:', paymentsError.message);
+      } else {
+        console.log('Successfully updated asaas_payments table');
+      }
 
-      // Log the webhook event
+      // 3. Log the webhook event
       await supabase
         .from('asaas_webhook_logs')
         .insert({
           event_type: payload.event,
-          payment_id: payload.payment.id,
-          status: payload.payment.status,
+          payment_id: paymentId,
+          status: newStatus,
           payload: payload
         });
 
       return new Response(
         JSON.stringify({ 
           message: 'Webhook processed successfully',
-          updatedOrder: data
+          updatedOrder: orderData,
+          timestamp: updateTimestamp
         }),
         {
           status: 200,
