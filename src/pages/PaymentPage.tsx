@@ -15,6 +15,7 @@ const PaymentPage = () => {
   const [loading, setLoading] = useState(true);
   const [paymentData, setPaymentData] = useState<PixPaymentData | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
     const billingData = location.state?.billingData as BillingData;
@@ -34,17 +35,21 @@ const PaymentPage = () => {
     
     const fetchPixPayment = async () => {
       setLoading(true);
+      setError(null);
+      
       try {
+        console.log("Generating PIX payment for order:", orderData.id);
         const data = await generatePixPayment(billingData);
+        console.log("Payment data received:", data);
         setPaymentData(data);
       } catch (error) {
-        console.error('Erro ao gerar pagamento PIX:', error);
+        console.error('Error generating PIX payment:', error);
+        setError(error.message || "Failed to generate payment");
         toast({
           title: "Erro ao gerar pagamento",
           description: "Não foi possível gerar o pagamento PIX. Por favor, tente novamente.",
           variant: "destructive",
         });
-        navigate('/');
       } finally {
         setLoading(false);
       }
@@ -73,6 +78,17 @@ const PaymentPage = () => {
             <Loader2 className="h-10 w-10 animate-spin text-asaas-primary mx-auto mb-4" />
             <p className="text-muted-foreground">Gerando pagamento PIX...</p>
           </div>
+        </div>
+      ) : error ? (
+        <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg text-center">
+          <p className="text-red-500 mb-2">Erro ao gerar pagamento</p>
+          <p className="text-sm text-muted-foreground mb-4">{error}</p>
+          <Button 
+            onClick={() => navigate('/')} 
+            className="mt-2"
+          >
+            Tentar novamente
+          </Button>
         </div>
       ) : (paymentData && order) ? (
         <PixPayment 

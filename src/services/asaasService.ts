@@ -2,83 +2,120 @@
 import { BillingData, PaymentStatus, PixPaymentData } from "@/types/checkout";
 import { supabase } from "@/integrations/supabase/client";
 
-const ASAAS_API_URL = "https://api.asaas.com/v3";
-
-// Gerar pagamento PIX através da nossa função Netlify ou simulação local
+/**
+ * Generate a PIX payment through Netlify function or local mock
+ */
 export const generatePixPayment = async (billingData: BillingData): Promise<PixPaymentData> => {
   try {
-    // Primeiro, buscar as configurações do Asaas
-    const { data: config } = await supabase
+    // First, fetch Asaas configuration to determine which endpoint to use
+    const { data: config, error: configError } = await supabase
       .from('asaas_config')
-      .select('use_netlify_functions')
+      .select('use_netlify_functions, sandbox')
       .maybeSingle();
+      
+    if (configError) {
+      console.error("Error fetching Asaas config:", configError);
+      throw new Error("Failed to fetch Asaas configuration");
+    }
 
     const useNetlifyFunctions = config?.use_netlify_functions ?? false;
+    console.log(`Using Netlify functions: ${useNetlifyFunctions}`);
 
-    // Escolher o endpoint com base na configuração
+    // Determine which endpoint to use based on configuration
     const endpoint = useNetlifyFunctions 
       ? '/.netlify/functions/create-asaas-customer' 
       : '/api/mock-asaas-payment';
 
+    console.log(`Using payment endpoint: ${endpoint}`);
+
+    // Prepare the payment request payload
+    const paymentPayload = {
+      name: billingData.customer.name,
+      cpfCnpj: billingData.customer.cpfCnpj,
+      email: billingData.customer.email,
+      phone: billingData.customer.phone,
+      orderId: billingData.orderId,
+      value: billingData.value,
+      description: billingData.description
+    };
+
+    // Make the API request
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        name: billingData.customer.name,
-        cpfCnpj: billingData.customer.cpfCnpj,
-        email: billingData.customer.email,
-        phone: billingData.customer.phone,
-        orderId: billingData.orderId,
-        value: billingData.value,
-        description: billingData.description
-      })
+      body: JSON.stringify(paymentPayload)
     });
 
-    // Verificar se a resposta é um JSON válido
+    // Check if the response is successful
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Resposta de erro bruta:", errorText);
-      throw new Error(`Erro ao gerar pagamento PIX: ${errorText.substring(0, 200)}`);
+      console.error("Error response from payment API:", errorText);
+      throw new Error(`Error generating PIX payment: ${errorText.substring(0, 200)}`);
     }
 
+    // Parse the response
     const responseText = await response.text();
     let data;
     
     try {
       data = JSON.parse(responseText);
     } catch (error) {
-      console.error("Erro ao parsear resposta como JSON:", responseText);
-      throw new Error("Resposta inválida do servidor. Não foi possível processar o pagamento.");
+      console.error("Error parsing response as JSON:", responseText);
+      throw new Error("Invalid response from server. Could not process payment.");
     }
 
-    // Formatar os dados para o formato esperado pelo componente de pagamento
+    console.log("Payment response data:", data);
+
+    // Map response to a consistent format regardless of source (mock or Netlify function)
     return {
-      paymentId: data.paymentId || 'mock_payment_123',
-      qrCode: data.qrCode || '',
-      qrCodeImage: data.qrCodeImageUrl || 'https://via.placeholder.com/300x300.png?text=QR+PIX',
-      copyPasteKey: data.qrCode || '',
-      expirationDate: new Date(Date.now() + 30 * 60000).toISOString(), // 30 minutes from now
-      status: 'PENDING' as PaymentStatus,
+      paymentId: data.paymentId || data.payment?.id || 'unknown_payment_id',
+      qrCode: data.qrCode || data.pixQrCode?.payload || '',
+      qrCodeImage: data.qrCodeImage || data.qrCodeImageUrl || data.pixQrCode?.encodedImage || '',
+      copyPasteKey: data.copyPasteKey || data.qrCode || data.pixQrCode?.payload || '',
+      expirationDate: data.expirationDate || data.pixQrCode?.expirationDate || new Date(Date.now() + 30 * 60000).toISOString(),
+      status: (data.status || 'PENDING') as PaymentStatus,
       value: billingData.value,
       description: billingData.description
     };
   } catch (error) {
-    console.error("Erro ao gerar pagamento PIX:", error);
-    throw new Error("Falha ao gerar pagamento PIX. Por favor, tente novamente.");
+    console.error("Error generating PIX payment:", error);
+    throw new Error("Failed to generate PIX payment. Please try again.");
   }
 };
 
-// Verificar status do pagamento no Asaas
+/**
+ * Check the status of an Asaas payment
+ */
 export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStatus> => {
   try {
-    const response = await fetch(`/.netlify/functions/check-payment-status?paymentId=${paymentId}`);
+    // Get Asaas configuration to determine which endpoint to use
+    const { data: config, error: configError } = await supabase
+      .from('asaas_config')
+      .select('use_netlify_functions')
+      .maybeSingle();
+      
+    if (configError) {
+      console.error("Error fetching Asaas config:", configError);
+      throw new Error("Failed to fetch Asaas configuration");
+    }
+
+    const useNetlifyFunctions = config?.use_netlify_functions ?? false;
+    
+    // Choose endpoint based on configuration
+    const endpoint = useNetlifyFunctions
+      ? `/.netlify/functions/check-payment-status?paymentId=${paymentId}`
+      : `/api/check-payment-status?paymentId=${paymentId}`;
+    
+    console.log(`Checking payment status at: ${endpoint}`);
+    
+    const response = await fetch(endpoint);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Resposta de erro bruta:", errorText);
-      throw new Error(`Erro ao verificar status do pagamento: ${errorText.substring(0, 200)}`);
+      console.error("Error response from status API:", errorText);
+      throw new Error(`Error checking payment status: ${errorText.substring(0, 200)}`);
     }
     
     const responseText = await response.text();
@@ -87,18 +124,18 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     try {
       data = JSON.parse(responseText);
     } catch (error) {
-      console.error("Erro ao parsear resposta como JSON:", responseText);
-      throw new Error("Resposta inválida do servidor. Não foi possível verificar o status do pagamento.");
+      console.error("Error parsing response as JSON:", responseText);
+      throw new Error("Invalid response from server. Could not check payment status.");
     }
     
     if (!data.status) {
-      console.error("Resposta incompleta:", data);
-      throw new Error("Dados de status incompletos na resposta do servidor.");
+      console.error("Incomplete response:", data);
+      throw new Error("Incomplete status data in server response.");
     }
     
     return data.status as PaymentStatus;
   } catch (error) {
-    console.error("Erro ao verificar status do pagamento:", error);
-    throw new Error("Falha ao verificar status do pagamento. Por favor, tente novamente.");
+    console.error("Error checking payment status:", error);
+    throw new Error("Failed to check payment status. Please try again.");
   }
 };
