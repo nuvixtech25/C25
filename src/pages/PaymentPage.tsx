@@ -8,6 +8,7 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { handleApiError } from '@/utils/errorHandling';
 
 const PaymentPage = () => {
   const location = useLocation();
@@ -61,11 +62,14 @@ const PaymentPage = () => {
         
         setPaymentData(data);
       } catch (error) {
-        console.error('Error generating PIX payment:', error);
-        setError(error.message || "Failed to generate payment");
+        const errorMessage = handleApiError(error, {
+          defaultMessage: "Não foi possível gerar o pagamento PIX. Por favor, tente novamente."
+        });
+        setError(errorMessage);
+        
         toast({
           title: "Erro ao gerar pagamento",
-          description: "Não foi possível gerar o pagamento PIX. Por favor, tente novamente.",
+          description: errorMessage,
           variant: "destructive",
         });
       } finally {

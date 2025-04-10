@@ -1,39 +1,26 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { BillingData, CheckoutCustomization, CustomerData, Order, PaymentMethod, PaymentStatus, Product } from '@/types/checkout';
+import { CustomerData, PaymentMethod } from '@/types/checkout';
 import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
-import { PersonalInfoSection } from '@/components/checkout/PersonalInfoSection';
-import { TestimonialSection } from '@/components/checkout/TestimonialSection';
-import { PaymentMethodSection } from '@/components/checkout/PaymentMethodSection';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { CountdownBanner } from '@/components/CountdownBanner';
 import { fetchProductBySlug } from '@/services/productService';
 import { Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-
-// Mock customization data - In a real app, this would come from Supabase
-const mockCustomization: CheckoutCustomization = {
-  buttonColor: '#6E59A5', // Default Asaas primary color
-  buttonText: 'Finalizar Compra',
-  headingColor: '#6E59A5',
-  bannerImageUrl: null,
-  topMessage: 'Oferta por tempo limitado!',
-  countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24h from now
-  isDigitalProduct: true
-};
+import { useCheckoutCustomization } from '@/hooks/useCheckoutCustomization';
+import { useCheckoutOrder } from '@/hooks/useCheckoutOrder';
+import { CheckoutFormContainer } from '@/components/checkout/CheckoutFormContainer';
+import { handleApiError } from '@/utils/errorHandling';
 
 const Checkout = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('creditCard');
-  const [customization] = useState<CheckoutCustomization>(mockCustomization);
   
   // Fetch product data by slug
   const { data: product, isLoading, error } = useQuery({
@@ -43,8 +30,14 @@ const Checkout = () => {
     refetchOnWindowFocus: false,
   });
 
+  // Get checkout customization based on product
+  const customization = useCheckoutCustomization(product);
+  
+  // Use checkout order hook
+  const { isSubmitting, setIsSubmitting, createOrder, prepareBillingData } = useCheckoutOrder();
+
   // If the product is not found, redirect to the 404 page
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isLoading && !product && !error) {
       navigate('/not-found', { replace: true });
     }
@@ -56,49 +49,7 @@ const Checkout = () => {
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
   };
   
-  const createOrder = async (customer: CustomerData, product: Product, paymentMethod: PaymentMethod): Promise<Order> => {
-    // Criar pedido no Supabase
-    const order = {
-      customer_id: `customer_${Date.now()}`, // No futuro, usar ID real do cliente no Asaas
-      customer_name: customer.name,
-      customer_email: customer.email,
-      customer_cpf_cnpj: customer.cpfCnpj,
-      customer_phone: customer.phone,
-      product_id: product.id,
-      product_name: product.name,
-      product_price: product.price,
-      status: "PENDING" as PaymentStatus,
-      payment_method: paymentMethod,
-    };
-    
-    // Salvar no Supabase
-    const { data, error } = await supabase
-      .from('orders')
-      .insert(order)
-      .select()
-      .single();
-      
-    if (error) throw new Error(error.message);
-    
-    return {
-      id: data.id,
-      customerId: data.customer_id,
-      customerName: data.customer_name,
-      customerEmail: data.customer_email,
-      customerCpfCnpj: data.customer_cpf_cnpj,
-      customerPhone: data.customer_phone,
-      productId: data.product_id,
-      productName: data.product_name,
-      productPrice: data.product_price,
-      status: data.status as PaymentStatus,
-      paymentMethod: data.payment_method as PaymentMethod,
-      asaasPaymentId: data.asaas_payment_id,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at
-    };
-  };
-  
-  const handlePaymentSubmit = async (paymentData?: any) => {
+  const handlePaymentSubmit = async () => {
     if (!customerData || !product) return;
     
     setIsSubmitting(true);
@@ -108,12 +59,7 @@ const Checkout = () => {
       const order = await createOrder(customerData, product, paymentMethod);
       
       // 2. Criar billing data para processamento do pagamento
-      const billingData: BillingData = {
-        customer: customerData,
-        value: product.price,
-        description: product.name,
-        orderId: order.id as string // Adicionar ID do pedido
-      };
+      const billingData = prepareBillingData(customerData, product, order.id as string);
       
       // 3. Processar pagamento baseado no método selecionado
       if (paymentMethod === 'pix') {
@@ -137,11 +83,9 @@ const Checkout = () => {
         navigate('/success');
       }
     } catch (error) {
-      console.error("Erro ao processar pagamento:", error);
-      toast({
-        title: "Erro no pagamento",
-        description: "Ocorreu um erro ao processar o pagamento. Tente novamente.",
-        variant: "destructive",
+      handleApiError(error, {
+        toast,
+        defaultMessage: "Ocorreu um erro ao processar o pagamento. Tente novamente."
       });
     } finally {
       setIsSubmitting(false);
@@ -166,50 +110,36 @@ const Checkout = () => {
       </div>
     );
   }
-
-  // Update customization based on product type
-  const productCustomization = {
-    ...customization,
-    isDigitalProduct: product.isDigital
-  };
   
   return (
     <CheckoutContainer>
-      {productCustomization.topMessage && productCustomization.countdownEndTime && (
+      {customization.topMessage && customization.countdownEndTime && (
         <CountdownBanner 
-          message={productCustomization.topMessage}
-          endTime={new Date(productCustomization.countdownEndTime)}
+          message={customization.topMessage}
+          endTime={new Date(customization.countdownEndTime)}
         />
       )}
       
       <div className="grid md:grid-cols-12 gap-6 mt-6">
-        <div className="md:col-span-7 space-y-8">
-          <PersonalInfoSection 
-            onSubmit={handleCustomerSubmit} 
-            headingColor={productCustomization.headingColor}
+        <div className="md:col-span-7">
+          <CheckoutFormContainer
+            customerData={customerData}
+            paymentMethod={paymentMethod}
+            isSubmitting={isSubmitting}
+            headingColor={customization.headingColor}
+            buttonColor={customization.buttonColor}
+            buttonText={customization.buttonText}
+            onCustomerSubmit={handleCustomerSubmit}
+            onPaymentMethodChange={setPaymentMethod}
+            onPaymentSubmit={handlePaymentSubmit}
           />
-          
-          <TestimonialSection headingColor={productCustomization.headingColor} />
-          
-          {customerData && (
-            <PaymentMethodSection
-              id="payment-section"
-              paymentMethod={paymentMethod}
-              onPaymentMethodChange={setPaymentMethod}
-              onSubmit={handlePaymentSubmit}
-              isSubmitting={isSubmitting}
-              headingColor={productCustomization.headingColor}
-              buttonColor={productCustomization.buttonColor}
-              buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : productCustomization.buttonText}
-            />
-          )}
         </div>
         
         <div className="md:col-span-5">
           <div className="sticky top-4">
             <OrderSummary 
               product={product}
-              isDigitalProduct={productCustomization.isDigitalProduct}
+              isDigitalProduct={customization.isDigitalProduct}
             />
           </div>
         </div>

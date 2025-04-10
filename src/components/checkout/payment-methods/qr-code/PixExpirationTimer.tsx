@@ -1,39 +1,11 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 interface PixExpirationTimerProps {
-  expirationDate: string;
+  timeLeft: string;
 }
 
-export const PixExpirationTimer: React.FC<PixExpirationTimerProps> = ({ expirationDate }) => {
-  const [timeLeft, setTimeLeft] = useState('');
-  
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const expirationTime = new Date(expirationDate).getTime();
-      const now = new Date().getTime();
-      const difference = expirationTime - now;
-      
-      if (difference <= 0) {
-        return '00:00:00';
-      }
-      
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000).toString().padStart(2, '0');
-      
-      return `${hours}:${minutes}:${seconds}`;
-    };
-    
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-    
-    setTimeLeft(calculateTimeLeft());
-    
-    return () => clearInterval(timer);
-  }, [expirationDate]);
-  
+export const PixExpirationTimer: React.FC<PixExpirationTimerProps> = ({ timeLeft }) => {
   return (
     <p className="text-sm text-center text-muted-foreground">
       {timeLeft ? (
