@@ -9,6 +9,7 @@ import AdminLayout from '@/layouts/AdminLayout';
 // Public pages
 import Checkout from '@/pages/Checkout';
 import SuccessPage from '@/pages/SuccessPage';
+import FailedPage from '@/pages/FailedPage';
 import NotFound from '@/pages/NotFound';
 import PaymentPage from '@/pages/PaymentPage';
 
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
   {
     path: "/success",
     element: <SuccessPage />,
+  },
+  {
+    path: "/payment-failed",
+    element: <FailedPage />,
   },
   
   // Admin routes

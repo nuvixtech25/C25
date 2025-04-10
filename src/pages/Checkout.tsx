@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -111,7 +112,7 @@ const Checkout = () => {
         customer: customerData,
         value: product.price,
         description: product.name,
-        orderId: order.id // Adicionar ID do pedido
+        orderId: order.id as string // Adicionar ID do pedido
       };
       
       // 3. Processar pagamento baseado no método selecionado

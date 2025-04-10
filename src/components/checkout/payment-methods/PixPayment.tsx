@@ -5,11 +5,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Copy, Check, RefreshCw, Loader2 } from 'lucide-react';
-import { checkPaymentStatus } from '@/services/asaasService';
+import { usePaymentPolling } from './qr-code/usePaymentPolling';
 import { PaymentStatus } from '@/types/checkout';
 
 interface PixPaymentProps {
   orderId: string;
+  paymentId: string;
   qrCode: string;
   qrCodeImage: string;
   copyPasteKey: string;
@@ -20,6 +21,7 @@ interface PixPaymentProps {
 
 export const PixPayment: React.FC<PixPaymentProps> = ({
   orderId,
+  paymentId,
   qrCode,
   qrCodeImage,
   copyPasteKey,
@@ -29,10 +31,11 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
 }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<PaymentStatus>("PENDING");
-  const [checking, setChecking] = useState(false);
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState('');
+  
+  // Usar hook de polling para verificar o status do pagamento
+  const { status, isCheckingStatus, error, forceCheck } = usePaymentPolling(paymentId, 'PENDING');
   
   // Function to copy PIX code to clipboard
   const copyToClipboard = () => {
@@ -56,43 +59,27 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
     );
   };
   
-  // Polling function to check payment status
-  const checkStatus = async () => {
-    if (checking) return;
-    
-    setChecking(true);
-    try {
-      const newStatus = await checkPaymentStatus(orderId);
-      setStatus(newStatus);
-      
-      if (newStatus === "CONFIRMED") {
-        toast({
-          title: "Pagamento confirmado!",
-          description: "Seu pagamento foi processado com sucesso.",
-        });
-        
-        // Redirect to success page
-        setTimeout(() => navigate("/payment-success"), 2000);
-      } else if (["CANCELLED", "REFUNDED", "OVERDUE"].includes(newStatus)) {
-        toast({
-          title: "Pagamento não aprovado",
-          description: "Houve um problema com seu pagamento.",
-          variant: "destructive",
-        });
-        
-        // Redirect to failed page
-        setTimeout(() => navigate("/payment-failed"), 2000);
-      }
-    } catch (error) {
+  // Efeito para redirecionar com base no status
+  useEffect(() => {
+    if (status === "CONFIRMED") {
       toast({
-        title: "Erro ao verificar",
-        description: "Não foi possível verificar o status do pagamento.",
+        title: "Pagamento confirmado!",
+        description: "Seu pagamento foi processado com sucesso.",
+      });
+      
+      // Redirect to success page
+      setTimeout(() => navigate("/success"), 2000);
+    } else if (["CANCELLED", "REFUNDED", "OVERDUE"].includes(status)) {
+      toast({
+        title: "Pagamento não aprovado",
+        description: "Houve um problema com seu pagamento.",
         variant: "destructive",
       });
-    } finally {
-      setChecking(false);
+      
+      // Redirect to failed page
+      setTimeout(() => navigate("/payment-failed"), 2000);
     }
-  };
+  }, [status, navigate, toast]);
   
   // Calculate time left for expiration
   useEffect(() => {
@@ -120,17 +107,6 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
     
     return () => clearInterval(timer);
   }, [expirationDate]);
-  
-  // Auto-check status every 5 seconds
-  useEffect(() => {
-    if (status === "PENDING") {
-      const interval = setInterval(() => {
-        checkStatus();
-      }, 5000); // Poll every 5 seconds
-      
-      return () => clearInterval(interval);
-    }
-  }, [status]);
   
   // Render payment confirmation or QR code based on status
   return (
@@ -203,12 +179,12 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
             {/* Check Payment Status Button */}
             <div className="pt-2">
               <Button 
-                onClick={checkStatus} 
-                disabled={checking}
+                onClick={() => forceCheck()} 
+                disabled={isCheckingStatus}
                 variant="outline"
                 className="w-full"
               >
-                {checking ? (
+                {isCheckingStatus ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <RefreshCw className="mr-2 h-4 w-4" />

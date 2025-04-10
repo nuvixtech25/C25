@@ -59,18 +59,6 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     
     const data = await response.json();
     return data.status;
-    
-    // Nos estágios iniciais, você pode manter o código de simulação como fallback
-    /*
-    // Para desenvolvimento, simular API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Em desenvolvimento, retornar aleatoriamente CONFIRMED ou PENDING para simular fluxo de pagamento
-    const statusOptions: PaymentStatus[] = ["PENDING", "CONFIRMED"];
-    const randomStatus = statusOptions[Math.floor(Math.random() * 2)];
-    
-    return randomStatus;
-    */
   } catch (error) {
     console.error("Erro ao verificar status do pagamento:", error);
     throw new Error("Falha ao verificar status do pagamento. Por favor, tente novamente.");
