@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
 import { fetchPixelConfig, updatePixelConfig, PixelConfig } from '@/services/pixelConfigService';
 import { pixelConfigSchema, PixelConfigFormValues } from './PixelSettingsSchema';
 
@@ -35,7 +36,8 @@ export const PixelSettingsForm = () => {
       conversionLabel: '',
       facebookPixelId: '',
       facebookToken: '',
-      enabled: false,
+      googleEnabled: false,
+      facebookEnabled: false,
     },
   });
   
@@ -101,33 +103,29 @@ export const PixelSettingsForm = () => {
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="enabled"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                    <div className="space-y-0.5">
-                      <FormLabel className="text-base">Ativar Rastreamento</FormLabel>
-                      <FormDescription>
-                        Ativa os pixels de rastreamento em seu site.
-                      </FormDescription>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              
               {/* Google Ads Section */}
-              <div className="mt-8">
-                <h3 className="text-lg font-medium">Configurações do Google Ads</h3>
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium">Google Ads</h3>
+                  <FormField
+                    control={form.control}
+                    name="googleEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center space-x-2">
+                        <FormLabel>Ativo</FormLabel>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <Separator className="my-4" />
                 
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
                     name="googleAdsId"
@@ -150,7 +148,7 @@ export const PixelSettingsForm = () => {
                     name="conversionLabel"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Label de Conversão do Google Ads</FormLabel>
+                        <FormLabel>Label de Conversão</FormLabel>
                         <FormControl>
                           <Input placeholder="Exemplo: AbCdEfGhIjK-123" {...field} />
                         </FormControl>
@@ -165,11 +163,28 @@ export const PixelSettingsForm = () => {
               </div>
               
               {/* Facebook Pixel Section */}
-              <div className="mt-8">
-                <h3 className="text-lg font-medium">Configurações do Facebook Pixel</h3>
+              <div className="p-4 border rounded-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium">Facebook Pixel</h3>
+                  <FormField
+                    control={form.control}
+                    name="facebookEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center space-x-2">
+                        <FormLabel>Ativo</FormLabel>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <Separator className="my-4" />
                 
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
                     name="facebookPixelId"
@@ -192,7 +207,7 @@ export const PixelSettingsForm = () => {
                     name="facebookToken"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Token de Acesso do Facebook</FormLabel>
+                        <FormLabel>Token de Acesso</FormLabel>
                         <FormControl>
                           <Input placeholder="Exemplo: EAAxxxxxxxxxxxxx" {...field} />
                         </FormControl>

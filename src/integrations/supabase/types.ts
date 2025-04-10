@@ -316,6 +316,42 @@ export type Database = {
         }
         Relationships: []
       }
+      pixel_config: {
+        Row: {
+          conversion_label: string | null
+          created_at: string
+          facebook_enabled: boolean | null
+          facebook_pixel_id: string | null
+          facebook_token: string | null
+          google_ads_id: string | null
+          google_enabled: boolean | null
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          conversion_label?: string | null
+          created_at?: string
+          facebook_enabled?: boolean | null
+          facebook_pixel_id?: string | null
+          facebook_token?: string | null
+          google_ads_id?: string | null
+          google_enabled?: boolean | null
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          conversion_label?: string | null
+          created_at?: string
+          facebook_enabled?: boolean | null
+          facebook_pixel_id?: string | null
+          facebook_token?: string | null
+          google_ads_id?: string | null
+          google_enabled?: boolean | null
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           created_at: string
