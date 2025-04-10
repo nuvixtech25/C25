@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -53,12 +53,9 @@ const CreditCardsPage = () => {
                 orders={orders} 
                 onDeleteCard={deleteOrder} 
               />
-              <div className="mt-4 flex justify-between items-center p-4 border-t text-sm">
+              <div className="mt-4 flex justify-end items-center p-4 border-t text-sm">
                 <div>
                   Total de cartões: <strong>{ordersSummary.count}</strong>
-                </div>
-                <div>
-                  Valor total: <strong>R$ {ordersSummary.totalValue.toFixed(2)}</strong>
                 </div>
               </div>
             </>
