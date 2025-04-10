@@ -21,6 +21,7 @@ type AdminToolsFormValues = z.infer<typeof adminToolsSchema>;
 const AdminTools = () => {
   const { isAdmin, makeUserAdmin } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPromotingCurrentUser, setIsPromotingCurrentUser] = useState(false);
 
   const form = useForm<AdminToolsFormValues>({
     resolver: zodResolver(adminToolsSchema),
@@ -71,6 +72,43 @@ const AdminTools = () => {
     }
   };
 
+  const handlePromoteCurrentUser = async () => {
+    setIsPromotingCurrentUser(true);
+    try {
+      // Directly update the current user's email in the profiles table
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ is_admin: true })
+        .eq('email', 'elianemourasara@admin.com')
+        .select();
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        toast({
+          title: 'Usuário promovido',
+          description: 'elianemourasara@admin.com agora tem privilégios de administrador.',
+        });
+      } else {
+        toast({
+          title: 'Usuário não encontrado',
+          description: 'Não foi possível encontrar o usuário elianemourasara@admin.com',
+          variant: 'destructive',
+        });
+      }
+    } catch (error: any) {
+      console.error('Error promoting current user:', error);
+      toast({
+        title: 'Erro ao promover usuário',
+        description: error.message || 'Ocorreu um erro ao tentar dar privilégios de administrador.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsPromotingCurrentUser(false);
+    }
+  };
+
+  // For the case where we have no admin access at all
   if (!isAdmin) {
     return (
       <Card>
@@ -80,6 +118,23 @@ const AdminTools = () => {
             Você não tem permissão para acessar esta página.
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-500">
+              Se você precisa de acesso de administrador para elianemourasara@admin.com, clique no botão abaixo:
+            </p>
+            <Button onClick={handlePromoteCurrentUser} disabled={isPromotingCurrentUser}>
+              {isPromotingCurrentUser ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Promovendo...
+                </>
+              ) : (
+                "Promover elianemourasara@admin.com a administrador"
+              )}
+            </Button>
+          </div>
+        </CardContent>
       </Card>
     );
   }

@@ -108,7 +108,7 @@ const router = createBrowserRouter([
   {
     path: "/admin/tools",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requireAdmin={false}>
         <AdminLayout>
           <AdminTools />
         </AdminLayout>
