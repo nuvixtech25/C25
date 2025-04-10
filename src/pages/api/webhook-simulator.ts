@@ -1,10 +1,21 @@
 
+// Define a type for the expected payload structure
+interface WebhookPayload {
+  event?: string;
+  payment?: {
+    id: string;
+    status: string;
+  };
+  [key: string]: any; // Allow other properties
+}
+
 export async function handler(req: Request) {
   console.log('Webhook simulator API called');
 
   try {
-    // Parse the request body
-    const payload = await req.json();
+    // Parse the request body and type cast it
+    const rawPayload = await req.json();
+    const payload = rawPayload as WebhookPayload;
     console.log('Webhook simulator payload:', payload);
 
     // We need to use a relative import path to avoid the vite error
