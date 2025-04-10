@@ -19,6 +19,7 @@ export type Database = {
           sandbox: boolean
           sandbox_key: string | null
           updated_at: string | null
+          use_netlify_functions: boolean | null
         }
         Insert: {
           active?: boolean | null
@@ -29,6 +30,7 @@ export type Database = {
           sandbox?: boolean
           sandbox_key?: string | null
           updated_at?: string | null
+          use_netlify_functions?: boolean | null
         }
         Update: {
           active?: boolean | null
@@ -39,6 +41,7 @@ export type Database = {
           sandbox?: boolean
           sandbox_key?: string | null
           updated_at?: string | null
+          use_netlify_functions?: boolean | null
         }
         Relationships: []
       }

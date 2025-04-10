@@ -8,6 +8,8 @@ export const asaasSettingsSchema = z.object({
   pix_enabled: z.boolean().default(false),
   card_enabled: z.boolean().default(false),
   active: z.boolean().default(false),
+  // New field for Netlify functions toggle
+  use_netlify_functions: z.boolean().default(false),
 });
 
 export type AsaasSettingsFormValues = z.infer<typeof asaasSettingsSchema>;

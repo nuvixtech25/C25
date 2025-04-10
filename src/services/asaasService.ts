@@ -1,13 +1,26 @@
 
 import { BillingData, PaymentStatus, PixPaymentData } from "@/types/checkout";
+import { supabase } from "@/integrations/supabase/client";
 
 const ASAAS_API_URL = "https://api.asaas.com/v3";
 
-// Gerar pagamento PIX através da nossa função Netlify
+// Gerar pagamento PIX através da nossa função Netlify ou simulação local
 export const generatePixPayment = async (billingData: BillingData): Promise<PixPaymentData> => {
   try {
-    // Chamar a função Netlify que criamos
-    const response = await fetch('/.netlify/functions/create-asaas-customer', {
+    // Primeiro, buscar as configurações do Asaas
+    const { data: config } = await supabase
+      .from('asaas_config')
+      .select('use_netlify_functions')
+      .maybeSingle();
+
+    const useNetlifyFunctions = config?.use_netlify_functions ?? false;
+
+    // Escolher o endpoint com base na configuração
+    const endpoint = useNetlifyFunctions 
+      ? '/.netlify/functions/create-asaas-customer' 
+      : '/api/mock-asaas-payment';
+
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -23,50 +36,42 @@ export const generatePixPayment = async (billingData: BillingData): Promise<PixP
       })
     });
 
+    // Verificar se a resposta é um JSON válido
     if (!response.ok) {
-      // Tentar obter resposta como texto primeiro para debug
       const errorText = await response.text();
       console.error("Resposta de erro bruta:", errorText);
-      
-      // Tentar parsear como JSON se possível
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-        throw new Error(`Erro ao gerar pagamento PIX: ${JSON.stringify(errorData)}`);
-      } catch (parseError) {
-        // Se não for JSON, use o texto bruto
-        throw new Error(`Erro ao gerar pagamento PIX: ${errorText.substring(0, 200)}`);
-      }
+      throw new Error(`Erro ao gerar pagamento PIX: ${errorText.substring(0, 200)}`);
     }
 
-    // Verificar se a resposta pode ser parseada como JSON
     const responseText = await response.text();
     let data;
     
     try {
       data = JSON.parse(responseText);
     } catch (error) {
-      console.error("Erro ao parsear resposta como JSON:", responseText.substring(0, 200));
+      console.error("Erro ao parsear resposta como JSON:", responseText);
       throw new Error("Resposta inválida do servidor. Não foi possível processar o pagamento.");
     }
     
     // Verificar se todos os dados necessários estão presentes
-    if (!data.payment || !data.pixQrCode) {
+    if (useNetlifyFunctions && (!data.payment || !data.pixQrCode)) {
       console.error("Resposta incompleta:", data);
       throw new Error("Dados de pagamento incompletos na resposta do servidor.");
     }
-    
+
     // Formatar os dados para o formato esperado pelo componente de pagamento
-    return {
-      paymentId: data.payment.id,
-      qrCode: data.pixQrCode.payload,
-      qrCodeImage: data.pixQrCode.encodedImage,
-      copyPasteKey: data.pixQrCode.payload,
-      expirationDate: data.pixQrCode.expirationDate,
-      status: data.payment.status as PaymentStatus,
-      value: data.payment.value,
-      description: data.payment.description
-    };
+    return useNetlifyFunctions
+      ? {
+          paymentId: data.payment.id,
+          qrCode: data.pixQrCode.payload,
+          qrCodeImage: data.pixQrCode.encodedImage,
+          copyPasteKey: data.pixQrCode.payload,
+          expirationDate: data.pixQrCode.expirationDate,
+          status: data.payment.status,
+          value: data.payment.value,
+          description: data.payment.description
+        }
+      : data; // Caso seja um mock, retornar diretamente os dados do mock
   } catch (error) {
     console.error("Erro ao gerar pagamento PIX:", error);
     throw new Error("Falha ao gerar pagamento PIX. Por favor, tente novamente.");
@@ -79,29 +84,18 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     const response = await fetch(`/.netlify/functions/check-payment-status?paymentId=${paymentId}`);
     
     if (!response.ok) {
-      // Tentar obter resposta como texto primeiro para debug
       const errorText = await response.text();
       console.error("Resposta de erro bruta:", errorText);
-      
-      // Tentar parsear como JSON se possível
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-        throw new Error(`Erro ao verificar status do pagamento: ${JSON.stringify(errorData)}`);
-      } catch (parseError) {
-        // Se não for JSON, use o texto bruto
-        throw new Error(`Erro ao verificar status do pagamento: ${errorText.substring(0, 200)}`);
-      }
+      throw new Error(`Erro ao verificar status do pagamento: ${errorText.substring(0, 200)}`);
     }
     
-    // Verificar se a resposta pode ser parseada como JSON
     const responseText = await response.text();
     let data;
     
     try {
       data = JSON.parse(responseText);
     } catch (error) {
-      console.error("Erro ao parsear resposta como JSON:", responseText.substring(0, 200));
+      console.error("Erro ao parsear resposta como JSON:", responseText);
       throw new Error("Resposta inválida do servidor. Não foi possível verificar o status do pagamento.");
     }
     
