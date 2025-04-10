@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, DollarSign, ShoppingCart, Users } from 'lucide-react';
+import { CreditCard, DollarSign, ShoppingCart, Users, BarChart2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import AdminLayout from '@/layouts/AdminLayout';
@@ -10,6 +9,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
 import { PaymentStatus } from '@/types/checkout';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 // Dashboard statistic card component
 const StatCard = ({ title, value, description, icon, className = "" }) => {
@@ -288,6 +289,12 @@ const DashboardPage = () => {
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           
           <div className="flex items-center gap-2">
+            <Button asChild variant="outline" className="mr-2">
+              <Link to="/admin/analytics/payment-retry">
+                <BarChart2 className="mr-2 h-4 w-4" />
+                Análise de Retry Payment
+              </Link>
+            </Button>
             <Tabs
               defaultValue="7days"
               value={period}

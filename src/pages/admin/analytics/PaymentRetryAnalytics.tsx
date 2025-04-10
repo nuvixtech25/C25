@@ -1,11 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface AttemptStats {
   attemptNumber: number;
@@ -169,7 +170,15 @@ const PaymentRetryAnalytics = () => {
   if (attemptStats.length === 0) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold tracking-tight">Análise de Retry Payment</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">Análise de Retry Payment</h1>
+          <Button asChild variant="outline">
+            <Link to="/admin/dashboard">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar para Dashboard
+            </Link>
+          </Button>
+        </div>
         
         <Card>
           <CardHeader>
@@ -191,7 +200,15 @@ const PaymentRetryAnalytics = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Análise de Retry Payment</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold tracking-tight">Análise de Retry Payment</h1>
+        <Button asChild variant="outline">
+          <Link to="/admin/dashboard">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Voltar para Dashboard
+          </Link>
+        </Button>
+      </div>
       <p className="text-muted-foreground">
         Visualize e analise as tentativas de pagamento e conversões.
       </p>
