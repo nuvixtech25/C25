@@ -1,10 +1,9 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,12 +31,13 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const Login = () => {
-  const { signIn, session } = useAuth();
+  const { signIn, session, createAdminUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
+  const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
   const navigate = useNavigate();
 
   const loginForm = useForm<LoginFormValues>({
@@ -115,6 +115,21 @@ const Login = () => {
   
   const toggleShowConfirmPassword = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleCreateAdminUser = async () => {
+    setIsCreatingAdmin(true);
+    try {
+      await createAdminUser("elianemourasara@gmail.com", "pass123");
+      toast({
+        title: "Administrador criado",
+        description: "O usuário elianemourasara@gmail.com foi criado como administrador.",
+      });
+    } catch (error) {
+      // Error is handled in the createAdminUser function
+    } finally {
+      setIsCreatingAdmin(false);
+    }
   };
 
   return (
@@ -201,6 +216,27 @@ const Login = () => {
                   </Button>
                 </form>
               </Form>
+              
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={handleCreateAdminUser}
+                  disabled={isCreatingAdmin}
+                >
+                  {isCreatingAdmin ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Criando...
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Criar Admin (elianemourasara@gmail.com)
+                    </>
+                  )}
+                </Button>
+              </div>
             </TabsContent>
             
             <TabsContent value="register">

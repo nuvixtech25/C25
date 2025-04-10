@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +12,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   makeUserAdmin: (userId: string) => Promise<void>;
+  createAdminUser: (email: string, password: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -166,6 +166,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const createAdminUser = async (email: string, password: string) => {
+    try {
+      // First sign up the user
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (signUpError) throw signUpError;
+
+      if (!authData.user) throw new Error('User creation failed');
+
+      // Directly update the profile to be an admin
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ is_admin: true })
+        .eq('id', authData.user.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: 'Usuário administrador criado',
+        description: `${email} foi criado e promovido a administrador.`,
+      });
+    } catch (error: any) {
+      console.error('Error creating admin user:', error);
+      toast({
+        title: 'Erro ao criar usuário administrador',
+        description: error.error_description || error.message || 'Ocorreu um erro ao tentar criar o usuário administrador.',
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -177,6 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signOut,
         signUp,
         makeUserAdmin,
+        createAdminUser,
       }}
     >
       {children}
