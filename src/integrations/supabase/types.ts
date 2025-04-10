@@ -95,6 +95,33 @@ export type Database = {
           },
         ]
       }
+      asaas_webhook_logs: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          payload: Json
+          payment_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          payload: Json
+          payment_id: string
+          status: string
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json
+          payment_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           asaas_payment_id: string | null
