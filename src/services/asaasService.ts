@@ -1,6 +1,6 @@
 
 import { BillingData, PaymentStatus, PixPaymentData } from "@/types/checkout";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Generate a PIX payment through Netlify function or local mock
@@ -39,13 +39,9 @@ export const generatePixPayment = async (billingData: BillingData): Promise<PixP
       description: billingData.description
     };
 
-    // Check if we're running in a preview environment
-    const isPreviewEnvironment = 
-      window.location.hostname.includes('lovable.app') || 
-      window.location.hostname.includes('lovableproject.com') ||
-      window.location.hostname.includes('lovable.dev');
-    
     // Define fetch options with appropriate CORS settings
+    const isPreviewEnvironment = isPreviewOrDevelopmentEnvironment();
+    
     const fetchOptions = {
       method: 'POST',
       headers: {
@@ -142,11 +138,8 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     
     console.log(`Checking payment status at: ${endpoint}`);
     
-    // Check if we're running in a preview environment
-    const isPreviewEnvironment = 
-      window.location.hostname.includes('lovable.app') || 
-      window.location.hostname.includes('lovableproject.com') ||
-      window.location.hostname.includes('lovable.dev');
+    // Define fetch options with appropriate CORS settings
+    const isPreviewEnvironment = isPreviewOrDevelopmentEnvironment();
     
     // Define fetch options with appropriate CORS settings
     const fetchOptions = {
@@ -199,3 +192,17 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     throw new Error("Failed to check payment status. Please try again.");
   }
 };
+
+/**
+ * Detect if we're running in a preview or development environment
+ */
+function isPreviewOrDevelopmentEnvironment(): boolean {
+  const hostname = window.location.hostname;
+  return (
+    hostname.includes('lovable.app') || 
+    hostname.includes('lovableproject.com') ||
+    hostname.includes('lovable.dev') ||
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1'
+  );
+}

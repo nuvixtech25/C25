@@ -12,7 +12,7 @@ interface ExtendedIncomingMessage extends IncomingMessage {
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+  'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization, x-client-info, apikey',
   'Access-Control-Max-Age': '86400', // 24 hours
 };
 
@@ -26,6 +26,7 @@ export const mockApiPlugin = (): Plugin => {
       // Handle CORS preflight requests
       server.middlewares.use((req: ExtendedIncomingMessage, res: ServerResponse, next) => {
         console.log(`Request received for: ${req.url}`);
+        console.log(`Request headers:`, req.headers);
         
         // Add CORS headers to all responses
         Object.entries(corsHeaders).forEach(([key, value]) => {

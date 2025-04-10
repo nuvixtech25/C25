@@ -11,7 +11,7 @@ interface ExtendedIncomingMessage extends IncomingMessage {
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+  'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization, x-client-info, apikey',
   'Access-Control-Max-Age': '86400', // 24 hours
 };
 
@@ -36,6 +36,10 @@ export const apiRoutesMiddleware = async (
   
   // Process API routes
   try {
+    // Log incoming request details for debugging
+    console.log(`Processing API request: ${req.method} ${url.pathname}`);
+    console.log(`Request headers:`, req.headers);
+    
     // Mock Asaas payment endpoint
     if (url.pathname === '/api/mock-asaas-payment') {
       console.log('Processing request to /api/mock-asaas-payment');
