@@ -3,19 +3,28 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { PaymentStatus } from '@/types/checkout';
 
 export const useWebhookSimulator = () => {
   const { toast } = useToast();
   const [processingOrders, setProcessingOrders] = useState<Record<string, boolean>>({});
+  const [statusFilter, setStatusFilter] = useState<PaymentStatus | 'ALL'>('ALL');
 
   // Fetch all orders
   const { data: orders, isLoading, refetch } = useQuery({
-    queryKey: ['orders'],
+    queryKey: ['orders', statusFilter],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
+      
+      // Apply status filter if not set to ALL
+      if (statusFilter !== 'ALL') {
+        query = query.eq('status', statusFilter);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data;
@@ -80,6 +89,8 @@ export const useWebhookSimulator = () => {
     orders,
     isLoading,
     processingOrders,
+    statusFilter,
+    setStatusFilter,
     simulatePaymentConfirmed,
     refetch
   };
