@@ -1,10 +1,12 @@
 
 import { IncomingMessage, ServerResponse } from 'http';
 import { handler as webhookSimulatorHandler } from '../pages/api/webhook-simulator';
+import { handler as mockAsaasPaymentHandler } from '../pages/api/mock-asaas-payment';
 
 // This is a mapping of API routes to their handlers
 export const apiRoutes: Record<string, (req: Request) => Promise<Response>> = {
   '/api/webhook-simulator': webhookSimulatorHandler,
+  '/api/mock-asaas-payment': mockAsaasPaymentHandler
 };
 
 // Custom type for middleware
