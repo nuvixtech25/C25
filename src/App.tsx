@@ -15,6 +15,7 @@ import PixelSettings from './pages/admin/PixelSettings';
 import AsaasSettings from './pages/admin/AsaasSettings';
 import WebhookSimulator from './pages/admin/WebhookSimulator';
 import ProductsAdmin from './pages/admin/products'; // Import the ProductsAdmin component
+import NewProductPage from './pages/admin/products/new'; // Import the NewProductPage component
 import OrdersPage from './pages/admin/orders'; // Import the OrdersPage component
 import LandingPage from './pages/LandingPage'; // Import the new LandingPage component
 import AdminTools from './pages/admin/AdminTools'; // Import the AdminTools component
@@ -77,6 +78,13 @@ const AppWithPixels = () => {
         <RequireAuth>
           <AdminLayout>
             <ProductsAdmin />
+          </AdminLayout>
+        </RequireAuth>
+      } />
+      <Route path="/admin/products/new" element={
+        <RequireAuth>
+          <AdminLayout>
+            <NewProductPage />
           </AdminLayout>
         </RequireAuth>
       } />
