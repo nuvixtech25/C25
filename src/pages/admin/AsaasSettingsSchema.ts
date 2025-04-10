@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export const asaasSettingsSchema = z.object({
@@ -7,7 +8,7 @@ export const asaasSettingsSchema = z.object({
   pix_enabled: z.boolean().default(false),
   card_enabled: z.boolean().default(false),
   active: z.boolean().default(false),
-  // New field for Netlify functions toggle
+  // Opção para toggle de funções Netlify
   use_netlify_functions: z.boolean().default(false),
   manual_card_redirect_page: z.string().default('/payment-pending'),
 });
