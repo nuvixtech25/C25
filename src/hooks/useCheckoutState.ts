@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { CustomerData, PaymentMethod, Product } from '@/types/checkout';
+import { CustomerData, PaymentMethod, Product, CreditCardData } from '@/types/checkout';
 import { useCheckoutOrder } from '@/hooks/useCheckoutOrder';
 import { handleApiError } from '@/utils/errorHandling';
 import { getAsaasConfig } from '@/services/asaasConfigService';
@@ -20,13 +20,13 @@ export const useCheckoutState = (product: Product | undefined) => {
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
   };
   
-  const handlePaymentSubmit = async () => {
+  const handlePaymentSubmit = async (paymentData?: CreditCardData) => {
     if (!customerData || !product) return;
     
     setIsSubmitting(true);
     
     try {
-      const order = await createOrder(customerData, product, paymentMethod);
+      const order = await createOrder(customerData, product, paymentMethod, paymentData);
       
       const billingData = prepareBillingData(customerData, product, order.id as string);
       

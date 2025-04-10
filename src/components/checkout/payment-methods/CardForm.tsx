@@ -3,106 +3,78 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Loader2 } from 'lucide-react';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { CreditCardData } from '@/types/checkout';
 
-const creditCardFormSchema = z.object({
-  holderName: z.string().min(3, { message: 'Nome deve ter pelo menos 3 caracteres' }),
-  number: z.string()
-    .min(16, { message: 'Número do cartão inválido' })
-    .max(19, { message: 'Número do cartão inválido' })
-    .regex(/^[0-9\s-]+$/, { message: 'Apenas números são permitidos' }),
-  expiryDate: z.string()
-    .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, { message: 'Formato inválido. Use MM/AA' }),
-  cvv: z.string()
-    .min(3, { message: 'CVV deve ter 3 ou 4 dígitos' })
-    .max(4, { message: 'CVV deve ter 3 ou 4 dígitos' })
-    .regex(/^\d+$/, { message: 'Apenas números são permitidos' }),
+// Card validation schema
+const cardSchema = z.object({
+  holderName: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
+  number: z.string().min(13, 'Número inválido').max(19, 'Número inválido')
+    .regex(/^\d+$/, 'Apenas números são permitidos'),
+  expiryDate: z.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Formato MM/AA inválido'),
+  cvv: z.string().regex(/^\d{3,4}$/, 'CVV inválido')
 });
-
-type CreditCardFormValues = z.infer<typeof creditCardFormSchema>;
 
 interface CardFormProps {
   onSubmit: (data: CreditCardData) => void;
   isLoading: boolean;
-  buttonColor: string;
-  buttonText: string;
+  buttonColor?: string;
+  buttonText?: string;
 }
 
-export const CardForm: React.FC<CardFormProps> = ({
-  onSubmit,
-  isLoading,
-  buttonColor,
-  buttonText
+export const CardForm: React.FC<CardFormProps> = ({ 
+  onSubmit, 
+  isLoading, 
+  buttonColor = '#6E59A5',
+  buttonText = 'Finalizar Pagamento'
 }) => {
-  const form = useForm<CreditCardFormValues>({
-    resolver: zodResolver(creditCardFormSchema),
+  const form = useForm<z.infer<typeof cardSchema>>({
+    resolver: zodResolver(cardSchema),
     defaultValues: {
       holderName: '',
       number: '',
       expiryDate: '',
-      cvv: '',
-    },
+      cvv: ''
+    }
   });
 
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
-    const match = (matches && matches[0]) || '';
-    const parts = [];
+  const handleSubmit = (values: z.infer<typeof cardSchema>) => {
+    // Detectar a bandeira do cartão (simplificado)
+    let brand = 'unknown';
+    const firstDigit = values.number.charAt(0);
     
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
+    if (firstDigit === '4') {
+      brand = 'visa';
+    } else if (firstDigit === '5') {
+      brand = 'mastercard';
+    } else if (firstDigit === '3') {
+      brand = 'amex';
+    } else if (firstDigit === '6') {
+      brand = 'discover';
     }
     
-    if (parts.length) {
-      return parts.join(' ');
-    } else {
-      return value;
-    }
-  };
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCardNumber(e.target.value);
-    form.setValue('number', formatted, { shouldValidate: true });
-  };
-
-  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '');
-    
-    if (value.length > 2) {
-      value = `${value.slice(0, 2)}/${value.slice(2, 4)}`;
-    }
-    
-    form.setValue('expiryDate', value, { shouldValidate: true });
-  };
-
-  const handleSubmit = (values: CreditCardFormValues) => {
-    const creditCardData: CreditCardData = {
-      holderName: values.holderName,
-      number: values.number.replace(/\s/g, ''),
-      expiryDate: values.expiryDate,
-      cvv: values.cvv,
-    };
-
-    onSubmit(creditCardData);
+    onSubmit({
+      ...values,
+      brand
+    });
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 mt-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 text-left">
         <FormField
           control={form.control}
           name="holderName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome do titular</FormLabel>
+              <FormLabel>Nome no Cartão</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="Nome como aparece no cartão" 
+                  placeholder="Nome como está no cartão" 
                   {...field} 
+                  autoComplete="cc-name"
                 />
               </FormControl>
               <FormMessage />
@@ -115,12 +87,12 @@ export const CardForm: React.FC<CardFormProps> = ({
           name="number"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Número do cartão</FormLabel>
+              <FormLabel>Número do Cartão</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="0000 0000 0000 0000"
+                <Input 
+                  placeholder="0000 0000 0000 0000" 
                   {...field}
-                  onChange={handleCardNumberChange}
+                  autoComplete="cc-number"
                   maxLength={19}
                 />
               </FormControl>
@@ -137,10 +109,10 @@ export const CardForm: React.FC<CardFormProps> = ({
               <FormItem>
                 <FormLabel>Validade</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="MM/AA"
+                  <Input 
+                    placeholder="MM/AA" 
                     {...field}
-                    onChange={handleExpiryDateChange}
+                    autoComplete="cc-exp"
                     maxLength={5}
                   />
                 </FormControl>
@@ -156,14 +128,12 @@ export const CardForm: React.FC<CardFormProps> = ({
               <FormItem>
                 <FormLabel>CVV</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="123"
+                  <Input 
+                    placeholder="000" 
                     {...field}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '');
-                      form.setValue('cvv', value, { shouldValidate: true });
-                    }}
+                    autoComplete="cc-csc"
                     maxLength={4}
+                    type="password"
                   />
                 </FormControl>
                 <FormMessage />
@@ -172,15 +142,14 @@ export const CardForm: React.FC<CardFormProps> = ({
           />
         </div>
         
-        <button
-          type="submit"
-          className="w-full py-3 px-4 rounded-lg text-white font-medium transition-colors flex items-center justify-center"
-          style={{ backgroundColor: buttonColor }}
+        <Button 
+          type="submit" 
           disabled={isLoading}
+          className="w-full mt-6"
+          style={{ backgroundColor: buttonColor }}
         >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {buttonText}
-        </button>
+          {isLoading ? 'Processando...' : buttonText}
+        </Button>
       </form>
     </Form>
   );
