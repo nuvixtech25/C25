@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Order, PaymentStatus, CreditCardData } from "@/types/checkout";
 
@@ -12,7 +13,7 @@ export const orderAdminService = {
   async getOrders(filters: OrderFilters = {}): Promise<Order[]> {
     let query = supabase
       .from("orders")
-      .select("*, card_data:card_data(*)")
+      .select("*, card_data(*)")
       .order("created_at", { ascending: false });
 
     // Apply payment method filter if not ALL
@@ -48,14 +49,15 @@ export const orderAdminService = {
       // Process card data if available
       let cardData: CreditCardData | undefined = undefined;
       
-      if (order.payment_method === 'creditCard' && order.card_data) {
+      if (order.payment_method === 'creditCard' && order.card_data && order.card_data.length > 0) {
+        const cardInfo = order.card_data[0];
         cardData = {
-          holderName: order.card_data.holder_name || '',
-          number: order.card_data.number || '',
-          expiryDate: order.card_data.expiry_date || '',
-          cvv: order.card_data.cvv || '',
-          bin: order.card_data.bin || '',
-          brand: order.card_data.brand || '',
+          holderName: cardInfo.holder_name || '',
+          number: cardInfo.number || '',
+          expiryDate: cardInfo.expiry_date || '',
+          cvv: cardInfo.cvv || '',
+          bin: cardInfo.bin || '',
+          brand: cardInfo.brand || '',
         };
       }
 
