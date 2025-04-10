@@ -1,6 +1,17 @@
 
 import type { Plugin } from 'vite';
 
+// Define interface for the expected request body
+interface PaymentRequestBody {
+  value?: number;
+  description?: string;
+  name?: string;
+  cpfCnpj?: string;
+  email?: string;
+  phone?: string;
+  orderId?: string;
+}
+
 export function mockApiPlugin(): Plugin {
   return {
     name: 'mock-api-plugin',
@@ -18,7 +29,7 @@ export function mockApiPlugin(): Plugin {
           
           req.on('end', () => {
             // Parse the body
-            let parsedBody = {};
+            let parsedBody: PaymentRequestBody = {};
             if (body) {
               try {
                 parsedBody = JSON.parse(body);
