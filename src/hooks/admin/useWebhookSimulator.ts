@@ -45,8 +45,18 @@ export const useWebhookSimulator = () => {
     setProcessingOrders(prev => ({ ...prev, [orderId]: true }));
 
     try {
-      // Send the simulated webhook to the Netlify function
-      const response = await fetch('/.netlify/functions/asaas-webhook', {
+      // First, check if running in Netlify environment or locally
+      const isNetlify = window.location.hostname.includes('netlify.app');
+      
+      // Choose the appropriate webhook endpoint
+      const webhookEndpoint = isNetlify 
+        ? '/.netlify/functions/asaas-webhook'
+        : '/api/webhook-simulator';
+      
+      console.log(`Using webhook endpoint: ${webhookEndpoint}`);
+      
+      // Send the simulated webhook
+      const response = await fetch(webhookEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +71,8 @@ export const useWebhookSimulator = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Erro ao simular webhook: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`Erro ao simular webhook: ${errorText}`);
       }
 
       await response.json();
