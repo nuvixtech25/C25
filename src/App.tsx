@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,6 +11,7 @@ import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics
 import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import PixSettings from './pages/admin/PixSettings';
+import PixelSettings from './pages/admin/PixelSettings';
 import AsaasSettings from './pages/admin/AsaasSettings';
 import WebhookSimulator from './pages/admin/WebhookSimulator';
 import ProductsAdmin from './pages/admin/products'; // Import the ProductsAdmin component
@@ -96,6 +98,13 @@ const AppWithPixels = () => {
         <RequireAuth>
           <AdminLayout>
             <PixSettings />
+          </AdminLayout>
+        </RequireAuth>
+      } />
+      <Route path="/admin/pixel-settings" element={
+        <RequireAuth>
+          <AdminLayout>
+            <PixelSettings />
           </AdminLayout>
         </RequireAuth>
       } />
