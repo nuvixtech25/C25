@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { PaymentStatus } from '@/types/checkout';
 
-export type WebhookEventType = 'PAYMENT_RECEIVED' | 'PAYMENT_CONFIRMED' | 'PAYMENT_OVERDUE' | 'PAYMENT_CANCELED';
+export type WebhookEventType = 'PAYMENT_RECEIVED' | 'PAYMENT_CONFIRMED' | 'PAYMENT_OVERDUE' | 'PAYMENT_CANCELED' | 'PAYMENT_REFUSED';
 
 export const useWebhookSimulator = () => {
   const { toast } = useToast();
@@ -70,6 +70,7 @@ export const useWebhookSimulator = () => {
           newStatus = 'OVERDUE';
           break;
         case 'PAYMENT_CANCELED':
+        case 'PAYMENT_REFUSED':
           newStatus = 'CANCELLED';
           break;
       }

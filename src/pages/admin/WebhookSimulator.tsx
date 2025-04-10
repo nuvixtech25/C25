@@ -42,7 +42,8 @@ const WebhookSimulator = () => {
     { value: 'PAYMENT_RECEIVED', label: 'Pagamento Recebido' },
     { value: 'PAYMENT_CONFIRMED', label: 'Pagamento Confirmado' },
     { value: 'PAYMENT_OVERDUE', label: 'Pagamento Vencido' },
-    { value: 'PAYMENT_CANCELED', label: 'Pagamento Cancelado' }
+    { value: 'PAYMENT_CANCELED', label: 'Pagamento Cancelado' },
+    { value: 'PAYMENT_REFUSED', label: 'Pagamento Recusado' }
   ];
 
   const handleDeleteAll = async () => {

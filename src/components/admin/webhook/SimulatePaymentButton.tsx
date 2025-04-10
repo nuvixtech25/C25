@@ -39,6 +39,7 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
       case 'PAYMENT_CONFIRMED': return 'Confirmado';
       case 'PAYMENT_OVERDUE': return 'Vencido';
       case 'PAYMENT_CANCELED': return 'Cancelado';
+      case 'PAYMENT_REFUSED': return 'Recusado';
       default: return event;
     }
   };
@@ -47,7 +48,7 @@ const SimulatePaymentButton: React.FC<SimulatePaymentButtonProps> = ({
   const isAlreadyProcessed = 
     (orderStatus === 'CONFIRMED' && 
      (selectedEvent === 'PAYMENT_RECEIVED' || selectedEvent === 'PAYMENT_CONFIRMED')) ||
-    (orderStatus === 'CANCELLED' && selectedEvent === 'PAYMENT_CANCELED') ||
+    (orderStatus === 'CANCELLED' && (selectedEvent === 'PAYMENT_CANCELED' || selectedEvent === 'PAYMENT_REFUSED')) ||
     (orderStatus === 'OVERDUE' && selectedEvent === 'PAYMENT_OVERDUE');
   
   const hasAsaasId = !!asaasPaymentId || isCreditCard;
