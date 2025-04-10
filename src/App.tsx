@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -17,9 +16,10 @@ import ProductsAdmin from './pages/admin/products'; // Import the ProductsAdmin 
 import OrdersPage from './pages/admin/orders'; // Import the OrdersPage component
 import LandingPage from './pages/LandingPage'; // Import the new LandingPage component
 import AdminTools from './pages/admin/AdminTools'; // Import the AdminTools component
+import BusinessRegistration from './pages/BusinessRegistration'; // Import the new BusinessRegistration component
+import Checkout from './pages/Checkout'; // Import the Checkout component
 
 // Importações temporárias para funcionar sem os arquivos reais
-const CheckoutPage = () => <div>Checkout Page</div>;
 const ProductPage = () => <div>Product Page</div>;
 const ConfirmationPage = () => <div>Confirmation Page</div>;
 const PaymentPendingPage = () => <div>Payment Pending Page</div>;
@@ -38,9 +38,12 @@ function App() {
             {/* Landing Page as the default route */}
             <Route path="/" element={<LandingPage />} />
             
+            {/* Business Registration form replaces the produto-exemplo route */}
+            <Route path="/checkout/produto-exemplo" element={<BusinessRegistration />} />
+            
             {/* Existing routes */}
             <Route path="/product/:slug" element={<ProductPage />} />
-            <Route path="/checkout/:slug" element={<CheckoutPage />} />
+            <Route path="/checkout/:slug" element={<Checkout />} />
             <Route path="/confirmation" element={<ConfirmationPage />} />
             <Route path="/payment-pending" element={<PaymentPendingPage />} />
             <Route path="/retry-payment" element={<RetryPaymentPage />} />
