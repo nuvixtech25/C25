@@ -18,6 +18,7 @@ import PixSettings from '@/pages/admin/PixSettings';
 import ProductsPage from '@/pages/admin/products';
 import NewProductPage from '@/pages/admin/products/new';
 import EditProductPage from '@/pages/admin/products/edit';
+import AdminTools from '@/pages/admin/AdminTools';
 
 import { Toaster } from "@/components/ui/toaster";
 
@@ -89,6 +90,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <AdminLayout>
           <PixSettings />
+        </AdminLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/tools",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout>
+          <AdminTools />
         </AdminLayout>
       </ProtectedRoute>
     ),

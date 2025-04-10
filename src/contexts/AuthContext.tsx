@@ -11,6 +11,8 @@ type AuthContextType = {
   isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
+  makeUserAdmin: (userId: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -100,6 +102,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signUp = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Conta criada com sucesso',
+        description: 'Verifique seu e-mail para confirmar sua conta.',
+      });
+    } catch (error: any) {
+      console.error('Error signing up:', error);
+      toast({
+        title: 'Erro ao criar conta',
+        description: error.error_description || error.message || 'Ocorreu um erro ao tentar criar a conta.',
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -117,6 +143,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const makeUserAdmin = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_admin: true })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Usuário promovido',
+        description: 'O usuário agora tem privilégios de administrador.',
+      });
+    } catch (error: any) {
+      console.error('Error making user admin:', error);
+      toast({
+        title: 'Erro ao promover usuário',
+        description: error.message || 'Ocorreu um erro ao tentar promover o usuário.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -126,6 +175,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAdmin,
         signIn,
         signOut,
+        signUp,
+        makeUserAdmin,
       }}
     >
       {children}
