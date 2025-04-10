@@ -13,6 +13,12 @@ import {
 } from '@/components/ui/select';
 import { PaymentStatus } from '@/types/checkout';
 import { DeleteConfirmModal } from '@/components/admin/orders/OrderModals';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from '@/components/ui/tabs';
 
 const WebhookSimulator = () => {
   const {
@@ -23,6 +29,8 @@ const WebhookSimulator = () => {
     setStatusFilter,
     selectedEvent,
     setSelectedEvent,
+    paymentMethod,
+    setPaymentMethod,
     simulatePaymentWebhook,
     refetch,
     deleteAllWebhookLogs
@@ -108,20 +116,44 @@ const WebhookSimulator = () => {
         </div>
       </div>
 
-      <OrdersTable
-        orders={orders}
-        isLoading={isLoading}
-        processingOrders={processingOrders}
-        onSimulatePayment={simulatePaymentWebhook}
-        selectedEvent={selectedEvent}
-      />
+      <Tabs 
+        defaultValue="pix" 
+        value={paymentMethod}
+        onValueChange={(value) => setPaymentMethod(value as "pix" | "creditCard")}
+        className="w-full"
+      >
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="pix">Webhook PIX</TabsTrigger>
+          <TabsTrigger value="creditCard">Webhook Cartão</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="pix" className="mt-4">
+          <OrdersTable
+            orders={orders}
+            isLoading={isLoading}
+            processingOrders={processingOrders}
+            onSimulatePayment={simulatePaymentWebhook}
+            selectedEvent={selectedEvent}
+          />
+        </TabsContent>
+        
+        <TabsContent value="creditCard" className="mt-4">
+          <OrdersTable
+            orders={orders}
+            isLoading={isLoading}
+            processingOrders={processingOrders}
+            onSimulatePayment={simulatePaymentWebhook}
+            selectedEvent={selectedEvent}
+          />
+        </TabsContent>
+      </Tabs>
 
       <DeleteConfirmModal
         open={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDeleteAll}
         isDeleteAll={true}
-        paymentMethod="pix"
+        paymentMethod={paymentMethod}
       />
     </div>
   );

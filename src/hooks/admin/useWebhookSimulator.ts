@@ -12,14 +12,16 @@ export const useWebhookSimulator = () => {
   const [processingOrders, setProcessingOrders] = useState<Record<string, boolean>>({});
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | 'ALL'>('ALL');
   const [selectedEvent, setSelectedEvent] = useState<WebhookEventType>('PAYMENT_RECEIVED');
+  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'creditCard'>('pix');
 
   // Fetch all orders
   const { data: orders, isLoading, refetch } = useQuery({
-    queryKey: ['orders', statusFilter],
+    queryKey: ['orders', statusFilter, paymentMethod],
     queryFn: async () => {
       let query = supabase
         .from('orders')
         .select('*')
+        .eq('payment_method', paymentMethod)
         .order('created_at', { ascending: false });
       
       // Apply status filter if not set to ALL
@@ -193,6 +195,8 @@ export const useWebhookSimulator = () => {
     setStatusFilter,
     selectedEvent,
     setSelectedEvent,
+    paymentMethod,
+    setPaymentMethod,
     simulatePaymentWebhook,
     deleteAllWebhookLogs,
     refetch
