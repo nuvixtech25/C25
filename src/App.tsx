@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import RetryPaymentPage from './pages/RetryPaymentPage';
 import { AuthProvider } from './contexts/AuthContext';
-import { RequireAuth } from './contexts/auth/RequireAuth';
+import RequireAuth from './contexts/auth/RequireAuth'; // Corrected import
 import AdminLayout from './layouts/AdminLayout';
 import CreditCardsPage from './pages/admin/credit-cards';
 import PaymentRetryAnalytics from "./pages/admin/analytics/PaymentRetryAnalytics";

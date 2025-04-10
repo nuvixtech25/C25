@@ -55,4 +55,4 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   return <>{children}</>;
 };
 
-export default RequireAuth;
+export default RequireAuth; // Confirm default export
