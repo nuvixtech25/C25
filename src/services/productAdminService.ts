@@ -68,3 +68,46 @@ export const handleDeleteProduct = async (
     });
   }
 };
+
+/**
+ * Make a user an admin (for initial setup)
+ */
+export const makeUserAdmin = async (email: string): Promise<void> => {
+  try {
+    // First find the user by email
+    const { data: profiles, error: fetchError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', email);
+
+    if (fetchError) {
+      throw fetchError;
+    }
+
+    if (!profiles || profiles.length === 0) {
+      throw new Error(`User with email ${email} not found`);
+    }
+
+    // Update the profile to make the user an admin
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ is_admin: true })
+      .eq('id', profiles[0].id);
+
+    if (updateError) {
+      throw updateError;
+    }
+
+    toast({
+      title: "Usuário promovido",
+      description: `${email} agora tem privilégios de administrador.`,
+    });
+  } catch (error) {
+    console.error("Error making user admin:", error);
+    toast({
+      title: "Erro ao promover usuário",
+      description: "Ocorreu um erro ao tentar dar privilégios de administrador.",
+      variant: "destructive",
+    });
+  }
+};
