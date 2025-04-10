@@ -9,7 +9,7 @@ type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   isAdmin: boolean;
-  signIn: (email: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -76,28 +76,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signIn = async (email: string) => {
+  const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
-        options: {
-          emailRedirectTo: window.location.origin + '/admin',
-        },
+        password,
       });
 
       if (error) throw error;
 
       toast({
-        title: 'Link de acesso enviado',
-        description: 'Verifique seu e-mail para acessar o painel administrativo.',
+        title: 'Login realizado com sucesso',
+        description: 'Você está conectado ao painel administrativo.',
       });
     } catch (error: any) {
-      console.error('Error sending magic link:', error);
+      console.error('Error signing in:', error);
       toast({
-        title: 'Erro ao enviar link',
-        description: error.message || 'Ocorreu um erro ao tentar enviar o link de acesso.',
+        title: 'Erro ao fazer login',
+        description: error.error_description || error.message || 'Ocorreu um erro ao tentar fazer login.',
         variant: 'destructive',
       });
+      throw error;
     }
   };
 
