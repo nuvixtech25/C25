@@ -1,10 +1,25 @@
+
 import { Handler } from '@netlify/functions';
-import { createServerSupabaseClient } from '../../src/integrations/supabase/server';
+import { createServerSupabaseClient, checkSupabaseEnvVars } from '../../src/integrations/supabase/server';
 
 export const handler: Handler = async (event) => {
   // Verificar variáveis de ambiente
-  const supabaseUrl = process.env.SUPABASE_URL || '';
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  const { isConfigured, missingVars } = checkSupabaseEnvVars();
+  
+  if (!isConfigured) {
+    console.error(`Missing environment variables: ${missingVars.join(', ')}`);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        message: 'Server configuration error', 
+        details: `Missing required environment variables: ${missingVars.join(', ')}` 
+      }),
+    };
+  }
+  
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   
   // Inicializar cliente Supabase com o método seguro
   const supabase = createServerSupabaseClient(supabaseUrl, supabaseServiceKey);

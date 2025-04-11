@@ -173,7 +173,7 @@ export const handler: Handler = async (event) => {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
-        error: error.message || 'Erro interno no servidor',
+        error: error.message || 'Erro interno do servidor',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       }),
     };
