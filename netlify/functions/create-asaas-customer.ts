@@ -1,6 +1,5 @@
-
 import { Handler } from '@netlify/functions';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '../../src/lib/supabase/initServer';
 
 // Tipos para o request e response
 interface AsaasCustomerRequest {
@@ -75,11 +74,10 @@ export const handler: Handler = async (event) => {
     };
   }
   
-  // Inicializar cliente Supabase com as variáveis validadas
+  // We're already initializing the client in supabaseAdmin, so we don't need this section anymore
+  // but we'll keep the logging
   console.log('Inicializando cliente Supabase...');
   console.log(`URL Supabase: ${supabaseUrl.substring(0, 10)}...`); // Log parcial por segurança
-  
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   try {
     // Parsear o corpo da requisição
@@ -118,7 +116,7 @@ export const handler: Handler = async (event) => {
     
     // 4. Salvar os dados no Supabase (tabela asaas_payments)
     const saveResult = await savePaymentData(
-      supabase,
+      supabaseAdmin,
       requestData.orderId,
       payment.id,
       payment.status,
@@ -131,7 +129,7 @@ export const handler: Handler = async (event) => {
     console.log('Dados salvos no Supabase:', saveResult);
     
     // 5. Atualizar o pedido com o ID do pagamento Asaas
-    await updateOrderAsaasPaymentId(supabase, requestData.orderId, payment.id);
+    await updateOrderAsaasPaymentId(supabaseAdmin, requestData.orderId, payment.id);
     
     // Retornar os dados do pagamento e QR Code
     return {

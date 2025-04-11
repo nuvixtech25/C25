@@ -1,11 +1,6 @@
 
 import { Handler } from '@netlify/functions';
-import { createClient } from '@supabase/supabase-js';
-
-// Inicializar cliente Supabase
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+import { supabaseAdmin } from '../../src/lib/supabase/initServer';
 
 // Definir tipos para o payload do webhook
 interface AsaasWebhookPayload {
@@ -39,7 +34,7 @@ export const handler: Handler = async (event) => {
     // Verificar se o evento é relacionado a pagamento
     if (payload.event && payload.payment) {
       // Atualizar o status do pedido no Supabase
-      const { error } = await supabase
+      const { error } = await supabaseAdmin
         .from('orders')
         .update({ 
           status: payload.payment.status,
@@ -56,7 +51,7 @@ export const handler: Handler = async (event) => {
       }
 
       // Registrar o evento do webhook
-      await supabase
+      await supabaseAdmin
         .from('asaas_webhook_logs')
         .insert({
           event_type: payload.event,

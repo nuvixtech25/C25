@@ -1,11 +1,6 @@
 
 import { Handler } from '@netlify/functions';
-import { createClient } from '@supabase/supabase-js';
-
-// Inicializar cliente Supabase
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+import { supabaseAdmin } from '../../src/lib/supabase/initServer';
 
 // Configuração da API Asaas
 const ASAAS_API_URL = 'https://sandbox.asaas.com/api/v3';
@@ -57,7 +52,7 @@ export const handler: Handler = async (event) => {
     const status = paymentData.status;
     
     // Atualizar o status do pagamento no Supabase
-    const { data: asaasPayment, error: findError } = await supabase
+    const { data: asaasPayment, error: findError } = await supabaseAdmin
       .from('asaas_payments')
       .select('order_id')
       .eq('payment_id', paymentId)
@@ -67,7 +62,7 @@ export const handler: Handler = async (event) => {
       console.error('Erro ao buscar pagamento no Supabase:', findError);
     } else if (asaasPayment) {
       // Atualizar o status na tabela asaas_payments
-      const { error: updatePaymentError } = await supabase
+      const { error: updatePaymentError } = await supabaseAdmin
         .from('asaas_payments')
         .update({ status })
         .eq('payment_id', paymentId);
@@ -77,7 +72,7 @@ export const handler: Handler = async (event) => {
       }
       
       // Atualizar o status na tabela orders
-      const { error: updateOrderError } = await supabase
+      const { error: updateOrderError } = await supabaseAdmin
         .from('orders')
         .update({ status })
         .eq('id', asaasPayment.order_id);
