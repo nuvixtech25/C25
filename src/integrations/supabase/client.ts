@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 // Use any for Database type since we can't modify the types.ts file
 type Database = any;
 
-// Use environment variables injected pelo Vite
+// Use environment variables injected by Vite
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
