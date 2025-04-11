@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 type Database = any;
 
 // Use environment variables injected by Vite
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Supabase URL or Anon Key not configured. Check your environment variables.');
@@ -16,6 +16,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(
-  supabaseUrl || '', 
-  supabaseAnonKey || ''
+  supabaseUrl, 
+  supabaseAnonKey
 );
