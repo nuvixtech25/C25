@@ -1,4 +1,3 @@
-
 import { Handler } from '@netlify/functions';
 import { createServerSupabaseClient, checkSupabaseEnvVars } from '../../src/integrations/supabase/server';
 

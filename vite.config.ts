@@ -23,8 +23,7 @@ export default defineConfig(({ mode }) => ({
   },
   // Define environment variables
   define: {
-    // This ensures environment variables are handled correctly
-    // and are not directly inserted into the source code during the build
+    // This ensures environment variables are properly exposed to the client
     "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(process.env.VITE_SUPABASE_URL || ''),
     "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || ''),
   },
