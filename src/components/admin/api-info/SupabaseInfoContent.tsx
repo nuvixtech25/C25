@@ -24,7 +24,7 @@ export const SupabaseInfoContent: React.FC = () => {
               <ul className="list-disc list-inside text-sm mt-2 space-y-1">
                 <li>
                   <strong>Cliente Frontend</strong>: <code>src/integrations/supabase/client.ts</code>
-                  <p className="text-xs text-muted-foreground ml-6">Usa a chave anônima (SUPABASE_ANON_KEY) para operações seguras no frontend</p>
+                  <p className="text-xs text-muted-foreground ml-6">Usa a chave anônima (VITE_SUPABASE_ANON_KEY) para operações seguras no frontend</p>
                 </li>
                 <li>
                   <strong>Cliente Backend</strong>: <code>src/integrations/supabase/server.ts</code>

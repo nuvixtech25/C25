@@ -21,10 +21,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Adiciona definição de tipo para variáveis de ambiente
+  // Define environment variables
   define: {
-    // Isso garante que as variáveis de ambiente sejam manipuladas corretamente
-    // e não são inseridas diretamente no código-fonte durante o build
+    // This ensures environment variables are handled correctly
+    // and are not directly inserted into the source code during the build
     "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(process.env.VITE_SUPABASE_URL),
     "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY),
   },
