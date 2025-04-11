@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { createServerSupabaseClient } from '../../src/integrations/supabase/server';
+import { createServerSupabaseClient, checkSupabaseEnvVars } from '../../src/integrations/supabase/server';
 
 // Tipos para o request e response
 interface AsaasCustomerRequest {
@@ -52,19 +52,30 @@ export const handler: Handler = async (event) => {
     };
   }
 
-  // Verificar variáveis de ambiente necessárias de forma defensiva
+  // Check environment variables first
+  const envCheck = checkSupabaseEnvVars();
+  if (!envCheck.isConfigured) {
+    console.error(`Missing environment variables: ${envCheck.missingVars.join(', ')}`);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        error: `Configuração incompleta. Faltam variáveis de ambiente: ${envCheck.missingVars.join(', ')}` 
+      }),
+    };
+  }
+
+  // Check API keys
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const asaasApiKey = process.env.ASAAS_API_KEY;
   
-  // Verificação completa das variáveis necessárias
+  // Complete check of required variables
   const missingVars = [];
-  if (!supabaseUrl) missingVars.push('SUPABASE_URL');
-  if (!supabaseServiceKey) missingVars.push('SUPABASE_SERVICE_ROLE_KEY');
   if (!asaasApiKey) missingVars.push('ASAAS_API_KEY');
   
   if (missingVars.length > 0) {
-    console.error(`Variáveis de ambiente faltando: ${missingVars.join(', ')}`);
+    console.error(`Missing environment variables: ${missingVars.join(', ')}`);
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
@@ -74,11 +85,23 @@ export const handler: Handler = async (event) => {
     };
   }
   
-  // Inicializar cliente Supabase com as variáveis validadas usando o createServerSupabaseClient
-  console.log('Inicializando cliente Supabase...');
-  console.log(`URL Supabase: ${supabaseUrl.substring(0, 10)}...`); // Log parcial por segurança
+  // Initialize Supabase client with validated variables
+  console.log('Initializing Supabase client...');
+  console.log(`Supabase URL: ${supabaseUrl?.substring(0, 10)}...`); // Partial log for security
   
-  const supabase = createServerSupabaseClient(supabaseUrl, supabaseServiceKey);
+  let supabase;
+  try {
+    supabase = createServerSupabaseClient(supabaseUrl, supabaseServiceKey);
+  } catch (error) {
+    console.error('Error initializing Supabase client:', error);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        error: 'Error initializing Supabase client. Check environment variables.'
+      }),
+    };
+  }
 
   try {
     // Parsear o corpo da requisição
