@@ -18,15 +18,16 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   const location = useLocation();
 
   useEffect(() => {
+    // Somente redirecionar quando o status de autenticação for finalizado
     if (!isLoading) {
-      // If not authenticated, redirect to login
+      // Se não estiver autenticado, redireciona para login
       if (!user) {
         navigate('/admin/login', { 
           state: { from: location },
           replace: true 
         });
       } 
-      // If admin access is required but user is not admin
+      // Se acesso admin for necessário mas usuário não for admin
       else if (requireAdmin && !isAdmin) {
         navigate('/admin/tools', { 
           replace: true 
@@ -35,7 +36,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     }
   }, [user, isLoading, isAdmin, navigate, location, requireAdmin]);
 
-  // While checking auth status, show loading spinner
+  // Enquanto verifica status de autenticação, mostra spinner
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -45,13 +46,13 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     );
   }
 
-  // If user is not authenticated or doesn't have required admin status, don't render children
-  // (The useEffect will handle redirection)
+  // Se usuário não estiver autenticado ou não tiver status admin necessário, não renderiza filhos
+  // (O useEffect irá tratar o redirecionamento)
   if (!user || (requireAdmin && !isAdmin)) {
     return null;
   }
 
-  // If all checks pass, render the protected content
+  // Se todas as verificações passarem, renderiza o conteúdo protegido
   return <>{children}</>;
 };
 

@@ -12,16 +12,42 @@ export const useAuthProvider = (): AuthContextType => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Set up the auth state listener
+    // Melhorado o gerenciamento de autenticação para evitar loops
+
+    // Obter sessão inicial
+    const getInitialSession = async () => {
+      try {
+        setIsLoading(true);
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        
+        setSession(initialSession);
+        setUser(initialSession?.user ?? null);
+        
+        if (initialSession?.user) {
+          const adminStatus = await checkIfUserIsAdmin(initialSession.user.id);
+          setIsAdmin(adminStatus);
+        }
+      } catch (error) {
+        console.error('Error getting initial session:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Configurar listener de mudança de estado de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
+        console.log('Auth state changed:', event);
+        
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
         if (newSession?.user) {
           // Defer loading profile to prevent Supabase auth deadlock
           setTimeout(() => {
-            checkIfUserIsAdmin(newSession.user.id).then(setIsAdmin);
+            checkIfUserIsAdmin(newSession.user.id).then(adminStatus => {
+              setIsAdmin(adminStatus);
+            });
           }, 0);
         } else {
           setIsAdmin(false);
@@ -29,16 +55,8 @@ export const useAuthProvider = (): AuthContextType => {
       }
     );
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
-      setSession(initialSession);
-      setUser(initialSession?.user ?? null);
-      
-      if (initialSession?.user) {
-        checkIfUserIsAdmin(initialSession.user.id).then(setIsAdmin);
-      }
-      setIsLoading(false);
-    });
+    // Obter sessão inicial
+    getInitialSession();
 
     return () => {
       subscription.unsubscribe();

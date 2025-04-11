@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2, UserPlus } from 'lucide-react';
@@ -18,10 +19,14 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Se o usuário já estiver autenticado, redireciona para o dashboard administrativo
+  // Modificação aqui: adicionado um método mais seguro para o redirecionamento
   useEffect(() => {
     if (session) {
-      navigate('/admin/dashboard');
+      // Adicionando um pequeno atraso para evitar redirecionamentos indesejados
+      const timer = setTimeout(() => {
+        navigate('/admin/dashboard', { replace: true });
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [session, navigate]);
 

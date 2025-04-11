@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -16,17 +16,18 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
-  // Redirect user based on their role after login
+  // Modificação aqui: adicionado verificação mais segura para o redirecionamento
   useEffect(() => {
     if (session) {
-      // If user is admin, redirect to admin dashboard
+      // Se o usuário for administrador, redireciona para o dashboard administrativo
       if (isAdmin) {
-        navigate('/admin/dashboard');
+        navigate('/admin/dashboard', { replace: true });
       } else {
-        // For regular users, redirect to homepage
-        navigate('/');
+        // Para usuários regulares, redireciona para a homepage
+        navigate('/', { replace: true });
       }
     }
   }, [session, navigate, isAdmin]);
@@ -35,9 +36,9 @@ const Login = () => {
     setIsSubmitting(true);
     try {
       await signIn(data.email, data.password);
-      // The useEffect will handle redirection when the session is updated
+      // O useEffect tratará do redirecionamento quando a sessão for atualizada
     } catch (error) {
-      // Error is handled in the signIn function
+      // Erro é tratado na função signIn
       setIsSubmitting(false);
     }
   };
