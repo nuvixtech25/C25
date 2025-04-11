@@ -24,7 +24,7 @@ export const SupabaseInfoContent: React.FC = () => {
               <ul className="list-disc list-inside text-sm mt-2 space-y-1">
                 <li>
                   <strong>Cliente Frontend</strong>: <code>src/integrations/supabase/client.ts</code>
-                  <p className="text-xs text-muted-foreground ml-6">Usa a chave anônima (SUPABASE_PUBLISHABLE_KEY) para operações seguras no frontend</p>
+                  <p className="text-xs text-muted-foreground ml-6">Usa a chave anônima (SUPABASE_ANON_KEY) para operações seguras no frontend</p>
                 </li>
                 <li>
                   <strong>Cliente Backend</strong>: <code>src/integrations/supabase/server.ts</code>
@@ -35,10 +35,10 @@ export const SupabaseInfoContent: React.FC = () => {
 {`// src/integrations/supabase/client.ts - Para uso no frontend
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = "https://onysoawoiffinwewtsex.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);`}
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);`}
               </pre>
             </div>
 
