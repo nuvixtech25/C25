@@ -14,8 +14,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 type Database = any;
 
 export const supabase = createClient<Database>(
-  supabaseUrl, 
-  supabaseAnonKey, 
+  supabaseUrl || '', 
+  supabaseAnonKey || '', 
   {
     auth: {
       persistSession: true,
