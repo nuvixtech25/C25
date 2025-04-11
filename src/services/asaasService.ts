@@ -1,6 +1,6 @@
+
 import { BillingData, PaymentStatus, PixPaymentData } from "@/types/checkout";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 /**
  * Generate a PIX payment through Netlify function or local mock
@@ -52,18 +52,7 @@ export const generatePixPayment = async (billingData: BillingData): Promise<PixP
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Error response from payment API:", errorText);
-      
-      // Try to parse the error if possible
-      let errorMessage = "Failed to generate PIX payment";
-      try {
-        const errorJson = JSON.parse(errorText);
-        errorMessage = errorJson.error || errorMessage;
-      } catch (e) {
-        // If we can't parse JSON, use the raw text (but limit length)
-        errorMessage = errorText.substring(0, 200);
-      }
-      
-      throw new Error(`Error generating PIX payment: ${errorMessage}`);
+      throw new Error(`Error generating PIX payment: ${errorText.substring(0, 200)}`);
     }
 
     // Parse the response
@@ -96,7 +85,7 @@ export const generatePixPayment = async (billingData: BillingData): Promise<PixP
     };
   } catch (error) {
     console.error("Error generating PIX payment:", error);
-    throw new Error(`Failed to generate PIX payment. Please try again. ${error.message ? `Details: ${error.message}` : ''}`);
+    throw new Error("Failed to generate PIX payment. Please try again.");
   }
 };
 
