@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,8 +50,8 @@ const PaymentPendingPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-blue-50">
-      <Card className="max-w-md w-full shadow-xl border border-blue-100 rounded-xl overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-purple-50">
+      <Card className="max-w-md w-full shadow-xl border border-purple-100 rounded-xl overflow-hidden">
         <div className="bg-gradient-to-r from-blue-500 to-blue-700 h-2 w-full" />
         <CardHeader className="text-center">
           <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-blue-100">
@@ -96,7 +95,7 @@ const PaymentPendingPage = () => {
               <p className="text-center text-gray-600 mb-3">Dúvidas sobre seu pedido?</p>
               <Button 
                 asChild 
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md transition-all duration-300 py-4 h-auto text-base font-medium rounded-xl"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md transition-all duration-300 py-4 h-auto text-base font-medium rounded-xl"
               >
                 <a 
                   href={formatWhatsAppUrl()} 
