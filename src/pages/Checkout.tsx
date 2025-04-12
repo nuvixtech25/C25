@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -5,7 +6,7 @@ import { fetchProductBySlug } from '@/services/productService';
 import { CountdownBanner } from '@/components/CountdownBanner';
 import { useCheckoutCustomization } from '@/hooks/useCheckoutCustomization';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
-import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
+import CheckoutContainer from '@/components/checkout/CheckoutContainer';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { CheckoutError } from '@/components/checkout/CheckoutError';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
