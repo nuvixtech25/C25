@@ -29,19 +29,19 @@ const DashboardPage = () => {
         />
         
         <DashboardStats 
-          stats={stats || { totalOrders: 0, totalRevenue: 0, cardsCaptures: 0, visitors: 0 }}
+          stats={stats}
           loading={statsLoading}
           period={period}
         />
         
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <OrdersTimeChart data={ordersOverTime || []} />
-          <PaymentMethodsChart data={paymentDistribution || []} />
+          <OrdersTimeChart data={ordersOverTime} />
+          <PaymentMethodsChart data={paymentDistribution} />
         </div>
         
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <RevenueChart data={ordersOverTime || []} />
-          <OrderStatusChart data={statusDistribution || []} />
+          <RevenueChart data={ordersOverTime} />
+          <OrderStatusChart data={statusDistribution} />
         </div>
       </div>
     </AdminLayout>
