@@ -8,7 +8,7 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/admin/*" element={<AdminRoutes />} />
-      <Route path="/*" element={<PublicRoutes />} />
+      <Route path="*" element={<PublicRoutes />} />
     </Routes>
   );
 };
