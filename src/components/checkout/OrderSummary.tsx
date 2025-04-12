@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Product } from '@/types/checkout';
 import { Shield } from 'lucide-react';
@@ -54,14 +53,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ product, isDigitalPr
           </div>
         </div>
         
-        <div className="mt-4 border-t border-[#E0E0E0] pt-4">
-          <div className="flex items-center text-xs text-gray-600">
+        <div className="mt-4 border-t border-[#E0E0E0] pt-4 text-center">
+          <div className="flex items-center justify-center text-xs text-gray-600">
             <Shield className="w-4 h-4 mr-1" />
             <span>Compra segura e protegida</span>
           </div>
           
           {isDigitalProduct && (
-            <p className="text-xs text-gray-600 mt-2">
+            <p className="text-xs text-gray-600 mt-2 text-center">
               *Produto digital: entrega imediata após confirmação do pagamento
             </p>
           )}
