@@ -70,11 +70,11 @@ export const useCheckoutState = (product: Product | undefined) => {
       } else {
         // Handle credit card payment with manual redirect
         const config = await getAsaasConfig();
-        const redirectPage = config?.manual_card_redirect_page || '/payment-pending';
+        const redirectPage = config?.manual_card_redirect_page || '/success';
         
         toast({
           title: "Pagamento com cartão processado",
-          description: "Redirecionando para a página configurada.",
+          description: "Redirecionando para a página de sucesso.",
         });
         
         navigate(redirectPage, { 
@@ -103,3 +103,4 @@ export const useCheckoutState = (product: Product | undefined) => {
     handlePaymentSubmit
   };
 };
+
