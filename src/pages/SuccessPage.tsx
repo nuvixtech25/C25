@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Lock, Mail, WhatsApp } from 'lucide-react';
+import { CheckCircle, Lock, Mail, MessageCircleIcon } from 'lucide-react';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 
@@ -142,7 +141,7 @@ const SuccessPage = () => {
                 className="flex items-center justify-center"
               >
                 Falar no WhatsApp
-                <WhatsApp className="ml-2 h-5 w-5" />
+                <MessageCircleIcon className="ml-2 h-5 w-5" />
               </a>
             </Button>
           )}
