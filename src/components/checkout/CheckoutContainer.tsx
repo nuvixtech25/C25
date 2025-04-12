@@ -9,7 +9,8 @@ interface CheckoutContainerProps {
   className?: string;
 }
 
-export const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ 
+// Change from named export to default export
+const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ 
   children, 
   className 
 }) => {
@@ -25,3 +26,6 @@ export const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
     </div>
   );
 };
+
+// Export as default instead of named export
+export default CheckoutContainer;
