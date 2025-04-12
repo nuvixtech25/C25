@@ -1,14 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
-import { CheckoutHeader } from './CheckoutHeader';
-import { CheckoutFooter } from './CheckoutFooter';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { TimerBanner } from './TimerBanner';
-
-interface CheckoutContainerProps {
-  children: React.ReactNode;
-}
+import { CheckoutFooter } from './CheckoutFooter';
 
 interface CheckoutCustomization {
   button_color?: string;
@@ -88,13 +82,20 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     );
   }
 
+  // Remove the CheckoutHeader component
   return (
     <div className="min-h-screen bg-white text-black" style={customStyles}>
-      <TimerBanner message="Oferta por tempo limitado!" initialMinutes={5} initialSeconds={2} />
-      <CheckoutHeader />
+      {/* Conditionally render TimerBanner based on customization */}
+      {customization.show_banner && (
+        <TimerBanner 
+          message={customization.header_message || 'Oferta por tempo limitado!'} 
+          initialMinutes={5} 
+          initialSeconds={2} 
+        />
+      )}
+      
       <div className="w-full flex justify-center">
         <div className="w-full md:w-1/2 max-w-xl mx-auto p-4 md:p-6 bg-white rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold text-center text-black mb-6">Finalizar Compra</h1>
           <main>
             {children}
           </main>
