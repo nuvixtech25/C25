@@ -4,31 +4,34 @@ import { MessageCircleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface WhatsAppButtonProps {
-  hasWhatsappSupport: boolean;
+  hasWhatsappSupport?: boolean;
   whatsappNumber?: string;
+  forceShow?: boolean;
 }
 
 export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ 
   hasWhatsappSupport, 
-  whatsappNumber 
+  whatsappNumber,
+  forceShow = false
 }) => {
   useEffect(() => {
     console.log('[WhatsAppButton] Rendering with props:', { 
       hasWhatsappSupport, 
       whatsappNumber,
+      forceShow,
       hasWhatsappSupportType: typeof hasWhatsappSupport,
       whatsappNumberType: typeof whatsappNumber
     });
-  }, [hasWhatsappSupport, whatsappNumber]);
+  }, [hasWhatsappSupport, whatsappNumber, forceShow]);
 
-  // More robust check to show the button
-  // Only hide if BOTH conditions explicitly fail
-  const shouldShowButton = Boolean(hasWhatsappSupport || whatsappNumber);
+  // More lenient check - show by default on failed payment page
+  const shouldShowButton = forceShow || Boolean(hasWhatsappSupport || whatsappNumber);
   
   if (!shouldShowButton) {
     console.log('[WhatsAppButton] Not rendering - button conditions failed:', {
       hasWhatsappSupport,
-      whatsappNumber
+      whatsappNumber,
+      forceShow
     });
     return null;
   }

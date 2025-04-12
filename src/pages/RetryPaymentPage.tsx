@@ -10,6 +10,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { RefreshCcw, XCircle, AlertTriangle, Clock } from 'lucide-react';
 import { useRetryValidation } from '@/hooks/useRetryValidation';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
 
 const RetryPaymentPage = () => {
   const { state } = useLocation();
@@ -276,6 +277,11 @@ const RetryPaymentPage = () => {
               </button>
             </div>
           )}
+          
+          {/* Add WhatsApp button with forceShow */}
+          <div className="mt-6">
+            <WhatsAppButton forceShow={true} />
+          </div>
         </CardContent>
       </Card>
     </div>
