@@ -4,11 +4,6 @@ import { CreditCard } from 'lucide-react';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { PaymentMethod } from '@/types/checkout';
 
-interface PaymentOptionsProps {
-  paymentMethod: PaymentMethod;
-  onPaymentMethodChange: (method: PaymentMethod) => void;
-}
-
 const PaymentOptions: React.FC<PaymentOptionsProps> = ({ 
   paymentMethod, 
   onPaymentMethodChange 
@@ -22,12 +17,12 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
       <div
         className={`flex-1 cursor-pointer p-4 flex justify-center items-center border rounded-md ${
           paymentMethod === 'creditCard' 
-            ? 'bg-gray-100 border-primary shadow-sm' 
+            ? 'bg-green-100 border-green-500 shadow-sm' // Changed to green 
             : 'bg-white border-gray-300'
         }`}
         onClick={() => onPaymentMethodChange('creditCard')}
       >
-        <CreditCard className={`${paymentMethod === 'creditCard' ? 'text-primary' : 'text-gray-600'}`} size={24} />
+        <CreditCard className={`${paymentMethod === 'creditCard' ? 'text-green-600' : 'text-gray-600'}`} size={24} />
         <span className="ml-2 font-medium">Cartão</span>
       </div>
       
