@@ -58,9 +58,9 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
   };
 
   return (
-    <section id="customer-section" className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-6" style={{ color: headingColor }}>
-        Informações pessoais
+    <section id="customer-section" className="bg-white/10 backdrop-blur-sm p-6 rounded-lg">
+      <h2 className="text-xl font-medium mb-6 text-white">
+        Identificação
       </h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -136,7 +136,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
           
           <Button 
             type="submit" 
-            className="w-full bg-asaas-primary hover:bg-asaas-secondary"
+            className="w-full bg-green-500 hover:bg-green-600 text-white"
           >
             Continuar para pagamento
           </Button>
