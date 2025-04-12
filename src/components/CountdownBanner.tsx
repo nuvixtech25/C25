@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 interface CountdownBannerProps {
   message: string;
-  endTime: Date;
+  endTime: Date | string;
 }
 
 export const CountdownBanner: React.FC<CountdownBannerProps> = ({
@@ -18,7 +18,17 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
   
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const difference = endTime.getTime() - new Date().getTime();
+      // Handle both Date objects and ISO strings
+      const endTimeDate = endTime instanceof Date ? endTime : new Date(endTime);
+      
+      // Make sure the date is valid before proceeding
+      if (isNaN(endTimeDate.getTime())) {
+        console.error('Invalid date provided to CountdownBanner:', endTime);
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      
+      const difference = endTimeDate.getTime() - new Date().getTime();
       
       if (difference <= 0) {
         setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });

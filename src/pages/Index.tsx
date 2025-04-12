@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -20,13 +21,20 @@ const mockProduct: Product = {
   imageUrl: 'https://via.placeholder.com/300x200'
 };
 
+// Create a valid Date object for the countdown that's 24 hours from now
+const createValidCountdownDate = (): Date => {
+  const date = new Date();
+  date.setHours(date.getHours() + 24);
+  return date;
+};
+
 const mockCustomization: CheckoutCustomization = {
   buttonColor: '#6E59A5', // Default Asaas primary color
   buttonText: 'Finalizar Compra',
   headingColor: '#6E59A5',
   bannerImageUrl: null,
   topMessage: 'Oferta por tempo limitado!',
-  countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24h from now
+  countdownEndTime: createValidCountdownDate().toISOString(), // 24h from now, using a valid date
   isDigitalProduct: true
 };
 
@@ -55,7 +63,7 @@ const Index = () => {
     setIsSubmitting(true);
     
     try {
-      // Criar um ordem temporária para emular o fluxo real
+      // Create a temporary order to emulate the real flow
       const mockOrderId = `mock_order_${Date.now()}`;
       
       // Create billing data
@@ -67,7 +75,7 @@ const Index = () => {
       };
       
       if (paymentMethod === 'pix') {
-        navigate('/payment', { state: { billingData } });
+        navigate('/payment', { state: { billingData, order: { id: mockOrderId } } });
       } else {
         // Process credit card payment
         toast({

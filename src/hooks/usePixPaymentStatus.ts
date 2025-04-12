@@ -30,26 +30,26 @@ export const usePixPaymentStatus = ({
   const [isExpired, setIsExpired] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
   
-  // Usar hook de polling para verificar o status do pagamento
+  // Use polling hook to check payment status
   const { status, isCheckingStatus, error, forceCheck } = usePaymentPolling(paymentId, 'PENDING');
   
-  // Efeito para redirecionar com base no status
+  // Effect to redirect based on status
   useEffect(() => {
     if (redirecting) return;
     
     if (status === "CONFIRMED") {
       setRedirecting(true);
       
-      // Mostrar toast de confirmação
+      // Show confirmation toast
       toast({
         title: "Pagamento confirmado!",
         description: "Seu pagamento foi processado com sucesso.",
       });
       
-      // Abrir nova página com a confirmação e então redirecionar
+      // Open new page with confirmation and then redirect
       console.log("Pagamento confirmado, preparando redirecionamento para página de sucesso");
       
-      // Tentar abrir uma nova janela com a mensagem de confirmação
+      // Try to open a new window with confirmation message
       const successWindow = window.open("", "_blank");
       if (successWindow) {
         successWindow.document.write(`
@@ -151,7 +151,7 @@ export const usePixPaymentStatus = ({
         `);
       }
       
-      // Redirecionar a janela atual após um pequeno atraso
+      // Redirect current window after a short delay
       setTimeout(() => navigate("/success", {
         state: {
           order: {
@@ -178,21 +178,36 @@ export const usePixPaymentStatus = ({
   // Calculate time left for expiration
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const expirationTime = new Date(expirationDate).getTime();
-      const now = new Date().getTime();
-      const difference = expirationTime - now;
-      
-      if (difference <= 0) {
+      try {
+        // Parse the expiration date string safely
+        const expirationTime = new Date(expirationDate);
+        
+        // Check if the date is valid
+        if (isNaN(expirationTime.getTime())) {
+          console.error('Invalid expiration date:', expirationDate);
+          setIsExpired(true);
+          return '00:00:00';
+        }
+        
+        const now = new Date();
+        const difference = expirationTime.getTime() - now.getTime();
+        
+        if (difference <= 0) {
+          setIsExpired(true);
+          return '00:00:00';
+        }
+        
+        setIsExpired(false);
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000).toString().padStart(2, '0');
+        
+        return `${hours}:${minutes}:${seconds}`;
+      } catch (error) {
+        console.error('Error calculating time left:', error);
         setIsExpired(true);
         return '00:00:00';
       }
-      
-      setIsExpired(false);
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000).toString().padStart(2, '0');
-      
-      return `${hours}:${minutes}:${seconds}`;
     };
     
     const timer = setInterval(() => {
