@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,17 +12,20 @@ const SuccessPage = () => {
   const location = useLocation();
   const { trackPurchase } = usePixelEvents();
   const [isDigitalProduct, setIsDigitalProduct] = useState(false);
-  const [hasWhatsappSupport, setHasWhatsappSupport] = useState(true); // Default to true for visibility
-  const [whatsappNumber, setWhatsappNumber] = useState(''); // Start with empty string
+  const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false); 
+  const [whatsappNumber, setWhatsappNumber] = useState(''); 
   
   useEffect(() => {
-    console.log('[SuccessPage] Initializing with location state:', JSON.stringify(location.state, null, 2));
+    console.log('[SuccessPage] Full location state:', JSON.stringify(location.state, null, 2));
     
     if (location.state?.order) {
       const { order, product } = location.state;
       
-      console.log('[SuccessPage] Processing order details:', JSON.stringify(order, null, 2));
-      console.log('[SuccessPage] Product info from state:', JSON.stringify(product, null, 2));
+      console.log('[SuccessPage] Product data:', {
+        hasWhatsappSupport: product?.has_whatsapp_support,
+        whatsappNumber: product?.whatsapp_number,
+        orderWhatsappNumber: order.whatsapp_number
+      });
       
       // Track purchase event
       trackPurchase(
