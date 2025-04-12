@@ -1,17 +1,21 @@
+
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Product, CheckoutCustomization } from '@/types/checkout';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
 import CheckoutContainer from '@/components/checkout/CheckoutContainer';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchProductBySlug } from '@/services/productService';
+import { CheckoutError } from '@/components/checkout/CheckoutError';
 
 const Checkout: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { productSlug } = useParams<{ productSlug?: string }>();
 
   const {
     customerData,
@@ -23,8 +27,29 @@ const Checkout: React.FC = () => {
   } = useCheckoutState(product || undefined);
 
   useEffect(() => {
-    const fetchDefaultProduct = async () => {
+    const fetchProduct = async () => {
+      setLoading(true);
       try {
+        // If product slug is provided in the URL, fetch that specific product
+        if (productSlug) {
+          console.log(`Fetching product with slug: ${productSlug}`);
+          const foundProduct = await fetchProductBySlug(productSlug);
+          
+          if (foundProduct) {
+            console.log(`Found product:`, foundProduct);
+            setProduct(foundProduct);
+            return;
+          } else {
+            console.error(`Product with slug "${productSlug}" not found`);
+            toast({
+              title: "Produto não encontrado",
+              description: `O produto "${productSlug}" não foi encontrado.`,
+              variant: "destructive",
+            });
+          }
+        }
+        
+        // If no slug or product not found, fetch default product
         const { data, error } = await supabase
           .from('products')
           .select('*')
@@ -75,8 +100,8 @@ const Checkout: React.FC = () => {
       }
     };
 
-    fetchDefaultProduct();
-  }, [toast]);
+    fetchProduct();
+  }, [productSlug, toast]);
 
   if (loading) {
     return (
@@ -87,20 +112,7 @@ const Checkout: React.FC = () => {
   }
 
   if (!product) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-500">Produto não encontrado</h2>
-          <p className="mt-2 text-gray-600">Não foi possível encontrar o produto solicitado.</p>
-          <button 
-            onClick={() => navigate('/')} 
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Voltar para a página inicial
-          </button>
-        </div>
-      </div>
-    );
+    return <CheckoutError message={`Produto "${productSlug || ''}" não encontrado.`} />;
   }
 
   const customization: CheckoutCustomization = {

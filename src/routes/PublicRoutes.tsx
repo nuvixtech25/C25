@@ -22,6 +22,8 @@ const PublicRoutes: React.FC = () => {
       <Route path="/" element={<Index />} />
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/checkout" element={<Checkout />} />
+      {/* Dynamic route for product checkout */}
+      <Route path="/checkout/:productSlug" element={<Checkout />} />
       <Route path="/checkout/preview" element={<CheckoutPreview />} />
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />
