@@ -20,8 +20,8 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
   };
   
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
-    // Get the current cursor position
-    const cursorPos = e.target.selectionStart;
+    // Get the current cursor position, defaulting to end position if null
+    const cursorPos = e.target.selectionStart ?? e.target.value.length;
     
     // Get the current value
     let { value } = e.target;
@@ -52,9 +52,12 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
     const newCursorPos = cursorPos + (addedSpaces - (value.length - valueWithoutSpaces.length));
     
     // Set the cursor position to where it should be after formatting
-    setTimeout(() => {
-      e.target.setSelectionRange(newCursorPos, newCursorPos);
-    }, 0);
+    // Only attempt to set selection range if the element is focused
+    if (document.activeElement === e.target) {
+      setTimeout(() => {
+        e.target.setSelectionRange(newCursorPos, newCursorPos);
+      }, 0);
+    }
   };
 
   return (
