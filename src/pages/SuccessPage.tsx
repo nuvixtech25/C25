@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +14,7 @@ const SuccessPage = () => {
   const { trackPurchase } = usePixelEvents();
   const [isDigitalProduct, setIsDigitalProduct] = useState(false);
   const [hasWhatsappSupport, setHasWhatsappSupport] = useState(true); // Default to true for visibility
-  const [whatsappNumber, setWhatsappNumber] = useState('5511999999999'); // Default fallback number
+  const [whatsappNumber, setWhatsappNumber] = useState(''); // Start with empty string
   
   useEffect(() => {
     console.log('[SuccessPage] Initializing with location state:', JSON.stringify(location.state, null, 2));
@@ -40,29 +41,36 @@ const SuccessPage = () => {
         setIsDigitalProduct(true);
       }
       
-      // SIMPLIFIED WHATSAPP LOGIC: Force enable WhatsApp support
-      setHasWhatsappSupport(true);
+      // Get WhatsApp support status
+      const productHasWhatsappSupport = product?.has_whatsapp_support === true || 
+                                        location.state.has_whatsapp_support === true;
+                                        
+      console.log('[SuccessPage] WhatsApp support status:', productHasWhatsappSupport);
+      setHasWhatsappSupport(productHasWhatsappSupport);
       
-      // Get WhatsApp number from any available source
+      // Get WhatsApp number from any available source with priority
+      const productNumber = product?.whatsapp_number;
       const locationNumber = location.state.whatsapp_number;
       const orderNumber = order.whatsapp_number;
-      const productNumber = product?.whatsapp_number;
         
       console.log('[SuccessPage] WhatsApp number sources:', {
+        productNumber,
         locationNumber,
-        orderNumber,
-        productNumber
+        orderNumber
       });
       
-      const wNumber = locationNumber || orderNumber || productNumber || '5511999999999';
+      // Use the first available number with priority order
+      const wNumber = productNumber || locationNumber || orderNumber || '';
         
       console.log('[SuccessPage] Setting WhatsApp number:', wNumber);
       setWhatsappNumber(wNumber);
     } else {
-      // Always enable WhatsApp support with fallback number
-      console.log('[SuccessPage] No order data found - enabling fallback WhatsApp support');
-      setHasWhatsappSupport(true);
-      setWhatsappNumber('5511999999999');
+      // For testing in development environment only - enable WhatsApp with test number
+      console.log('[SuccessPage] No order data found - testing mode');
+      if (process.env.NODE_ENV === 'development') {
+        setHasWhatsappSupport(true);
+        setWhatsappNumber('5511999999999');
+      }
     }
   }, [location.state, trackPurchase]);
 
