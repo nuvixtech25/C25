@@ -16,7 +16,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   message,
   initialMinutes = 5,
   initialSeconds = 0,
-  backgroundColor = '#000000',
+  backgroundColor = 'transparent',
   bannerImageUrl = null,
   containerClassName = 'w-full'
 }) => {

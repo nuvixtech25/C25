@@ -14,7 +14,7 @@ interface CountdownBannerProps {
 export const CountdownBanner: React.FC<CountdownBannerProps> = ({ 
   message, 
   endTime, 
-  backgroundColor = '#000000',
+  backgroundColor = 'transparent',
   bannerImageUrl = null,
   containerClassName = 'w-full'
 }) => {
@@ -73,9 +73,11 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
           style={{ 
             backgroundColor,
             backgroundImage: `url(${bannerImageUrl})`,
-            backgroundSize: 'cover',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            height: isMobile ? '180px' : '220px' // Significativamente maior para mostrar o banner completo
+            height: isMobile ? '180px' : '220px', // Significativamente maior para mostrar o banner completo
+            maxWidth: '100%'
           }}
         />
       )}
