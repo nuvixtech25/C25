@@ -5,161 +5,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Paintbrush, LayoutTemplate, Clock, Text, Store, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { ColorPicker } from './components/ColorPicker';
+import { createPreviewUrl } from '@/utils/previewUtils';
+import { CheckoutCustomizationSettings } from '@/types/customization';
+import { AppearanceTab } from './components/customization/AppearanceTab';
+import { ContentTab } from './components/customization/ContentTab';
+import { TimerTab } from './components/customization/TimerTab';
+import { ProductTab } from './components/customization/ProductTab';
 
-// Extrair componentes para tornar o código mais limpo e gerenciável
-const AppearanceTab = ({ settings, handleChange, handleColorChange }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Cores e Estilo</CardTitle>
-      <CardDescription>
-        Personalize as cores e aparência do seu checkout.
-      </CardDescription>
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="buttonColor">Cor do Botão</Label>
-          <div className="flex gap-2">
-            <ColorPicker 
-              color={settings.buttonColor} 
-              onChange={(color) => handleColorChange('buttonColor', color)} 
-            />
-            <Input 
-              id="buttonColor"
-              name="buttonColor"
-              value={settings.buttonColor}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="headingColor">Cor dos Títulos</Label>
-          <div className="flex gap-2">
-            <ColorPicker 
-              color={settings.headingColor} 
-              onChange={(color) => handleColorChange('headingColor', color)} 
-            />
-            <Input 
-              id="headingColor"
-              name="headingColor"
-              value={settings.headingColor}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="bannerImageUrl">URL da Imagem de Banner</Label>
-        <Input 
-          id="bannerImageUrl"
-          name="bannerImageUrl"
-          value={settings.bannerImageUrl || ''}
-          onChange={handleChange}
-          placeholder="https://exemplo.com/imagem.jpg"
-        />
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const ContentTab = ({ settings, handleChange }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Textos e Mensagens</CardTitle>
-      <CardDescription>
-        Personalize os textos mostrados na página de checkout.
-      </CardDescription>
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="buttonText">Texto do Botão de Pagamento</Label>
-        <Input 
-          id="buttonText"
-          name="buttonText"
-          value={settings.buttonText}
-          onChange={handleChange}
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="topMessage">Mensagem de Topo</Label>
-        <Input 
-          id="topMessage"
-          name="topMessage"
-          value={settings.topMessage}
-          onChange={handleChange}
-        />
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const TimerTab = ({ settings, handleChange }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Temporizador de Oferta</CardTitle>
-      <CardDescription>
-        Configure um temporizador de contagem regressiva para criar urgência.
-      </CardDescription>
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="countdownEndTime">Data e Hora de Término</Label>
-        <Input 
-          id="countdownEndTime"
-          name="countdownEndTime"
-          type="datetime-local"
-          value={settings.countdownEndTime}
-          onChange={handleChange}
-        />
-      </div>
-    </CardContent>
-  </Card>
-);
-
-const ProductTab = ({ settings, handleSwitchChange }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Configurações do Produto</CardTitle>
-      <CardDescription>
-        Configure as propriedades relacionadas ao produto.
-      </CardDescription>
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <div className="flex items-center space-x-2">
-        <Switch 
-          id="isDigitalProduct"
-          checked={settings.isDigitalProduct}
-          onCheckedChange={(checked) => handleSwitchChange('isDigitalProduct', checked)}
-        />
-        <Label htmlFor="isDigitalProduct">Produto Digital</Label>
-      </div>
-    </CardContent>
-  </Card>
-);
-
-// Função para criar a URL de prévia do checkout
-const createPreviewUrl = (settings) => {
-  let url = `/checkout/preview?buttonColor=${encodeURIComponent(settings.buttonColor)}&buttonText=${encodeURIComponent(settings.buttonText)}&headingColor=${encodeURIComponent(settings.headingColor)}&topMessage=${encodeURIComponent(settings.topMessage)}&countdownEndTime=${encodeURIComponent(settings.countdownEndTime)}&isDigitalProduct=${settings.isDigitalProduct}`;
-  
-  if (settings.bannerImageUrl) {
-    url += `&bannerImageUrl=${encodeURIComponent(settings.bannerImageUrl)}`;
-  }
-  
-  return url;
-};
-
-const AdminTools = () => {
+const AdminTools: React.FC = () => {
   const customization = useCheckoutCustomization();
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<CheckoutCustomizationSettings>({
     buttonColor: customization.buttonColor || '#6E59A5',
     buttonText: customization.buttonText || 'Finalizar Compra',
     headingColor: customization.headingColor || '#6E59A5',
