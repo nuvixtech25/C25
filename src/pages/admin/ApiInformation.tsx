@@ -43,13 +43,6 @@ const ApiInformation = () => {
                     O cliente Supabase é inicializado em <code>src/integrations/supabase/client.ts</code>
                   </p>
                   <pre className="bg-black/90 text-white p-3 rounded-md text-xs mt-2 overflow-auto">
-{`// src/integrations/supabase/client.ts
-import { createClient } from '@supabase/supabase-js';
-
-const SUPABASE_URL = "https://onysoawoiffinwewtsex.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
-
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);`}
                   </pre>
                 </div>
 
