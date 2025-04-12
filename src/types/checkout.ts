@@ -91,6 +91,7 @@ export interface CheckoutCustomization {
   topMessage: string;
   countdownEndTime: string;
   isDigitalProduct: boolean;
+  bannerColor: string; // Added the bannerColor property
 }
 
 // Testimonial

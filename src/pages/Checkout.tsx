@@ -122,7 +122,8 @@ const Checkout: React.FC = () => {
     bannerImageUrl: null,
     topMessage: 'Oferta por tempo limitado!',
     countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    isDigitalProduct: product.type === 'digital'
+    isDigitalProduct: product.type === 'digital',
+    bannerColor: '#000000' // Added default banner color
   };
 
   return (
