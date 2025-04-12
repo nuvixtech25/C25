@@ -21,9 +21,9 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     });
   }, [hasWhatsappSupport, whatsappNumber]);
 
-  // Check if we should show the button
-  // Only hide the button if BOTH conditions are explicit false/empty
-  const shouldShowButton = hasWhatsappSupport || !!whatsappNumber;
+  // More robust check to show the button
+  // Only hide if BOTH conditions explicitly fail
+  const shouldShowButton = Boolean(hasWhatsappSupport || whatsappNumber);
   
   if (!shouldShowButton) {
     console.log('[WhatsAppButton] Not rendering - button conditions failed:', {
@@ -38,7 +38,7 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     const numberToUse = whatsappNumber || '5511999999999';
     const cleanNumber = numberToUse.replace(/\D/g, '') || '';
     console.log('[WhatsAppButton] Creating WhatsApp URL with number:', cleanNumber);
-    const url = `https://wa.me/${cleanNumber}?text=Olá! Acabei de adquirir um produto e gostaria de obter mais informações.`;
+    const url = `https://wa.me/${cleanNumber}?text=Olá! Acabei de tentar fazer uma compra e tive um problema. Gostaria de obter ajuda.`;
     return url;
   };
 

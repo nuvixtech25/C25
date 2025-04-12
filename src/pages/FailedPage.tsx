@@ -6,14 +6,19 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, RefreshCcw } from 'lucide-react';
 import { Order, PaymentMethod } from '@/types/checkout';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
+import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
 
 const FailedPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
+  const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   const { trackPurchase } = usePixelEvents();
 
   useEffect(() => {
+    console.log('[FailedPage] Full location state:', JSON.stringify(state, null, 2));
+    
     // Get order from location state if available
     if (state?.order) {
       setOrder(state.order);
@@ -22,8 +27,81 @@ const FailedPage = () => {
       if (state.order.id && state.order.productPrice) {
         trackPurchase(state.order.id, 0); // Value 0 for failed payment
       }
+      
+      // Process WhatsApp data if available in state
+      const product = state.product || {};
+      
+      console.log('[FailedPage] Product data:', {
+        hasWhatsappSupport: product?.has_whatsapp_support,
+        whatsappNumber: product?.whatsapp_number
+      });
+      
+      // Check if WhatsApp support is enabled
+      const productHasWhatsappSupport = Boolean(
+        product?.has_whatsapp_support === true || 
+        state.has_whatsapp_support === true
+      );
+      
+      console.log('[FailedPage] WhatsApp support status:', productHasWhatsappSupport);
+      setHasWhatsappSupport(productHasWhatsappSupport);
+      
+      // Get WhatsApp number from any available source
+      const productNumber = product?.whatsapp_number;
+      const locationNumber = state.whatsapp_number;
+      
+      console.log('[FailedPage] WhatsApp number sources:', {
+        productNumber,
+        locationNumber
+      });
+      
+      // Use the first available number
+      const wNumber = productNumber || locationNumber || '';
+      
+      console.log('[FailedPage] Setting WhatsApp number:', wNumber);
+      setWhatsappNumber(wNumber);
+      
+      // Store in localStorage as fallback
+      if (productHasWhatsappSupport || wNumber) {
+        try {
+          localStorage.setItem('whatsapp_support', productHasWhatsappSupport.toString());
+          if (wNumber) localStorage.setItem('whatsapp_number', wNumber);
+          console.log('[FailedPage] Stored WhatsApp data in localStorage for fallback');
+        } catch (e) {
+          console.error('[FailedPage] Failed to store in localStorage:', e);
+        }
+      }
+    } else {
+      // No state available, try to get from localStorage as fallback
+      try {
+        const storedSupport = localStorage.getItem('whatsapp_support');
+        const storedNumber = localStorage.getItem('whatsapp_number');
+        
+        console.log('[FailedPage] No order data found - checking localStorage:', {
+          storedSupport,
+          storedNumber
+        });
+        
+        if (storedSupport === 'true') {
+          setHasWhatsappSupport(true);
+        }
+        
+        if (storedNumber) {
+          setWhatsappNumber(storedNumber);
+        }
+      } catch (e) {
+        console.error('[FailedPage] Failed to read from localStorage:', e);
+      }
     }
   }, [state, trackPurchase]);
+
+  // Add debug rendering information
+  useEffect(() => {
+    console.log('[FailedPage] Current component state:', {
+      hasWhatsappSupport,
+      whatsappNumber,
+      orderExists: !!order
+    });
+  }, [hasWhatsappSupport, whatsappNumber, order]);
 
   const handleRetry = () => {
     if (order) {
@@ -64,6 +142,18 @@ const FailedPage = () => {
           <Button asChild className="w-full bg-asaas-primary hover:bg-asaas-secondary">
             <Link to="/">Voltar para a página inicial</Link>
           </Button>
+          
+          {/* Add WhatsApp button */}
+          <WhatsAppButton 
+            hasWhatsappSupport={hasWhatsappSupport} 
+            whatsappNumber={whatsappNumber}
+          />
+          
+          {/* Debug info */}
+          <div className="mt-3 text-xs bg-gray-100 p-2 rounded text-gray-500">
+            Debug: WhatsApp Support: {hasWhatsappSupport ? 'Yes' : 'No'}, 
+            Number: {whatsappNumber || 'None'}
+          </div>
         </CardFooter>
       </Card>
     </div>
