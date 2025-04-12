@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -9,12 +9,49 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { CreditCardData } from '@/types/checkout';
 import { useToast } from '@/hooks/use-toast';
 
+// Função para formatar data de expiração MM/AA
+const formatExpiryDate = (value: string): string => {
+  const cleaned = value.replace(/\D/g, '');
+  
+  if (cleaned.length <= 2) {
+    return cleaned;
+  } else {
+    return `${cleaned.substring(0, 2)}/${cleaned.substring(2, 4)}`;
+  }
+};
+
+// Validação para verificar se a data de expiração é válida e não está vencida
+const isExpiryDateValid = (value: string): boolean => {
+  // Formato esperado: MM/AA
+  const pattern = /^(0[1-9]|1[0-2])\/\d{2}$/;
+  if (!pattern.test(value)) return false;
+  
+  const parts = value.split('/');
+  const month = parseInt(parts[0], 10);
+  const year = parseInt(`20${parts[1]}`, 10);
+  
+  const today = new Date();
+  const currentMonth = today.getMonth() + 1; // Js meses são 0-indexed
+  const currentYear = today.getFullYear();
+  
+  // Verificar se o cartão já expirou
+  if (year < currentYear || (year === currentYear && month < currentMonth)) {
+    return false;
+  }
+  
+  return true;
+};
+
 // Card validation schema
 const cardSchema = z.object({
   holderName: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
   number: z.string().min(13, 'Número inválido').max(19, 'Número inválido')
     .regex(/^\d+$/, 'Apenas números são permitidos'),
-  expiryDate: z.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Formato MM/AA inválido'),
+  expiryDate: z.string()
+    .refine(
+      val => isExpiryDateValid(val),
+      'Data de validade inválida ou cartão vencido'
+    ),
   cvv: z.string().regex(/^\d{3,4}$/, 'CVV inválido')
 });
 
@@ -41,6 +78,12 @@ export const CardForm: React.FC<CardFormProps> = ({
       cvv: ''
     }
   });
+
+  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
+    const { value } = e.target;
+    const formatted = formatExpiryDate(value);
+    onChange(formatted);
+  };
 
   const handleSubmit = (values: z.infer<typeof cardSchema>) => {
     // Detectar a bandeira do cartão (simplificado)
@@ -113,13 +156,14 @@ export const CardForm: React.FC<CardFormProps> = ({
           <FormField
             control={form.control}
             name="expiryDate"
-            render={({ field }) => (
+            render={({ field: { onChange, ...rest } }) => (
               <FormItem>
                 <FormLabel>Validade</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="MM/AA" 
-                    {...field}
+                    {...rest}
+                    onChange={(e) => handleExpiryDateChange(e, onChange)}
                     autoComplete="cc-exp"
                     maxLength={5}
                   />
