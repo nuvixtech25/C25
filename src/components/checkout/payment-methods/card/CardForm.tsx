@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,7 +20,7 @@ interface CardFormProps {
 export const CardForm: React.FC<CardFormProps> = ({ 
   onSubmit, 
   isLoading, 
-  buttonColor = '#28A745',
+  buttonColor = '#006400', // Dark green color
   buttonText = 'Finalizar Pagamento',
   productPrice = 0
 }) => {
@@ -49,7 +48,7 @@ export const CardForm: React.FC<CardFormProps> = ({
     
     onSubmit(cardData);
   };
-
+  
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
