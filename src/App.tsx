@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -27,6 +28,7 @@ import Dashboard from './pages/admin/dashboard'; // Import the new Dashboard com
 import SuccessPage from './pages/SuccessPage';
 import FailedPage from './pages/FailedPage';
 import PaymentPage from './pages/PaymentPage';
+import PaymentPendingPage from './pages/PaymentPendingPage'; // Import the new PaymentPendingPage component
 import { usePixelEvents } from './hooks/usePixelEvents';
 import AccessDataPage from './pages/AccessDataPage';
 import AccessProductPage from './pages/AccessProductPage';
@@ -34,7 +36,6 @@ import AccessProductPage from './pages/AccessProductPage';
 // Importações temporárias para funcionar sem os arquivos reais
 const ProductPage = () => <div>Product Page</div>;
 const ConfirmationPage = () => <div>Confirmation Page</div>;
-const PaymentPendingPage = () => <div>Payment Pending Page</div>;
 const TestimonialsPage = () => <div>Testimonials Page</div>;
 const CheckoutCustomizationPage = () => <div>Checkout Customization Page</div>;
 
