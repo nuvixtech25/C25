@@ -32,7 +32,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
       {/* Banner image below the timer */}
       {bannerImageUrl && (
         <div 
-          className="w-full flex items-center justify-center mt-6 md:mt-12" 
+          className="w-full flex items-center justify-center" 
           style={{ 
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'contain',
