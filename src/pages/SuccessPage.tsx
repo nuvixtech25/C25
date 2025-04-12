@@ -98,6 +98,14 @@ const SuccessPage = () => {
     });
   }, [isDigitalProduct, hasWhatsappSupport, whatsappNumber]);
 
+  // Log WhatsApp button props before rendering (outside JSX)
+  useEffect(() => {
+    console.log('[SuccessPage] Rendering WhatsApp button with props:', { 
+      hasWhatsappSupport, 
+      whatsappNumber 
+    });
+  }, [hasWhatsappSupport, whatsappNumber]);
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-gray-50 to-gray-100">
       <Card className="max-w-md w-full shadow-lg border border-gray-100 rounded-xl overflow-hidden">
@@ -128,12 +136,7 @@ const SuccessPage = () => {
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
           
-          {/* Force render WhatsApp button when debug values are available */}
-          {console.log('[SuccessPage] Rendering WhatsApp button with props:', { 
-            hasWhatsappSupport, 
-            whatsappNumber 
-          })}
-          
+          {/* WhatsApp button component with props */}
           <WhatsAppButton 
             hasWhatsappSupport={hasWhatsappSupport} 
             whatsappNumber={whatsappNumber} 
