@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BillingData, PixPaymentData, Order, PaymentStatus } from '@/types/checkout';
 import { generatePixPayment } from '@/services/asaasService';
 import { PixPayment } from '@/components/checkout/payment-methods/PixPayment';
-import { ArrowLeft, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Star, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -85,8 +85,16 @@ const PaymentPage = () => {
   }, [location.state, navigate, toast]);
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white to-asaas-light/30">
-      <div className="w-full max-w-md mb-4 flex items-center justify-between">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white via-purple-50/30 to-white">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-asaas-primary/5 via-asaas-secondary/10 to-purple-100/5 pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-r from-purple-100/5 via-asaas-secondary/10 to-asaas-primary/5 pointer-events-none"></div>
+      
+      {/* Floating circles for decoration */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-asaas-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-20 right-10 w-40 h-40 bg-asaas-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div className="w-full max-w-md mb-6 flex items-center justify-between">
         <Button 
           variant="ghost" 
           size="sm" 
@@ -97,23 +105,24 @@ const PaymentPage = () => {
           Voltar
         </Button>
         
-        <div className="flex items-center text-xs text-gray-500">
-          <ShieldCheck className="h-4 w-4 mr-1 text-asaas-primary" />
-          Pagamento Seguro
+        <div className="flex items-center text-xs bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100">
+          <ShieldCheck className="h-4 w-4 mr-1.5 text-asaas-primary" />
+          <span className="text-gray-700 font-medium">Pagamento Seguro</span>
         </div>
       </div>
       
       {loading ? (
-        <div className="w-full max-w-md h-64 flex items-center justify-center bg-white rounded-xl shadow-lg">
+        <div className="w-full max-w-md h-64 flex items-center justify-center bg-white rounded-xl shadow-lg border border-gray-100">
           <LoadingSpinner message="Gerando pagamento PIX..." />
         </div>
       ) : error ? (
-        <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg text-center">
-          <p className="text-red-500 mb-2">Erro ao gerar pagamento</p>
+        <div className="w-full max-w-md p-6 bg-white rounded-xl shadow-lg text-center border border-red-100">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-500 font-medium text-lg mb-2">Erro ao gerar pagamento</p>
           <p className="text-sm text-muted-foreground mb-4">{error}</p>
           <Button 
             onClick={() => navigate('/')} 
-            className="mt-2"
+            className="mt-2 bg-asaas-primary hover:bg-asaas-secondary transition-colors"
           >
             Tentar novamente
           </Button>
@@ -130,6 +139,20 @@ const PaymentPage = () => {
             description={paymentData.description}
             paymentId={paymentData.paymentId}
           />
+          
+          <div className="mt-8 text-center">
+            <div className="inline-flex items-center justify-center mb-3">
+              <Star className="h-4 w-4 text-yellow-400" filled />
+              <Star className="h-4 w-4 text-yellow-400" filled />
+              <Star className="h-4 w-4 text-yellow-400" filled />
+              <Star className="h-4 w-4 text-yellow-400" filled />
+              <Star className="h-4 w-4 text-yellow-400" filled />
+            </div>
+            <p className="text-sm text-gray-600">
+              "Compra super fácil e rápida! Recomendo!"
+            </p>
+            <p className="text-xs text-gray-500 mt-1">— Maria S.</p>
+          </div>
           
           <div className="mt-6 text-center text-xs text-gray-500 flex flex-col items-center">
             <p className="mb-2">Se precisar de ajuda, entre em contato com nosso suporte</p>

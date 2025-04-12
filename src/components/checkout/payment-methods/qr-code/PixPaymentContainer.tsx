@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PixPaymentStatus } from './PixPaymentStatus';
@@ -9,7 +8,7 @@ import { PixStatusChecker } from './PixStatusChecker';
 import { PixPaymentDetails } from './PixPaymentDetails';
 import { PaymentStatus } from '@/types/checkout';
 import { useToast } from '@/hooks/use-toast';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ShieldCheck, QrCode } from 'lucide-react';
 
 interface PixPaymentContainerProps {
   orderId: string;
@@ -69,31 +68,52 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
       }
     }
   }, [orderId, paymentId, qrCodeImage, status, showQRCode, toast, isPending]);
-
+  
   return (
-    <Card className="max-w-md mx-auto shadow-xl border border-gray-100 rounded-xl overflow-hidden animate-fade-in pix-container bg-gradient-to-b from-white to-gray-50">
-      <CardHeader className="bg-gradient-to-r from-asaas-primary/90 to-asaas-secondary/90 text-white">
-        <CardTitle className="text-2xl flex items-center">
-          <Sparkles className="mr-2 h-5 w-5" />
-          Pagamento PIX
-        </CardTitle>
-        <CardDescription className="text-white/90">
+    <Card className="max-w-md mx-auto shadow-xl border-0 rounded-xl overflow-hidden animate-fade-in pix-container bg-white">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-asaas-primary via-asaas-secondary to-purple-400"></div>
+      
+      <CardHeader className="bg-gradient-to-r from-asaas-primary/95 to-asaas-secondary/95 text-white pb-6">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-2xl flex items-center font-bold">
+            <QrCode className="mr-2 h-6 w-6" />
+            Pagamento PIX
+          </CardTitle>
+          
+          <div className="bg-white/20 rounded-full p-1">
+            <Sparkles className="h-5 w-5 text-white" />
+          </div>
+        </div>
+        
+        <CardDescription className="text-white/90 mt-2">
           {showQRCode ? 'Escaneie o QR Code ou copie o código para pagar' : 'Detalhes do pagamento'}
         </CardDescription>
+        
+        <div className="mt-4 flex items-center text-xs text-white/80 bg-black/10 w-fit rounded-full px-3 py-1">
+          <ShieldCheck className="h-3 w-3 mr-1.5" />
+          <span>Pagamento Seguro</span>
+        </div>
       </CardHeader>
       
-      <CardContent className="space-y-6 p-6">
+      <CardContent className="space-y-6 p-6 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-purple-50/50 to-white/0 pointer-events-none"></div>
+        
         {/* Status de pagamento */}
         <PixPaymentStatus status={status} />
         
         {/* Exibe o QR Code apenas se o pagamento estiver pendente e não expirado */}
         {showQRCode && (
-          <div className="space-y-6 animate-scale-in">
+          <div className="space-y-6 animate-scale-in relative z-10">
             <PixQRCodeDisplay qrCodeImage={qrCodeImage} />
             
-            <PixExpirationTimer timeLeft={timeLeft} isExpired={isExpired} />
+            <div className="p-4 bg-gradient-to-r from-purple-50 to-white rounded-lg border border-purple-100">
+              <PixExpirationTimer timeLeft={timeLeft} isExpired={isExpired} />
+            </div>
             
-            <PixCopyPasteField copyPasteKey={copyPasteKey} />
+            <div className="bg-gradient-to-r from-gray-50 to-white p-4 rounded-lg border border-gray-100 shadow-sm">
+              <p className="text-xs text-gray-500 mb-2">Código PIX copia e cola:</p>
+              <PixCopyPasteField copyPasteKey={copyPasteKey} />
+            </div>
             
             <PixStatusChecker 
               isCheckingStatus={isCheckingStatus} 
@@ -110,6 +130,10 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
           />
         )}
       </CardContent>
+      
+      <div className="relative">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+      </div>
       
       <PixPaymentDetails description={description} value={value} />
     </Card>
