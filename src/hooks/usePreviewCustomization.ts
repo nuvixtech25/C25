@@ -7,7 +7,7 @@ import { getDemoProduct } from '@/utils/previewUtils';
 
 // Default customization values
 const defaultCustomization: CheckoutCustomization = {
-  buttonColor: '#6E59A5',
+  buttonColor: '#F2FCE2', // Updated to soft green
   buttonText: 'Finalizar Compra',
   headingColor: '#6E59A5',
   bannerImageUrl: null,

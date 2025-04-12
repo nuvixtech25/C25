@@ -4,12 +4,12 @@ import { CheckoutCustomization, Product } from '@/types/checkout';
 
 // Default customization values
 const defaultCustomization: CheckoutCustomization = {
-  buttonColor: '#6E59A5', // Default Asaas primary color
+  buttonColor: '#F2FCE2', // Updated to soft green
   buttonText: 'Finalizar Compra',
   headingColor: '#6E59A5',
   bannerImageUrl: null,
   topMessage: 'Oferta por tempo limitado!',
-  countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24h from now
+  countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
   isDigitalProduct: true
 };
 
