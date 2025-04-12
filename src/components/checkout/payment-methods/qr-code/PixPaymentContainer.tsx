@@ -25,6 +25,7 @@ interface PixPaymentContainerProps {
   timeLeft: string;
   isExpired: boolean;
   onCheckStatus: () => void;
+  productType?: 'digital' | 'physical';
 }
 
 // Helper function to validate QR code image
@@ -47,7 +48,8 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
   isCheckingStatus,
   timeLeft,
   isExpired,
-  onCheckStatus
+  onCheckStatus,
+  productType = 'physical'
 }) => {
   const { toast } = useToast();
   const isPending = status === "PENDING";
@@ -61,6 +63,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
     console.log("PixPaymentContainer - ID do pedido:", orderId);
     console.log("PixPaymentContainer - Exibir QR code:", showQRCode);
     console.log("PixPaymentContainer - QR Code Image válido:", hasValidQRCode);
+    console.log("PixPaymentContainer - Product Type:", productType);
     
     if (!hasValidQRCode) {
       console.warn("QR Code Image inválido:", qrCodeImage ? 
@@ -75,7 +78,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
         });
       }
     }
-  }, [orderId, paymentId, qrCodeImage, status, showQRCode, toast, isPending, hasValidQRCode]);
+  }, [orderId, paymentId, qrCodeImage, status, showQRCode, toast, isPending, hasValidQRCode, productType]);
   
   return (
     <Card className="max-w-md mx-auto shadow-xl border-0 rounded-xl overflow-hidden animate-fade-in pix-container bg-white">

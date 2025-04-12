@@ -11,6 +11,11 @@ interface UsePixPaymentStatusProps {
   productType?: 'digital' | 'physical';
 }
 
+interface PaymentStatusResponse {
+  status: PaymentStatus;
+  error?: string;
+}
+
 export const usePixPaymentStatus = ({
   paymentId,
   orderId,
@@ -36,27 +41,48 @@ export const usePixPaymentStatus = ({
       console.log(`Checking payment status for paymentId: ${paymentId}, orderId: ${orderId}`);
       const response = await checkPaymentStatus(paymentId);
       
-      if (response.error) {
-        console.error("Erro ao verificar status:", response.error);
-        return;
-      }
-      
-      // Normalize status - treat "RECEIVED" as "CONFIRMED"
-      const normalizedStatus = 
-        response.status === "RECEIVED" ? "CONFIRMED" : response.status;
-      
-      console.log(`Received payment status: ${response.status}, normalized to: ${normalizedStatus}`);
-      setStatus(normalizedStatus as PaymentStatus);
-      
-      // Redirect if payment is confirmed
-      if (normalizedStatus === "CONFIRMED") {
-        console.log("Payment confirmed, redirecting to success page...");
-        navigate('/success', { 
-          state: { 
-            order: { id: orderId },
-            productType: productType
-          } 
-        });
+      // Handle response based on whether it's the raw status string or a response object
+      if (typeof response === 'object' && response !== null) {
+        if (response.error) {
+          console.error("Erro ao verificar status:", response.error);
+          return;
+        }
+        
+        // Normalize status - treat "RECEIVED" as "CONFIRMED"
+        const normalizedStatus = 
+          response.status === "RECEIVED" ? "CONFIRMED" : response.status;
+        
+        console.log(`Received payment status: ${response.status}, normalized to: ${normalizedStatus}`);
+        setStatus(normalizedStatus as PaymentStatus);
+        
+        // Redirect if payment is confirmed
+        if (normalizedStatus === "CONFIRMED") {
+          console.log("Payment confirmed, redirecting to success page...");
+          navigate('/success', { 
+            state: { 
+              order: { id: orderId },
+              productType: productType
+            } 
+          });
+        }
+      } else {
+        // Handle when response is just the status string directly
+        const normalizedStatus = 
+          response === "RECEIVED" ? "CONFIRMED" : response;
+        
+        console.log(`Received payment status: ${response}, normalized to: ${normalizedStatus}`);
+        setStatus(normalizedStatus as PaymentStatus);
+        
+        // Redirect if payment is confirmed
+        if (normalizedStatus === "CONFIRMED") {
+          console.log("Payment confirmed, redirecting to success page...");
+          navigate('/success', { 
+            state: { 
+              order: { id: orderId },
+              productType: productType
+            } 
+          });
+        }
       }
     } catch (error) {
       console.error("Erro ao verificar status do pagamento:", error);

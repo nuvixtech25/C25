@@ -1,12 +1,17 @@
 
 import { PaymentStatus } from '@/types/checkout';
 
+interface PaymentStatusResponse {
+  status: PaymentStatus;
+  error?: string;
+}
+
 /**
  * Verifica o status de um pagamento Asaas
  * @param paymentId ID do pagamento no Asaas
  * @returns Status atual do pagamento
  */
-export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStatus> => {
+export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStatus | PaymentStatusResponse> => {
   try {
     console.log(`Verificando status do pagamento: ${paymentId}`);
     
