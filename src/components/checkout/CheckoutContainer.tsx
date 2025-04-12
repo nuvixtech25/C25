@@ -26,7 +26,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     button_text_color: '#ffffff',
     button_text: 'Finalizar Pagamento',
     header_message: 'Oferta por tempo limitado!',
-    banner_image_url: '',
+    banner_image_url: '/lovable-uploads/16f24441-4ee0-4dc8-b774-d2f6ea7024bc.png', // Use the uploaded banner image
     show_banner: true,
     heading_color: '#000000',
     banner_color: '#000000'

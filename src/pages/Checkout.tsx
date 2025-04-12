@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -119,11 +118,11 @@ const Checkout: React.FC = () => {
     headingColor: '#000000',
     buttonColor: '#28A745',
     buttonText: 'Finalizar Compra',
-    bannerImageUrl: null,
+    bannerImageUrl: '/lovable-uploads/16f24441-4ee0-4dc8-b774-d2f6ea7024bc.png', // Use the uploaded banner image
     topMessage: 'Oferta por tempo limitado!',
     countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     isDigitalProduct: product.type === 'digital',
-    bannerColor: '#000000' // Added default banner color
+    bannerColor: '#000000'
   };
 
   return (

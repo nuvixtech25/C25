@@ -51,11 +51,6 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
 
   const timeDisplay = `${timeLeft.hours > 0 ? `${timeLeft.hours}h ` : ''}${timeLeft.minutes > 0 ? `${timeLeft.minutes}m ` : ''}${timeLeft.seconds}s`;
 
-  // Main banner container - full size
-  const containerClass = isMobile 
-    ? "w-full max-w-full" 
-    : "w-full max-w-full";
-
   return (
     <div className="flex flex-col w-full items-center">
       {/* Black bar with message and countdown side by side */}
@@ -68,16 +63,16 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
         </div>
       </div>
 
-      {/* Main banner below the timer */}
+      {/* Main banner below the timer - optimized dimensions */}
       {bannerImageUrl && (
         <div 
-          className={`${containerClass} flex items-center justify-center overflow-hidden`}
+          className="w-full flex items-center justify-center overflow-hidden"
           style={{ 
             backgroundColor,
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            minHeight: isMobile ? '120px' : '150px'
+            height: isMobile ? '80px' : '110px' // Reduced height to match the reference banner
           }}
         />
       )}
