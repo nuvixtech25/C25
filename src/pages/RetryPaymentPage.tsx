@@ -25,7 +25,7 @@ const RetryPaymentPage = () => {
     waitTime?: number;
   } | null>(null);
   
-  // New state for tracking WhatsApp support
+  // New state for tracking WhatsApp support - keeping this to maintain compatibility
   const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
   
@@ -111,21 +111,43 @@ const RetryPaymentPage = () => {
     fetchOrder();
   }, [navigate, state, toast]);
 
+  // Modified useEffect to correctly handle WhatsApp data
   useEffect(() => {
-    // When order data is loaded, set WhatsApp support if available
+    // When order data is loaded, check for WhatsApp support in state instead of order
     if (order) {
-      const product = order.product || {};
-      const supportStatus = Boolean(
-        product?.has_whatsapp_support === true || 
-        order.has_whatsapp_support === true
-      );
-      
-      const number = product?.whatsapp_number || order.whatsapp_number || '';
-      
-      setHasWhatsappSupport(supportStatus);
-      setWhatsappNumber(number);
+      // Check for WhatsApp support in location state rather than directly on order
+      if (state && state.product) {
+        const productData = state.product;
+        setHasWhatsappSupport(Boolean(productData.has_whatsapp_support));
+        setWhatsappNumber(productData.whatsapp_number || '');
+        console.log('[RetryPaymentPage] Set WhatsApp data from state:', {
+          hasSupport: Boolean(productData.has_whatsapp_support),
+          number: productData.whatsapp_number || ''
+        });
+      } else {
+        // No product data in state, try checking localStorage
+        try {
+          const storedSupport = localStorage.getItem('whatsapp_support');
+          const storedNumber = localStorage.getItem('whatsapp_number');
+          
+          console.log('[RetryPaymentPage] Checking localStorage for WhatsApp data:', {
+            storedSupport,
+            storedNumber
+          });
+          
+          if (storedSupport === 'true') {
+            setHasWhatsappSupport(true);
+          }
+          
+          if (storedNumber) {
+            setWhatsappNumber(storedNumber);
+          }
+        } catch (e) {
+          console.error('[RetryPaymentPage] Failed to read from localStorage:', e);
+        }
+      }
     }
-  }, [order]);
+  }, [order, state]);
 
   // Check if we can retry payment
   const checkRetryLimit = async (orderId: string) => {
@@ -297,15 +319,8 @@ const RetryPaymentPage = () => {
             </div>
           )}
           
-          {/* Conditionally render WhatsApp button ONLY if support is true and number exists */}
-          {hasWhatsappSupport && whatsappNumber && (
-            <div className="mt-6">
-              <WhatsAppButton 
-                hasWhatsappSupport={hasWhatsappSupport}
-                whatsappNumber={whatsappNumber}
-              />
-            </div>
-          )}
+          {/* Conditionally render WhatsApp button ONLY if support is true and number exists (removed as per user request) */}
+          {/* WhatsApp button has been removed for this page per user request */}
         </CardContent>
       </Card>
     </div>
