@@ -25,6 +25,8 @@ export interface Product {
   imageUrl?: string;
   has_whatsapp_support?: boolean;
   whatsapp_number?: string;
+  slug?: string;
+  status?: boolean;
 }
 
 // Customer data
