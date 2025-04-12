@@ -35,10 +35,10 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
         />
       </div>
 
-      {/* Main banner below the timer - optimized dimensions with added margin */}
+      {/* Added mt-4 to create more space between the message and the banner */}
       {bannerImageUrl && (
         <div 
-          className="w-full flex items-center justify-center overflow-hidden mb-4" // Added mb-4 for bottom margin
+          className="w-full flex items-center justify-center overflow-hidden mt-4 mb-4" 
           style={{ 
             backgroundColor,
             backgroundImage: `url(${bannerImageUrl})`,
