@@ -4,6 +4,11 @@ import { CreditCard } from 'lucide-react';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { PaymentMethod } from '@/types/checkout';
 
+interface PaymentOptionsProps {
+  paymentMethod: PaymentMethod;
+  onPaymentMethodChange: (method: PaymentMethod) => void;
+}
+
 const PaymentOptions: React.FC<PaymentOptionsProps> = ({ 
   paymentMethod, 
   onPaymentMethodChange 
