@@ -25,6 +25,9 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
   value,
   description
 }) => {
+  // Ensure value is a valid number
+  const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
+  
   console.log("PixPayment - Rendering with props:", {
     orderId,
     paymentId: paymentId || "N/A",
@@ -32,12 +35,12 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
     hasQRImage: !!qrCodeImage,
     hasCopyPasteKey: !!copyPasteKey,
     expirationDate,
-    value: typeof value === 'number' ? value : 0, // Log the actual value with validation
+    value: safeValue, // Log the actual safe value
+    valueType: typeof safeValue,
     description
   });
   
   // Ensure we have valid values for all props before passing them to child components
-  const safeValue = typeof value === 'number' ? value : 0;
   const safeDescription = description || 'Pagamento PIX';
   
   // Usar custom hook para gerenciar o status do pagamento e timeout

@@ -75,13 +75,23 @@ export const generatePixPayment = async (billingData: any) => {
       [key: string]: string | number; // Add index signature for string keys
     }
     
+    // Ensure value is a valid number
+    let numericValue: number;
+    if (typeof billingData.value === 'string') {
+      numericValue = parseFloat(billingData.value.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+    } else if (typeof billingData.value === 'number') {
+      numericValue = isNaN(billingData.value) ? 0 : billingData.value;
+    } else {
+      numericValue = 0;
+    }
+    
     const formattedData: FormattedData = {
       name: billingData.customer?.name || '',
       cpfCnpj: billingData.customer?.cpfCnpj?.replace(/[^0-9]/g, '') || '', // Remove non-numeric chars
       email: billingData.customer?.email || '',
       phone: billingData.customer?.phone?.replace(/[^0-9]/g, '') || '', // Remove non-numeric chars
       orderId: billingData.orderId || '',
-      value: parseFloat(billingData.value) || 0,
+      value: numericValue,
       description: billingData.description || `Pedido #${billingData.orderId || 'novo'}`
     };
     
@@ -140,6 +150,11 @@ export const generatePixPayment = async (billingData: any) => {
       `Received (${responseData.copyPasteKey.substring(0, 30)}...)` : "Not received");
     
     // Ensure all expected properties exist with default values if missing
+    // Most importantly, ensure the value is a proper number
+    const safeValue = typeof responseData.value === 'number' && !isNaN(responseData.value) ?
+      responseData.value :
+      (typeof responseData.value === 'string' ? parseFloat(responseData.value) || formattedData.value : formattedData.value);
+      
     const safeResponseData = {
       ...responseData,
       qrCodeImage: validQrCodeImage,
@@ -147,9 +162,17 @@ export const generatePixPayment = async (billingData: any) => {
       copyPasteKey: responseData.copyPasteKey || '',
       expirationDate: responseData.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(), // Default 30 minutes
       paymentId: responseData.paymentId || responseData.payment?.id || '',
-      value: responseData.value || formattedData.value,
+      value: safeValue,
       status: responseData.status || 'PENDING',
     };
+    
+    console.log("Safe response data prepared:", {
+      paymentId: safeResponseData.paymentId,
+      value: safeResponseData.value,
+      valueType: typeof safeResponseData.value,
+      hasQRCode: !!safeResponseData.qrCode,
+      hasQRImage: !!safeResponseData.qrCodeImage
+    });
     
     return safeResponseData;
   } catch (error) {

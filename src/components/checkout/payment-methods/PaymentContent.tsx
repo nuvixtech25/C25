@@ -24,7 +24,8 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
     hasError: !!error, 
     hasPaymentData: !!paymentData, 
     hasOrder: !!order,
-    paymentValue: paymentData?.value
+    paymentValue: paymentData?.value,
+    paymentValueType: paymentData ? typeof paymentData.value : 'undefined'
   });
   
   if (loading) {
@@ -54,7 +55,11 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
   });
   
   // Ensure we have valid values for all required props
-  const safeValue = typeof paymentData.value === 'number' ? paymentData.value : 0;
+  // More robust validation for value - ensure it's a valid number
+  const safeValue = typeof paymentData.value === 'number' && !isNaN(paymentData.value) ? 
+    paymentData.value : 
+    (typeof paymentData.value === 'string' ? parseFloat(paymentData.value) || 0 : 0);
+    
   const safeDescription = paymentData.description || 'Pagamento';
   
   return (

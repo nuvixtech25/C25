@@ -11,8 +11,8 @@ export const PixPaymentDetails: React.FC<PixPaymentDetailsProps> = ({
   description,
   value
 }) => {
-  // Add safety check to handle undefined or null values
-  const safeValue = typeof value === 'number' ? value : 0;
+  // Add stronger safety check to handle undefined or null values
+  const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
   
   return (
     <CardFooter className="flex justify-between bg-white rounded-lg">
