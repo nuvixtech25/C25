@@ -35,7 +35,7 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
   };
 
   return (
-    <div className="sticky top-0 w-full bg-[#FF0000] text-white py-2 z-10">
+    <div className="sticky top-0 w-full bg-black text-white py-2 z-10">
       <div className="max-w-xl mx-auto text-center">
         <p className="text-sm font-bold flex items-center justify-center">
           <span className="mr-2">⏰</span>
@@ -45,4 +45,3 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
     </div>
   );
 };
-
