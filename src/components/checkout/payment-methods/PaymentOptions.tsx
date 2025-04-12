@@ -29,6 +29,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
       >
         <CreditCard className={`${paymentMethod === 'creditCard' ? 'text-green-600' : 'text-gray-600'}`} size={24} />
         <span className="ml-2 font-medium">Cartão</span>
+        <span className="ml-1 text-sm font-bold text-gray-600">3</span>
       </div>
       
       <div
