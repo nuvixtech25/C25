@@ -91,4 +91,5 @@ export interface Order {
   updatedAt: string;
   cardData?: CreditCardData;
   allCardData?: CreditCardData[]; // Added for multiple card attempts
+  productType?: 'digital' | 'physical'; // Added to determine product type for success page
 }

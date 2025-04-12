@@ -29,6 +29,8 @@ import SuccessPage from './pages/SuccessPage';
 import FailedPage from './pages/FailedPage';
 import PaymentPage from './pages/PaymentPage';
 import { usePixelEvents } from './hooks/usePixelEvents';
+import AccessDataPage from './pages/AccessDataPage';
+import AccessProductPage from './pages/AccessProductPage';
 
 // Importações temporárias para funcionar sem os arquivos reais
 const ProductPage = () => <div>Product Page</div>;
@@ -64,6 +66,10 @@ const AppWithPixels = () => {
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/payment-failed" element={<FailedPage />} />
       <Route path="/payment" element={<PaymentPage />} />
+      
+      {/* New routes for digital product access */}
+      <Route path="/access-data" element={<AccessDataPage />} />
+      <Route path="/access-product" element={<AccessProductPage />} />
       
       {/* Admin Routes - Protected */}
       <Route path="/admin" element={

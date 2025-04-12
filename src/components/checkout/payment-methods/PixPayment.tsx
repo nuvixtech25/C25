@@ -13,6 +13,7 @@ interface PixPaymentProps {
   expirationDate: string;
   value: number;
   description: string;
+  productType?: 'digital' | 'physical';
 }
 
 export const PixPayment: React.FC<PixPaymentProps> = ({
@@ -23,7 +24,8 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
   copyPasteKey,
   expirationDate,
   value,
-  description
+  description,
+  productType = 'physical'
 }) => {
   // Ensure value is a valid number
   const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
@@ -37,7 +39,8 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
     expirationDate,
     value: safeValue, // Log the actual safe value
     valueType: typeof safeValue,
-    description
+    description,
+    productType
   });
   
   // Ensure we have valid values for all props before passing them to child components
@@ -53,7 +56,8 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
   } = usePixPaymentStatus({
     paymentId,
     orderId,
-    expirationDate
+    expirationDate,
+    productType
   });
   
   // Log when payment status changes
@@ -76,6 +80,7 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
       timeLeft={timeLeft}
       isExpired={isExpired}
       onCheckStatus={forceCheckStatus}
+      productType={productType}
     />
   );
 };

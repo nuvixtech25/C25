@@ -25,7 +25,8 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
     hasPaymentData: !!paymentData, 
     hasOrder: !!order,
     paymentValue: paymentData?.value,
-    paymentValueType: paymentData ? typeof paymentData.value : 'undefined'
+    paymentValueType: paymentData ? typeof paymentData.value : 'undefined',
+    productType: order?.productType
   });
   
   if (loading) {
@@ -51,7 +52,8 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
     imageLength: paymentData.qrCodeImage?.length || 0,
     copyPasteKeyLength: paymentData.copyPasteKey?.length || 0,
     value: paymentData.value,
-    valueType: typeof paymentData.value
+    valueType: typeof paymentData.value,
+    productType: order.productType
   });
   
   // Ensure we have valid values for all required props
@@ -73,6 +75,7 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
         value={safeValue}
         description={safeDescription}
         paymentId={paymentData.paymentId || ''}
+        productType={order.productType}
       />
     </div>
   );
