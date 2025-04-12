@@ -10,7 +10,7 @@ const testimonials: Testimonial[] = [
     name: 'Ana Silva',
     photo: 'https://randomuser.me/api/portraits/women/12.jpg',
     rating: 5,
-    comment: 'Excelente curso! O conteúdo é muito bem explicado e aplicável imediatamente. Superei minhas expectativas!'
+    comment: 'Excelente produto! O conteúdo é muito bem explicado e aplicável imediatamente. Superei minhas expectativas!'
   },
   {
     id: '2',

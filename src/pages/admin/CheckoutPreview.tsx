@@ -4,7 +4,6 @@ import { useSearchParams } from 'react-router-dom';
 import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
 import { CountdownBanner } from '@/components/CountdownBanner';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
-import { CheckoutCustomization } from '@/types/checkout';
 import { usePreviewCustomization } from '@/hooks/usePreviewCustomization';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { PreviewLoading } from '@/components/preview/PreviewLoading';
