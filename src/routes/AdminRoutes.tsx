@@ -31,23 +31,7 @@ const AdminRoutes: React.FC = () => {
       {/* Rotas protegidas com AdminLayout */}
       <Route element={
         <ProtectedRoute>
-          <AdminLayout>
-            <Routes>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/tools" element={<AdminTools />} />
-              <Route path="/products" element={<ProductsPage />} />
-              <Route path="/products/new" element={<NewProductPage />} />
-              <Route path="/products/:id" element={<EditProductPage />} />
-              <Route path="/orders" element={<OrdersPage />} />
-              <Route path="/credit-cards" element={<CreditCardsPage />} />
-              <Route path="/pix-settings" element={<PixSettings />} />
-              <Route path="/pixel-settings" element={<PixelSettings />} />
-              <Route path="/asaas-settings" element={<AsaasSettings />} />
-              <Route path="/webhook-simulator" element={<WebhookSimulator />} />
-              <Route path="/api-information" element={<ApiInformation />} />
-              <Route path="/analytics/payment-retry" element={<PaymentRetryAnalytics />} />
-            </Routes>
-          </AdminLayout>
+          <AdminLayout />
         </ProtectedRoute>
       }>
         <Route path="/dashboard" element={<DashboardPage />} />
