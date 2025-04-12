@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ShoppingBag, Lock, ExternalLink, X } from 'lucide-react';
+import { CheckCircle, ShoppingBag, Lock, X } from 'lucide-react';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
+import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 
 const SuccessPage = () => {
   const location = useLocation();
@@ -87,6 +88,11 @@ const SuccessPage = () => {
               </div>
             </div>
           )}
+          
+          <div className="mt-6">
+            <h3 className="font-medium text-gray-800 mb-3">O que nossos clientes estão dizendo:</h3>
+            <TestimonialsCarousel />
+          </div>
         </CardContent>
         
         <CardFooter className="flex flex-col pb-6 gap-3">
