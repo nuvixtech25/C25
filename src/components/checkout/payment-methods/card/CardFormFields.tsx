@@ -10,6 +10,7 @@ import { cardSchema } from './cardValidation';
 import { handleCardNumberChange, handleExpiryDateChange } from './formatters/cardInputFormatters';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatCurrency } from '@/utils/formatters';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CardFormFieldsProps {
   form: UseFormReturn<z.infer<typeof cardSchema>>;
@@ -17,12 +18,14 @@ interface CardFormFieldsProps {
 }
 
 export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form, productPrice = 0 }) => {
+  const isMobile = useIsMobile();
+  
   return (
     <div className="space-y-4">
       <CardHolderField form={form} />
       <CardNumberField form={form} />
       
-      <div className="grid grid-cols-3 gap-4">
+      <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-3 gap-4'}`}>
         <ExpiryDateField form={form} />
         <CvvField form={form} />
         <InstallmentsField form={form} productPrice={productPrice} />
