@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { CustomerData, CheckoutCustomization, PaymentMethod } from '@/types/checkout';
 import { PersonalInfoSection } from '@/components/checkout/PersonalInfoSection';
 import { TestimonialSection } from '@/components/checkout/TestimonialSection';
-import { PaymentMethodSection } from '@/components/checkout/PaymentMethodSection';
+import { PaymentMethodSection } from '@/components/checkout/payment-methods/PaymentMethodSection';
 
 interface CheckoutFormContainerProps {
   customerData: CustomerData | null;

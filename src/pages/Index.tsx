@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
 import { PersonalInfoSection } from '@/components/checkout/PersonalInfoSection';
 import { TestimonialSection } from '@/components/checkout/TestimonialSection';
-import { PaymentMethodSection } from '@/components/checkout/PaymentMethodSection';
+import { PaymentMethodSection } from '@/components/checkout/payment-methods/PaymentMethodSection';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { CountdownBanner } from '@/components/CountdownBanner';
 import { BillingData, CheckoutCustomization, CustomerData, PaymentMethod, PaymentStatus, Product } from '@/types/checkout';
