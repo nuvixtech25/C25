@@ -1,6 +1,7 @@
+
 import React, { useEffect, useState } from 'react';
-import CheckoutHeader from './CheckoutHeader';
-import CheckoutFooter from './CheckoutFooter';
+import { CheckoutHeader } from './CheckoutHeader';
+import { CheckoutFooter } from './CheckoutFooter';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
