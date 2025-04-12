@@ -36,7 +36,17 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
       return 'PENDING';
     }
     
-    return data.status as PaymentStatus;
+    // Normalize the status - ensure consistent formatting across the system
+    let normalizedStatus: PaymentStatus = data.status as PaymentStatus;
+    
+    // Remapear certos status do Asaas para o formato que usamos
+    // Por exemplo, se o Asaas usa "RECEIVED" e nós usamos "CONFIRMED"
+    if (normalizedStatus === 'RECEIVED') {
+      console.log('Remapeando status RECEIVED para CONFIRMED');
+      normalizedStatus = 'CONFIRMED';
+    }
+    
+    return normalizedStatus;
   } catch (error) {
     console.error('Erro ao verificar status do pagamento:', error);
     // Em caso de erro, assumir que o pagamento ainda está pendente

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PaymentStatus } from '@/types/checkout';
 import { PixPaymentContainer } from './qr-code/PixPaymentContainer';
 import { usePixPaymentStatus } from '@/hooks/usePixPaymentStatus';
@@ -52,6 +52,11 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
     orderId,
     expirationDate
   });
+  
+  // Log when payment status changes
+  useEffect(() => {
+    console.log(`Payment status in PixPayment component: ${status}`);
+  }, [status]);
   
   return (
     <PixPaymentContainer

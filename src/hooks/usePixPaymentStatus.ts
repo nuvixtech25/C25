@@ -60,13 +60,13 @@ const calculateTimeLeft = (expirationDate: string): { timeLeftString: string; is
 const handlePaymentConfirmation = (
   orderId: string, 
   navigate: ReturnType<typeof useNavigate>, 
-  { toast }: ReturnType<typeof useToast>, 
+  toastUtils: ReturnType<typeof useToast>, 
   setRedirecting: (val: boolean) => void
 ) => {
   setRedirecting(true);
   
   // Show confirmation toast
-  toast({
+  toastUtils.toast({
     title: "Pagamento confirmado!",
     description: "Seu pagamento foi processado com sucesso.",
   });
@@ -177,15 +177,18 @@ const handlePaymentConfirmation = (
   }
   
   // Redirect current window after a short delay
-  setTimeout(() => navigate("/success", {
-    state: {
-      order: {
-        id: orderId,
-        paymentMethod: 'pix',
-        status: 'CONFIRMED'
+  setTimeout(() => {
+    console.log("Redirecionando para página de sucesso agora...");
+    navigate("/success", {
+      state: {
+        order: {
+          id: orderId,
+          paymentMethod: 'pix',
+          status: 'CONFIRMED'
+        }
       }
-    }
-  }), 1800);
+    });
+  }, 1800);
 };
 
 /**
@@ -194,11 +197,11 @@ const handlePaymentConfirmation = (
 const handleFailedPayment = (
   status: PaymentStatus, 
   navigate: ReturnType<typeof useNavigate>, 
-  { toast }: ReturnType<typeof useToast>, 
+  toastUtils: ReturnType<typeof useToast>, 
   setRedirecting: (val: boolean) => void
 ) => {
   setRedirecting(true);
-  toast({
+  toastUtils.toast({
     title: "Pagamento não aprovado",
     description: "Houve um problema com seu pagamento.",
     variant: "destructive",
@@ -223,16 +226,36 @@ export const usePixPaymentStatus = ({
   const [isExpired, setIsExpired] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
   
+  // Log debugging info
+  console.log("usePixPaymentStatus hook initialized with:", {
+    paymentId,
+    orderId,
+    expirationDate,
+    redirecting
+  });
+  
   // Use polling hook to check payment status
   const { status, isCheckingStatus, error, forceCheck } = usePaymentPolling(paymentId, 'PENDING');
   
+  // Log whenever status changes
+  useEffect(() => {
+    console.log("Payment status changed to:", status);
+  }, [status]);
+  
   // Effect to redirect based on status
   useEffect(() => {
-    if (redirecting) return;
+    if (redirecting) {
+      console.log("Skipping redirect handling - already redirecting");
+      return;
+    }
+    
+    console.log("Checking payment status for redirect:", status);
     
     if (status === "CONFIRMED") {
+      console.log("Payment CONFIRMED, initiating redirect process");
       handlePaymentConfirmation(orderId, navigate, toastUtils, setRedirecting);
     } else if (["CANCELLED", "REFUNDED", "OVERDUE"].includes(status)) {
+      console.log(`Payment ${status}, initiating failure redirect`);
       handleFailedPayment(status, navigate, toastUtils, setRedirecting);
     }
   }, [status, navigate, toastUtils, orderId, redirecting]);
