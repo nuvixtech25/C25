@@ -14,6 +14,14 @@ const FailedPage = () => {
   const { trackPurchase } = usePixelEvents();
 
   useEffect(() => {
+    // Clear any WhatsApp data from localStorage to prevent it from being used
+    try {
+      localStorage.removeItem('whatsapp_support');
+      localStorage.removeItem('whatsapp_number');
+    } catch (e) {
+      console.error('Failed to clear localStorage:', e);
+    }
+    
     console.log('[FailedPage] Full location state:', JSON.stringify(state, null, 2));
     
     // Get order from location state if available
@@ -29,7 +37,14 @@ const FailedPage = () => {
 
   const handleRetry = () => {
     if (order) {
-      navigate(`/retry-payment?orderId=${order.id}`, { state: { order } });
+      navigate(`/retry-payment?orderId=${order.id}`, { 
+        state: { 
+          order,
+          // Explicitly passing empty WhatsApp data
+          has_whatsapp_support: false,
+          whatsapp_number: ''
+        } 
+      });
     } else {
       navigate('/');
     }
