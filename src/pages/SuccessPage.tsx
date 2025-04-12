@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ShoppingBag, Lock, ExternalLink } from 'lucide-react';
+import { CheckCircle, ShoppingBag, Lock, ExternalLink, X } from 'lucide-react';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 
 const SuccessPage = () => {
@@ -36,10 +37,22 @@ const SuccessPage = () => {
     }
   }, [location.state, trackPurchase]);
 
+  const handleCloseWindow = () => {
+    window.close();
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
       <Card className="max-w-md w-full shadow-md border border-gray-100 rounded-lg overflow-hidden">
-        <CardHeader className="text-center bg-white pb-6">
+        <CardHeader className="text-center bg-white pb-6 relative">
+          <button 
+            onClick={handleCloseWindow}
+            className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Fechar página"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
@@ -88,6 +101,15 @@ const SuccessPage = () => {
               </Link>
             </Button>
           ) : null}
+          
+          <Button 
+            onClick={handleCloseWindow}
+            variant="outline"
+            className="w-full border-gray-200 hover:bg-gray-50 px-6 py-2 h-auto transition-colors"
+          >
+            Fechar página
+            <X className="ml-2 h-4 w-4" />
+          </Button>
         </CardFooter>
       </Card>
     </div>
