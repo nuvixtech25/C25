@@ -17,10 +17,13 @@ const SuccessPage = () => {
   const [whatsappNumber, setWhatsappNumber] = useState('');
   
   useEffect(() => {
-    console.log('Location state details:', JSON.stringify(location.state, null, 2));
+    console.log('[SuccessPage] Initializing with location state:', JSON.stringify(location.state, null, 2));
     
     if (location.state?.order) {
       const { order, product } = location.state;
+      
+      console.log('[SuccessPage] Processing order details:', JSON.stringify(order, null, 2));
+      console.log('[SuccessPage] Product info from state:', JSON.stringify(product, null, 2));
       
       // Track purchase event
       trackPurchase(
@@ -34,36 +37,53 @@ const SuccessPage = () => {
         order.productType === 'digital' ||
         order.isDigital === true
       ) {
-        console.log('Setting digital product to true');
+        console.log('[SuccessPage] Digital product detected');
         setIsDigitalProduct(true);
       }
       
       // Check WhatsApp support from multiple possible sources
-      const checkWhatsAppSupport = 
-        location.state.has_whatsapp_support || 
-        order.has_whatsapp_support || 
-        product?.has_whatsapp_support;
-
-      console.log('WhatsApp support check:', {
-        locationState: location.state.has_whatsapp_support,
-        orderState: order.has_whatsapp_support,
-        productState: product?.has_whatsapp_support
+      const locationStateWhatsApp = location.state.has_whatsapp_support;
+      const orderWhatsApp = order.has_whatsapp_support;
+      const productWhatsApp = product?.has_whatsapp_support;
+      
+      console.log('[SuccessPage] WhatsApp support details:', {
+        locationStateWhatsApp,
+        orderWhatsApp,
+        productWhatsApp,
+        locationWhatsAppType: typeof locationStateWhatsApp,
+        orderWhatsAppType: typeof orderWhatsApp,
+        productWhatsAppType: typeof productWhatsApp
       });
 
+      const checkWhatsAppSupport = locationStateWhatsApp || orderWhatsApp || productWhatsApp;
+
       if (checkWhatsAppSupport) {
-        console.log('Setting WhatsApp support to true');
+        console.log('[SuccessPage] WhatsApp support is enabled');
         setHasWhatsappSupport(true);
         
-        const wNumber = 
-          location.state.whatsapp_number || 
-          order.whatsapp_number || 
-          product?.whatsapp_number;
+        const locationNumber = location.state.whatsapp_number;
+        const orderNumber = order.whatsapp_number;
+        const productNumber = product?.whatsapp_number;
+          
+        console.log('[SuccessPage] WhatsApp number sources:', {
+          locationNumber,
+          orderNumber,
+          productNumber
+        });
+        
+        const wNumber = locationNumber || orderNumber || productNumber;
           
         if (wNumber) {
-          console.log('WhatsApp number found:', wNumber);
+          console.log('[SuccessPage] Setting WhatsApp number:', wNumber);
           setWhatsappNumber(wNumber);
+        } else {
+          console.log('[SuccessPage] Warning: WhatsApp support enabled but no number found');
         }
+      } else {
+        console.log('[SuccessPage] WhatsApp support is disabled or not configured');
       }
+    } else {
+      console.log('[SuccessPage] No order data found in location state');
     }
   }, [location.state, trackPurchase]);
 

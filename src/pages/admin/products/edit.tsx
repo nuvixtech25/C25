@@ -47,6 +47,7 @@ const EditProductPage = () => {
     queryFn: async () => {
       if (!id) throw new Error('ID do produto não fornecido');
 
+      console.log(`[EditProductPage] Fetching product with ID: ${id}`);
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -54,7 +55,7 @@ const EditProductPage = () => {
         .single();
 
       if (error) {
-        console.error('Erro ao buscar produto:', error);
+        console.error('[EditProductPage] Erro ao buscar produto:', error);
         throw error;
       }
 
@@ -65,7 +66,13 @@ const EditProductPage = () => {
       // Cast data to ProductData type
       const productData = data as ProductData;
       
-      console.log('Product data from DB:', productData);
+      console.log('[EditProductPage] Product data from DB:', productData);
+      console.log('[EditProductPage] WhatsApp support details:', {
+        has_whatsapp_support: productData.has_whatsapp_support,
+        whatsapp_number: productData.whatsapp_number,
+        supportType: typeof productData.has_whatsapp_support,
+        numberType: typeof productData.whatsapp_number
+      });
 
       // Set form values
       form.reset({
@@ -92,14 +99,14 @@ const EditProductPage = () => {
       // Generate slug from name if not provided
       const slug = data.slug || generateSlug(data.name);
       
-      console.log('Submitting product update:', { 
+      console.log('[EditProductPage] Submitting product update:', { 
         ...data, 
         slug,
         has_whatsapp_support: data.has_whatsapp_support,
         whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
       });
       
-      const { error } = await supabase
+      const { data: updatedData, error } = await supabase
         .from('products')
         .update({
           name: data.name,
@@ -112,10 +119,11 @@ const EditProductPage = () => {
           has_whatsapp_support: data.has_whatsapp_support,
           whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
         })
-        .eq('id', id);
+        .eq('id', id)
+        .select();
 
       if (error) {
-        console.error('Erro de atualização detalhado:', error);
+        console.error('[EditProductPage] Erro de atualização detalhado:', error);
         if (error.code === '23505') {
           toast({
             title: 'Erro ao atualizar produto',
@@ -128,6 +136,7 @@ const EditProductPage = () => {
         return;
       }
 
+      console.log('[EditProductPage] Product updated successfully:', updatedData);
       toast({
         title: 'Produto atualizado',
         description: 'O produto foi atualizado com sucesso!',
@@ -135,7 +144,7 @@ const EditProductPage = () => {
       
       navigate('/admin/products');
     } catch (error) {
-      console.error('Erro ao atualizar produto:', error);
+      console.error('[EditProductPage] Erro ao atualizar produto:', error);
       toast({
         title: 'Erro ao atualizar produto',
         description: 'Ocorreu um erro ao tentar atualizar o produto. Tente novamente.',

@@ -7,6 +7,8 @@ import { Product } from '@/types/checkout';
  */
 export const fetchProductBySlug = async (slug: string): Promise<Product | null> => {
   try {
+    console.log(`[productService] Fetching product with slug: ${slug}`);
+    
     const { data, error } = await supabase
       .from('products')
       .select('*')
@@ -14,16 +16,25 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
       .maybeSingle();
 
     if (error) {
-      console.error("Error fetching product by slug:", error);
+      console.error("[productService] Error fetching product by slug:", error);
       throw new Error(error.message);
     }
 
     if (!data) {
+      console.log("[productService] No product found with slug:", slug);
       return null;
     }
 
+    console.log("[productService] Raw product data from database:", data);
+    console.log("[productService] WhatsApp support details:", {
+      has_whatsapp_support: data.has_whatsapp_support,
+      whatsapp_number: data.whatsapp_number,
+      supportType: typeof data.has_whatsapp_support,
+      numberType: typeof data.whatsapp_number
+    });
+
     // Map the database product to our Product type with WhatsApp support
-    return {
+    const product = {
       id: data.id,
       name: data.name,
       description: data.description || '',
@@ -38,8 +49,17 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
       has_whatsapp_support: data.has_whatsapp_support || false,
       whatsapp_number: data.whatsapp_number || undefined
     };
+
+    console.log("[productService] Mapped product with WhatsApp details:", {
+      id: product.id,
+      name: product.name,
+      has_whatsapp_support: product.has_whatsapp_support,
+      whatsapp_number: product.whatsapp_number
+    });
+
+    return product;
   } catch (error) {
-    console.error("Error in fetchProductBySlug:", error);
+    console.error("[productService] Error in fetchProductBySlug:", error);
     return null;
   }
 };

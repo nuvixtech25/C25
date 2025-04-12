@@ -30,7 +30,7 @@ const NewProductPage = () => {
       // Generate slug from name if not provided
       const slug = data.slug || generateSlug(data.name);
       
-      console.log('Submitting product data:', {
+      console.log('[NewProductPage] Submitting product data:', {
         ...data,
         slug,
         has_whatsapp_support: data.has_whatsapp_support,
@@ -38,7 +38,7 @@ const NewProductPage = () => {
       });
       
       // Use type assertion to tell TypeScript we know what we're doing
-      const { error } = await supabase.from('products').insert({
+      const { data: insertedData, error } = await supabase.from('products').insert({
         name: data.name,
         description: data.description || null,
         image_url: data.image_url || null,
@@ -48,9 +48,10 @@ const NewProductPage = () => {
         slug: slug,
         has_whatsapp_support: data.has_whatsapp_support,
         whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
-      });
+      }).select();
 
       if (error) {
+        console.error('[NewProductPage] Supabase error details:', error);
         if (error.code === '23505') {
           toast({
             title: 'Erro ao criar produto',
@@ -58,12 +59,13 @@ const NewProductPage = () => {
             variant: 'destructive',
           });
         } else {
-          console.error('Erro detalhado:', error);
+          console.error('[NewProductPage] Erro detalhado:', error);
           throw error;
         }
         return;
       }
 
+      console.log('[NewProductPage] Product created successfully:', insertedData);
       toast({
         title: 'Produto criado',
         description: 'O produto foi criado com sucesso!',
@@ -71,7 +73,7 @@ const NewProductPage = () => {
       
       navigate('/admin/products');
     } catch (error) {
-      console.error('Erro ao criar produto:', error);
+      console.error('[NewProductPage] Erro ao criar produto:', error);
       toast({
         title: 'Erro ao criar produto',
         description: 'Ocorreu um erro ao tentar criar o produto. Tente novamente.',

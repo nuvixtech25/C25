@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MessageCircleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -12,11 +12,28 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   hasWhatsappSupport, 
   whatsappNumber 
 }) => {
-  if (!hasWhatsappSupport || !whatsappNumber) return null;
+  useEffect(() => {
+    console.log('[WhatsAppButton] Rendering with props:', { 
+      hasWhatsappSupport, 
+      whatsappNumber,
+      hasWhatsappSupportType: typeof hasWhatsappSupport,
+      whatsappNumberType: typeof whatsappNumber
+    });
+  }, [hasWhatsappSupport, whatsappNumber]);
+
+  if (!hasWhatsappSupport || !whatsappNumber) {
+    console.log('[WhatsAppButton] Not rendering - support disabled or missing number', {
+      hasWhatsappSupport,
+      whatsappNumber
+    });
+    return null;
+  }
 
   const formatWhatsAppUrl = () => {
     const cleanNumber = whatsappNumber.replace(/\D/g, '');
-    return `https://wa.me/${cleanNumber}?text=Olá! Acabei de adquirir um produto e gostaria de obter mais informações.`;
+    const url = `https://wa.me/${cleanNumber}?text=Olá! Acabei de adquirir um produto e gostaria de obter mais informações.`;
+    console.log('[WhatsAppButton] Generated WhatsApp URL:', url);
+    return url;
   };
 
   return (
