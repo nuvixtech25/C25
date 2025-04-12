@@ -44,7 +44,12 @@ const CheckoutPreview: React.FC = () => {
       
       <PreviewContent 
         product={demoProduct}
-        customerData={customerData}
+        customerData={customerData || {
+          name: '',
+          email: '',
+          cpfCnpj: '',
+          phone: ''
+        }} // Provide default empty customer data if null
         paymentMethod={paymentMethod}
         isSubmitting={isSubmitting}
         customization={customization}

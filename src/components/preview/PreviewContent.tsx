@@ -7,7 +7,7 @@ import { CustomerData } from '@/types/checkout';
 
 interface PreviewContentProps {
   product: Product;
-  customerData: CustomerData;
+  customerData: CustomerData; // This now expects non-null CustomerData
   paymentMethod: PaymentMethod;
   isSubmitting: boolean;
   customization: CheckoutCustomization;
