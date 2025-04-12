@@ -16,7 +16,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   initialMinutes = 5,
   initialSeconds = 0,
   bannerImageUrl = null,
-  containerClassName = 'w-full'
+  containerClassName = ''  // Removed default 'w-full' to avoid adding any extra spacing
 }) => {
   const isMobile = useIsMobile();
   
