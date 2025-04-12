@@ -1,3 +1,4 @@
+
 export const formatCpfCnpj = (value: string): string => {
   const cleanValue = value.replace(/\D/g, '');
 
@@ -83,4 +84,12 @@ export const formatTime = (minutes: number, seconds: number): string => {
   const formattedMinutes = minutes.toString().padStart(2, '0');
   const formattedSeconds = seconds.toString().padStart(2, '0');
   return `${formattedMinutes}:${formattedSeconds}`;
+};
+
+// Add formatCurrency function that was missing
+export const formatCurrency = (value: number): string => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
 };
