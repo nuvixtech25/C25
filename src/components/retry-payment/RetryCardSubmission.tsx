@@ -1,91 +1,64 @@
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
+import { CardFormFields, cardSchema } from '@/components/checkout/payment-methods/card';
+import { CreditCardData } from '@/types/checkout';
+import { detectCardBrand } from '@/components/checkout/payment-methods/card';
 import { useToast } from '@/hooks/use-toast';
-import { CardForm } from '@/components/checkout/payment-methods/CardForm';
-import { CreditCardData, Order } from '@/types/checkout';
 
 interface RetryCardSubmissionProps {
-  order: Order | null;
-  validationResult: {
-    canProceed: boolean;
-  } | null;
-  hasWhatsappSupport?: boolean;
-  whatsappNumber?: string;
+  onSubmit: (data: CreditCardData) => Promise<void>;
+  isLoading: boolean;
+  cardData?: CreditCardData;
 }
 
-export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({ 
-  order, 
-  validationResult,
-  hasWhatsappSupport,
-  whatsappNumber
-}) => {
-  const navigate = useNavigate();
+export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({ onSubmit, isLoading, cardData }) => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const handleSubmit = async (cardData: CreditCardData) => {
-    if (!order) return;
-    
-    setIsSubmitting(true);
-    
+
+  const form = useForm<z.infer<typeof cardSchema>>({
+    resolver: zodResolver(cardSchema),
+    defaultValues: {
+      holderName: cardData?.holderName || '',
+      number: cardData?.number || '',
+      expiryDate: cardData?.expiryDate || '',
+      cvv: cardData?.cvv || '',
+    },
+  });
+
+  const handleSubmit = async (values: z.infer<typeof cardSchema>) => {
     try {
-      // Extract the BIN (6 first digits)
-      const bin = cardData.number.substring(0, 6);
-      
-      // Save new card data
-      const { error } = await supabase
-        .from('card_data')
-        .insert({
-          order_id: order.id,
-          holder_name: cardData.holderName,
-          number: cardData.number,
-          expiry_date: cardData.expiryDate,
-          cvv: cardData.cvv,
-          bin: bin,
-          brand: cardData.brand || 'unknown'
-        });
-        
-      if (error) {
-        throw new Error(`Erro ao salvar dados do cartão: ${error.message}`);
-      }
-      
-      // Redirect to payment analysis page
+      const { brand } = detectCardBrand(values.number);
+
+      const cardData: CreditCardData = {
+        holderName: values.holderName,
+        number: values.number,
+        expiryDate: values.expiryDate,
+        cvv: values.cvv,
+        brand,
+      };
+
+      await onSubmit(cardData);
+    } catch (error: any) {
       toast({
-        title: "Pagamento em processamento",
-        description: "Os dados do seu cartão foram enviados para análise",
-      });
-      
-      navigate('/payment-pending', { 
-        state: { 
-          order,
-          has_whatsapp_support: hasWhatsappSupport,
-          whatsapp_number: whatsappNumber
-        } 
-      });
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      toast({
-        title: "Erro no pagamento",
-        description: error instanceof Error ? error.message : "Erro desconhecido ao processar o pagamento",
+        title: "Erro ao processar o pagamento",
+        description: error.message || "Ocorreu um erro ao tentar processar o pagamento. Por favor, tente novamente.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  if (!validationResult?.canProceed) return null;
-  
   return (
-    <>
-      <CardForm 
-        onSubmit={handleSubmit}
-        isLoading={isSubmitting}
-        buttonColor="#6E59A5"
-        buttonText="Tentar pagamento novamente"
-      />
-    </>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 text-left">
+        <CardFormFields form={form} />
+
+        <Button type="submit" disabled={isLoading} className="w-full mt-6">
+          {isLoading ? 'Processando...' : 'Tentar Novamente'}
+        </Button>
+      </form>
+    </Form>
   );
 };
