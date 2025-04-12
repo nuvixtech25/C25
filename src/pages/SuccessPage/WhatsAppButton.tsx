@@ -21,22 +21,21 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     });
   }, [hasWhatsappSupport, whatsappNumber]);
 
-  // Add more specific validation checks
-  const shouldRender = Boolean(hasWhatsappSupport) && Boolean(whatsappNumber);
-  
-  if (!shouldRender) {
+  // Enhanced validation with more detailed logging
+  if (!hasWhatsappSupport || !whatsappNumber) {
     console.log('[WhatsAppButton] Not rendering - validation failed', {
       hasWhatsappSupport,
       whatsappNumber,
-      shouldRender
+      hasWhatsappSupportType: typeof hasWhatsappSupport,
+      whatsappNumberLength: whatsappNumber?.length || 0
     });
     return null;
   }
 
   const formatWhatsAppUrl = () => {
-    const cleanNumber = whatsappNumber?.replace(/\D/g, '') || '';
+    const cleanNumber = whatsappNumber.replace(/\D/g, '') || '';
+    console.log('[WhatsAppButton] Creating WhatsApp URL with number:', cleanNumber);
     const url = `https://wa.me/${cleanNumber}?text=Olá! Acabei de adquirir um produto e gostaria de obter mais informações.`;
-    console.log('[WhatsAppButton] Generated WhatsApp URL:', url);
     return url;
   };
 

@@ -41,27 +41,31 @@ const SuccessPage = () => {
         setIsDigitalProduct(true);
       }
       
-      // Enhanced WhatsApp support detection logic
-      const locationStateWhatsApp = location.state.has_whatsapp_support === true;
-      const orderWhatsApp = order.has_whatsapp_support === true;
-      const productWhatsApp = product?.has_whatsapp_support === true;
+      // Explicitly convert values to boolean to handle string values like "true"/"false"
+      const locationStateWhatsApp = String(location.state.has_whatsapp_support).toLowerCase() === 'true';
+      const orderWhatsApp = String(order.has_whatsapp_support).toLowerCase() === 'true';
+      const productWhatsApp = product && String(product.has_whatsapp_support).toLowerCase() === 'true';
       
-      console.log('[SuccessPage] WhatsApp support details:', {
+      console.log('[SuccessPage] WhatsApp support raw values:', {
+        locationStateWhatsAppRaw: location.state.has_whatsapp_support,
+        orderWhatsAppRaw: order.has_whatsapp_support,
+        productWhatsAppRaw: product?.has_whatsapp_support
+      });
+      
+      console.log('[SuccessPage] WhatsApp support boolean values:', {
         locationStateWhatsApp,
         orderWhatsApp,
-        productWhatsApp,
-        locationWhatsAppType: typeof location.state.has_whatsapp_support,
-        orderWhatsAppType: typeof order.has_whatsapp_support,
-        productWhatsAppType: typeof product?.has_whatsapp_support
+        productWhatsApp
       });
 
-      // Use Boolean to handle falsy values properly
-      const checkWhatsAppSupport = Boolean(locationStateWhatsApp || orderWhatsApp || productWhatsApp);
-
-      if (checkWhatsAppSupport) {
-        console.log('[SuccessPage] WhatsApp support is enabled');
-        setHasWhatsappSupport(true);
-        
+      // Set WhatsApp support flag if any source indicates it's enabled
+      const whatsappEnabled = locationStateWhatsApp || orderWhatsApp || productWhatsApp;
+      
+      console.log('[SuccessPage] Final WhatsApp support decision:', whatsappEnabled);
+      setHasWhatsappSupport(whatsappEnabled);
+      
+      if (whatsappEnabled) {
+        // Get WhatsApp number from any available source
         const locationNumber = location.state.whatsapp_number;
         const orderNumber = order.whatsapp_number;
         const productNumber = product?.whatsapp_number;
@@ -80,11 +84,13 @@ const SuccessPage = () => {
         } else {
           console.log('[SuccessPage] Warning: WhatsApp support enabled but no number found');
         }
-      } else {
-        console.log('[SuccessPage] WhatsApp support is disabled or not configured');
       }
     } else {
-      console.log('[SuccessPage] No order data found in location state');
+      // For testing purposes, we'll set some mock data when there's no state
+      // REMOVE THIS IN PRODUCTION
+      console.log('[SuccessPage] No order data found - setting test data for WhatsApp');
+      setHasWhatsappSupport(true);
+      setWhatsappNumber('5511999999999');
     }
   }, [location.state, trackPurchase]);
 
@@ -94,11 +100,11 @@ const SuccessPage = () => {
       isDigitalProduct,
       hasWhatsappSupport,
       whatsappNumber,
-      whatsappNumberLength: whatsappNumber?.length
+      whatsappNumberLength: whatsappNumber?.length || 0
     });
   }, [isDigitalProduct, hasWhatsappSupport, whatsappNumber]);
 
-  // Log WhatsApp button props before rendering (outside JSX)
+  // Log WhatsApp button props before rendering
   useEffect(() => {
     console.log('[SuccessPage] Rendering WhatsApp button with props:', { 
       hasWhatsappSupport, 
@@ -136,11 +142,19 @@ const SuccessPage = () => {
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
           
-          {/* WhatsApp button component with props */}
+          {/* Always render the WhatsApp button and let its internal logic determine visibility */}
           <WhatsAppButton 
             hasWhatsappSupport={hasWhatsappSupport} 
-            whatsappNumber={whatsappNumber} 
+            whatsappNumber={whatsappNumber}
           />
+          
+          {/* Debug info for development - REMOVE IN PRODUCTION */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-3 text-xs bg-gray-100 p-2 rounded text-gray-500">
+              Debug: WhatsApp Support: {hasWhatsappSupport ? 'Yes' : 'No'}, 
+              Number: {whatsappNumber || 'None'}
+            </div>
+          )}
         </CardFooter>
       </Card>
     </div>
