@@ -29,7 +29,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
         message={message}
       />
 
-      {/* Banner image below the timer - Adicionando mais espaço na versão desktop */}
+      {/* Banner image below the timer */}
       {bannerImageUrl && (
         <div 
           className="w-full flex items-center justify-center mt-6 md:mt-12" 
