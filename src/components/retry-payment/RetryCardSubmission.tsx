@@ -1,21 +1,40 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { CardFormFields, cardSchema } from '@/components/checkout/payment-methods/card';
-import { CreditCardData } from '@/types/checkout';
-import { detectCardBrand } from '@/components/checkout/payment-methods/card';
+import { CardFormFields } from '@/components/checkout/payment-methods/card/CardFormFields';
+import { cardSchema } from '@/components/checkout/payment-methods/card/cardValidation';
+import { CreditCardData, Order } from '@/types/checkout';
+import { detectCardBrand } from '@/components/checkout/payment-methods/card/CardBrandDetector';
 import { useToast } from '@/hooks/use-toast';
 
 interface RetryCardSubmissionProps {
   onSubmit: (data: CreditCardData) => Promise<void>;
   isLoading: boolean;
   cardData?: CreditCardData;
+  order: Order | null;
+  validationResult: {
+    canProceed: boolean;
+    message?: string;
+    remainingAttempts?: number;
+    waitTime?: number;
+  } | null;
+  hasWhatsappSupport: boolean;
+  whatsappNumber: string;
 }
 
-export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({ onSubmit, isLoading, cardData }) => {
+export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({ 
+  onSubmit, 
+  isLoading, 
+  cardData,
+  order,
+  validationResult,
+  hasWhatsappSupport,
+  whatsappNumber
+}) => {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof cardSchema>>({

@@ -16,7 +16,7 @@ export const cardSchema = z.object({
   cvv: z.string()
     .refine(
       (val, ctx) => {
-        const cardNumber = ctx.path[0] === 'cvv' && ctx.parent.number 
+        const cardNumber = typeof ctx.path[0] === 'string' && ctx.path[0] === 'cvv' && ctx.parent.number 
           ? ctx.parent.number.toString() 
           : '';
         
@@ -29,7 +29,7 @@ export const cardSchema = z.object({
         }
       },
       ctx => {
-        const cardNumber = ctx.path[0] === 'cvv' && ctx.parent.number 
+        const cardNumber = typeof ctx.path[0] === 'string' && ctx.path[0] === 'cvv' && ctx.parent.number 
           ? ctx.parent.number.toString() 
           : '';
         
