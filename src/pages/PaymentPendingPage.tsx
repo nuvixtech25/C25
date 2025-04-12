@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Hourglass, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Order } from '@/types/checkout';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
+import { Button } from '@/components/ui/button';
+import { MessageCircle } from 'lucide-react';
 
 const PaymentPendingPage = () => {
   const { state } = useLocation();
@@ -35,6 +36,11 @@ const PaymentPendingPage = () => {
     
     return () => clearTimeout(timer);
   }, [state]);
+
+  const formatWhatsAppUrl = () => {
+    const cleanNumber = whatsappNumber?.replace(/\D/g, '') || '';
+    return `https://wa.me/${cleanNumber}?text=Olá! Gostaria de informações sobre meu pedido ${order?.id || ''} que está em análise.`;
+  };
 
   if (loading) {
     return (
@@ -88,11 +94,19 @@ const PaymentPendingPage = () => {
           {hasWhatsappSupport && whatsappNumber && (
             <div className="mt-8">
               <p className="text-center text-gray-600 mb-3">Dúvidas sobre seu pedido?</p>
-              <WhatsAppButton 
-                whatsappNumber={whatsappNumber} 
-                message={`Olá! Gostaria de informações sobre meu pedido ${order?.id || ''} que está em análise.`}
+              <Button 
+                asChild 
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md transition-all duration-300 py-4 h-auto text-base font-medium rounded-xl"
-              />
+              >
+                <a 
+                  href={formatWhatsAppUrl()} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  Falar no WhatsApp
+                  <MessageCircle className="h-5 w-5" />
+                </a>
+              </Button>
             </div>
           )}
         </CardContent>
