@@ -2,9 +2,9 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Index from '@/pages/Index';
+import Checkout from '@/pages/Checkout';
 import CheckoutPreview from '@/pages/admin/CheckoutPreview';
 import PaymentPage from '@/pages/PaymentPage';
-import Checkout from '@/pages/Checkout';
 
 const PublicRoutes: React.FC = () => {
   return (

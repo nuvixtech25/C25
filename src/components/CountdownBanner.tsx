@@ -41,7 +41,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({ message, endTi
   }
 
   return (
-    <div className="bg-gradient-to-r from-black to-gray-800 text-white py-3 px-4 text-center mb-6">
+    <div className="bg-gradient-to-r from-black to-gray-800 text-white py-3 px-4 text-center mb-0">
       <div className="max-w-5xl mx-auto flex items-center justify-center">
         <Clock className="h-5 w-5 mr-2 text-yellow-300" />
         <span className="text-base md:text-lg">

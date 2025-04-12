@@ -25,7 +25,7 @@ const Checkout = () => {
     refetchOnWindowFocus: false,
   });
 
-  // Get checkout customization based on product - filter out null values
+  // Get checkout customization based on product
   const customization = useCheckoutCustomization(product || undefined);
   
   // Use checkout state hook
@@ -45,6 +45,10 @@ const Checkout = () => {
     }
   }, [product, isLoading, error, navigate]);
   
+  // Create a countdown end time 15 minutes from now
+  const countdownEndTime = new Date();
+  countdownEndTime.setMinutes(countdownEndTime.getMinutes() + 15);
+  
   // Show loading state while fetching product
   if (isLoading) {
     return (
@@ -61,12 +65,10 @@ const Checkout = () => {
   
   return (
     <CheckoutContainer>
-      {customization.topMessage && customization.countdownEndTime && (
-        <CountdownBanner 
-          message={customization.topMessage}
-          endTime={new Date(customization.countdownEndTime)}
-        />
-      )}
+      <CountdownBanner 
+        message="Oferta por tempo limitado!"
+        endTime={countdownEndTime}
+      />
       
       <CheckoutContent 
         product={product}
