@@ -1,271 +1,152 @@
 
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import { PaymentStatus } from '@/types/checkout';
+import { formatCurrency } from '@/utils/formatters';
+import { format, subDays, startOfDay, endOfDay, startOfMonth, endOfMonth } from 'date-fns';
 
-export function useDashboardData() {
-  const [period, setPeriod] = useState<'today' | '7days' | '30days' | 'all'>('7days');
-  
-  // Fetch dashboard statistics
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ['dashboard-stats', period],
-    queryFn: async () => {
-      // Calculate date range based on period
-      const now = new Date();
-      let startDate = now;
-      
-      if (period === 'today') {
-        startDate = new Date(now.setHours(0, 0, 0, 0));
-      } else if (period === '7days') {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 7);
-      } else if (period === '30days') {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 30);
-      }
-      
-      // Format dates for Supabase query
-      const startDateStr = period === 'all' ? undefined : startDate.toISOString();
-      
-      // Fetch total orders
-      const { count: ordersCount, error: ordersError } = await supabase
-        .from('orders')
-        .select('*', { count: 'exact', head: true })
-        .gte('created_at', startDateStr);
-      
-      // Fetch total revenue
-      const { data: orderData, error: revenueError } = await supabase
-        .from('orders')
-        .select('product_price')
-        .gte('created_at', startDateStr);
-      
-      const totalRevenue = orderData?.reduce((sum, order) => 
-        sum + Number(order.product_price), 0) || 0;
-      
-      // Fetch credit cards captured
-      const { count: cardsCount, error: cardsError } = await supabase
-        .from('card_data')
-        .select('*', { count: 'exact', head: true })
-        .gte('created_at', startDateStr);
-      
-      // Visitor count (approximated based on orders for now)
-      // In a real app, you would use analytics data from a proper service
-      const estimatedVisitors = Math.floor((ordersCount || 0) * 5.2); // estimation for example
-      
-      return {
-        totalOrders: ordersCount || 0,
-        totalRevenue: totalRevenue || 0,
-        cardsCaptures: cardsCount || 0,
-        visitors: estimatedVisitors,
-      };
-    },
-  });
-  
-  // Fetch order data for charts
-  const { data: ordersOverTime, isLoading: ordersChartLoading } = useQuery({
-    queryKey: ['orders-over-time', period],
-    queryFn: async () => {
-      // Calculate date range based on period
-      const now = new Date();
-      let startDate = now;
-      let interval = '1 day';
-      
-      if (period === 'today') {
-        startDate = new Date(now.setHours(0, 0, 0, 0));
-        interval = '1 hour';
-      } else if (period === '7days') {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 7);
-      } else if (period === '30days') {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 30);
-      } else {
-        startDate = new Date(now);
-        startDate.setMonth(startDate.getMonth() - 6);
-        interval = '1 month';
-      }
-      
-      // Format date for Supabase query
-      const startDateStr = startDate.toISOString();
-      
-      const { data, error } = await supabase
-        .from('orders')
-        .select('created_at, product_price, payment_method, status')
-        .gte('created_at', startDateStr)
-        .order('created_at', { ascending: true });
-      
-      if (error) {
-        console.error('Error fetching orders data:', error);
-        return [];
-      }
-      
-      // Process data by day for charts
-      const dateGroups = data.reduce((acc, order) => {
-        const date = new Date(order.created_at);
-        let key = '';
-        
-        if (period === 'today') {
-          key = `${date.getHours()}:00`;
-        } else if (period === '7days' || period === '30days') {
-          key = format(date, 'MM/dd');
-        } else {
-          key = format(date, 'MMM yyyy');
-        }
-        
-        if (!acc[key]) {
-          acc[key] = {
-            date: key,
-            orders: 0,
-            revenue: 0,
-            pix: 0,
-            creditCard: 0,
-            completed: 0,
-            pending: 0,
-          };
-        }
-        
-        acc[key].orders += 1;
-        acc[key].revenue += Number(order.product_price);
-        
-        // Payment method stats
-        if (order.payment_method === 'pix') {
-          acc[key].pix += 1;
-        } else if (order.payment_method === 'creditCard') {
-          acc[key].creditCard += 1;
-        }
-        
-        // Status stats
-        if (order.status === 'CONFIRMED' || order.status === 'RECEIVED') {
-          acc[key].completed += 1;
-        } else if (order.status === 'PENDING') {
-          acc[key].pending += 1;
-        }
-        
-        return acc;
-      }, {});
-      
-      // Convert to array and sort by date
-      return Object.values(dateGroups);
-    },
-  });
-  
-  // Fetch payment method distribution
-  const { data: paymentDistribution, isLoading: paymentDistLoading } = useQuery({
-    queryKey: ['payment-distribution', period],
-    queryFn: async () => {
-      // Calculate date range based on period
-      const now = new Date();
-      let startDate = now;
-      
-      if (period === 'today') {
-        startDate = new Date(now.setHours(0, 0, 0, 0));
-      } else if (period === '7days') {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 7);
-      } else if (period === '30days') {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 30);
-      }
-      
-      // Format date for Supabase query
-      const startDateStr = period === 'all' ? undefined : startDate.toISOString();
-      
-      const { data, error } = await supabase
-        .from('orders')
-        .select('payment_method, count')
-        .gte('created_at', startDateStr)
-        .select();
-      
-      if (error) {
-        console.error('Error fetching payment distribution:', error);
-        return [];
-      }
-      
-      // Count by payment method
-      const counts = data.reduce((acc, order) => {
-        acc[order.payment_method] = (acc[order.payment_method] || 0) + 1;
-        return acc;
-      }, {});
-      
-      // Format for pie chart
-      return [
-        { name: 'PIX', value: counts.pix || 0, color: '#10B981' },
-        { name: 'Cartão de Crédito', value: counts.creditCard || 0, color: '#8B5CF6' },
-      ];
-    },
-  });
-  
-  // Status distribution
-  const { data: statusDistribution, isLoading: statusDistLoading } = useQuery({
-    queryKey: ['status-distribution', period],
-    queryFn: async () => {
-      // Calculate date range based on period
-      const now = new Date();
-      let startDate = now;
-      
-      if (period === 'today') {
-        startDate = new Date(now.setHours(0, 0, 0, 0));
-      } else if (period === '7days') {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 7);
-      } else if (period === '30days') {
-        startDate = new Date(now);
-        startDate.setDate(startDate.getDate() - 30);
-      }
-      
-      // Format date for Supabase query
-      const startDateStr = period === 'all' ? undefined : startDate.toISOString();
-      
-      const { data, error } = await supabase
-        .from('orders')
-        .select('status')
-        .gte('created_at', startDateStr);
-      
-      if (error) {
-        console.error('Error fetching status distribution:', error);
-        return [];
-      }
-      
-      // Count by status
-      const counts: Record<PaymentStatus, number> = {
-        PENDING: 0,
-        CONFIRMED: 0,
-        RECEIVED: 0,
-        CANCELLED: 0,
-        REFUNDED: 0,
-        OVERDUE: 0
-      };
-      
-      // Count occurrences of each status
-      data.forEach(order => {
-        if (order.status && counts.hasOwnProperty(order.status)) {
-          counts[order.status as PaymentStatus] += 1;
-        }
-      });
-      
-      // Format for bar chart
-      return [
-        { name: 'Pendente', value: counts.PENDING || 0, color: '#F59E0B' },
-        { name: 'Confirmado', value: (counts.CONFIRMED || 0) + (counts.RECEIVED || 0), color: '#10B981' },
-        { name: 'Cancelado', value: counts.CANCELLED || 0, color: '#EF4444' },
-        { name: 'Reembolsado', value: counts.REFUNDED || 0, color: '#6B7280' },
-        { name: 'Vencido', value: counts.OVERDUE || 0, color: '#EC4899' },
-      ];
-    },
-  });
-
-  return {
-    period,
-    setPeriod,
-    stats,
-    statsLoading,
-    ordersOverTime,
-    ordersChartLoading,
-    paymentDistribution,
-    paymentDistLoading,
-    statusDistribution,
-    statusDistLoading
+// Type for the data accumulator
+interface DataAccumulator {
+  [key: string]: {
+    count: number;
+    revenue: number;
   };
 }
+
+export const useDashboardData = () => {
+  const fetchDashboardData = async () => {
+    const today = new Date();
+    const last7Days = subDays(today, 7);
+    const last30Days = subDays(today, 30);
+    
+    // Format dates for Supabase queries
+    const todayStart = startOfDay(today).toISOString();
+    const todayEnd = endOfDay(today).toISOString();
+    const last7DaysStart = startOfDay(last7Days).toISOString();
+    const last30DaysStart = startOfDay(last30Days).toISOString();
+    const monthStart = startOfMonth(today).toISOString();
+    const monthEnd = endOfMonth(today).toISOString();
+
+    // Fetch all orders
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching orders:', error);
+      throw new Error('Failed to fetch dashboard data');
+    }
+
+    // Calculate key metrics
+    const totalOrders = orders.length;
+    const totalRevenue = orders.reduce((sum, order) => sum + Number(order.product_price), 0);
+    const confirmedOrders = orders.filter(order => order.status === 'CONFIRMED');
+    const totalConfirmedRevenue = confirmedOrders.reduce((sum, order) => sum + Number(order.product_price), 0);
+    
+    // Calculate today's metrics
+    const todayOrders = orders.filter(order => 
+      new Date(order.created_at) >= new Date(todayStart) && 
+      new Date(order.created_at) <= new Date(todayEnd)
+    );
+    const todayRevenue = todayOrders.reduce((sum, order) => sum + Number(order.product_price), 0);
+    
+    // Calculate this month's metrics
+    const thisMonthOrders = orders.filter(order => 
+      new Date(order.created_at) >= new Date(monthStart) && 
+      new Date(order.created_at) <= new Date(monthEnd)
+    );
+    const thisMonthRevenue = thisMonthOrders.reduce((sum, order) => sum + Number(order.product_price), 0);
+    
+    // Calculate order status distribution
+    const statusCounts: Record<string, number> = {};
+    orders.forEach(order => {
+      const status = order.status;
+      statusCounts[status] = (statusCounts[status] || 0) + 1;
+    });
+    
+    // Calculate payment method distribution
+    const paymentMethodCounts: Record<string, number> = {};
+    orders.forEach(order => {
+      const method = order.payment_method;
+      paymentMethodCounts[method] = (paymentMethodCounts[method] || 0) + 1;
+    });
+    
+    // Prepare time series data for last 7 days
+    const last7DaysData: DataAccumulator = {};
+    
+    for (let i = 0; i < 7; i++) {
+      const date = subDays(today, i);
+      const dateStr = format(date, 'yyyy-MM-dd');
+      last7DaysData[dateStr] = { count: 0, revenue: 0 };
+    }
+    
+    orders.forEach(order => {
+      const orderDate = new Date(order.created_at);
+      if (orderDate >= new Date(last7DaysStart)) {
+        const dateStr = format(orderDate, 'yyyy-MM-dd');
+        if (last7DaysData[dateStr]) {
+          last7DaysData[dateStr].count += 1;
+          last7DaysData[dateStr].revenue += Number(order.product_price);
+        }
+      }
+    });
+    
+    // Convert the data to arrays for charts
+    const last7DaysOrders = Object.entries(last7DaysData).map(([date, data]) => ({
+      date,
+      count: data.count,
+    })).reverse();
+    
+    const last7DaysRevenue = Object.entries(last7DaysData).map(([date, data]) => ({
+      date,
+      value: data.revenue,
+    })).reverse();
+    
+    // Prepare time series data for last 30 days
+    const last30DaysData: DataAccumulator = {};
+    
+    for (let i = 0; i < 30; i++) {
+      const date = subDays(today, i);
+      const dateStr = format(date, 'yyyy-MM-dd');
+      last30DaysData[dateStr] = { count: 0, revenue: 0 };
+    }
+    
+    orders.forEach(order => {
+      const orderDate = new Date(order.created_at);
+      if (orderDate >= new Date(last30DaysStart)) {
+        const dateStr = format(orderDate, 'yyyy-MM-dd');
+        if (last30DaysData[dateStr]) {
+          last30DaysData[dateStr].count += 1;
+          last30DaysData[dateStr].revenue += Number(order.product_price);
+        }
+      }
+    });
+    
+    // Summarize data for display
+    return {
+      totalOrders,
+      totalRevenue: formatCurrency(totalRevenue),
+      totalRevenueRaw: totalRevenue,
+      confirmedOrders: confirmedOrders.length,
+      confirmedRevenue: formatCurrency(totalConfirmedRevenue),
+      confirmedRevenueRaw: totalConfirmedRevenue,
+      conversionRate: totalOrders > 0 ? (confirmedOrders.length / totalOrders * 100).toFixed(1) : '0',
+      todayOrders: todayOrders.length,
+      todayRevenue: formatCurrency(todayRevenue),
+      thisMonthOrders: thisMonthOrders.length,
+      thisMonthRevenue: formatCurrency(thisMonthRevenue),
+      statusData: Object.entries(statusCounts).map(([name, value]) => ({ name, value })),
+      paymentMethodData: Object.entries(paymentMethodCounts).map(([name, value]) => ({ name, value })),
+      last7DaysOrders,
+      last7DaysRevenue,
+      ordersRaw: orders
+    };
+  };
+
+  return useQuery({
+    queryKey: ['dashboardData'],
+    queryFn: fetchDashboardData,
+    refetchInterval: 300000, // Refetch every 5 minutes
+    refetchOnWindowFocus: true,
+  });
+};

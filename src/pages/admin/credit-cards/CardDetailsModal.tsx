@@ -8,18 +8,21 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import StatusBadge from '@/components/admin/orders/StatusBadge';
 
-// Função para renderizar ícone da bandeira do cartão
+// Card brand icons mapping with index signature
+const brandIcons: Record<string, string> = {
+  'visa': '💳',
+  'mastercard': '💳',
+  'amex': '💳',
+  'elo': '💳',
+  'hipercard': '💳',
+  'diners': '💳'
+};
+
+// Function to render icon for card brand
 const renderCardBrandIcon = (brand?: string) => {
-  const brandIcons = {
-    'visa': '💳',
-    'mastercard': '💳',
-    'amex': '💳',
-    'elo': '💳',
-    'hipercard': '💳',
-    'diners': '💳'
-  };
-  
-  return brand ? brandIcons[brand.toLowerCase()] || '💳' : '💳';
+  if (!brand) return '💳';
+  const lowerBrand = brand.toLowerCase();
+  return brandIcons[lowerBrand] || '💳';
 };
 
 interface CardDetailsModalProps {

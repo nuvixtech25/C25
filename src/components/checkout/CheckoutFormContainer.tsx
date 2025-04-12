@@ -32,10 +32,10 @@ export const CheckoutFormContainer: React.FC<CheckoutFormContainerProps> = ({
     <div className="space-y-8">
       <PersonalInfoSection 
         onSubmit={onCustomerSubmit} 
-        headingColor={headingColor}
+        headingColor={headingColor || '#000000'} // Provide default value
       />
       
-      <TestimonialSection headingColor={headingColor} />
+      <TestimonialSection headingColor={headingColor || '#000000'} /> {/* Provide default value */}
       
       {customerData && (
         <PaymentMethodSection
@@ -44,9 +44,9 @@ export const CheckoutFormContainer: React.FC<CheckoutFormContainerProps> = ({
           onPaymentMethodChange={onPaymentMethodChange}
           onSubmit={onPaymentSubmit}
           isSubmitting={isSubmitting}
-          headingColor={headingColor}
-          buttonColor={buttonColor}
-          buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : buttonText}
+          headingColor={headingColor || '#000000'} // Provide default value
+          buttonColor={buttonColor || '#6E59A5'} // Provide default value
+          buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : (buttonText || 'Finalizar Compra')} // Provide default value
         />
       )}
     </div>

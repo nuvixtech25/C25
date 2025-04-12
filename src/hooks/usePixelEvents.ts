@@ -27,8 +27,10 @@ export const usePixelEvents = ({ initialize = false }: UsePixelEventsProps = {})
             GooglePixel.initGooglePixel(config.googleAdsId);
             
             // Set global variables for access in window
-            window.googleAdsId = config.googleAdsId;
-            window.conversionLabel = config.conversionLabel || '';
+            if (typeof window !== 'undefined') {
+              window.googleAdsId = config.googleAdsId;
+              window.conversionLabel = config.conversionLabel || '';
+            }
           }
           
           // Initialize Facebook Pixel if enabled and ID exists
@@ -36,8 +38,10 @@ export const usePixelEvents = ({ initialize = false }: UsePixelEventsProps = {})
             FacebookPixel.initFacebookPixel(config.facebookPixelId, config.facebookToken);
             
             // Set global variables for access in window
-            window.facebookPixelId = config.facebookPixelId;
-            window.facebookToken = config.facebookToken || '';
+            if (typeof window !== 'undefined') {
+              window.facebookPixelId = config.facebookPixelId;
+              window.facebookToken = config.facebookToken || '';
+            }
           }
           
           setPixelInitialized(true);
@@ -54,22 +58,22 @@ export const usePixelEvents = ({ initialize = false }: UsePixelEventsProps = {})
   useEffect(() => {
     if (process.env.NODE_ENV === 'production' && pixelInitialized) {
       // Track Google Ads page view if initialized
-      if (window.googleAdsId) {
+      if (typeof window !== 'undefined' && window.googleAdsId) {
         GooglePixel.trackPageView(location.pathname);
       }
       
       // Track Facebook page view if initialized
-      if (window.fbq) {
+      if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
         FacebookPixel.trackPageView();
       }
       
       // Check for specific pages to trigger events
       if (location.pathname.includes('/checkout/')) {
         // Begin checkout events
-        if (window.googleAdsId) {
+        if (typeof window !== 'undefined' && window.googleAdsId) {
           GooglePixel.trackBeginCheckout();
         }
-        if (window.fbq) {
+        if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
           FacebookPixel.trackInitiateCheckout();
         }
       }
@@ -80,12 +84,12 @@ export const usePixelEvents = ({ initialize = false }: UsePixelEventsProps = {})
   const trackPurchase = (orderId: string, value: number) => {
     if (process.env.NODE_ENV === 'production' && pixelInitialized) {
       // Track Google purchase if initialized
-      if (window.googleAdsId) {
+      if (typeof window !== 'undefined' && window.googleAdsId) {
         GooglePixel.trackPurchase(orderId, value, window.conversionLabel);
       }
       
       // Track Facebook purchase if initialized
-      if (window.fbq) {
+      if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
         FacebookPixel.trackPurchase(value);
       }
     }

@@ -25,8 +25,8 @@ const Checkout = () => {
     refetchOnWindowFocus: false,
   });
 
-  // Get checkout customization based on product
-  const customization = useCheckoutCustomization(product);
+  // Get checkout customization based on product - filter out null values
+  const customization = useCheckoutCustomization(product || undefined);
   
   // Use checkout state hook
   const {
@@ -36,7 +36,7 @@ const Checkout = () => {
     handleCustomerSubmit,
     setPaymentMethod,
     handlePaymentSubmit
-  } = useCheckoutState(product);
+  } = useCheckoutState(product || undefined);
 
   // If the product is not found, redirect to the 404 page
   useEffect(() => {
