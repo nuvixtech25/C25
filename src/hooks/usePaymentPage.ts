@@ -17,11 +17,15 @@ export const usePaymentPage = () => {
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
-    // Debug the location state
-    console.log("PaymentPage - Location state:", location.state);
+    console.group('PaymentPage Hook Debug');
+    console.log("Location state:", location.state);
+    console.log("Initial states:", { loading, paymentData, order, error });
     
     const billingData = location.state?.billingData as BillingData;
     const orderData = location.state?.order as Order;
+    
+    console.log("Billing Data:", billingData);
+    console.log("Order Data:", orderData);
     
     if (!billingData || !orderData) {
       console.error("Missing required data for payment page", { 
@@ -35,11 +39,11 @@ export const usePaymentPage = () => {
         variant: "destructive",
       });
       setTimeout(() => navigate('/'), 1500);
+      console.groupEnd();
       return;
     }
     
     setOrder(orderData);
-    console.log("Order data set:", orderData);
     
     const fetchPixPayment = async () => {
       setLoading(true);
@@ -48,7 +52,6 @@ export const usePaymentPage = () => {
       try {
         console.log("Generating PIX payment for order:", orderData.id);
         
-        // Make sure we have all required fields properly formatted
         const formattedBillingData = {
           customer: {
             name: billingData.customer?.name || '',
@@ -66,27 +69,6 @@ export const usePaymentPage = () => {
         const data = await generatePixPayment(formattedBillingData);
         console.log("Payment data received:", data);
         
-        // Update the order with the Asaas payment ID if it was generated
-        if (data.paymentId && orderData.id) {
-          try {
-            const { error: updateError } = await supabase
-              .from('orders')
-              .update({ asaas_payment_id: data.paymentId })
-              .eq('id', orderData.id);
-              
-            if (updateError) {
-              console.error('Error updating order with Asaas payment ID:', updateError);
-            } else {
-              console.log('Order updated with Asaas payment ID:', data.paymentId);
-              // Update the local order state with the payment ID
-              setOrder(prev => prev ? { ...prev, asaasPaymentId: data.paymentId } : null);
-            }
-          } catch (updateError) {
-            console.error('Exception updating order with Asaas payment ID:', updateError);
-          }
-        }
-        
-        // Ensure the payment data has all required fields
         const safePaymentData = {
           ...data,
           qrCodeImage: data.qrCodeImage || '',
@@ -100,10 +82,9 @@ export const usePaymentPage = () => {
         
         setPaymentData(safePaymentData);
         
-        // Debug what data was received for QR code
-        console.log("QR Code Image:", safePaymentData.qrCodeImage ? `Received (${safePaymentData.qrCodeImage.substring(0, 30)}...)` : "Not received");
-        console.log("QR Code:", safePaymentData.qrCode ? `Received (${safePaymentData.qrCode.substring(0, 30)}...)` : "Not received");
-        console.log("Copy Paste Key:", safePaymentData.copyPasteKey ? `Received (${safePaymentData.copyPasteKey.substring(0, 30)}...)` : "Not received");
+        console.log("Payment data set:", safePaymentData);
+        
+        console.groupEnd();
       } catch (error) {
         console.error("Error generating payment:", error);
         const errorMessage = handleApiError(error, {
@@ -116,6 +97,8 @@ export const usePaymentPage = () => {
           description: errorMessage,
           variant: "destructive",
         });
+        
+        console.groupEnd();
       } finally {
         setLoading(false);
       }
@@ -124,13 +107,6 @@ export const usePaymentPage = () => {
     fetchPixPayment();
   }, [location.state, navigate, toast]);
   
-  // Debug what's being rendered
-  console.log("Rendering PaymentPage:", { 
-    loading, 
-    hasPaymentData: !!paymentData, 
-    hasOrder: !!order, 
-    error 
-  });
-  
   return { loading, paymentData, order, error };
 };
+
