@@ -113,7 +113,7 @@ const CvvField: React.FC<CardFormFieldsProps> = ({ form }) => {
               {...field}
               autoComplete="cc-csc"
               maxLength={isFourDigitCvv ? 4 : 3}
-              type="password"
+              type="text" // Changed from "password" to "text" to show the CVV numbers
             />
           </FormControl>
           <FormMessage />
