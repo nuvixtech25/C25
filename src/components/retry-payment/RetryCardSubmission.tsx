@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CardForm } from '@/components/checkout/payment-methods/CardForm';
 import { CreditCardData, Order } from '@/types/checkout';
-import { WhatsAppButton } from '@/pages/SuccessPage/WhatsAppButton';
 
 interface RetryCardSubmissionProps {
   order: Order | null;
@@ -87,15 +85,6 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
         buttonColor="#6E59A5"
         buttonText="Tentar pagamento novamente"
       />
-      
-      {hasWhatsappSupport && whatsappNumber && (
-        <div className="mt-4">
-          <WhatsAppButton 
-            hasWhatsappSupport={hasWhatsappSupport} 
-            whatsappNumber={whatsappNumber}
-          />
-        </div>
-      )}
     </>
   );
 };
