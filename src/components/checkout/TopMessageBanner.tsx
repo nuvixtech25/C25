@@ -16,20 +16,18 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   initialMinutes = 5,
   initialSeconds = 0,
   bannerImageUrl = null,
-  containerClassName = ''  // Removed default 'w-full' to avoid adding any extra spacing
+  containerClassName = ''
 }) => {
   const isMobile = useIsMobile();
   
   return (
     <div className={`flex flex-col items-center ${containerClassName}`}>
-      {/* Black bar with eye icon, message, and timer */}
       <TimerBanner 
         initialMinutes={initialMinutes} 
         initialSeconds={initialSeconds}
         message={message}
       />
 
-      {/* Banner image below the timer */}
       {bannerImageUrl && (
         <div 
           className="w-full flex items-center justify-center" 
