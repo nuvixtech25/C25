@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CreditCard } from 'lucide-react';
 
@@ -11,12 +10,22 @@ export const detectCardBrand = (cardNumber: string): { brand: string; icon: Reac
   if (/^4/.test(cleanNumber)) {
     return { 
       brand: 'visa', 
-      icon: <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M21.5 5H2.5C1.4 5 0.5 5.9 0.5 7V17C0.5 18.1 1.4 19 2.5 19H21.5C22.6 19 23.5 18.1 23.5 17V7C23.5 5.9 22.6 5 21.5 5Z" stroke="#1A56DB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M7 15L10 9" stroke="#1A56DB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M10 15L13 9" stroke="#1A56DB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M16 15L19 9" stroke="#1A56DB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      icon: (
+        <svg 
+          className="h-6 w-6" 
+          viewBox="0 0 38 24" 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="38" 
+          height="24"
+          fill="none"
+        >
+          <rect width="38" height="24" rx="3" fill="white"/>
+          <path 
+            d="M14.435 18.006l3.53-16.072h4.635l-3.53 16.072h-4.635zm15.85-14.88c-.967-.386-2.476-.806-4.35-.806-4.8 0-8.173 2.62-8.194 6.368-.022 2.766 2.455 4.311 4.324 5.24 1.925.96 2.573 1.579 2.552 2.44-.021 1.313-1.54 1.915-2.959 1.915-1.979 0-3.025-.3-4.65-1.025l-.643-.314-.68 4.076c1.135.537 3.231.998 5.41.998 5.096 0 8.41-2.576 8.436-6.556.012-2.188-1.27-3.858-4.054-5.24-1.691-.84-2.73-1.404-2.73-2.264 0-.762.85-1.579 2.687-1.579 1.53-.025 2.637.328 3.504.71l.447.211.67-3.945z" 
+            fill="#1A4BA0"
+          />
+        </svg>
+      )
     };
   }
   
