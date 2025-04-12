@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { checkIfUserIsAdmin, signIn, signOut, signUp, makeUserAdmin, createAdminUser } from './authActions';
 import { AuthContextType } from './authTypes';
 
-export const useAuthProvider = (): AuthContextType => {
+export function useAuthProvider(): AuthContextType {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,4 +56,4 @@ export const useAuthProvider = (): AuthContextType => {
     makeUserAdmin,
     createAdminUser,
   };
-};
+}

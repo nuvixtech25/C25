@@ -3,9 +3,11 @@ import React, { createContext, useContext } from 'react';
 import { useAuthProvider } from './auth/useAuthProvider';
 import { AuthContextType } from './auth/authTypes';
 
+// Criando o contexto com um valor inicial undefined
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+// Componente Provider como função React explícita 
+export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const auth = useAuthProvider();
 
   return (
@@ -13,8 +15,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
+// Hook customizado para usar o contexto
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

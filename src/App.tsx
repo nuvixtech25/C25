@@ -30,11 +30,11 @@ const AppWithPixels = () => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Router>
+      <Router>
+        <AuthProvider>
           <AppWithPixels />
-        </Router>
-      </AuthProvider>
+        </AuthProvider>
+      </Router>
     </QueryClientProvider>
   );
 }
