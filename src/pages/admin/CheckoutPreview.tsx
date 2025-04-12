@@ -6,9 +6,8 @@ import { CountdownBanner } from '@/components/CountdownBanner';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
 import { CheckoutCustomization } from '@/types/checkout';
 import { usePreviewCustomization } from '@/hooks/usePreviewCustomization';
-import { PreviewContent } from '@/components/preview/PreviewContent';
+import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { PreviewLoading } from '@/components/preview/PreviewLoading';
-import { getDemoProduct } from '@/utils/previewUtils';
 
 const CheckoutPreview: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -42,14 +41,9 @@ const CheckoutPreview: React.FC = () => {
         />
       )}
       
-      <PreviewContent 
+      <CheckoutContent 
         product={demoProduct}
-        customerData={customerData || {
-          name: '',
-          email: '',
-          cpfCnpj: '',
-          phone: ''
-        }} // Provide default empty customer data if null
+        customerData={customerData}
         paymentMethod={paymentMethod}
         isSubmitting={isSubmitting}
         customization={customization}

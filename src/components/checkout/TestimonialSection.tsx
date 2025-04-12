@@ -34,13 +34,13 @@ interface TestimonialSectionProps {
 
 export const TestimonialSection: React.FC<TestimonialSectionProps> = ({ headingColor }) => {
   return (
-    <section id="testimonials-section" className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-6" style={{ color: headingColor }}>
+    <section id="testimonials-section" className="bg-white/10 backdrop-blur-sm p-6 rounded-lg">
+      <h2 className="text-xl font-semibold mb-6 text-white">
         O que dizem nossos clientes
       </h2>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="space-y-4">
         {testimonials.map((testimonial) => (
-          <Card key={testimonial.id} className="border-gray-200 hover:shadow-md transition-shadow">
+          <Card key={testimonial.id} className="bg-white/5 backdrop-blur-sm border-0 text-white">
             <CardContent className="p-4">
               <div className="flex items-center mb-3">
                 <img 
@@ -54,7 +54,7 @@ export const TestimonialSection: React.FC<TestimonialSectionProps> = ({ headingC
                     {Array.from({ length: 5 }).map((_, i) => (
                       <svg 
                         key={i} 
-                        className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400' : 'text-gray-300'}`} 
+                        className={`w-4 h-4 ${i < testimonial.rating ? 'text-yellow-400' : 'text-gray-600'}`} 
                         fill="currentColor" 
                         viewBox="0 0 20 20"
                       >
@@ -64,7 +64,7 @@ export const TestimonialSection: React.FC<TestimonialSectionProps> = ({ headingC
                   </div>
                 </div>
               </div>
-              <p className="text-gray-600 text-sm">{testimonial.comment}</p>
+              <p className="text-gray-300 text-sm">{testimonial.comment}</p>
             </CardContent>
           </Card>
         ))}

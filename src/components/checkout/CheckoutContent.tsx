@@ -28,14 +28,10 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
   onPaymentSubmit
 }) => {
   return (
-    <div className="max-w-[600px] mx-auto">
-      <div className="space-y-4">
+    <div className="grid md:grid-cols-12 gap-6">
+      <div className="md:col-span-7 space-y-6">
         <PersonalInfoSection 
           onSubmit={onCustomerSubmit}
-          headingColor={customization.headingColor}
-        />
-        
-        <TestimonialSection
           headingColor={customization.headingColor}
         />
         
@@ -52,11 +48,19 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
             productPrice={product.price}
           />
         )}
-        
-        <OrderSummary 
-          product={product}
-          isDigitalProduct={customization.isDigitalProduct}
-        />
+      </div>
+      
+      <div className="md:col-span-5">
+        <div className="sticky top-4 space-y-6">
+          <OrderSummary 
+            product={product}
+            isDigitalProduct={customization.isDigitalProduct}
+          />
+          
+          <TestimonialSection
+            headingColor={customization.headingColor}
+          />
+        </div>
       </div>
     </div>
   );
