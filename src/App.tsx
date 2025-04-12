@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -66,6 +65,9 @@ const AppWithPixels = () => {
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/payment-failed" element={<FailedPage />} />
       <Route path="/payment" element={<PaymentPage />} />
+      
+      {/* Adicionar redirecionamento de /payment-success para /success */}
+      <Route path="/payment-success" element={<Navigate to="/success" replace />} />
       
       {/* New routes for digital product access */}
       <Route path="/access-data" element={<AccessDataPage />} />

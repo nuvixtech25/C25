@@ -24,6 +24,11 @@ const NotFound = () => {
         
         <p className="text-gray-500 mb-8">
           A página <span className="font-medium text-gray-700">{location.pathname}</span> não existe ou foi removida.
+          {location.pathname === '/payment-success' && (
+            <span className="block mt-2 text-blue-600">
+              Tente acessar a página <Link to="/success" className="underline">success</Link> em vez disso.
+            </span>
+          )}
         </p>
         
         <Button asChild variant="default" className="w-full">
