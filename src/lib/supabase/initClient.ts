@@ -1,30 +1,33 @@
-
+// src/lib/supabase/initClient.ts
 import { createClient } from '@supabase/supabase-js';
 
-// Access environment variables safely
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-// Strict validation for required environment variables
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('ERROR: Required Supabase environment variables are missing.');
-  throw new Error('Supabase configuration error: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be defined in your environment.');
-}
-
-type Database = any;
-
-export const supabase = createClient<Database>(
-  supabaseUrl, 
-  supabaseAnonKey, 
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    }
+// Solução robusta para ambientes Lovable
+const getSupabaseConfig = () => {
+  // Modo desenvolvimento (Vite)
+  if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    return {
+      url: import.meta.env.VITE_SUPABASE_URL,
+      key: import.meta.env.VITE_SUPABASE_ANON_KEY
+    };
   }
-);
 
-// Log initialization without exposing credentials
-if (process.env.NODE_ENV !== 'production') {
-  console.log('Supabase client initialized successfully');
-}
+  // Modo produção (Lovable/Netlify)
+  if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
+    return {
+      url: process.env.SUPABASE_URL,
+      key: process.env.SUPABASE_ANON_KEY
+    };
+  }
+
+  throw new Error(`
+    [ERRO DE CONFIGURAÇÃO] Credenciais do Supabase não encontradas.
+    Configure em:
+    1. Variáveis de ambiente (VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY)
+    2. Painel Lovable/Netlify para produção
+  `);
+};
+
+export const supabase = createClient(
+  getSupabaseConfig().url,
+  getSupabaseConfig().key
+);
