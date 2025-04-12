@@ -15,9 +15,9 @@ export const cardSchema = z.object({
     ),
   cvv: z.string()
     .refine(
-      (val, ctx) => {
+      (val: string, ctx: z.RefinementCtx) => {
         // Get card number from form data
-        const cardNumber = ctx.path.length > 0 && ctx.path[0] === 'cvv' && 
+        const cardNumber = Array.isArray(ctx.path) && ctx.path.length > 0 && ctx.path[0] === 'cvv' && 
           typeof ctx.data === 'object' && ctx.data !== null && 'number' in ctx.data
             ? String(ctx.data.number || '')
             : '';
@@ -33,9 +33,9 @@ export const cardSchema = z.object({
         }
       },
       {
-        message: (ctx) => {
+        message: (ctx: z.RefinementCtx) => {
           // Get card number from form data
-          const cardNumber = ctx.path.length > 0 && ctx.path[0] === 'cvv' && 
+          const cardNumber = Array.isArray(ctx.path) && ctx.path.length > 0 && ctx.path[0] === 'cvv' && 
             typeof ctx.data === 'object' && ctx.data !== null && 'number' in ctx.data
               ? String(ctx.data.number || '')
               : '';
