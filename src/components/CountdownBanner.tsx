@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { formatTime } from '@/utils/formatters';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CountdownBannerProps {
   message: string;
@@ -15,6 +16,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
   backgroundColor = '#000000',
   bannerImageUrl = null
 }) => {
+  const isMobile = useIsMobile();
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
     minutes: 0,
@@ -50,11 +52,16 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
 
   const timeDisplay = `${timeLeft.hours > 0 ? `${timeLeft.hours}h ` : ''}${timeLeft.minutes > 0 ? `${timeLeft.minutes}m ` : ''}${timeLeft.seconds}s`;
 
+  // Adjustments for mobile view
+  const containerClass = isMobile 
+    ? "w-full max-w-[100vw] h-auto aspect-video overflow-hidden" 
+    : "w-[800px] h-[600px]";
+
   // Render banner with background image if URL is provided
   if (bannerImageUrl) {
     return (
       <div 
-        className="w-[800px] h-[600px] bg-cover bg-center flex items-center justify-center" 
+        className={`${containerClass} bg-cover bg-center flex items-center justify-center`}
         style={{ backgroundImage: `url(${bannerImageUrl})` }}
       >
         <div className="flex flex-col items-center">
@@ -72,7 +79,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
   // Fallback to color background if no image URL
   return (
     <div 
-      className="w-[800px] h-[600px] flex items-center justify-center" 
+      className={`${containerClass} flex items-center justify-center`}
       style={{ backgroundColor }}
     >
       <div className="flex flex-col items-center">

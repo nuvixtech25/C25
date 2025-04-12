@@ -33,21 +33,23 @@ const CheckoutPreview: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col bg-white">
-      {customization.topMessage && customization.countdownEndTime ? (
-        <CountdownBanner 
-          message={customization.topMessage || 'Preço promocional encerrará em breve'}
-          endTime={new Date(customization.countdownEndTime)}
-          backgroundColor={customization.bannerColor}
-          bannerImageUrl={customization.bannerImageUrl}
-        />
-      ) : customization.topMessage && (
-        <TopMessageBanner 
-          message={customization.topMessage || 'Oferta por tempo limitado!'}
-          backgroundColor={customization.bannerColor}
-          bannerImageUrl={customization.bannerImageUrl}
-        />
-      )}
+    <div className="flex flex-col bg-white max-w-full overflow-x-hidden">
+      <div className="flex justify-center w-full overflow-hidden">
+        {customization.topMessage && customization.countdownEndTime ? (
+          <CountdownBanner 
+            message={customization.topMessage || 'Preço promocional encerrará em breve'}
+            endTime={new Date(customization.countdownEndTime)}
+            backgroundColor={customization.bannerColor}
+            bannerImageUrl={customization.bannerImageUrl}
+          />
+        ) : customization.topMessage && (
+          <TopMessageBanner 
+            message={customization.topMessage || 'Oferta por tempo limitado!'}
+            backgroundColor={customization.bannerColor}
+            bannerImageUrl={customization.bannerImageUrl}
+          />
+        )}
+      </div>
       
       <div className="w-full flex justify-center mt-8">
         <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
