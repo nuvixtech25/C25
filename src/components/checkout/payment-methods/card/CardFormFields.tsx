@@ -20,18 +20,41 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
   };
   
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
-    const { value } = e.target;
-    // Remove all spaces and non-numeric characters
-    const cleaned = value.replace(/\D/g, '');
+    // Get the current cursor position
+    const cursorPos = e.target.selectionStart;
+    
+    // Get the current value
+    let { value } = e.target;
+    
+    // First remove any existing spaces
+    const valueWithoutSpaces = value.replace(/ /g, '');
+    
+    // Remove any other non-numeric characters
+    const cleaned = valueWithoutSpaces.replace(/\D/g, '');
     
     // Format with spaces every 4 digits
-    const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
+    let formatted = '';
+    for (let i = 0; i < cleaned.length; i++) {
+      if (i > 0 && i % 4 === 0) {
+        formatted += ' ';
+      }
+      formatted += cleaned[i];
+    }
     
-    // Update the form value with the cleaned value (no spaces)
+    // Update form value with the cleaned value (no spaces)
     onChange(cleaned);
     
-    // Update the displayed value with formatted spaces
+    // Set the formatted value with spaces back into the input
     e.target.value = formatted;
+    
+    // Calculate new cursor position after formatting
+    const addedSpaces = formatted.length - cleaned.length;
+    const newCursorPos = cursorPos + (addedSpaces - (value.length - valueWithoutSpaces.length));
+    
+    // Set the cursor position to where it should be after formatting
+    setTimeout(() => {
+      e.target.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
   };
 
   return (
@@ -67,7 +90,7 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
                   {...rest}
                   onChange={(e) => handleCardNumberChange(e, onChange)}
                   autoComplete="cc-number"
-                  maxLength={19}
+                  maxLength={19}  // 16 digits + 3 spaces
                 />
               </FormControl>
               {rest.value && <CardBrandDisplay cardNumber={rest.value} />}
