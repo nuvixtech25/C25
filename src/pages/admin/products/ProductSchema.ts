@@ -13,7 +13,14 @@ export const productSchema = z.object({
   status: z.boolean().default(true),
   slug: z.string().optional(),
   has_whatsapp_support: z.boolean().default(false),
-  whatsapp_number: z.string().optional(),
+  whatsapp_number: z.string()
+    .optional()
+    .refine(val => {
+      if (!val) return true;
+      return /^\d+$/.test(val);
+    }, {
+      message: 'O número deve conter apenas dígitos',
+    })
 });
 
 export type ProductFormValues = z.infer<typeof productSchema>;

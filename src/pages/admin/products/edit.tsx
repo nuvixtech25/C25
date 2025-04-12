@@ -54,6 +54,7 @@ const EditProductPage = () => {
         .single();
 
       if (error) {
+        console.error('Erro ao buscar produto:', error);
         throw error;
       }
 
@@ -91,7 +92,12 @@ const EditProductPage = () => {
       // Generate slug from name if not provided
       const slug = data.slug || generateSlug(data.name);
       
-      console.log('Submitting product update:', { ...data, slug });
+      console.log('Submitting product update:', { 
+        ...data, 
+        slug,
+        has_whatsapp_support: data.has_whatsapp_support,
+        whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
+      });
       
       const { error } = await supabase
         .from('products')
@@ -109,6 +115,7 @@ const EditProductPage = () => {
         .eq('id', id);
 
       if (error) {
+        console.error('Erro de atualização detalhado:', error);
         if (error.code === '23505') {
           toast({
             title: 'Erro ao atualizar produto',
