@@ -6,7 +6,7 @@ import { usePreviewCustomization } from '@/hooks/usePreviewCustomization';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { PreviewLoading } from '@/components/preview/PreviewLoading';
 import { CountdownBanner } from '@/components/CountdownBanner';
-import CheckoutContainer from '@/components/checkout/CheckoutContainer';  // Ensure this is a default import
+import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';  // Changed to named import
 
 const CheckoutPreview: React.FC = () => {
   const [searchParams] = useSearchParams();
