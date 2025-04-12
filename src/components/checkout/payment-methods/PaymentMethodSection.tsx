@@ -38,8 +38,8 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
         <SectionTitle number={3} title="Meio de Pagamento" />
         
         <PaymentOptions
-          selectedMethod={paymentMethod}
-          onSelect={onPaymentMethodChange}
+          paymentMethod={paymentMethod}
+          onPaymentMethodChange={onPaymentMethodChange}
         />
         
         <Separator className="my-4" />
