@@ -32,11 +32,19 @@ const FailedPage = () => {
       if (state.order.id && state.order.productPrice) {
         trackPurchase(state.order.id, 0); // Value 0 for failed payment
       }
+    } else {
+      console.log('[FailedPage] No order found in location state');
     }
   }, [state, trackPurchase]);
 
+  // Debug logs to help troubleshoot the issue
+  useEffect(() => {
+    console.log('[FailedPage] Current order state:', order);
+  }, [order]);
+
   const handleRetry = () => {
     if (order) {
+      console.log('[FailedPage] Navigating to retry-payment with order:', order);
       navigate(`/retry-payment?orderId=${order.id}`, { 
         state: { 
           order,
@@ -46,6 +54,7 @@ const FailedPage = () => {
         } 
       });
     } else {
+      console.log('[FailedPage] No order available for retry, going to home page');
       navigate('/');
     }
   };
