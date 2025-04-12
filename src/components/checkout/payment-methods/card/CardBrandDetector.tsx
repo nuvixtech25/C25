@@ -2,131 +2,117 @@
 import React from 'react';
 import { CreditCard } from 'lucide-react';
 
-// Function to detect and return card brand based on number
 export const detectCardBrand = (cardNumber: string): { brand: string; icon: React.ReactNode } => {
-  // Remove spaces and non-numeric characters
   const cleanNumber = cardNumber.replace(/\D/g, '');
   
-  // Visa: starts with 4
   if (/^4/.test(cleanNumber)) {
     return { 
       brand: 'visa', 
       icon: (
-        <svg 
-          className="h-6 w-8" 
-          viewBox="0 0 780 500" 
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path 
-            fill="#1434CB" 
-            d="M290 200L440 200L423 292L290 292L290 200Z"
-          />
-          <path 
-            d="M311.2 220L322.8 220L311.5 272L299.9 272L311.2 220Z" 
-            fill="#1434CB"
-          />
-          <path 
-            d="M352.3 244.4C347.7 242.3 345 240.7 345 238.3C345 236.1 347.6 234.5 352.6 234.5C356.5 234.5 359.3 235.4 361.5 236.3L363 236.9L364.4 226.2C362 225.4 358.1 224.5 353.4 224.5C339.2 224.5 329.4 231.9 329.4 242.3C329.4 250.3 336.7 254.8 342.3 257.5C348 260.3 350 262.1 350 264.7C350 268.7 345.2 270.5 340.7 270.5C335 270.5 332 269.7 327.5 268L325.5 267.2L324 278.2C327 279.4 332.5 280.5 338.3 280.5C353.5 280.5 362.9 273.2 363 262C363 255.7 359.4 251 352.3 244.4Z" 
-            fill="#1434CB"
-          />
-          <path 
-            d="M398.3 224.9C395.1 224.9 392.7 226.8 391.5 229.8L368.5 272L384 272C384 272 387 264.3 387.8 262.5C390.3 262.5 408.3 262.5 411.5 262.5C412.1 264.8 413.8 272 413.8 272L427.8 272L414.7 224.9L398.3 224.9ZM392.7 252.5C394.5 248.1 398.7 237.7 398.7 237.7C398.6 237.9 399.9 234.3 400.7 232.1L401.7 237.3C401.7 237.3 404.3 249 405.1 252.5L392.7 252.5Z" 
-            fill="#1434CB"
-          />
-          <path 
-            d="M283.5 224.9L269 254.2L267.5 246.5C264.8 238.4 256.4 229.7 247 225.5L260.5 272L276.5 272L299.5 224.9L283.5 224.9Z" 
-            fill="#1434CB"
-          />
-          <path 
-            d="M249 225.2L226.7 225.2L226.5 226.3C243 230.2 253.5 241.7 257.5 254.8L252.5 230C251.5 225.7 249 225.3 249 225.2Z" 
-            fill="#1434CB"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" viewBox="0 0 640 480" className="h-6 w-8">
+          <path fill="#fff" d="M0 0h640v480H0z"/>
+          <path fill="#1435A9" d="M0 240h640v240H0z"/>
+          <path fill="#D90025" d="M0 0h640v240H0z"/>
+          <g fill="#fff" transform="scale(3.2) translate(100, 50)">
+            <path d="m-16.9 17.9h33.8v-35.8h-33.8zm16.9-33.8c4.7 0 8.5 3.7 8.5 8.5s-3.7 8.5-8.5 8.5-8.5-3.7-8.5-8.5 3.8-8.5 8.5-8.5z"/>
+            <circle cy="0" cx="0" r="8.5" fillOpacity="0" stroke="#fff"/>
+            <path d="m-5.7 5.5c-.5-.2-.9-.5-.9-1 0-.5.4-.9 1.2-.9.6 0 1 .2 1.4.4l.3-1.7c-.5-.3-1.2-.5-2-.5-1.9 0-3.3 1.1-3.3 2.6 0 1.2 1.1 1.8 1.9 2.2.9.4 1.2.7 1.2 1.1 0 .6-.6.9-1.5.9-.7 0-1.4-.3-1.9-.6l-.3 1.8c.6.4 1.5.6 2.3.6 2.1 0 3.5-1 3.5-2.7 0-1.3-1-1.8-1.9-2.2z"/>
+            <path d="m-0.5 12.7v-2.6h2.5v-1.9h-2.5v-2.3h3.3l.5-2.1h-6.1v8.9z"/>
+          </g>
         </svg>
       )
     };
   }
   
-  // Mastercard: starts with 51-55 or between 2221 and 2720
   if (/^(5[1-5]|222[1-9]|22[3-9]|2[3-6]|27[0-1]|2720)/.test(cleanNumber)) {
     return { 
       brand: 'mastercard', 
-      icon: <svg className="h-6 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="8" cy="12" r="5" fill="#EB001B" />
-        <circle cx="16" cy="12" r="5" fill="#F79E1B" />
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 15.98C13.3889 14.8432 14.25 13.0294 14.25 11C14.25 8.97059 13.3889 7.15681 12 6.02C10.6111 7.15681 9.75 8.97059 9.75 11C9.75 13.0294 10.6111 14.8432 12 15.98Z" fill="#FF5F00" />
-      </svg>
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" viewBox="0 0 640 480" className="h-6 w-8">
+          <path fill="#fff" d="M0 0h640v480H0z"/>
+          <path fill="#FF5F00" d="M266 180c0 75.2-60.8 136-136 136s-136-60.8-136-136 60.8-136 136-136 136 60.8 136 136"/>
+          <path fill="#EB001B" d="M374 44c-55.4 0-106 26.4-136 68 23.6 29.6 38 67.2 38 108s-14.4 78.4-38 108c30 41.6 80.6 68 136 68 106.4 0 192-85.6 192-192S480.4 44 374 44z"/>
+          <path fill="#F79E1B" d="M374 44c55.4 0 106 26.4 136 68-23.6 29.6-38 67.2-38 108s14.4 78.4 38 108c-30 41.6-80.6 68-136 68-106.4 0-192-85.6-192-192S267.6 44 374 44z"/>
+        </svg>
+      )
     };
   }
   
-  // American Express: starts with 34 or 37
   if (/^3[47]/.test(cleanNumber)) {
     return { 
       brand: 'amex', 
-      icon: <svg className="h-6 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="5" width="22" height="14" rx="2" fill="#1F72CD" />
-        <path d="M12 12.5L14 9H17L13 15H10L6 9H9L11 12.5H12Z" fill="white" />
-        <path d="M19 11H16V10H19V9H16V8H19V7H15V12H19V11Z" fill="white" />
-      </svg>
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" viewBox="0 0 640 480" className="h-6 w-8">
+          <path fill="#2B96D8" d="M0 0h640v480H0z"/>
+          <path d="M101.5 201h71.3l8.2-20.4h18.4l-8.2 20.4h18.4l-8.2 20.4h-18.4l-8.2 20.4h-71.3l8.2-20.4H53.3l8.2-20.4h18.4zm63.1 0 8.2-20.4h-45.7l-8.2 20.4h45.7z" fill="#fff"/>
+          <path d="M380.7 180.6c-15.8 0-25 10.4-25 27.5v31.4h54.5v-31.4c0-17.1-9.2-27.5-25-27.5h-4.5z" fill="#fff"/>
+          <path d="M359.2 238.5v-30.4c0-14.3 7.9-24.2 21.5-24.2 13.6 0 21.5 9.9 21.5 24.2v30.4h-43z" fill="#2B96D8"/>
+          <path d="M359.2 238.5v-30.4c0-14.3 7.9-24.2 21.5-24.2 13.6 0 21.5 9.9 21.5 24.2v30.4h-43z" fill="none" stroke="#2B96D8" strokeWidth="3"/>
+          <path d="M496.7 180.6h-43l-15.8 38.3-15.8-38.3h-43v67.9h36.5v-46.3l22.1 46.3h14.2l22.1-46.3v46.3h36.5v-67.9z" fill="#fff"/>
+        </svg>
+      )
     };
   }
   
-  // Discover: starts with 6011, 644-649 or 65
   if (/^(6011|64[4-9]|65)/.test(cleanNumber)) {
     return { 
       brand: 'discover', 
-      icon: <svg className="h-6 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="5" width="22" height="14" rx="2" fill="#FF6600" />
-        <path d="M13 15C16.866 15 20 12.3137 20 9C20 5.68629 16.866 3 13 3C9.13401 3 6 5.68629 6 9C6 12.3137 9.13401 15 13 15Z" fill="#EEEEEE" />
-        <path d="M10 10.5C10 9.11929 11.1193 8 12.5 8H15C16.1046 8 17 8.89543 17 10V12C17 13.1046 16.1046 14 15 14H12.5C11.1193 14 10 12.8807 10 11.5V10.5Z" fill="#FF6600" />
-      </svg>
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" viewBox="0 0 640 480" className="h-6 w-8">
+          <path fill="#F38020" d="M0 0h640v480H0z"/>
+          <path d="M62.6 149.5c0 49.2 40 89.3 89.3 89.3h336.3v-89.3a89.3 89.3 0 0 0-89.3-89.3H62.6v89.3z" fill="#fff"/>
+          <path d="M488.2 60.2a89.3 89.3 0 0 0-89.3 89.3v89.3h89.3a89.3 89.3 0 0 0 89.3-89.3 89.3 89.3 0 0 0-89.3-89.3z" fill="#2294CC"/>
+          <path d="M488.2 149.5a89.3 89.3 0 0 1-89.3 89.3h-336.3v-89.3a89.3 89.3 0 0 1 89.3-89.3h336.3v89.3z" fill="#fff"/>
+        </svg>
+      )
     };
   }
   
-  // Diners Club: starts with 300-305, 36, 38-39
   if (/^(30[0-5]|36|38|39)/.test(cleanNumber)) {
     return { 
       brand: 'diners', 
-      icon: <svg className="h-6 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="5" width="22" height="14" rx="2" fill="#0079BE" />
-        <circle cx="12" cy="12" r="5" fill="#FFFFFF" />
-      </svg>
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" viewBox="0 0 640 480" className="h-6 w-8">
+          <path fill="#0079BE" d="M0 0h640v480H0z"/>
+          <path d="M270 240c0-68.2-47.6-124.6-112.8-146.4a189.2 189.2 0 0 0-44.2-5.6c-105.4 0-190.4 85-190.4 190.4s85 190.4 190.4 190.4c15.2 0 30-1.8 44.2-5.6C222.4 364.6 270 308.2 270 240z" fill="#fff"/>
+          <path d="M270 240c0-68.2 47.6-124.6 112.8-146.4a189.2 189.2 0 0 1 44.2-5.6c105.4 0 190.4 85 190.4 190.4s-85 190.4-190.4 190.4c-15.2 0-30-1.8-44.2-5.6C317.6 364.6 270 308.2 270 240z" fill="#fff"/>
+        </svg>
+      )
     };
   }
   
-  // Elo: starts with various patterns
   if (/^(636368|438935|504175|451416|5090(4[0-9]|5[0-9]|6[0-9]|7[0-4]))/.test(cleanNumber)) {
     return { 
       brand: 'elo', 
-      icon: <svg className="h-6 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="5" width="22" height="14" rx="2" fill="#00A4E0" />
-        <path d="M11 10L13 12L11 14" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M8 8L6 12L8 16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M16 8L18 12L16 16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" viewBox="0 0 640 480" className="h-6 w-8">
+          <path fill="#00A4E0" d="M0 0h640v480H0z"/>
+          <path d="M320 120a120 120 0 1 0 0 240 120 120 0 0 0 0-240z" fill="#FFC200"/>
+          <path d="M320 240a120 120 0 0 1 120-120 120 120 0 1 1 0 240 120 120 0 0 1-120-120z" fill="#F7B600"/>
+        </svg>
+      )
     };
   }
   
-  // Hipercard: starts with 606282
   if (/^(606282)/.test(cleanNumber)) {
     return { 
       brand: 'hipercard', 
-      icon: <svg className="h-6 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="5" width="22" height="14" rx="2" fill="#822124" />
-        <path d="M6 12H18" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12 8V16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" viewBox="0 0 640 480" className="h-6 w-8">
+          <path fill="#922126" d="M0 0h640v480H0z"/>
+          <path d="M320 120a120 120 0 1 0 0 240 120 120 0 0 0 0-240z" fill="#fff"/>
+          <path d="M320 240a120 120 0 0 1 120-120 120 120 0 1 1 0 240 120 120 0 0 1-120-120z" fill="#922126"/>
+        </svg>
+      )
     };
   }
   
-  // If no brand is found
   return { 
     brand: 'unknown', 
     icon: <CreditCard className="h-5 w-5 text-gray-400" /> 
   };
 };
 
-// Function to check if a card requires 4-digit CVV (mainly Amex)
 export const requiresFourDigitCvv = (cardNumber: string): boolean => {
   const { brand } = detectCardBrand(cardNumber);
   return brand === 'amex';
@@ -145,3 +131,6 @@ export const CardBrandDisplay: React.FC<CardBrandDisplayProps> = ({ cardNumber }
     </div>
   );
 };
+
+export default { detectCardBrand, CardBrandDisplay, requiresFourDigitCvv };
+
