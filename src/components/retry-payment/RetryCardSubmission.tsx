@@ -5,17 +5,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CardForm } from '@/components/checkout/payment-methods/CardForm';
 import { CreditCardData, Order } from '@/types/checkout';
+import { WhatsAppButton } from '@/pages/SuccessPage/WhatsAppButton';
 
 interface RetryCardSubmissionProps {
   order: Order | null;
   validationResult: {
     canProceed: boolean;
   } | null;
+  hasWhatsappSupport?: boolean;
+  whatsappNumber?: string;
 }
 
 export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({ 
   order, 
-  validationResult 
+  validationResult,
+  hasWhatsappSupport,
+  whatsappNumber
 }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -56,6 +61,8 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
       navigate('/payment-pending', { 
         state: { 
           order,
+          has_whatsapp_support: hasWhatsappSupport,
+          whatsapp_number: whatsappNumber
         } 
       });
     } catch (error) {
@@ -73,11 +80,22 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
   if (!validationResult?.canProceed) return null;
   
   return (
-    <CardForm 
-      onSubmit={handleSubmit}
-      isLoading={isSubmitting}
-      buttonColor="#6E59A5"
-      buttonText="Tentar pagamento novamente"
-    />
+    <>
+      <CardForm 
+        onSubmit={handleSubmit}
+        isLoading={isSubmitting}
+        buttonColor="#6E59A5"
+        buttonText="Tentar pagamento novamente"
+      />
+      
+      {hasWhatsappSupport && whatsappNumber && (
+        <div className="mt-4">
+          <WhatsAppButton 
+            hasWhatsappSupport={hasWhatsappSupport} 
+            whatsappNumber={whatsappNumber}
+          />
+        </div>
+      )}
+    </>
   );
 };

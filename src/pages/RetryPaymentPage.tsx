@@ -14,7 +14,9 @@ const RetryPaymentPage = () => {
     order, 
     loading, 
     validationResult, 
-    isValidating 
+    isValidating,
+    hasWhatsappSupport,
+    whatsappNumber
   } = useRetryPaymentData();
 
   if (loading || isValidating) {
@@ -43,13 +45,13 @@ const RetryPaymentPage = () => {
           {validationResult?.canProceed ? (
             <RetryCardSubmission 
               order={order} 
-              validationResult={validationResult} 
+              validationResult={validationResult}
+              hasWhatsappSupport={hasWhatsappSupport}
+              whatsappNumber={whatsappNumber}
             />
           ) : (
             <RetryLimitMessage validationResult={validationResult} />
           )}
-          
-          {/* WhatsApp button has been removed as per user request */}
         </CardContent>
       </Card>
     </div>
