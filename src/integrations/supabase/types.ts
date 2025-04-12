@@ -229,6 +229,7 @@ export type Database = {
       }
       checkout_customization: {
         Row: {
+          banner_color: string
           banner_image_url: string | null
           button_color: string
           button_text: string
@@ -241,6 +242,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          banner_color?: string
           banner_image_url?: string | null
           button_color?: string
           button_text?: string
@@ -253,6 +255,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          banner_color?: string
           banner_image_url?: string | null
           button_color?: string
           button_text?: string

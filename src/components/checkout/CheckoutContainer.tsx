@@ -17,7 +17,7 @@ interface CheckoutCustomization {
   banner_image_url?: string;
   show_banner?: boolean;
   heading_color?: string;
-  banner_color?: string; // Banner color property
+  banner_color?: string;
 }
 
 const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
@@ -30,7 +30,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     banner_image_url: '',
     show_banner: true,
     heading_color: '#000000',
-    banner_color: '#000000' // Default banner color
+    banner_color: '#000000'
   });
   const [isCustomizationLoaded, setIsCustomizationLoaded] = useState(false);
 
@@ -101,6 +101,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
           initialMinutes={5} 
           initialSeconds={2} 
           backgroundColor={customization.banner_color || '#000000'}
+          bannerImageUrl={customization.banner_image_url}
         />
       )}
       
