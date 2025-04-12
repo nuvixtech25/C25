@@ -42,9 +42,11 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
           style={{ 
             backgroundColor,
             backgroundImage: `url(${bannerImageUrl})`,
-            backgroundSize: 'cover',
+            backgroundSize: 'contain',
+            backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            height: isMobile ? '180px' : '220px' // Significativamente maior para mostrar o banner completo
+            height: isMobile ? '180px' : '220px', // Maintaining the larger height for visibility
+            maxWidth: '100%'
           }}
         />
       )}
