@@ -5,7 +5,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TopMessageBannerProps {
   message: string;
-  showTimer?: boolean;
   initialMinutes?: number;
   initialSeconds?: number;
   backgroundColor?: string;
@@ -14,7 +13,6 @@ interface TopMessageBannerProps {
 
 export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   message,
-  showTimer = false,
   initialMinutes = 5,
   initialSeconds = 0,
   backgroundColor = '#000000',
@@ -22,43 +20,37 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
-  // Timer container at the top
-  const timerContainerClass = "w-full bg-black py-2 px-4 text-center";
-  
   // Main banner container - full size
   const containerClass = isMobile 
     ? "w-full max-w-full" 
-    : "w-full max-w-4xl";
+    : "w-full max-w-full";
 
   return (
     <div className="flex flex-col w-full items-center">
-      {/* Timer at the top (if showTimer is true) */}
-      {showTimer && (
-        <div className={timerContainerClass}>
-          <TimerBanner 
-            initialMinutes={initialMinutes} 
-            initialSeconds={initialSeconds} 
-          />
+      {/* Black bar with message and timer side by side */}
+      <div className="w-full bg-black py-2 px-4 flex justify-center items-center space-x-4">
+        <div className="text-white text-sm md:text-base lg:text-lg font-medium">
+          {message}
         </div>
-      )}
-
-      {/* Main banner with background image if URL is provided */}
-      <div 
-        className={`${containerClass} ${showTimer ? 'mt-2' : ''} flex items-center justify-center rounded-lg overflow-hidden`}
-        style={{ 
-          backgroundColor,
-          backgroundImage: bannerImageUrl ? `url(${bannerImageUrl})` : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          minHeight: isMobile ? '120px' : '150px'
-        }}
-      >
-        <div className="p-4 md:p-6">
-          <div className="text-white text-center text-sm md:text-base lg:text-lg font-medium">
-            {message}
-          </div>
-        </div>
+        <TimerBanner 
+          initialMinutes={initialMinutes} 
+          initialSeconds={initialSeconds} 
+        />
       </div>
+
+      {/* Main banner below the timer */}
+      {bannerImageUrl && (
+        <div 
+          className={`${containerClass} flex items-center justify-center overflow-hidden`}
+          style={{ 
+            backgroundColor,
+            backgroundImage: `url(${bannerImageUrl})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            minHeight: isMobile ? '120px' : '150px'
+          }}
+        />
+      )}
     </div>
   );
 };

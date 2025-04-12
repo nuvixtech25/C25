@@ -48,6 +48,8 @@ const CheckoutPreview: React.FC = () => {
             message={customization.topMessage || 'Oferta por tempo limitado!'}
             backgroundColor={customization.bannerColor}
             bannerImageUrl={customization.bannerImageUrl}
+            initialMinutes={5}
+            initialSeconds={0}
           />
         )}
       </div>

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -98,7 +97,6 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
         {customization.show_banner && (
           <TopMessageBanner 
             message={customization.header_message || 'Preço promocional encerrará em breve'} 
-            showTimer={true}
             initialMinutes={5} 
             initialSeconds={2} 
             backgroundColor={customization.banner_color || '#000000'}
