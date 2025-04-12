@@ -3,7 +3,7 @@ import React from 'react';
 import { CheckoutCustomization, CustomerData, PaymentMethod, Product } from '@/types/checkout';
 import { PersonalInfoSection } from './PersonalInfoSection';
 import { TestimonialSection } from './TestimonialSection';
-import { PaymentMethodSection } from './PaymentMethodSection';
+import { PaymentMethodSection } from './payment-methods/PaymentMethodSection';
 import { OrderSummary } from './OrderSummary';
 
 interface CheckoutContentProps {
