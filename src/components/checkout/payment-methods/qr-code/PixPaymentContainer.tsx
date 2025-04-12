@@ -45,12 +45,29 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
   const isPending = status === "PENDING";
   const showQRCode = isPending && !isExpired;
   
-  // Effects for debugging QR code
+  // Log importantes ao montar o componente para diagnóstico
   useEffect(() => {
-    console.log("PixPaymentContainer - QR Code Image URL:", qrCodeImage ? `${qrCodeImage.substring(0, 30)}...` : 'No QR Code');
-    console.log("PixPaymentContainer - Payment Status:", status);
-    console.log("PixPaymentContainer - Copy/Paste Key Length:", copyPasteKey ? copyPasteKey.length : 0);
-  }, [qrCodeImage, status, copyPasteKey]);
+    console.log("PixPaymentContainer - Status do pagamento:", status);
+    console.log("PixPaymentContainer - ID do pagamento:", paymentId);
+    console.log("PixPaymentContainer - ID do pedido:", orderId);
+    console.log("PixPaymentContainer - Exibir QR code:", showQRCode);
+    
+    // Verificar se temos um QR code válido
+    const hasValidQRCodeImage = qrCodeImage && qrCodeImage.length > 100;
+    console.log("PixPaymentContainer - QR Code Image disponível:", hasValidQRCodeImage);
+    if (!hasValidQRCodeImage) {
+      console.warn("QR Code Image não disponível ou inválido:", qrCodeImage ? qrCodeImage.substring(0, 30) + "..." : "Não fornecido");
+      
+      // Notificar o usuário sobre o problema do QR code
+      if (!qrCodeImage && isPending) {
+        toast({
+          title: "Problema com QR Code",
+          description: "Use o código de cópia e cola abaixo para realizar o pagamento.",
+          variant: "warning",
+        });
+      }
+    }
+  }, [orderId, paymentId, qrCodeImage, status, showQRCode, toast, isPending]);
 
   return (
     <Card className="max-w-md mx-auto shadow-lg pix-container">

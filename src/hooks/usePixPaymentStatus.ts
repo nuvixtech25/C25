@@ -39,13 +39,62 @@ export const usePixPaymentStatus = ({
     
     if (status === "CONFIRMED") {
       setRedirecting(true);
+      
+      // Mostrar toast de confirmação
       toast({
         title: "Pagamento confirmado!",
         description: "Seu pagamento foi processado com sucesso.",
       });
       
-      // Redirect to success page with order information
-      console.log("Redirecionando para página de sucesso após confirmação de pagamento");
+      // Abrir nova página com a confirmação e então redirecionar
+      console.log("Pagamento confirmado, preparando redirecionamento para página de sucesso");
+      
+      // Tentar abrir uma nova janela com a mensagem de confirmação
+      const successWindow = window.open("", "_blank");
+      if (successWindow) {
+        successWindow.document.write(`
+          <html>
+            <head>
+              <title>Pagamento Aprovado</title>
+              <style>
+                body { 
+                  font-family: Arial, sans-serif; 
+                  display: flex; 
+                  justify-content: center; 
+                  align-items: center; 
+                  height: 100vh; 
+                  margin: 0;
+                  background-color: #f9f9f9;
+                }
+                .message {
+                  text-align: center;
+                  padding: 40px;
+                  border-radius: 10px;
+                  background-color: white;
+                  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                  border-top: 4px solid #10b981;
+                }
+                h1 { color: #10b981; }
+                p { color: #4b5563; }
+              </style>
+            </head>
+            <body>
+              <div class="message">
+                <h1>Pagamento Aprovado!</h1>
+                <p>Seu pagamento foi confirmado com sucesso.</p>
+                <p>Você será redirecionado em instantes...</p>
+              </div>
+              <script>
+                setTimeout(() => {
+                  window.location.href = "${window.location.origin}/success";
+                }, 2000);
+              </script>
+            </body>
+          </html>
+        `);
+      }
+      
+      // Redirecionar a janela atual após um pequeno atraso
       setTimeout(() => navigate("/success", {
         state: {
           order: {

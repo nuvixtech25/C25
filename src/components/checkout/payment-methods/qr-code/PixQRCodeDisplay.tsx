@@ -8,28 +8,52 @@ interface PixQRCodeDisplayProps {
 
 export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage }) => {
   const [imageError, setImageError] = useState(false);
+  const [dataUrl, setDataUrl] = useState<string | null>(null);
   
   // Reset image error state if a new QR code image is provided
   useEffect(() => {
     if (qrCodeImage) {
       setImageError(false);
+      
+      // Verificar se o QR code já está no formato de data URL
+      if (qrCodeImage.startsWith('data:image')) {
+        setDataUrl(qrCodeImage);
+      } else {
+        // Tenta converter para data URL se não estiver no formato correto
+        try {
+          // Para imagens base64 sem o prefixo de data URL
+          setDataUrl(`data:image/png;base64,${qrCodeImage}`);
+          console.log("QR Code convertido para data URL");
+        } catch (e) {
+          console.error("Erro ao converter QR code para data URL:", e);
+          setImageError(true);
+        }
+      }
+    } else {
+      setDataUrl(null);
     }
   }, [qrCodeImage]);
 
   // Log for debugging
   useEffect(() => {
-    console.log('QR Code Image received in PixQRCodeDisplay:', qrCodeImage ? qrCodeImage.substring(0, 50) + '...' : 'No QR Code');
-  }, [qrCodeImage]);
+    const logInfo = dataUrl ? {
+      isDataUrl: dataUrl.startsWith('data:image'),
+      length: dataUrl.length,
+      preview: dataUrl.substring(0, 50) + '...'
+    } : 'No QR Code data';
+    
+    console.log('QR Code Image state in PixQRCodeDisplay:', logInfo);
+  }, [dataUrl]);
 
   return (
     <div className="flex justify-center">
-      {qrCodeImage && !imageError ? (
+      {dataUrl && !imageError ? (
         <img 
-          src={qrCodeImage} 
+          src={dataUrl} 
           alt="QR Code PIX" 
           className="w-48 h-48 border-4 border-white shadow-md rounded-lg" 
           onError={(e) => {
-            console.error('Error loading QR code image:', qrCodeImage);
+            console.error('Error loading QR code image:', e);
             setImageError(true);
           }}
         />
