@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -25,10 +24,10 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form, productPri
       <CardHolderField form={form} />
       <CardNumberField form={form} />
       
-      <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-3 gap-4'}`}>
+      <div className={`grid ${isMobile ? 'grid-cols-2 gap-3' : 'grid-cols-3 gap-4'}`}>
         <ExpiryDateField form={form} />
         <CvvField form={form} />
-        <InstallmentsField form={form} productPrice={productPrice} />
+        <InstallmentsField form={form} productPrice={productPrice} className={isMobile ? 'col-span-2' : ''} />
       </div>
     </div>
   );
@@ -108,6 +107,57 @@ const ExpiryDateField: React.FC<CardFormFieldsProps> = ({ form }) => (
   />
 );
 
+const InstallmentsField: React.FC<{ 
+  form: UseFormReturn<z.infer<typeof cardSchema>>; 
+  productPrice: number; 
+  className?: string;
+}> = ({ form, productPrice, className = '' }) => {
+  // Calculate installment values based on product price
+  const calculateInstallmentValue = (installments: number): string => {
+    if (!productPrice || installments <= 0) return "à vista";
+    
+    // For 1x, show "à vista" (in full)
+    if (installments === 1) {
+      return `1x de ${formatCurrency(productPrice)}`;
+    }
+    
+    // For 2x and above, show installment amount with "sem juros"
+    const installmentValue = productPrice / installments;
+    return `${installments}x de ${formatCurrency(installmentValue)}`;
+  };
+  
+  return (
+    <FormField
+      control={form.control}
+      name="installments"
+      render={({ field }) => (
+        <FormItem className={className}>
+          <FormLabel className="text-gray-700 font-medium">Parcelamento</FormLabel>
+          <Select 
+            onValueChange={(value) => field.onChange(parseInt(value))} 
+            defaultValue={field.value?.toString() || "1"}
+          >
+            <FormControl>
+              <SelectTrigger className="border border-gray-300 rounded py-3 px-4 w-full text-gray-700">
+                <SelectValue placeholder={calculateInstallmentValue(1)} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectItem value="1">{calculateInstallmentValue(1)}</SelectItem>
+              <SelectItem value="2">{calculateInstallmentValue(2)}</SelectItem>
+              <SelectItem value="3">{calculateInstallmentValue(3)}</SelectItem>
+              <SelectItem value="4">{calculateInstallmentValue(4)}</SelectItem>
+              <SelectItem value="5">{calculateInstallmentValue(5)}</SelectItem>
+              <SelectItem value="6">{calculateInstallmentValue(6)}</SelectItem>
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
+
 const CvvField: React.FC<CardFormFieldsProps> = ({ form }) => {
   const cardNumber = form.watch('number') || '';
   const isFourDigitCvv = requiresFourDigitCvv(cardNumber);
@@ -136,49 +186,4 @@ const CvvField: React.FC<CardFormFieldsProps> = ({ form }) => {
   );
 };
 
-const InstallmentsField: React.FC<{ form: UseFormReturn<z.infer<typeof cardSchema>>; productPrice: number }> = ({ form, productPrice }) => {
-  // Calculate installment values based on product price
-  const calculateInstallmentValue = (installments: number): string => {
-    if (!productPrice || installments <= 0) return "à vista";
-    
-    // For 1x, show "à vista" (in full)
-    if (installments === 1) {
-      return `1x de ${formatCurrency(productPrice)}`;
-    }
-    
-    // For 2x and above, show installment amount with "sem juros"
-    const installmentValue = productPrice / installments;
-    return `${installments}x de ${formatCurrency(installmentValue)}`;
-  };
-  
-  return (
-    <FormField
-      control={form.control}
-      name="installments"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel className="text-gray-700 font-medium">Parcelamento</FormLabel>
-          <Select 
-            onValueChange={(value) => field.onChange(parseInt(value))} 
-            defaultValue={field.value?.toString() || "1"}
-          >
-            <FormControl>
-              <SelectTrigger className="border border-gray-300 rounded py-3 px-4 w-full text-gray-700">
-                <SelectValue placeholder={calculateInstallmentValue(1)} />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectItem value="1">{calculateInstallmentValue(1)}</SelectItem>
-              <SelectItem value="2">{calculateInstallmentValue(2)}</SelectItem>
-              <SelectItem value="3">{calculateInstallmentValue(3)}</SelectItem>
-              <SelectItem value="4">{calculateInstallmentValue(4)}</SelectItem>
-              <SelectItem value="5">{calculateInstallmentValue(5)}</SelectItem>
-              <SelectItem value="6">{calculateInstallmentValue(6)}</SelectItem>
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-};
+export default CardFormFields;
