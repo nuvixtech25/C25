@@ -14,7 +14,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
   className 
 }) => {
   return (
-    <div className={cn("min-h-screen bg-white text-gray-900", className)}>
+    <div className={cn("min-h-screen bg-[#1A1A1A] text-white", className)}>
       <CheckoutHeader />
       
       <main className={cn("container mx-auto px-4 py-8", className)}>

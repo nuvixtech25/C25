@@ -28,9 +28,9 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
   onPaymentSubmit
 }) => {
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto px-4">
       <div className="grid md:grid-cols-12 gap-8">
-        <div className="md:col-span-7 space-y-6">
+        <div className="md:col-span-7 space-y-8">
           <PersonalInfoSection 
             onSubmit={onCustomerSubmit}
             headingColor={customization.headingColor}
