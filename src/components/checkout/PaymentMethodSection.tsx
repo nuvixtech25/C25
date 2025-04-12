@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { PaymentMethod } from '@/types/checkout';
-import { CardForm } from './payment-methods/CardForm';
+import { CardForm } from './payment-methods/card/CardForm';
 import { SimplifiedPixOption } from './payment-methods/SimplifiedPixOption';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
