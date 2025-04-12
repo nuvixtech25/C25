@@ -34,7 +34,7 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
   }, [hours, minutes, seconds]);
 
   return (
-    <div className="text-white text-sm md:text-lg lg:text-xl font-medium">
+    <div className="text-black text-sm md:text-lg lg:text-xl font-medium">
       {hours > 0 && `${hours}h `}{minutes > 0 && `${minutes}m `}{seconds}s
     </div>
   );

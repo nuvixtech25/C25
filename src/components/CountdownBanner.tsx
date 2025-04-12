@@ -56,17 +56,17 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
 
   return (
     <div className={`flex flex-col items-center ${containerClassName}`}>
-      {/* Black bar with message and countdown side by side */}
-      <div className="w-full bg-black py-2 px-4 flex justify-center items-center space-x-4 rounded-t-md">
-        <div className="text-white text-sm md:text-base lg:text-lg font-medium">
+      {/* Changed background from bg-black to bg-transparent */}
+      <div className="w-full bg-transparent py-2 px-4 flex justify-center items-center space-x-4 rounded-t-md">
+        <div className="text-black text-sm md:text-base lg:text-lg font-medium">
           {message}
         </div>
-        <div className="text-white text-sm md:text-lg lg:text-xl font-medium">
+        <div className="text-black text-sm md:text-lg lg:text-xl font-medium">
           {timeDisplay}
         </div>
       </div>
 
-      {/* Added mt-4 to create more space between the message and the banner */}
+      {/* Banner image container */}
       {bannerImageUrl && (
         <div 
           className="w-full flex items-center justify-center overflow-hidden mt-4 mb-4" 
@@ -76,7 +76,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            height: isMobile ? '180px' : '220px', // Significativamente maior para mostrar o banner completo
+            height: isMobile ? '180px' : '220px', // Mantendo a altura maior para visibilidade
             maxWidth: '100%'
           }}
         />

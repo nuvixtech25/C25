@@ -24,9 +24,9 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   
   return (
     <div className={`flex flex-col items-center ${containerClassName}`}>
-      {/* Black bar with message and timer side by side */}
-      <div className="w-full bg-black py-2 px-4 flex justify-center items-center space-x-4 rounded-t-md">
-        <div className="text-white text-sm md:text-base lg:text-lg font-medium">
+      {/* Changed background from bg-black to bg-transparent */}
+      <div className="w-full bg-transparent py-2 px-4 flex justify-center items-center space-x-4 rounded-t-md">
+        <div className="text-black text-sm md:text-base lg:text-lg font-medium">
           {message}
         </div>
         <TimerBanner 
