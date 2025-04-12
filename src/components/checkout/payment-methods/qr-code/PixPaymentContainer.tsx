@@ -63,7 +63,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
         toast({
           title: "Problema com QR Code",
           description: "Use o código de cópia e cola abaixo para realizar o pagamento.",
-          variant: "warning",
+          variant: "default", // Changed from "warning" to "default"
         });
       }
     }
