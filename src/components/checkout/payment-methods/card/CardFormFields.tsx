@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { formatExpiryDate } from '@/utils/cardValidationUtils';
-import { CardBrandDisplay } from './CardBrandDetector';
+import { CardBrandDisplay, requiresFourDigitCvv } from './CardBrandDetector';
 import { cardSchema } from './cardValidation';
 import { handleCardNumberChange, handleExpiryDateChange } from './formatters/cardInputFormatters';
 
@@ -96,24 +96,29 @@ const ExpiryDateField: React.FC<CardFormFieldsProps> = ({ form }) => (
   />
 );
 
-const CvvField: React.FC<CardFormFieldsProps> = ({ form }) => (
-  <FormField
-    control={form.control}
-    name="cvv"
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>CVV</FormLabel>
-        <FormControl>
-          <Input 
-            placeholder="000" 
-            {...field}
-            autoComplete="cc-csc"
-            maxLength={4}
-            type="password"
-          />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
+const CvvField: React.FC<CardFormFieldsProps> = ({ form }) => {
+  const cardNumber = form.watch('number') || '';
+  const isFourDigitCvv = requiresFourDigitCvv(cardNumber);
+  
+  return (
+    <FormField
+      control={form.control}
+      name="cvv"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>CVV</FormLabel>
+          <FormControl>
+            <Input 
+              placeholder={isFourDigitCvv ? "0000" : "000"} 
+              {...field}
+              autoComplete="cc-csc"
+              maxLength={isFourDigitCvv ? 4 : 3}
+              type="password"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};

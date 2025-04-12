@@ -126,6 +126,12 @@ export const detectCardBrand = (cardNumber: string): { brand: string; icon: Reac
   };
 };
 
+// Function to check if a card requires 4-digit CVV (mainly Amex)
+export const requiresFourDigitCvv = (cardNumber: string): boolean => {
+  const { brand } = detectCardBrand(cardNumber);
+  return brand === 'amex';
+};
+
 interface CardBrandDisplayProps {
   cardNumber: string;
 }
