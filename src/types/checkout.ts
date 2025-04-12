@@ -12,6 +12,7 @@ export interface CreditCardData {
   brand?: string;
   bin?: string;
   createdAt?: string;
+  installments?: number;
 }
 
 // Product types

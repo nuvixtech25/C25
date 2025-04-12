@@ -13,8 +13,8 @@ export const cardSchema = z.object({
       (val) => isExpiryDateValid(val),
       'Data de validade inválida ou cartão vencido'
     ),
-  // Use superRefine instead of refine to access other field values
-  cvv: z.string()
+  cvv: z.string(),
+  installments: z.number().min(1).max(6).default(1)
 }).superRefine((data, ctx) => {
   // Get the CVV value
   const cvv = data.cvv;

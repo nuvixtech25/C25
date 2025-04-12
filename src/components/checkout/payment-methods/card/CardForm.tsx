@@ -32,7 +32,8 @@ export const CardForm: React.FC<CardFormProps> = ({
       holderName: '',
       number: '',
       expiryDate: '',
-      cvv: ''
+      cvv: '',
+      installments: 1
     }
   });
 
@@ -46,7 +47,8 @@ export const CardForm: React.FC<CardFormProps> = ({
       number: values.number,
       expiryDate: values.expiryDate,
       cvv: values.cvv,
-      brand
+      brand,
+      installments: values.installments
     };
     
     onSubmit(cardData);

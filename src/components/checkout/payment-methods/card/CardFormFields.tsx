@@ -8,6 +8,7 @@ import { formatExpiryDate } from '@/utils/cardValidationUtils';
 import { CardBrandDisplay, requiresFourDigitCvv } from './CardBrandDetector';
 import { cardSchema } from './cardValidation';
 import { handleCardNumberChange, handleExpiryDateChange } from './formatters/cardInputFormatters';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface CardFormFieldsProps {
   form: UseFormReturn<z.infer<typeof cardSchema>>;
@@ -23,6 +24,8 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
         <ExpiryDateField form={form} />
         <CvvField form={form} />
       </div>
+      
+      <InstallmentsField form={form} />
     </>
   );
 };
@@ -122,3 +125,40 @@ const CvvField: React.FC<CardFormFieldsProps> = ({ form }) => {
     />
   );
 };
+
+const InstallmentsField: React.FC<CardFormFieldsProps> = ({ form }) => (
+  <FormField
+    control={form.control}
+    name="installments"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Parcelas (sem juros)</FormLabel>
+        <Select 
+          onValueChange={(value) => field.onChange(parseInt(value))} 
+          defaultValue={field.value?.toString() || "1"}
+        >
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o número de parcelas" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            <SelectItem value="1">1x de {formatInstallmentValue(form.getValues().number)}</SelectItem>
+            <SelectItem value="2">2x sem juros</SelectItem>
+            <SelectItem value="3">3x sem juros</SelectItem>
+            <SelectItem value="4">4x sem juros</SelectItem>
+            <SelectItem value="5">5x sem juros</SelectItem>
+            <SelectItem value="6">6x sem juros</SelectItem>
+          </SelectContent>
+        </Select>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+);
+
+// Helper function to format installment value (will be improved in future to show actual value)
+const formatInstallmentValue = (cardNumber: string | undefined) => {
+  return "à vista";
+};
+
