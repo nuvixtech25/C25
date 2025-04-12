@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BillingData, PixPaymentData, Order, PaymentStatus } from '@/types/checkout';
 import { generatePixPayment } from '@/services/asaasService';
 import { PixPayment } from '@/components/checkout/payment-methods/PixPayment';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -86,16 +86,21 @@ const PaymentPage = () => {
   
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white to-asaas-light/30">
-      <div className="w-full max-w-md mb-4">
+      <div className="w-full max-w-md mb-4 flex items-center justify-between">
         <Button 
           variant="ghost" 
           size="sm" 
           onClick={() => navigate('/')}
-          className="mb-4"
+          className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Voltar
         </Button>
+        
+        <div className="flex items-center text-xs text-gray-500">
+          <ShieldCheck className="h-4 w-4 mr-1 text-asaas-primary" />
+          Pagamento Seguro
+        </div>
       </div>
       
       {loading ? (
@@ -114,16 +119,23 @@ const PaymentPage = () => {
           </Button>
         </div>
       ) : (paymentData && order) ? (
-        <PixPayment 
-          orderId={order.id || ''} 
-          qrCode={paymentData.qrCode}
-          qrCodeImage={paymentData.qrCodeImage}
-          copyPasteKey={paymentData.copyPasteKey}
-          expirationDate={paymentData.expirationDate}
-          value={paymentData.value}
-          description={paymentData.description}
-          paymentId={paymentData.paymentId}
-        />
+        <div className="animate-fade-in w-full max-w-md">
+          <PixPayment 
+            orderId={order.id || ''} 
+            qrCode={paymentData.qrCode}
+            qrCodeImage={paymentData.qrCodeImage}
+            copyPasteKey={paymentData.copyPasteKey}
+            expirationDate={paymentData.expirationDate}
+            value={paymentData.value}
+            description={paymentData.description}
+            paymentId={paymentData.paymentId}
+          />
+          
+          <div className="mt-6 text-center text-xs text-gray-500 flex flex-col items-center">
+            <p className="mb-2">Se precisar de ajuda, entre em contato com nosso suporte</p>
+            <p>© {new Date().getFullYear()} Asaas Payments</p>
+          </div>
+        </div>
       ) : (
         <CheckoutError message="Erro ao carregar dados do pagamento" />
       )}

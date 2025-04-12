@@ -9,6 +9,7 @@ import { PixStatusChecker } from './PixStatusChecker';
 import { PixPaymentDetails } from './PixPaymentDetails';
 import { PaymentStatus } from '@/types/checkout';
 import { useToast } from '@/hooks/use-toast';
+import { Sparkles } from 'lucide-react';
 
 interface PixPaymentContainerProps {
   orderId: string;
@@ -63,28 +64,31 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
         toast({
           title: "Problema com QR Code",
           description: "Use o código de cópia e cola abaixo para realizar o pagamento.",
-          variant: "default", // Changed from "warning" to "default"
+          variant: "default", 
         });
       }
     }
   }, [orderId, paymentId, qrCodeImage, status, showQRCode, toast, isPending]);
 
   return (
-    <Card className="max-w-md mx-auto shadow-lg pix-container">
-      <CardHeader>
-        <CardTitle className="text-2xl heading-gradient">Pagamento PIX</CardTitle>
-        <CardDescription>
+    <Card className="max-w-md mx-auto shadow-xl border border-gray-100 rounded-xl overflow-hidden animate-fade-in pix-container bg-gradient-to-b from-white to-gray-50">
+      <CardHeader className="bg-gradient-to-r from-asaas-primary/90 to-asaas-secondary/90 text-white">
+        <CardTitle className="text-2xl flex items-center">
+          <Sparkles className="mr-2 h-5 w-5" />
+          Pagamento PIX
+        </CardTitle>
+        <CardDescription className="text-white/90">
           {showQRCode ? 'Escaneie o QR Code ou copie o código para pagar' : 'Detalhes do pagamento'}
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 p-6">
         {/* Status de pagamento */}
         <PixPaymentStatus status={status} />
         
         {/* Exibe o QR Code apenas se o pagamento estiver pendente e não expirado */}
         {showQRCode && (
-          <>
+          <div className="space-y-6 animate-scale-in">
             <PixQRCodeDisplay qrCodeImage={qrCodeImage} />
             
             <PixExpirationTimer timeLeft={timeLeft} isExpired={isExpired} />
@@ -95,7 +99,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
               isCheckingStatus={isCheckingStatus} 
               onCheckStatus={onCheckStatus} 
             />
-          </>
+          </div>
         )}
         
         {/* Se estiver expirado mas ainda PENDING, mostre opção de verificar status */}
