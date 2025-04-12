@@ -28,7 +28,7 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
   onPaymentSubmit
 }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <PersonalInfoSection 
         onSubmit={onCustomerSubmit}
         headingColor={customization.headingColor}
@@ -38,7 +38,6 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
         headingColor={customization.headingColor}
       />
       
-      {/* Removed the customerData condition to always show payment section */}
       <PaymentMethodSection
         id="payment-section"
         paymentMethod={paymentMethod}

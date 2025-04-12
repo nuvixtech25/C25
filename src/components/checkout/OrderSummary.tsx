@@ -19,9 +19,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ product, isDigitalPr
         
         <div className="flex items-center py-3 border-b border-[#E0E0E0]">
           <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded p-2 mr-3 flex items-center justify-center">
-            {product.image ? (
+            {product.imageUrl ? (
               <img 
-                src={product.image} 
+                src={product.imageUrl} 
                 alt={product.name} 
                 className="max-w-full max-h-full object-contain"
               />
