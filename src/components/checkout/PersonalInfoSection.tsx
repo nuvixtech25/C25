@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { SectionTitle } from './SectionTitle';
 import { CustomerData } from '@/types/checkout';
+import { handleCpfCnpjChange, handlePhoneChange } from '@/utils/formatters';
 
 // Schema validation for customer data
 const customerSchema = z.object({
@@ -98,13 +99,16 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             <FormField
               control={form.control}
               name="cpfCnpj"
-              render={({ field }) => (
+              render={({ field: { onChange, value, ...rest } }) => (
                 <FormItem>
                   <FormLabel className="text-gray-700">CPF/CNPJ</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Digite seu CPF" 
-                      {...field} 
+                      value={value}
+                      {...rest} 
+                      onChange={(e) => handleCpfCnpjChange(e, onChange)}
+                      maxLength={18} // Longest possible CNPJ with formatting
                       className="border-gray-300 focus:border-primary" 
                     />
                   </FormControl>
@@ -116,7 +120,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
             <FormField
               control={form.control}
               name="phone"
-              render={({ field }) => (
+              render={({ field: { onChange, value, ...rest } }) => (
                 <FormItem>
                   <FormLabel className="text-gray-700">Celular</FormLabel>
                   <div className="flex">
@@ -126,7 +130,10 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                     <FormControl>
                       <Input 
                         placeholder="(00) 00000-0000" 
-                        {...field} 
+                        value={value}
+                        {...rest} 
+                        onChange={(e) => handlePhoneChange(e, onChange)}
+                        maxLength={15} // (XX) XXXXX-XXXX
                         className="border-gray-300 focus:border-primary rounded-l-none" 
                       />
                     </FormControl>

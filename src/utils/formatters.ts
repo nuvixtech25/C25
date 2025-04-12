@@ -1,3 +1,4 @@
+
 export const formatCurrency = (value: number): string => {
   return value.toLocaleString('pt-BR', {
     style: 'currency',
@@ -130,4 +131,95 @@ export const formatPhone = (value: string): string => {
  */
 export const formatTime = (minutes: number, seconds: number): string => {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
+
+/**
+ * Handles the CPF/CNPJ input formatting with proper cursor positioning
+ */
+export const handleCpfCnpjChange = (
+  e: React.ChangeEvent<HTMLInputElement>, 
+  onChange: (...event: any[]) => void
+): void => {
+  const cursorPos = e.target.selectionStart ?? e.target.value.length;
+  const { value } = e.target;
+  
+  // Count dots and dashes before cursor
+  const specialCharsBefore = (value.substring(0, cursorPos).match(/[.-/]/g) || []).length;
+  
+  // Format the value
+  const formatted = formatCpfCnpj(value);
+  
+  // Update form value
+  onChange(formatted);
+  e.target.value = formatted;
+  
+  // Calculate new cursor position
+  const cleanValue = value.replace(/\D/g, '');
+  let newCursorPos = cursorPos;
+  
+  // CPF format: XXX.XXX.XXX-XX
+  if (cleanValue.length <= 11) {
+    if (cleanValue.length > 3) newCursorPos += 1; // After first dot
+    if (cleanValue.length > 6) newCursorPos += 1; // After second dot
+    if (cleanValue.length > 9) newCursorPos += 1; // After dash
+  } 
+  // CNPJ format: XX.XXX.XXX/XXXX-XX
+  else {
+    if (cleanValue.length > 2) newCursorPos += 1; // After first dot
+    if (cleanValue.length > 5) newCursorPos += 1; // After second dot
+    if (cleanValue.length > 8) newCursorPos += 1; // After slash
+    if (cleanValue.length > 12) newCursorPos += 1; // After dash
+  }
+  
+  // Adjust for deleted characters
+  const specialCharsAfter = (formatted.substring(0, newCursorPos).match(/[.-/]/g) || []).length;
+  newCursorPos -= Math.max(0, specialCharsBefore - specialCharsAfter);
+  
+  // Set cursor position
+  if (document.activeElement === e.target) {
+    setTimeout(() => {
+      e.target.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  }
+};
+
+/**
+ * Handles phone number input formatting with proper cursor positioning
+ */
+export const handlePhoneChange = (
+  e: React.ChangeEvent<HTMLInputElement>, 
+  onChange: (...event: any[]) => void
+): void => {
+  const cursorPos = e.target.selectionStart ?? e.target.value.length;
+  const { value } = e.target;
+  
+  // Count special chars before cursor
+  const specialCharsBefore = (value.substring(0, cursorPos).match(/[()-\s]/g) || []).length;
+  
+  // Format the value
+  const formatted = formatPhone(value);
+  
+  // Update form value
+  onChange(formatted);
+  e.target.value = formatted;
+  
+  // Calculate new cursor position
+  const cleanValue = value.replace(/\D/g, '');
+  let newCursorPos = cursorPos;
+  
+  // Phone format: (XX) XXXXX-XXXX
+  if (cleanValue.length > 0) newCursorPos += 1; // Opening parenthesis
+  if (cleanValue.length > 2) newCursorPos += 2; // Closing parenthesis and space
+  if (cleanValue.length > 7) newCursorPos += 1; // Dash (for 11-digit numbers)
+  
+  // Adjust for deleted characters
+  const specialCharsAfter = (formatted.substring(0, newCursorPos).match(/[()-\s]/g) || []).length;
+  newCursorPos -= Math.max(0, specialCharsBefore - specialCharsAfter);
+  
+  // Set cursor position
+  if (document.activeElement === e.target) {
+    setTimeout(() => {
+      e.target.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  }
 };

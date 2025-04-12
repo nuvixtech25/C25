@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { handleCpfCnpjChange, handlePhoneChange } from '@/utils/formatters';
 
 const businessSchema = z.object({
   name: z.string().min(2, 'Nome da empresa é obrigatório'),
@@ -77,9 +79,12 @@ const BusinessRegistration = () => {
                   <div className="space-y-2">
                     <label className="text-sm text-gray-300">CNPJ</label>
                     <Input
-                      {...form.register('cnpj')}
+                      {...form.register('cnpj', {
+                        onChange: (e) => handleCpfCnpjChange(e, form.setValue.bind(null, 'cnpj'))
+                      })}
                       className="bg-gray-800 border-gray-700 text-white"
                       placeholder="00.000.000/0000-00"
+                      maxLength={18}
                     />
                     {form.formState.errors.cnpj && (
                       <p className="text-red-500 text-xs">{form.formState.errors.cnpj.message}</p>
@@ -102,9 +107,12 @@ const BusinessRegistration = () => {
                   <div className="space-y-2">
                     <label className="text-sm text-gray-300">Telefone</label>
                     <Input
-                      {...form.register('phone')}
+                      {...form.register('phone', {
+                        onChange: (e) => handlePhoneChange(e, form.setValue.bind(null, 'phone'))
+                      })}
                       className="bg-gray-800 border-gray-700 text-white"
                       placeholder="(00) 00000-0000"
+                      maxLength={15}
                     />
                     {form.formState.errors.phone && (
                       <p className="text-red-500 text-xs">{form.formState.errors.phone.message}</p>
