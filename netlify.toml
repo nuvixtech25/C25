@@ -8,6 +8,12 @@
   SECRETS_SCAN_ENABLED = "false" # Apenas para emergências!
   
 [[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

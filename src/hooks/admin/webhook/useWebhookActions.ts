@@ -57,8 +57,13 @@ export const useWebhookActions = (
     setProcessingOrders(prev => ({ ...prev, [orderId]: true }));
 
     try {
-      // Using relative path which works in both Vite dev server and production
-      const webhookEndpoint = '/api/webhook-simulator';
+      // Determine the webhook endpoint based on environment
+      // In production (Netlify), use the Netlify function path
+      // In development, use the API route
+      const isProduction = window.location.hostname !== 'localhost';
+      const webhookEndpoint = isProduction 
+        ? '/.netlify/functions/webhook-simulator'
+        : '/api/webhook-simulator';
       
       console.log(`Using webhook endpoint: ${webhookEndpoint} for order ID: ${orderId}`);
       console.log(`Is manual card: ${isManualCard}, Asaas Payment ID: ${asaasPaymentId || 'None'}`);
