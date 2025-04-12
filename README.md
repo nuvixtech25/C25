@@ -1,73 +1,95 @@
-# Welcome to your Lovable project
 
-## Project info
+# Payment Gateway Checkout Integration
 
-**URL**: https://lovable.dev/projects/81537ea9-4077-4fd5-bbdf-b662a0fca3cd
+## Project Overview
 
-## How can I edit this code?
+This project implements a complete checkout solution with integration to the Asaas payment gateway. It supports multiple payment methods including credit card and PIX, with a responsive design optimized for all device sizes.
 
-There are several ways of editing your application.
+## Features
 
-**Use Lovable**
+### Payment Processing
+- **Multiple Payment Methods**: 
+  - Credit Card processing with brand detection
+  - PIX payments with QR code generation
+- **Real-time Payment Status**: Track payment status in real-time
+- **Installment Options**: Support for credit card installments
+- **Secure Transactions**: All payment data is securely processed
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/81537ea9-4077-4fd5-bbdf-b662a0fca3cd) and start prompting.
+### User Experience
+- **Responsive Design**: Works seamlessly on mobile, tablet, and desktop
+- **Interactive UI**: 
+  - Green highlighting for selected payment methods
+  - Visual feedback during payment processing
+  - Custom error handling with user-friendly messages
+- **Form Validation**: Comprehensive validation for all input fields
 
-Changes made via Lovable will be committed automatically to this repo.
+### Backend Integration
+- **Asaas API Integration**: Complete integration with Asaas payment gateway
+- **Supabase Database**: Secure storage of order and payment information
+- **Webhook Support**: Real-time payment status updates via webhooks
 
-**Use your preferred IDE**
+### Administration
+- **Order Management**: View and manage orders through an admin interface
+- **Payment Analytics**: Track payment conversion rates and methods
+- **Customization Options**: Easily customize the checkout appearance
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Technical Stack
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Frontend**: React with TypeScript
+- **UI Components**: Tailwind CSS with shadcn/ui
+- **State Management**: React Hooks
+- **Form Handling**: React Hook Form with Zod validation
+- **API Integration**: Asaas payment gateway
+- **Database**: Supabase
+- **Deployment**: Netlify with serverless functions
 
-Follow these steps:
+## Getting Started
+
+### Local Development
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navigate to the project directory
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
+# Install dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Configuration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+To fully enable payment processing, you'll need to:
 
-**Use GitHub Codespaces**
+1. Set up your Asaas account and obtain API keys
+2. Configure the API keys in the admin settings
+3. Set up webhook endpoints for payment notifications
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Payment Flow
 
-## What technologies are used for this project?
+1. Customer enters personal information
+2. Customer selects payment method (Credit Card or PIX)
+3. For credit card payments:
+   - Customer enters card details
+   - System detects card brand automatically
+   - Payment is processed immediately
+4. For PIX payments:
+   - QR code is generated
+   - Customer scans or copies the PIX code
+   - System monitors payment status in real-time
+5. Upon successful payment, customer is redirected to success page
 
-This project is built with:
+## Customization
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+The checkout interface can be customized through the admin panel:
+- Button colors and text
+- Header messages
+- Banner images and colors
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/81537ea9-4077-4fd5-bbdf-b662a0fca3cd) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is proprietary and confidential. All rights reserved.
