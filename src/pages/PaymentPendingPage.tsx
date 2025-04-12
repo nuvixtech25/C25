@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Hourglass, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Hourglass, CheckCircle2, AlertCircle, RefreshCcw } from 'lucide-react';
 import { Order } from '@/types/checkout';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Button } from '@/components/ui/button';
@@ -86,6 +86,13 @@ const PaymentPendingPage = () => {
               <div className="flex items-start">
                 <AlertCircle className="h-5 w-5 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
                 <p className="text-amber-800">Assim que tivermos uma resposta, você será notificado por e-mail sobre o status do seu pagamento.</p>
+              </div>
+            </div>
+            
+            <div className="bg-purple-50 p-4 rounded-lg border border-purple-100 shadow-sm">
+              <div className="flex items-start">
+                <RefreshCcw className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
+                <p className="text-purple-800 font-medium">Utilizar um cartão diferente aumenta suas chances de aprovação.</p>
               </div>
             </div>
           </div>
