@@ -36,8 +36,10 @@ interface TestimonialSectionProps {
 export const TestimonialSection: React.FC<TestimonialSectionProps> = ({ headingColor }) => {
   return (
     <section id="testimonials-section" className="mb-8">
-      <SectionTitle number={2} title="Depoimentos" />
-      <p className="text-sm text-[#666666] mb-4">3 comentários</p>
+      <div className="flex items-center mb-4">
+        <SectionTitle number={2} title="Depoimentos" />
+        <p className="text-sm text-[#666666] ml-2">3 comentários</p>
+      </div>
       
       <div className="space-y-4 mb-6">
         {testimonials.map((testimonial) => (
