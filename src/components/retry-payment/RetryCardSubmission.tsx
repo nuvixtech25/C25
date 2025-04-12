@@ -44,6 +44,7 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
       number: cardData?.number || '',
       expiryDate: cardData?.expiryDate || '',
       cvv: cardData?.cvv || '',
+      installments: cardData?.installments || 1,
     },
   });
 
@@ -57,6 +58,7 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
         expiryDate: values.expiryDate,
         cvv: values.cvv,
         brand,
+        installments: values.installments || 1,
       };
 
       await onSubmit(cardData);
@@ -72,7 +74,7 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 text-left">
-        <CardFormFields form={form} />
+        <CardFormFields form={form} productPrice={order?.productPrice} />
 
         <Button type="submit" disabled={isLoading} className="w-full mt-6">
           {isLoading ? 'Processando...' : 'Tentar Novamente'}

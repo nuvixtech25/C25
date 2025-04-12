@@ -71,12 +71,10 @@ const CardNumberField: React.FC<CardFormFieldsProps> = ({ form }) => (
               onChange={(e) => handleCardNumberChange(e, onChange)}
               autoComplete="cc-number"
               maxLength={19}  // 16 digits + 3 spaces
-              className="border border-gray-300 rounded py-3 px-4 w-full text-gray-700 pr-10"
+              className="border border-gray-300 rounded py-3 px-4 w-full text-gray-700 pr-12"
             />
           </FormControl>
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            {value && <CardBrandDisplay cardNumber={value} />}
-          </div>
+          <CardBrandDisplay cardNumber={value || ''} />
         </div>
         <FormMessage />
       </FormItem>

@@ -20,20 +20,21 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
       className="flex flex-row gap-2 mb-6"
     >
       <div
-        className={`flex-1 cursor-pointer p-4 flex justify-center items-center border ${
+        className={`flex-1 cursor-pointer p-4 flex justify-center items-center border rounded-md ${
           paymentMethod === 'creditCard' 
-            ? 'bg-gray-100 border-gray-300' 
+            ? 'bg-gray-100 border-primary shadow-sm' 
             : 'bg-white border-gray-300'
         }`}
         onClick={() => onPaymentMethodChange('creditCard')}
       >
-        <CreditCard className="text-gray-600" size={24} />
+        <CreditCard className={`${paymentMethod === 'creditCard' ? 'text-primary' : 'text-gray-600'}`} size={24} />
+        <span className="ml-2 font-medium">Cartão</span>
       </div>
       
       <div
-        className={`flex-1 cursor-pointer p-4 flex justify-center items-center border ${
+        className={`flex-1 cursor-pointer p-4 flex justify-center items-center border rounded-md ${
           paymentMethod === 'pix' 
-            ? 'bg-white border-green-500' 
+            ? 'bg-white border-green-500 shadow-sm' 
             : 'bg-white border-gray-300'
         }`}
         onClick={() => onPaymentMethodChange('pix')}
@@ -41,12 +42,12 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
         <img 
           src="https://pay.kirvano.com/img/pix.svg" 
           alt="PIX" 
-          className="h-8 w-8"
+          className="h-6 w-6"
         />
+        <span className="ml-2 font-medium">PIX</span>
       </div>
     </RadioGroup>
   );
 };
 
 export default PaymentOptions;
-
