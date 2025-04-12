@@ -1,7 +1,8 @@
+
 import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
-// Tipos para o request e response
+// ===== INTERFACES =====
 interface AsaasCustomerRequest {
   name: string;
   cpfCnpj: string;
@@ -41,144 +42,212 @@ interface AsaasPixQrCodeResponse {
   expirationDate: string;
 }
 
-// Função principal que recebe a requisição
-export const handler: Handler = async (event) => {
-  // Verificar se o método é POST
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Método não permitido. Use POST.' }),
-    };
-  }
+interface SupabasePaymentData {
+  order_id: string;
+  payment_id: string;
+  status: string;
+  amount: number;
+  qr_code: string;
+  qr_code_image: string;
+  copy_paste_key: string;
+  expiration_date: string;
+}
 
-  // Verificar variáveis de ambiente necessárias de forma defensiva
+// ===== CONSTANTS =====
+const ASAAS_API_URL = 'https://sandbox.asaas.com/api/v3';
+
+// ===== ERROR HANDLING =====
+class AsaasApiError extends Error {
+  constructor(message: string, public details?: any) {
+    super(message);
+    this.name = "AsaasApiError";
+  }
+}
+
+class ConfigurationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConfigurationError";
+  }
+}
+
+// ===== MAIN HANDLER =====
+export const handler: Handler = async (event) => {
+  try {
+    // Validate HTTP method
+    if (event.httpMethod !== 'POST') {
+      return createErrorResponse(405, 'Método não permitido. Use POST.');
+    }
+
+    // Validate environment variables
+    const { supabaseUrl, supabaseServiceKey, asaasApiKey } = validateEnvironmentVariables();
+
+    // Initialize Supabase client
+    console.log('Inicializando cliente Supabase...');
+    console.log(`URL Supabase: ${supabaseUrl.substring(0, 10)}...`);
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Parse and validate request data
+    const requestData = parseAndValidateRequestData(event);
+    console.log('Dados recebidos:', requestData);
+
+    // Main process flow
+    const result = await processPaymentFlow(requestData, asaasApiKey, supabase);
+
+    // Return successful response
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(result),
+    };
+  } catch (error) {
+    console.error('Erro na função:', error);
+    
+    // Create appropriate error response
+    return createErrorResponse(
+      error instanceof ConfigurationError ? 400 : 500,
+      error.message || 'Erro interno no servidor',
+      process.env.NODE_ENV === 'development' ? error.stack : undefined
+    );
+  }
+};
+
+// ===== HELPER FUNCTIONS =====
+
+/**
+ * Validates required environment variables
+ */
+function validateEnvironmentVariables() {
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const asaasApiKey = process.env.ASAAS_API_KEY;
   
-  // Verificação completa das variáveis necessárias
+  // Check for missing environment variables
   const missingVars = [];
   if (!supabaseUrl) missingVars.push('SUPABASE_URL');
   if (!supabaseServiceKey) missingVars.push('SUPABASE_SERVICE_ROLE_KEY');
   if (!asaasApiKey) missingVars.push('ASAAS_API_KEY');
   
   if (missingVars.length > 0) {
-    console.error(`Variáveis de ambiente faltando: ${missingVars.join(', ')}`);
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        error: `Configuração incompleta. Faltam variáveis de ambiente: ${missingVars.join(', ')}` 
-      }),
-    };
+    throw new ConfigurationError(`Configuração incompleta. Faltam variáveis de ambiente: ${missingVars.join(', ')}`);
   }
   
-  // Inicializar cliente Supabase com as variáveis validadas
-  console.log('Inicializando cliente Supabase...');
-  console.log(`URL Supabase: ${supabaseUrl.substring(0, 10)}...`); // Log parcial por segurança
-  
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  return { supabaseUrl, supabaseServiceKey, asaasApiKey };
+}
 
+/**
+ * Parses and validates the request data
+ */
+function parseAndValidateRequestData(event: any): AsaasCustomerRequest {
   try {
-    // Parsear o corpo da requisição
     const requestData = JSON.parse(event.body || '{}') as AsaasCustomerRequest;
     
-    // Validar os dados obrigatórios
-    if (!requestData.name || !requestData.cpfCnpj || !requestData.email || 
-        !requestData.phone || !requestData.orderId || !requestData.value) {
-      return {
-        statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Dados incompletos. Verifique os campos obrigatórios.' }),
-      };
+    // Check for required fields
+    const requiredFields = ['name', 'cpfCnpj', 'email', 'phone', 'orderId', 'value'];
+    const missingFields = requiredFields.filter(field => !requestData[field]);
+    
+    if (missingFields.length > 0) {
+      throw new ConfigurationError(`Dados incompletos. Campos obrigatórios: ${missingFields.join(', ')}`);
     }
-
-    console.log('Dados recebidos:', requestData);
-
-    // 1. Criar o cliente no Asaas
-    const customer = await createAsaasCustomer(requestData, asaasApiKey);
-    console.log('Cliente criado no Asaas:', customer);
     
-    // 2. Criar o pagamento PIX
-    const description = requestData.description || `Pedido #${requestData.orderId}`;
-    const payment = await createAsaasPayment(
-      customer.id, 
-      requestData.value, 
-      description, 
-      requestData.orderId,
-      asaasApiKey
-    );
-    console.log('Pagamento criado no Asaas:', payment);
-    
-    // 3. Buscar o QR Code do PIX
-    const pixQrCode = await getAsaasPixQrCode(payment.id, asaasApiKey);
-    console.log('QR Code PIX recebido:', {
-      success: pixQrCode.success,
-      payloadLength: pixQrCode.payload ? pixQrCode.payload.length : 0,
-      encodedImageLength: pixQrCode.encodedImage ? pixQrCode.encodedImage.length : 0
-    });
-    
-    // 4. Salvar os dados no Supabase (tabela asaas_payments)
-    const saveResult = await savePaymentData(
-      supabase,
-      requestData.orderId,
-      payment.id,
-      payment.status,
-      requestData.value,
-      pixQrCode.payload,
-      pixQrCode.encodedImage,
-      pixQrCode.payload,
-      pixQrCode.expirationDate
-    );
-    console.log('Dados salvos no Supabase:', saveResult);
-    
-    // 5. Atualizar o pedido com o ID do pagamento Asaas
-    await updateOrderAsaasPaymentId(supabase, requestData.orderId, payment.id);
-    
-    // Retornar os dados do pagamento e QR Code
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        customer,
-        payment,
-        pixQrCode,
-        paymentData: saveResult,
-        qrCodeImage: pixQrCode.encodedImage,  // Add explicit qrCodeImage field
-        qrCode: pixQrCode.payload,            // Add explicit qrCode field
-        copyPasteKey: pixQrCode.payload,      // Add explicit copyPasteKey field
-        expirationDate: pixQrCode.expirationDate  // Add explicit expirationDate field
-      }),
-    };
-    
+    return requestData;
   } catch (error) {
-    console.error('Erro na função:', error);
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        error: error.message || 'Erro interno no servidor',
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      }),
-    };
+    if (error instanceof SyntaxError) {
+      throw new ConfigurationError('Formato de JSON inválido na requisição');
+    }
+    throw error;
   }
-};
+}
 
-// Configuração da API Asaas atualizada
-const ASAAS_API_URL = 'https://sandbox.asaas.com/api/v3';
+/**
+ * Creates a standardized error response
+ */
+function createErrorResponse(statusCode: number, message: string, stack?: string) {
+  return {
+    statusCode,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      error: message,
+      stack: stack
+    }),
+  };
+}
 
-// Função para criar um cliente no Asaas
+/**
+ * Main processing flow for payment creation
+ */
+async function processPaymentFlow(
+  requestData: AsaasCustomerRequest,
+  apiKey: string,
+  supabase: any
+) {
+  // 1. Create customer in Asaas
+  const customer = await createAsaasCustomer(requestData, apiKey);
+  console.log('Cliente criado no Asaas:', customer);
+  
+  // 2. Create PIX payment
+  const description = requestData.description || `Pedido #${requestData.orderId}`;
+  const payment = await createAsaasPayment(
+    customer.id, 
+    requestData.value, 
+    description, 
+    requestData.orderId,
+    apiKey
+  );
+  console.log('Pagamento criado no Asaas:', payment);
+  
+  // 3. Get PIX QR Code
+  const pixQrCode = await getAsaasPixQrCode(payment.id, apiKey);
+  console.log('QR Code PIX recebido:', {
+    success: pixQrCode.success,
+    payloadLength: pixQrCode.payload ? pixQrCode.payload.length : 0,
+    encodedImageLength: pixQrCode.encodedImage ? pixQrCode.encodedImage.length : 0
+  });
+  
+  // 4. Save payment data to Supabase
+  const paymentData = {
+    order_id: requestData.orderId,
+    payment_id: payment.id,
+    status: payment.status,
+    amount: requestData.value,
+    qr_code: pixQrCode.payload,
+    qr_code_image: pixQrCode.encodedImage,
+    copy_paste_key: pixQrCode.payload,
+    expiration_date: pixQrCode.expirationDate
+  };
+  
+  const saveResult = await savePaymentData(supabase, paymentData);
+  console.log('Dados salvos no Supabase:', saveResult);
+  
+  // 5. Update order with Asaas payment ID
+  await updateOrderAsaasPaymentId(supabase, requestData.orderId, payment.id);
+  
+  // Return formatted response data
+  return {
+    customer,
+    payment,
+    pixQrCode,
+    paymentData: saveResult,
+    qrCodeImage: pixQrCode.encodedImage,
+    qrCode: pixQrCode.payload,
+    copyPasteKey: pixQrCode.payload,
+    expirationDate: pixQrCode.expirationDate
+  };
+}
+
+/**
+ * Creates a customer in Asaas
+ */
 async function createAsaasCustomer(
   data: AsaasCustomerRequest, 
   apiKey: string
 ): Promise<AsaasCustomerResponse> {
-  // Formatar telefone: remover todos os caracteres não numéricos
+  // Format phone: remove all non-numeric characters
   const formattedPhone = data.phone.replace(/\D/g, '');
   
   const customerData = {
     name: data.name,
-    cpfCnpj: data.cpfCnpj.replace(/\D/g, ''), // Remover caracteres não numéricos
+    cpfCnpj: data.cpfCnpj.replace(/\D/g, ''), // Remove non-numeric characters
     email: data.email,
     phone: formattedPhone,
     mobilePhone: formattedPhone,
@@ -196,14 +265,8 @@ async function createAsaasCustomer(
     });
     
     if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch (e) {
-        errorData = { message: errorText };
-      }
-      throw new Error(`Erro ao criar cliente no Asaas: ${JSON.stringify(errorData)}`);
+      const errorResponse = await handleApiError(response, 'criar cliente no Asaas');
+      throw new AsaasApiError(`Erro ao criar cliente no Asaas: ${errorResponse.message}`);
     }
     
     return await response.json();
@@ -213,7 +276,9 @@ async function createAsaasCustomer(
   }
 }
 
-// Função para criar um pagamento PIX no Asaas
+/**
+ * Creates a PIX payment in Asaas
+ */
 async function createAsaasPayment(
   customerId: string, 
   value: number, 
@@ -221,9 +286,9 @@ async function createAsaasPayment(
   externalReference: string,
   apiKey: string
 ): Promise<AsaasPaymentResponse> {
-  // Definir data de vencimento como hoje
+  // Set due date to today
   const today = new Date();
-  const dueDate = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  const dueDate = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
   
   const paymentData = {
     customer: customerId,
@@ -246,14 +311,8 @@ async function createAsaasPayment(
     });
     
     if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch (e) {
-        errorData = { message: errorText };
-      }
-      throw new Error(`Erro ao criar pagamento PIX no Asaas: ${JSON.stringify(errorData)}`);
+      const errorResponse = await handleApiError(response, 'criar pagamento PIX no Asaas');
+      throw new AsaasApiError(`Erro ao criar pagamento PIX no Asaas: ${errorResponse.message}`);
     }
     
     return await response.json();
@@ -263,7 +322,9 @@ async function createAsaasPayment(
   }
 }
 
-// Função para buscar o QR Code do PIX
+/**
+ * Gets the PIX QR Code for a payment
+ */
 async function getAsaasPixQrCode(
   paymentId: string, 
   apiKey: string
@@ -280,14 +341,8 @@ async function getAsaasPixQrCode(
     });
     
     if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch (e) {
-        errorData = { message: errorText };
-      }
-      throw new Error(`Erro ao buscar QR Code PIX: ${JSON.stringify(errorData)}`);
+      const errorResponse = await handleApiError(response, 'buscar QR Code PIX');
+      throw new AsaasApiError(`Erro ao buscar QR Code PIX: ${errorResponse.message}`);
     }
     
     const data = await response.json();
@@ -302,34 +357,34 @@ async function getAsaasPixQrCode(
   }
 }
 
-// Função para salvar os dados do pagamento no Supabase
-async function savePaymentData(
-  supabase: any,
-  orderId: string,
-  paymentId: string,
-  status: string,
-  amount: number,
-  qrCode: string,
-  qrCodeImage: string,
-  copyPasteKey: string,
-  expirationDate: string
-) {
+/**
+ * Handles API errors
+ */
+async function handleApiError(response: Response, operation: string) {
+  const errorText = await response.text();
+  let errorData;
+  
+  try {
+    errorData = JSON.parse(errorText);
+  } catch (e) {
+    errorData = { message: errorText };
+  }
+  
+  console.error(`Erro ao ${operation}:`, errorData);
+  return errorData;
+}
+
+/**
+ * Saves payment data to Supabase
+ */
+async function savePaymentData(supabase: any, data: SupabasePaymentData) {
   try {
     console.log('Salvando dados de pagamento no Supabase...');
-    console.log(`Order ID: ${orderId}, Payment ID: ${paymentId}`);
+    console.log(`Order ID: ${data.order_id}, Payment ID: ${data.payment_id}`);
     
-    const { data, error } = await supabase
+    const { data: result, error } = await supabase
       .from('asaas_payments')
-      .insert({
-        order_id: orderId,
-        payment_id: paymentId,
-        status: status,
-        amount: amount,
-        qr_code: qrCode,
-        qr_code_image: qrCodeImage,
-        copy_paste_key: copyPasteKey,
-        expiration_date: expirationDate
-      })
+      .insert(data)
       .select();
     
     if (error) {
@@ -337,14 +392,16 @@ async function savePaymentData(
       throw new Error(`Erro ao salvar dados no Supabase: ${error.message}`);
     }
     
-    return data;
+    return result;
   } catch (error) {
     console.error('Erro ao salvar pagamento:', error);
     throw error;
   }
 }
 
-// Função para atualizar o ID do pagamento Asaas no pedido
+/**
+ * Updates the order with the Asaas payment ID
+ */
 async function updateOrderAsaasPaymentId(supabase: any, orderId: string, paymentId: string) {
   try {
     console.log(`Atualizando pedido ${orderId} com payment ID ${paymentId}`);
