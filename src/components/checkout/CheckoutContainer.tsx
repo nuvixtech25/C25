@@ -93,8 +93,8 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col bg-white text-black max-w-full overflow-x-hidden" style={customStyles}>
-      {/* Render the top message banner at the top */}
-      <div className="flex justify-center w-full py-4">
+      {/* Render the top message banner without extra container padding */}
+      <div className="w-full">
         {customization.show_banner && (
           <TopMessageBanner 
             message={customization.header_message || 'Preço promocional encerrará em breve'} 

@@ -34,7 +34,8 @@ const CheckoutPreview: React.FC = () => {
 
   return (
     <div className="flex flex-col bg-white max-w-full overflow-x-hidden">
-      <div className="flex justify-center w-full py-4">
+      {/* Banners rendered without extra container padding */}
+      <div className="w-full">
         {customization.topMessage && customization.countdownEndTime ? (
           <CountdownBanner 
             message={customization.topMessage || 'Preço promocional encerrará em breve'}

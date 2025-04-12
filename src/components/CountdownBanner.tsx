@@ -52,46 +52,38 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
 
   const timeDisplay = `${timeLeft.hours > 0 ? `${timeLeft.hours}h ` : ''}${timeLeft.minutes > 0 ? `${timeLeft.minutes}m ` : ''}${timeLeft.seconds}s`;
 
-  // Responsive container classes - adjusted to match form width
-  const containerClass = isMobile 
-    ? "w-full px-4 py-3 max-w-full" 
-    : "w-full max-w-4xl px-4 py-4";
+  // Countdown timer container (positioned at the top)
+  const timerContainerClass = "w-full bg-black py-2 px-4 text-center";
   
-  const contentClass = isMobile
-    ? "p-3"
-    : "p-4";
+  // Main banner container - full size
+  const containerClass = isMobile 
+    ? "w-full max-w-full" 
+    : "w-full max-w-4xl";
 
-  // Render banner with background image if URL is provided
-  if (bannerImageUrl) {
-    return (
-      <div 
-        className={`${containerClass} bg-cover bg-center flex items-center justify-center rounded-lg overflow-hidden`}
-        style={{ backgroundImage: `url(${bannerImageUrl})` }}
-      >
-        <div className={`flex flex-col items-center ${contentClass}`}>
-          <div className="text-white text-center text-sm md:text-base lg:text-lg font-medium mb-2">
-            {message}
-          </div>
-          <div className="text-white text-center text-sm md:text-lg lg:text-xl font-medium">
-            {timeDisplay}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Fallback to color background if no image URL
   return (
-    <div 
-      className={`${containerClass} flex items-center justify-center rounded-lg overflow-hidden`}
-      style={{ backgroundColor }}
-    >
-      <div className={`flex flex-col items-center ${contentClass}`}>
-        <div className="text-white text-center text-sm md:text-base lg:text-lg font-medium mb-2">
-          {message}
-        </div>
+    <div className="flex flex-col w-full items-center">
+      {/* Countdown timer at the top */}
+      <div className={timerContainerClass}>
         <div className="text-white text-center text-sm md:text-lg lg:text-xl font-medium">
           {timeDisplay}
+        </div>
+      </div>
+
+      {/* Main banner below the timer */}
+      <div 
+        className={`${containerClass} mt-2 flex items-center justify-center rounded-lg overflow-hidden`}
+        style={{ 
+          backgroundColor,
+          backgroundImage: bannerImageUrl ? `url(${bannerImageUrl})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          minHeight: isMobile ? '120px' : '150px'
+        }}
+      >
+        <div className="p-4 md:p-6">
+          <div className="text-white text-center text-sm md:text-base lg:text-lg font-medium">
+            {message}
+          </div>
         </div>
       </div>
     </div>
