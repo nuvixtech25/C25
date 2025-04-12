@@ -34,28 +34,30 @@ const CheckoutPreview: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col w-full">
+    <div className="flex flex-col bg-white">
       {customization.topMessage && customization.countdownEndTime && (
         <CountdownBanner 
-          message={customization.topMessage}
+          message={customization.topMessage || 'Preço promocional encerrará em breve'}
           endTime={new Date(customization.countdownEndTime)}
           backgroundColor={customization.bannerColor}
           bannerImageUrl={customization.bannerImageUrl}
         />
       )}
       
-      <CheckoutContainer>
-        <CheckoutContent 
-          product={demoProduct}
-          customerData={customerData}
-          paymentMethod={paymentMethod}
-          isSubmitting={isSubmitting}
-          customization={customization}
-          onCustomerSubmit={handleCustomerSubmit}
-          onPaymentMethodChange={setPaymentMethod}
-          onPaymentSubmit={handlePaymentSubmit}
-        />
-      </CheckoutContainer>
+      <div className="w-full flex justify-center mt-8">
+        <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
+          <CheckoutContent 
+            product={demoProduct}
+            customerData={customerData}
+            paymentMethod={paymentMethod}
+            isSubmitting={isSubmitting}
+            customization={customization}
+            onCustomerSubmit={handleCustomerSubmit}
+            onPaymentMethodChange={setPaymentMethod}
+            onPaymentSubmit={handlePaymentSubmit}
+          />
+        </div>
+      </div>
     </div>
   );
 };

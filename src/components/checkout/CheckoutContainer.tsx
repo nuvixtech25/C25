@@ -92,11 +92,11 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
   }
 
   return (
-    <div className="w-full flex flex-col bg-white text-black" style={customStyles}>
-      {/* Conditionally render TimerBanner based on customization */}
+    <div className="flex flex-col bg-white text-black" style={customStyles}>
+      {/* Render the timer banner at the top */}
       {customization.show_banner && (
         <TimerBanner 
-          message={customization.header_message || 'Oferta por tempo limitado!'} 
+          message={customization.header_message || 'Preço promocional encerrará em breve'} 
           initialMinutes={5} 
           initialSeconds={2} 
           backgroundColor={customization.banner_color || '#000000'}
@@ -104,8 +104,8 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
         />
       )}
       
-      <div className="w-full flex justify-center">
-        <div className="w-full md:w-1/2 max-w-xl mx-auto p-4 md:p-6 bg-white rounded-lg shadow-md">
+      <div className="w-full flex justify-center mt-8">
+        <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
           <main>
             {children}
           </main>
