@@ -7,7 +7,6 @@ import { CustomerData } from '@/types/checkout';
 import { formatCpfCnpj, formatPhone, validateCpfCnpj } from '@/utils/formatters';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { SectionTitle } from './SectionTitle';
 
 const personalInfoFormSchema = z.object({
@@ -148,13 +147,6 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
                 )}
               />
             </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-[#28A745] hover:bg-[#218838] text-white font-semibold py-3 mt-4 rounded"
-            >
-              Continuar para pagamento
-            </Button>
           </form>
         </Form>
       </div>
