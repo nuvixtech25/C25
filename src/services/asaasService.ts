@@ -23,6 +23,7 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     });
     
     if (!response.ok) {
+      console.error(`Erro na resposta da API: ${response.status} ${response.statusText}`);
       throw new Error(`Erro ao verificar status: ${response.status} ${response.statusText}`);
     }
     
@@ -65,13 +66,13 @@ export const generatePixPayment = async (billingData: any) => {
     }
     
     const formattedData: FormattedData = {
-      name: billingData.customer?.name,
-      cpfCnpj: billingData.customer?.cpfCnpj?.replace(/[^0-9]/g, ''), // Remove non-numeric chars
-      email: billingData.customer?.email,
-      phone: billingData.customer?.phone?.replace(/[^0-9]/g, ''), // Remove non-numeric chars
-      orderId: billingData.orderId,
-      value: billingData.value,
-      description: billingData.description || `Pedido #${billingData.orderId}`
+      name: billingData.customer?.name || '',
+      cpfCnpj: billingData.customer?.cpfCnpj?.replace(/[^0-9]/g, '') || '', // Remove non-numeric chars
+      email: billingData.customer?.email || '',
+      phone: billingData.customer?.phone?.replace(/[^0-9]/g, '') || '', // Remove non-numeric chars
+      orderId: billingData.orderId || '',
+      value: parseFloat(billingData.value) || 0,
+      description: billingData.description || `Pedido #${billingData.orderId || 'novo'}`
     };
     
     // Validate required fields
@@ -109,7 +110,18 @@ export const generatePixPayment = async (billingData: any) => {
       // We'll continue without the QR code image, and the UI will handle this case
     }
     
-    return responseData;
+    // Ensure all expected properties exist with default values if missing
+    const safeResponseData = {
+      ...responseData,
+      qrCodeImage: responseData.qrCodeImage || '',
+      qrCode: responseData.qrCode || '',
+      copyPasteKey: responseData.copyPasteKey || '',
+      expirationDate: responseData.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(), // Default 30 minutes
+      paymentId: responseData.paymentId || responseData.payment?.id || '',
+      value: responseData.value || formattedData.value
+    };
+    
+    return safeResponseData;
   } catch (error) {
     console.error('Error generating PIX payment:', error);
     throw error;

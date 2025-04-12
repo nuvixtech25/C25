@@ -13,7 +13,7 @@ export const PixCopyPasteField: React.FC<PixCopyPasteFieldProps> = ({ copyPasteK
   const [copied, setCopied] = useState(false);
   
   const copyToClipboard = () => {
-    if (!copyPasteKey) {
+    if (!copyPasteKey || copyPasteKey.trim() === '') {
       toast({
         title: "Código PIX não disponível",
         description: "Não foi possível obter o código PIX para cópia",
@@ -32,17 +32,18 @@ export const PixCopyPasteField: React.FC<PixCopyPasteFieldProps> = ({ copyPasteK
         
         setTimeout(() => setCopied(false), 3000);
       },
-      () => {
+      (err) => {
+        console.error("Erro ao copiar para a área de transferência:", err);
         toast({
           title: "Erro ao copiar",
-          description: "Não foi possível copiar o código",
+          description: "Não foi possível copiar o código. Tente selecionar e copiar manualmente.",
           variant: "destructive",
         });
       }
     );
   };
   
-  if (!copyPasteKey) {
+  if (!copyPasteKey || copyPasteKey.trim() === '') {
     return (
       <div className="flex items-center justify-center p-4 bg-gray-50 rounded border border-gray-200">
         <AlertCircle className="h-4 w-4 text-amber-500 mr-2" />
@@ -53,7 +54,7 @@ export const PixCopyPasteField: React.FC<PixCopyPasteFieldProps> = ({ copyPasteK
   
   return (
     <div className="flex items-center justify-between p-2 bg-white rounded border">
-      <div className="text-xs truncate flex-1 mr-2 font-mono">
+      <div className="text-xs truncate flex-1 mr-2 font-mono break-all">
         {copyPasteKey}
       </div>
       <Button 
