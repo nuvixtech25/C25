@@ -53,7 +53,18 @@ export const generatePixPayment = async (billingData: any) => {
     console.log('Generating PIX payment with data:', billingData);
     
     // Ensure we have all required fields formatted correctly
-    const formattedData = {
+    interface FormattedData {
+      name: string;
+      cpfCnpj: string;
+      email: string;
+      phone: string;
+      orderId: string;
+      value: number;
+      description: string;
+      [key: string]: string | number; // Add index signature for string keys
+    }
+    
+    const formattedData: FormattedData = {
       name: billingData.customer?.name,
       cpfCnpj: billingData.customer?.cpfCnpj?.replace(/[^0-9]/g, ''), // Remove non-numeric chars
       email: billingData.customer?.email,
