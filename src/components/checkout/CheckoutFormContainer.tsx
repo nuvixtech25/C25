@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CustomerData, CheckoutCustomization, PaymentMethod } from '@/types/checkout';
 import { PersonalInfoSection } from '@/components/checkout/PersonalInfoSection';
@@ -36,18 +37,17 @@ export const CheckoutFormContainer: React.FC<CheckoutFormContainerProps> = ({
       
       <TestimonialSection headingColor={headingColor || '#000000'} /> {/* Provide default value */}
       
-      {customerData && (
-        <PaymentMethodSection
-          id="payment-section"
-          paymentMethod={paymentMethod}
-          onPaymentMethodChange={onPaymentMethodChange}
-          onSubmit={onPaymentSubmit}
-          isSubmitting={isSubmitting}
-          headingColor={headingColor || '#000000'} // Provide default value
-          buttonColor={buttonColor || '#6E59A5'} // Provide default value
-          buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : (buttonText || 'Finalizar Compra')} // Provide default value
-        />
-      )}
+      {/* Removed customerData condition - always show payment section */}
+      <PaymentMethodSection
+        id="payment-section"
+        paymentMethod={paymentMethod}
+        onPaymentMethodChange={onPaymentMethodChange}
+        onSubmit={onPaymentSubmit}
+        isSubmitting={isSubmitting}
+        headingColor={headingColor || '#000000'} // Provide default value
+        buttonColor={buttonColor || '#6E59A5'} // Provide default value
+        buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : (buttonText || 'Finalizar Compra')} // Provide default value
+      />
     </div>
   );
 };

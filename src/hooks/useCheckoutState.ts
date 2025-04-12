@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -21,7 +20,7 @@ export const useCheckoutState = (product: Product | undefined) => {
   };
   
   const handlePaymentSubmit = async (paymentData?: CreditCardData, existingOrderId?: string) => {
-    if (!customerData && !existingOrderId) return;
+    // Continue even without customer data
     if (!product) return;
     
     setIsSubmitting(true);
@@ -31,8 +30,6 @@ export const useCheckoutState = (product: Product | undefined) => {
       let billingData;
       
       if (existingOrderId) {
-        // If we have an existing order ID, this is a retry payment
-        // We need to fetch the order data
         const { data, error } = await fetch(`/api/orders/${existingOrderId}`).then(res => res.json());
         if (error) throw new Error(error.message);
         order = data;
@@ -55,9 +52,17 @@ export const useCheckoutState = (product: Product | undefined) => {
           orderId: existingOrderId
         };
       } else {
-        // Create a new order
-        order = await createOrder(customerData!, product, paymentMethod, paymentData);
-        billingData = prepareBillingData(customerData!, product, order.id as string);
+        // If we don't have customer data, use placeholder data
+        const defaultCustomerData: CustomerData = customerData || {
+          name: "Cliente Anônimo",
+          email: "anonimo@example.com",
+          cpfCnpj: "00000000000",
+          phone: "00000000000"
+        };
+        
+        // Create a new order with the customer data we have (or the placeholder)
+        order = await createOrder(defaultCustomerData, product, paymentMethod, paymentData);
+        billingData = prepareBillingData(defaultCustomerData, product, order.id as string);
       }
       
       if (paymentMethod === 'pix') {

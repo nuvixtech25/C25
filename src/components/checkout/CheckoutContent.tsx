@@ -38,19 +38,18 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
         headingColor={customization.headingColor}
       />
       
-      {customerData && (
-        <PaymentMethodSection
-          id="payment-section"
-          paymentMethod={paymentMethod}
-          onPaymentMethodChange={onPaymentMethodChange}
-          onSubmit={onPaymentSubmit}
-          isSubmitting={isSubmitting}
-          headingColor={customization.headingColor}
-          buttonColor={customization.buttonColor}
-          buttonText={customization.buttonText}
-          productPrice={product.price}
-        />
-      )}
+      {/* Removed the customerData condition to always show payment section */}
+      <PaymentMethodSection
+        id="payment-section"
+        paymentMethod={paymentMethod}
+        onPaymentMethodChange={onPaymentMethodChange}
+        onSubmit={onPaymentSubmit}
+        isSubmitting={isSubmitting}
+        headingColor={customization.headingColor}
+        buttonColor={customization.buttonColor}
+        buttonText={customization.buttonText}
+        productPrice={product.price}
+      />
       
       <OrderSummary 
         product={product}
