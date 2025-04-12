@@ -104,6 +104,7 @@ export const usePaymentPage = () => {
           }
         }
         
+        // Ensure payment data has valid values for all required fields, especially value
         const safePaymentData = {
           ...data,
           qrCodeImage: data.qrCodeImage || '',
@@ -111,12 +112,16 @@ export const usePaymentPage = () => {
           copyPasteKey: data.copyPasteKey || '',
           expirationDate: data.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
           paymentId: data.paymentId || data.payment?.id || '',
-          value: parseFloat(String(data.value)) || formattedBillingData.value,
+          value: typeof data.value === 'number' ? data.value : 
+                 typeof data.value === 'string' ? parseFloat(data.value) : 
+                 formattedBillingData.value,
           description: data.description || formattedBillingData.description,
           status: data.status || 'PENDING'
         };
         
         console.log("Payment data set:", safePaymentData);
+        console.log("Payment value type:", typeof safePaymentData.value);
+        console.log("Payment value:", safePaymentData.value);
         
         // Verificar explicitamente se o QR code foi gerado
         console.log("QR Code Image:", safePaymentData.qrCodeImage ? `Received (${safePaymentData.qrCodeImage.substring(0, 30)}...)` : "Not received");
@@ -153,7 +158,9 @@ export const usePaymentPage = () => {
     loading, 
     hasPaymentData: !!paymentData, 
     hasOrder: !!order, 
-    error 
+    error,
+    paymentValue: paymentData?.value,
+    paymentValueType: paymentData ? typeof paymentData.value : 'undefined'
   });
   
   return { loading, paymentData, order, error };

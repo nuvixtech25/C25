@@ -19,7 +19,13 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
   paymentData, 
   order 
 }) => {
-  console.log("PaymentContent - Props:", { loading, hasError: !!error, hasPaymentData: !!paymentData, hasOrder: !!order });
+  console.log("PaymentContent - Props:", { 
+    loading, 
+    hasError: !!error, 
+    hasPaymentData: !!paymentData, 
+    hasOrder: !!order,
+    paymentValue: paymentData?.value
+  });
   
   if (loading) {
     return <PaymentLoadingState />;
@@ -42,8 +48,14 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
     paymentId: paymentData.paymentId || "N/A",
     qrCodeLength: paymentData.qrCode?.length || 0,
     imageLength: paymentData.qrCodeImage?.length || 0,
-    copyPasteKeyLength: paymentData.copyPasteKey?.length || 0
+    copyPasteKeyLength: paymentData.copyPasteKey?.length || 0,
+    value: paymentData.value,
+    valueType: typeof paymentData.value
   });
+  
+  // Ensure we have valid values for all required props
+  const safeValue = typeof paymentData.value === 'number' ? paymentData.value : 0;
+  const safeDescription = paymentData.description || 'Pagamento';
   
   return (
     <div className="animate-fade-in w-full max-w-md">
@@ -53,8 +65,8 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
         qrCodeImage={paymentData.qrCodeImage || ''}
         copyPasteKey={paymentData.copyPasteKey || ''}
         expirationDate={paymentData.expirationDate || new Date().toISOString()}
-        value={paymentData.value || 0}
-        description={paymentData.description || ''}
+        value={safeValue}
+        description={safeDescription}
         paymentId={paymentData.paymentId || ''}
       />
     </div>

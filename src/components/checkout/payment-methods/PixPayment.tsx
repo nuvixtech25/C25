@@ -32,8 +32,13 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
     hasQRImage: !!qrCodeImage,
     hasCopyPasteKey: !!copyPasteKey,
     expirationDate,
-    value
+    value: typeof value === 'number' ? value : 0, // Log the actual value with validation
+    description
   });
+  
+  // Ensure we have valid values for all props before passing them to child components
+  const safeValue = typeof value === 'number' ? value : 0;
+  const safeDescription = description || 'Pagamento PIX';
   
   // Usar custom hook para gerenciar o status do pagamento e timeout
   const {
@@ -56,8 +61,8 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
       qrCodeImage={qrCodeImage}
       copyPasteKey={copyPasteKey}
       expirationDate={expirationDate}
-      value={value}
-      description={description}
+      value={safeValue}
+      description={safeDescription}
       status={status}
       isCheckingStatus={isCheckingStatus}
       timeLeft={timeLeft}
