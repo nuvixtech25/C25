@@ -12,7 +12,7 @@ interface CountdownBannerProps {
 export const CountdownBanner: React.FC<CountdownBannerProps> = ({ 
   message, 
   endTime, 
-  backgroundColor = '#000000' 
+  backgroundColor = '#000000'  // Default black
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     minutes: 0,
@@ -20,6 +20,8 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
   });
 
   useEffect(() => {
+    console.log('CountdownBanner rendered with backgroundColor:', backgroundColor);
+    
     const calculateTimeLeft = () => {
       const now = new Date();
       const difference = endTime.getTime() - now.getTime();
@@ -39,7 +41,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
     const timer = setInterval(calculateTimeLeft, 1000);
     
     return () => clearInterval(timer);
-  }, [endTime]);
+  }, [endTime, backgroundColor]);
 
   if (timeLeft.minutes <= 0 && timeLeft.seconds <= 0) {
     return null;

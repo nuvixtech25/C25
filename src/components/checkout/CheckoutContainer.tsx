@@ -17,7 +17,7 @@ interface CheckoutCustomization {
   banner_image_url?: string;
   show_banner?: boolean;
   heading_color?: string;
-  banner_color?: string; // Nova propriedade
+  banner_color?: string; // Banner color property
 }
 
 const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
@@ -30,13 +30,14 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     banner_image_url: '',
     show_banner: true,
     heading_color: '#000000',
-    banner_color: '#000000' // Cor padrão do banner
+    banner_color: '#000000' // Default banner color
   });
   const [isCustomizationLoaded, setIsCustomizationLoaded] = useState(false);
 
   useEffect(() => {
     const fetchCustomization = async () => {
       try {
+        console.log('Fetching checkout customization...');
         const { data, error } = await supabase
           .from('checkout_customization')
           .select('button_color, button_text_color, button_text, header_message, banner_image_url, show_banner, heading_color, banner_color')
@@ -55,6 +56,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
         }
 
         if (data) {
+          console.log('Checkout customization loaded:', data);
           setCustomization(data as CheckoutCustomization);
         }
       } catch (err) {

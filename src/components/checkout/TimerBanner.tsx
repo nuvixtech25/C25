@@ -5,19 +5,21 @@ interface TimerBannerProps {
   message: string;
   initialMinutes: number;
   initialSeconds: number;
-  backgroundColor?: string; // Nova propriedade para cor personalizada
+  backgroundColor?: string; // Color property
 }
 
 export const TimerBanner: React.FC<TimerBannerProps> = ({ 
   message, 
   initialMinutes, 
   initialSeconds,
-  backgroundColor = '#000000' // Cor padrão preta
+  backgroundColor = '#000000' // Default black
 }) => {
   const [minutes, setMinutes] = useState(initialMinutes);
   const [seconds, setSeconds] = useState(initialSeconds);
 
   useEffect(() => {
+    console.log('TimerBanner rendered with backgroundColor:', backgroundColor);
+    
     const timer = setInterval(() => {
       if (seconds > 0) {
         setSeconds(seconds - 1);
@@ -30,7 +32,7 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [minutes, seconds]);
+  }, [minutes, seconds, backgroundColor]);
 
   const formatTime = (min: number, sec: number) => {
     return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;

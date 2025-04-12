@@ -6,7 +6,7 @@ import { usePreviewCustomization } from '@/hooks/usePreviewCustomization';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { PreviewLoading } from '@/components/preview/PreviewLoading';
 import { CountdownBanner } from '@/components/CountdownBanner';
-import CheckoutContainer from '@/components/checkout/CheckoutContainer';  // Changed back to default import
+import CheckoutContainer from '@/components/checkout/CheckoutContainer';
 
 const CheckoutPreview: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -23,6 +23,8 @@ const CheckoutPreview: React.FC = () => {
   } = useCheckoutState(demoProduct);
 
   useEffect(() => {
+    // Log customization to verify banner color
+    console.log('CheckoutPreview customization:', customization);
     // Set loading to false once customization is loaded
     setLoading(false);
   }, [customization]);

@@ -1,21 +1,23 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCheckoutCustomization } from '@/hooks/useCheckoutCustomization';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Paintbrush, LayoutTemplate, Clock, Text, Store, ExternalLink } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { createPreviewUrl } from '@/utils/previewUtils';
 import { CheckoutCustomizationSettings } from '@/types/customization';
 import { AppearanceTab } from './components/customization/AppearanceTab';
 import { ContentTab } from './components/customization/ContentTab';
 import { TimerTab } from './components/customization/TimerTab';
 import { ProductTab } from './components/customization/ProductTab';
+import { supabase } from '@/integrations/supabase/client';
 
 const AdminTools: React.FC = () => {
   const customization = useCheckoutCustomization();
+  const { toast } = useToast();
   const [settings, setSettings] = useState<CheckoutCustomizationSettings>({
     buttonColor: customization.buttonColor || '#6E59A5',
     buttonText: customization.buttonText || 'Finalizar Compra',
@@ -41,12 +43,66 @@ const AdminTools: React.FC = () => {
     setSettings({ ...settings, [name]: color });
   };
 
-  const handleSave = () => {
-    // This would be implemented to save to the database
-    toast({
-      title: "Configurações salvas",
-      description: "As configurações do checkout foram atualizadas com sucesso.",
-    });
+  const handleSave = async () => {
+    try {
+      // Convert settings to database format
+      const dbSettings = {
+        button_color: settings.buttonColor,
+        button_text: settings.buttonText,
+        heading_color: settings.headingColor,
+        banner_image_url: settings.bannerImageUrl || null,
+        header_message: settings.topMessage,
+        show_banner: true,
+        banner_color: settings.bannerColor
+      };
+      
+      console.log('Saving checkout customization:', dbSettings);
+      
+      // Check if there's an existing record
+      const { data: existingData, error: existingError } = await supabase
+        .from('checkout_customization')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (existingError) {
+        console.error('Error checking existing customization:', existingError);
+        throw existingError;
+      }
+      
+      let result;
+      
+      if (existingData?.id) {
+        // Update existing record
+        result = await supabase
+          .from('checkout_customization')
+          .update(dbSettings)
+          .eq('id', existingData.id);
+      } else {
+        // Insert new record
+        result = await supabase
+          .from('checkout_customization')
+          .insert(dbSettings);
+      }
+      
+      if (result.error) {
+        console.error('Error saving customization:', result.error);
+        throw result.error;
+      }
+      
+      toast({
+        title: "Configurações salvas",
+        description: "As configurações do checkout foram atualizadas com sucesso.",
+      });
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar as configurações. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handlePreview = () => {
