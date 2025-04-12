@@ -4,26 +4,43 @@ import { Route, Routes } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminTools from '@/pages/admin/AdminTools';
 import DashboardPage from '@/pages/admin/dashboard';
+import PixSettings from '@/pages/admin/PixSettings';
+import PixelSettings from '@/pages/admin/PixelSettings';
+import AsaasSettings from '@/pages/admin/AsaasSettings';
+import WebhookSimulator from '@/pages/admin/WebhookSimulator';
+import Login from '@/pages/admin/Login';
+import NotFound from '@/pages/NotFound';
+import OrdersPage from '@/pages/admin/orders';
+import CreditCardsPage from '@/pages/admin/credit-cards';
+import ProductsPage from '@/pages/admin/products';
+import NewProductPage from '@/pages/admin/products/new';
+import EditProductPage from '@/pages/admin/products/edit';
+import ApiInformation from '@/pages/admin/ApiInformation';
+import PaymentRetryAnalytics from '@/pages/admin/analytics/PaymentRetryAnalytics';
 
 const AdminRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route 
-        path="/tools" 
-        element={
-          <ProtectedRoute>
-            <AdminTools />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/dashboard" 
-        element={
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        } 
-      />
+      {/* Rota de login (não protegida) */}
+      <Route path="/login" element={<Login />} />
+      
+      {/* Rotas protegidas */}
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/tools" element={<ProtectedRoute><AdminTools /></ProtectedRoute>} />
+      <Route path="/products" element={<ProtectedRoute><ProductsPage /></ProtectedRoute>} />
+      <Route path="/products/new" element={<ProtectedRoute><NewProductPage /></ProtectedRoute>} />
+      <Route path="/products/:id" element={<ProtectedRoute><EditProductPage /></ProtectedRoute>} />
+      <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+      <Route path="/credit-cards" element={<ProtectedRoute><CreditCardsPage /></ProtectedRoute>} />
+      <Route path="/pix-settings" element={<ProtectedRoute><PixSettings /></ProtectedRoute>} />
+      <Route path="/pixel-settings" element={<ProtectedRoute><PixelSettings /></ProtectedRoute>} />
+      <Route path="/asaas-settings" element={<ProtectedRoute><AsaasSettings /></ProtectedRoute>} />
+      <Route path="/webhook-simulator" element={<ProtectedRoute><WebhookSimulator /></ProtectedRoute>} />
+      <Route path="/api-information" element={<ProtectedRoute><ApiInformation /></ProtectedRoute>} />
+      <Route path="/analytics/payment-retry" element={<ProtectedRoute><PaymentRetryAnalytics /></ProtectedRoute>} />
+      
+      {/* Rota de fallback para páginas administrativas não encontradas */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
