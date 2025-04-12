@@ -103,14 +103,19 @@ export function useOrders(initialPaymentMethod: "pix" | "creditCard" = "pix") {
   // Delete a single order
   const deleteOrder = async (orderId: string) => {
     try {
-      await orderAdminService.deleteOrder(orderId);
+      console.log("Attempting to delete order:", orderId);
+      const result = await orderAdminService.deleteOrder(orderId);
+      console.log("Delete order result:", result);
+      
       toast({
         title: "Pedido excluído",
         description: "O pedido foi excluído com sucesso",
       });
+      
       // Update local state to remove the deleted order
       setOrders(orders.filter(order => order.id !== orderId));
     } catch (error) {
+      console.error("Error deleting order:", error);
       toast({
         variant: "destructive",
         title: "Erro ao excluir pedido",
@@ -122,14 +127,19 @@ export function useOrders(initialPaymentMethod: "pix" | "creditCard" = "pix") {
   // Delete all orders for current payment method
   const deleteAllOrders = async () => {
     try {
-      await orderAdminService.deleteOrdersByPaymentMethod(paymentMethod);
+      console.log(`Attempting to delete all ${paymentMethod} orders`);
+      const result = await orderAdminService.deleteOrdersByPaymentMethod(paymentMethod);
+      console.log("Delete all orders result:", result);
+      
       toast({
         title: "Pedidos excluídos",
         description: `Todos os pedidos de ${paymentMethod === 'pix' ? 'PIX' : 'Cartão de Crédito'} foram excluídos`,
       });
+      
       // Refresh the orders list
       fetchOrders();
     } catch (error) {
+      console.error("Error deleting all orders:", error);
       toast({
         variant: "destructive",
         title: "Erro ao excluir pedidos",

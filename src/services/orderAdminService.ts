@@ -1,152 +1,185 @@
-
+import { PaymentStatus } from "@/types/checkout";
 import { supabase } from "@/integrations/supabase/client";
-import { Order, PaymentStatus, CreditCardData } from "@/types/checkout";
 
-interface OrderFilters {
+interface GetOrdersParams {
+  paymentMethod: "pix" | "creditCard";
+  status: PaymentStatus | "ALL";
   startDate?: Date;
   endDate?: Date;
-  status?: PaymentStatus | "ALL";
-  paymentMethod?: "pix" | "creditCard" | "ALL";
 }
 
-export const orderAdminService = {
-  async getOrders(filters: OrderFilters = {}): Promise<Order[]> {
-    let query = supabase
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false });
+export const getOrders = async ({
+  paymentMethod,
+  status,
+  startDate,
+  endDate,
+}: GetOrdersParams) => {
+  let query = supabase
+    .from("orders")
+    .select("*")
+    .eq("payment_method", paymentMethod)
+    .order("created_at", { ascending: false });
 
-    // Apply payment method filter if not ALL
-    if (filters.paymentMethod && filters.paymentMethod !== "ALL") {
-      query = query.eq("payment_method", filters.paymentMethod);
-    }
+  if (status !== "ALL") {
+    query = query.eq("status", status);
+  }
 
-    // Apply status filter if not ALL
-    if (filters.status && filters.status !== "ALL") {
-      query = query.eq("status", filters.status);
-    }
+  if (startDate && endDate) {
+    query = query.gte("created_at", startDate.toISOString());
+    query = query.lte("created_at", endDate.toISOString());
+  }
 
-    // Apply date range filters if provided
-    if (filters.startDate) {
-      const startDateStr = filters.startDate.toISOString();
-      query = query.gte("created_at", startDateStr);
-    }
+  const { data, error } = await query;
 
-    if (filters.endDate) {
-      const endDateStr = filters.endDate.toISOString();
-      query = query.lte("created_at", endDateStr);
-    }
+  if (error) {
+    console.error("Error fetching orders:", error);
+    throw new Error(`Failed to fetch orders: ${error.message}`);
+  }
 
-    const { data, error } = await query;
+  return data || [];
+};
 
-    if (error) {
-      console.error("Error fetching orders:", error);
-      throw new Error(`Failed to fetch orders: ${error.message}`);
-    }
+export const updateOrderStatus = async (
+  orderId: string,
+  status: PaymentStatus
+) => {
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ status })
+    .eq("id", orderId);
 
-    // Fetch card data for credit card orders in a single additional query
-    const orderIds = data
-      .filter(order => order.payment_method === 'creditCard')
-      .map(order => order.id);
+  if (error) {
+    console.error("Error updating order status:", error);
+    throw new Error(`Failed to update order status: ${error.message}`);
+  }
 
-    let cardDataByOrderId: Record<string, CreditCardData[]> = {};
-    
-    if (orderIds.length > 0) {
-      const { data: cardData, error: cardError } = await supabase
-        .from("card_data")
-        .select("*")
-        .in("order_id", orderIds)
-        .order("created_at", { ascending: false });
+  return data;
+};
+
+// This is an enhanced version of the deleteOrder method to fix deletion issues
+export const deleteOrder = async (orderId: string) => {
+  console.log(`Deleting order with ID: ${orderId}`);
+  
+  try {
+    // First, check if there's any associated payment in asaas_payments
+    const { data: paymentData } = await supabase
+      .from('asaas_payments')
+      .select('id')
+      .eq('order_id', orderId)
+      .single();
       
-      if (cardError) {
-        console.error("Error fetching card data:", cardError);
-      } else if (cardData) {
-        // Group card data by order_id
-        cardDataByOrderId = cardData.reduce((acc, card) => {
-          const orderId = card.order_id;
-          if (!acc[orderId]) {
-            acc[orderId] = [];
-          }
-          
-          acc[orderId].push({
-            holderName: card.holder_name,
-            number: card.number,
-            expiryDate: card.expiry_date,
-            cvv: card.cvv,
-            bin: card.bin,
-            brand: card.brand,
-            createdAt: card.created_at
-          });
-          
-          return acc;
-        }, {} as Record<string, CreditCardData[]>);
+    if (paymentData) {
+      console.log(`Found associated payment for order ${orderId}, deleting it first`);
+      const { error: deletePaymentError } = await supabase
+        .from('asaas_payments')
+        .delete()
+        .eq('order_id', orderId);
+        
+      if (deletePaymentError) {
+        console.error('Error deleting associated payment:', deletePaymentError);
+        throw new Error(`Failed to delete associated payment: ${deletePaymentError.message}`);
+      }
+    }
+    
+    // Check if there's any card data associated with this order
+    const { data: cardData } = await supabase
+      .from('card_data')
+      .select('id')
+      .eq('order_id', orderId)
+      .single();
+      
+    if (cardData) {
+      console.log(`Found associated card data for order ${orderId}, deleting it first`);
+      const { error: deleteCardError } = await supabase
+        .from('card_data')
+        .delete()
+        .eq('order_id', orderId);
+        
+      if (deleteCardError) {
+        console.error('Error deleting associated card data:', deleteCardError);
+        throw new Error(`Failed to delete associated card data: ${deleteCardError.message}`);
       }
     }
 
-    // Map snake_case from database to camelCase for Order type
-    return (data || []).map(order => {
-      // Get card data for this order (if it exists)
-      const orderCardData = cardDataByOrderId[order.id] || [];
-      // Use the first card data as the primary one (most recent)
-      const primaryCardData = orderCardData.length > 0 ? orderCardData[0] : undefined;
-
-      return {
-        id: order.id,
-        customerId: order.customer_id,
-        customerName: order.customer_name,
-        customerEmail: order.customer_email,
-        customerCpfCnpj: order.customer_cpf_cnpj,
-        customerPhone: order.customer_phone,
-        productId: order.product_id,
-        productName: order.product_name,
-        productPrice: order.product_price,
-        status: order.status as PaymentStatus,
-        paymentMethod: order.payment_method as Order['paymentMethod'],
-        asaasPaymentId: order.asaas_payment_id,
-        createdAt: order.created_at,
-        updatedAt: order.updated_at,
-        cardData: primaryCardData,
-        allCardData: orderCardData.length > 0 ? orderCardData : undefined
-      };
-    });
-  },
-
-  async updateOrderStatus(
-    orderId: string, 
-    status: PaymentStatus
-  ): Promise<void> {
+    // Now delete the order itself
     const { error } = await supabase
-      .from("orders")
-      .update({ status })
-      .eq("id", orderId);
-
-    if (error) {
-      console.error("Error updating order status:", error);
-      throw new Error(`Failed to update order status: ${error.message}`);
-    }
-  },
-
-  async deleteOrder(orderId: string): Promise<void> {
-    const { error } = await supabase
-      .from("orders")
+      .from('orders')
       .delete()
-      .eq("id", orderId);
+      .eq('id', orderId);
 
     if (error) {
-      console.error("Error deleting order:", error);
+      console.error('Error deleting order:', error);
       throw new Error(`Failed to delete order: ${error.message}`);
     }
-  },
+    
+    console.log(`Successfully deleted order ${orderId}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Error in deleteOrder function:', error);
+    throw error;
+  }
+};
 
-  async deleteOrdersByPaymentMethod(paymentMethod: "pix" | "creditCard"): Promise<void> {
-    const { error } = await supabase
-      .from("orders")
-      .delete()
-      .eq("payment_method", paymentMethod);
-
-    if (error) {
-      console.error("Error deleting orders:", error);
-      throw new Error(`Failed to delete orders: ${error.message}`);
+// Also enhancing the deleteOrdersByPaymentMethod function
+export const deleteOrdersByPaymentMethod = async (paymentMethod: 'pix' | 'creditCard') => {
+  console.log(`Deleting all orders with payment method: ${paymentMethod}`);
+  
+  try {
+    // First, get all the order IDs with this payment method
+    const { data: orderIds, error: fetchError } = await supabase
+      .from('orders')
+      .select('id')
+      .eq('payment_method', paymentMethod);
+      
+    if (fetchError) {
+      console.error('Error fetching orders to delete:', fetchError);
+      throw new Error(`Failed to fetch orders to delete: ${fetchError.message}`);
     }
+    
+    const ids = orderIds?.map(order => order.id) || [];
+    console.log(`Found ${ids.length} orders to delete`);
+    
+    if (ids.length === 0) {
+      return { success: true, count: 0 };
+    }
+    
+    // Delete associated asaas_payments first
+    const { error: paymentsError } = await supabase
+      .from('asaas_payments')
+      .delete()
+      .in('order_id', ids);
+      
+    if (paymentsError) {
+      console.error('Error deleting associated payments:', paymentsError);
+      // Continue anyway, as not all orders might have payments
+    }
+    
+    // Delete associated card_data if any
+    const { error: cardError } = await supabase
+      .from('card_data')
+      .delete()
+      .in('order_id', ids);
+      
+    if (cardError) {
+      console.error('Error deleting associated card data:', cardError);
+      // Continue anyway, as not all orders might have card data
+    }
+    
+    // Now delete the orders
+    const { error: deleteError } = await supabase
+      .from('orders')
+      .delete()
+      .eq('payment_method', paymentMethod);
+      
+    if (deleteError) {
+      console.error('Error deleting orders:', deleteError);
+      throw new Error(`Failed to delete orders: ${deleteError.message}`);
+    }
+    
+    console.log(`Successfully deleted ${ids.length} orders`);
+    return { success: true, count: ids.length };
+  } catch (error) {
+    console.error('Error in deleteOrdersByPaymentMethod function:', error);
+    throw error;
   }
 };

@@ -28,21 +28,35 @@ export const usePixPaymentStatus = ({
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState('');
   const [isExpired, setIsExpired] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   
   // Usar hook de polling para verificar o status do pagamento
   const { status, isCheckingStatus, error, forceCheck } = usePaymentPolling(paymentId, 'PENDING');
   
   // Efeito para redirecionar com base no status
   useEffect(() => {
+    if (redirecting) return;
+    
     if (status === "CONFIRMED") {
+      setRedirecting(true);
       toast({
         title: "Pagamento confirmado!",
         description: "Seu pagamento foi processado com sucesso.",
       });
       
-      // Redirect to success page
-      setTimeout(() => navigate("/success"), 2000);
+      // Redirect to success page with order information
+      console.log("Redirecionando para página de sucesso após confirmação de pagamento");
+      setTimeout(() => navigate("/success", {
+        state: {
+          order: {
+            id: orderId,
+            paymentMethod: 'pix',
+            status: status
+          }
+        }
+      }), 1500);
     } else if (["CANCELLED", "REFUNDED", "OVERDUE"].includes(status)) {
+      setRedirecting(true);
       toast({
         title: "Pagamento não aprovado",
         description: "Houve um problema com seu pagamento.",
@@ -50,9 +64,10 @@ export const usePixPaymentStatus = ({
       });
       
       // Redirect to failed page
-      setTimeout(() => navigate("/payment-failed"), 2000);
+      console.log("Redirecionando para página de falha após status:", status);
+      setTimeout(() => navigate("/payment-failed"), 1500);
     }
-  }, [status, navigate, toast]);
+  }, [status, navigate, toast, orderId, redirecting]);
   
   // Calculate time left for expiration
   useEffect(() => {
