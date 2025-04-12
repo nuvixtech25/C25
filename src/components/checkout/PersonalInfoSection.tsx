@@ -44,7 +44,11 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
 
   return (
     <div className="mb-6 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
-      <SectionTitle title="Identificação" color={headingColor} icon="User" />
+      <SectionTitle 
+        title="Identificação" 
+        color={headingColor} 
+        icon="User" 
+      />
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 mt-4">
