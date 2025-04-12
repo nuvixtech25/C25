@@ -66,8 +66,43 @@ export const usePaymentPage = () => {
         
         console.log("Formatted billing data:", formattedBillingData);
         
+        // Adicionar validação dos dados formatados antes de chamar a API
+        if (!formattedBillingData.customer.name || !formattedBillingData.customer.cpfCnpj) {
+          throw new Error("Dados do cliente incompletos");
+        }
+        
+        if (!formattedBillingData.value || formattedBillingData.value <= 0) {
+          throw new Error("Valor do pagamento inválido");
+        }
+        
         const data = await generatePixPayment(formattedBillingData);
         console.log("Payment data received:", data);
+        
+        // Verificação explícita se temos dados válidos retornados
+        if (!data || typeof data !== 'object') {
+          console.error("API returned invalid data:", data);
+          throw new Error("Resposta inválida da API de pagamento");
+        }
+        
+        // Update the order with the Asaas payment ID if it was generated
+        if (data.paymentId && orderData.id) {
+          try {
+            const { error: updateError } = await supabase
+              .from('orders')
+              .update({ asaas_payment_id: data.paymentId })
+              .eq('id', orderData.id);
+              
+            if (updateError) {
+              console.error('Error updating order with Asaas payment ID:', updateError);
+            } else {
+              console.log('Order updated with Asaas payment ID:', data.paymentId);
+              // Update the local order state with the payment ID
+              setOrder(prev => prev ? { ...prev, asaasPaymentId: data.paymentId } : null);
+            }
+          } catch (updateError) {
+            console.error('Exception updating order with Asaas payment ID:', updateError);
+          }
+        }
         
         const safePaymentData = {
           ...data,
@@ -77,12 +112,18 @@ export const usePaymentPage = () => {
           expirationDate: data.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
           paymentId: data.paymentId || data.payment?.id || '',
           value: parseFloat(String(data.value)) || formattedBillingData.value,
-          description: data.description || formattedBillingData.description
+          description: data.description || formattedBillingData.description,
+          status: data.status || 'PENDING'
         };
         
-        setPaymentData(safePaymentData);
-        
         console.log("Payment data set:", safePaymentData);
+        
+        // Verificar explicitamente se o QR code foi gerado
+        console.log("QR Code Image:", safePaymentData.qrCodeImage ? `Received (${safePaymentData.qrCodeImage.substring(0, 30)}...)` : "Not received");
+        console.log("QR Code:", safePaymentData.qrCode ? `Received (${safePaymentData.qrCode.substring(0, 30)}...)` : "Not received");
+        console.log("Copy Paste Key:", safePaymentData.copyPasteKey ? `Received (${safePaymentData.copyPasteKey.substring(0, 30)}...)` : "Not received");
+        
+        setPaymentData(safePaymentData);
         
         console.groupEnd();
       } catch (error) {
@@ -107,6 +148,13 @@ export const usePaymentPage = () => {
     fetchPixPayment();
   }, [location.state, navigate, toast]);
   
+  // Debug what's being rendered
+  console.log("Rendering PaymentPage:", { 
+    loading, 
+    hasPaymentData: !!paymentData, 
+    hasOrder: !!order, 
+    error 
+  });
+  
   return { loading, paymentData, order, error };
 };
-

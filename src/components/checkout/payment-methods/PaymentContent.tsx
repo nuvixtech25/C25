@@ -19,6 +19,8 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
   paymentData, 
   order 
 }) => {
+  console.log("PaymentContent - Props:", { loading, hasError: !!error, hasPaymentData: !!paymentData, hasOrder: !!order });
+  
   if (loading) {
     return <PaymentLoadingState />;
   }
@@ -27,22 +29,34 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
     return <PaymentErrorState errorMessage={error} />;
   }
   
-  if (paymentData && order) {
-    return (
-      <div className="animate-fade-in w-full max-w-md">
-        <PixPayment 
-          orderId={order.id || ''} 
-          qrCode={paymentData.qrCode || ''}
-          qrCodeImage={paymentData.qrCodeImage || ''}
-          copyPasteKey={paymentData.copyPasteKey || ''}
-          expirationDate={paymentData.expirationDate || new Date().toISOString()}
-          value={paymentData.value || 0}
-          description={paymentData.description || ''}
-          paymentId={paymentData.paymentId || ''}
-        />
-      </div>
-    );
+  if (!paymentData || !order) {
+    console.warn("PaymentContent - Dados incompletos:", { 
+      paymentData: paymentData ? "presente" : "ausente", 
+      order: order ? "presente" : "ausente" 
+    });
+    return <PaymentEmptyState />;
   }
   
-  return <PaymentEmptyState />;
+  console.log("PaymentContent - Renderizando PixPayment com dados:", {
+    orderId: order.id || "N/A",
+    paymentId: paymentData.paymentId || "N/A",
+    qrCodeLength: paymentData.qrCode?.length || 0,
+    imageLength: paymentData.qrCodeImage?.length || 0,
+    copyPasteKeyLength: paymentData.copyPasteKey?.length || 0
+  });
+  
+  return (
+    <div className="animate-fade-in w-full max-w-md">
+      <PixPayment 
+        orderId={order.id || ''} 
+        qrCode={paymentData.qrCode || ''}
+        qrCodeImage={paymentData.qrCodeImage || ''}
+        copyPasteKey={paymentData.copyPasteKey || ''}
+        expirationDate={paymentData.expirationDate || new Date().toISOString()}
+        value={paymentData.value || 0}
+        description={paymentData.description || ''}
+        paymentId={paymentData.paymentId || ''}
+      />
+    </div>
+  );
 };

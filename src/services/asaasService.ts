@@ -110,6 +110,14 @@ export const generatePixPayment = async (billingData: any) => {
       // We'll continue without the QR code image, and the UI will handle this case
     }
     
+    // Debug the QR code data for troubleshooting
+    console.log("QR Code Image:", responseData.qrCodeImage ? 
+      `Received (${responseData.qrCodeImage.substring(0, 30)}...)` : "Not received");
+    console.log("QR Code:", responseData.qrCode ? 
+      `Received (${responseData.qrCode.substring(0, 30)}...)` : "Not received");
+    console.log("Copy Paste Key:", responseData.copyPasteKey ? 
+      `Received (${responseData.copyPasteKey.substring(0, 30)}...)` : "Not received");
+    
     // Ensure all expected properties exist with default values if missing
     const safeResponseData = {
       ...responseData,
@@ -118,7 +126,8 @@ export const generatePixPayment = async (billingData: any) => {
       copyPasteKey: responseData.copyPasteKey || '',
       expirationDate: responseData.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(), // Default 30 minutes
       paymentId: responseData.paymentId || responseData.payment?.id || '',
-      value: responseData.value || formattedData.value
+      value: responseData.value || formattedData.value,
+      status: responseData.status || 'PENDING',
     };
     
     return safeResponseData;

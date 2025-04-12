@@ -25,6 +25,16 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
   value,
   description
 }) => {
+  console.log("PixPayment - Rendering with props:", {
+    orderId,
+    paymentId: paymentId || "N/A",
+    hasQRCode: !!qrCode,
+    hasQRImage: !!qrCodeImage,
+    hasCopyPasteKey: !!copyPasteKey,
+    expirationDate,
+    value
+  });
+  
   // Usar custom hook para gerenciar o status do pagamento e timeout
   const {
     status,
