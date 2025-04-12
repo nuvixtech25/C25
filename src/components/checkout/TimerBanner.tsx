@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Eye } from 'lucide-react';
 
 interface TimerBannerProps {
   message: string;
@@ -16,7 +17,8 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
   backgroundColor = '#000000',
   bannerImageUrl = null
 }) => {
-  const [minutes, setMinutes] = useState(initialMinutes);
+  const [hours, setHours] = useState(Math.floor(initialMinutes / 60));
+  const [minutes, setMinutes] = useState(initialMinutes % 60);
   const [seconds, setSeconds] = useState(initialSeconds);
 
   useEffect(() => {
@@ -29,17 +31,17 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
       } else if (minutes > 0) {
         setMinutes(minutes - 1);
         setSeconds(59);
+      } else if (hours > 0) {
+        setHours(hours - 1);
+        setMinutes(59);
+        setSeconds(59);
       } else {
         clearInterval(timer);
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [minutes, seconds, backgroundColor, bannerImageUrl]);
-
-  const formatTime = (min: number, sec: number) => {
-    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-  };
+  }, [hours, minutes, seconds, backgroundColor, bannerImageUrl]);
 
   // Render banner with background image if URL is provided
   if (bannerImageUrl) {
@@ -48,11 +50,27 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
         className="sticky top-0 w-full text-white py-2 z-10 bg-cover bg-center" 
         style={{ backgroundImage: `url(${bannerImageUrl})` }}
       >
-        <div className="max-w-xl mx-auto text-center">
-          <p className="text-sm font-bold flex items-center justify-center">
-            <span className="mr-2">⏰</span>
-            {message} {formatTime(minutes, seconds)}
-          </p>
+        <div className="max-w-7xl mx-auto flex items-center justify-center">
+          <Eye className="h-5 w-5 mr-2" />
+          <span className="text-sm">
+            {message} {' '}
+          </span>
+          <div className="flex items-center ml-2">
+            <div className="flex flex-col items-center mx-1">
+              <span className="font-bold text-xl">{hours.toString().padStart(2, '0')}</span>
+              <span className="text-xs uppercase">horas</span>
+            </div>
+            <span className="text-xl font-bold mx-1">:</span>
+            <div className="flex flex-col items-center mx-1">
+              <span className="font-bold text-xl">{minutes.toString().padStart(2, '0')}</span>
+              <span className="text-xs uppercase">min</span>
+            </div>
+            <span className="text-xl font-bold mx-1">:</span>
+            <div className="flex flex-col items-center mx-1">
+              <span className="font-bold text-xl">{seconds.toString().padStart(2, '0')}</span>
+              <span className="text-xs uppercase">seg</span>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -61,11 +79,27 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
   // Fallback to color background if no image URL
   return (
     <div className="sticky top-0 w-full text-white py-2 z-10" style={{ backgroundColor }}>
-      <div className="max-w-xl mx-auto text-center">
-        <p className="text-sm font-bold flex items-center justify-center">
-          <span className="mr-2">⏰</span>
-          {message} {formatTime(minutes, seconds)}
-        </p>
+      <div className="max-w-7xl mx-auto flex items-center justify-center">
+        <Eye className="h-5 w-5 mr-2" />
+        <span className="text-sm">
+          {message} {' '}
+        </span>
+        <div className="flex items-center ml-2">
+          <div className="flex flex-col items-center mx-1">
+            <span className="font-bold text-xl">{hours.toString().padStart(2, '0')}</span>
+            <span className="text-xs uppercase">horas</span>
+          </div>
+          <span className="text-xl font-bold mx-1">:</span>
+          <div className="flex flex-col items-center mx-1">
+            <span className="font-bold text-xl">{minutes.toString().padStart(2, '0')}</span>
+            <span className="text-xs uppercase">min</span>
+          </div>
+          <span className="text-xl font-bold mx-1">:</span>
+          <div className="flex flex-col items-center mx-1">
+            <span className="font-bold text-xl">{seconds.toString().padStart(2, '0')}</span>
+            <span className="text-xs uppercase">seg</span>
+          </div>
+        </div>
       </div>
     </div>
   );

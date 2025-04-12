@@ -91,9 +91,8 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     );
   }
 
-  // Remove the CheckoutHeader component
   return (
-    <div className="min-h-screen bg-white text-black" style={customStyles}>
+    <div className="w-full flex flex-col bg-white text-black" style={customStyles}>
       {/* Conditionally render TimerBanner based on customization */}
       {customization.show_banner && (
         <TimerBanner 

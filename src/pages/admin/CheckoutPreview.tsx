@@ -34,7 +34,7 @@ const CheckoutPreview: React.FC = () => {
   }
 
   return (
-    <CheckoutContainer>
+    <div className="min-h-screen bg-white flex flex-col w-full">
       {customization.topMessage && customization.countdownEndTime && (
         <CountdownBanner 
           message={customization.topMessage}
@@ -44,17 +44,19 @@ const CheckoutPreview: React.FC = () => {
         />
       )}
       
-      <CheckoutContent 
-        product={demoProduct}
-        customerData={customerData}
-        paymentMethod={paymentMethod}
-        isSubmitting={isSubmitting}
-        customization={customization}
-        onCustomerSubmit={handleCustomerSubmit}
-        onPaymentMethodChange={setPaymentMethod}
-        onPaymentSubmit={handlePaymentSubmit}
-      />
-    </CheckoutContainer>
+      <CheckoutContainer>
+        <CheckoutContent 
+          product={demoProduct}
+          customerData={customerData}
+          paymentMethod={paymentMethod}
+          isSubmitting={isSubmitting}
+          customization={customization}
+          onCustomerSubmit={handleCustomerSubmit}
+          onPaymentMethodChange={setPaymentMethod}
+          onPaymentSubmit={handlePaymentSubmit}
+        />
+      </CheckoutContainer>
+    </div>
   );
 };
 
