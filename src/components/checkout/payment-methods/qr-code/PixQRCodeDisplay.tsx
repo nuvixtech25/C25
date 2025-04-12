@@ -35,8 +35,15 @@ export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage 
               className="max-w-full max-h-full object-contain animate-scale-in"
               onError={(e) => {
                 console.error("Failed to load QR code image");
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement.innerHTML = '<div class="text-center text-gray-500"><QrCode class="h-12 w-12 mx-auto mb-2" /><p>Erro ao carregar QR Code</p></div>';
+                // Check if parentElement exists before using it
+                const element = e.currentTarget;
+                const parent = element.parentElement;
+                if (parent) {
+                  // Hide the image
+                  element.style.display = 'none';
+                  // Replace with error message
+                  parent.innerHTML = '<div class="text-center text-gray-500"><QrCode class="h-12 w-12 mx-auto mb-2" /><p>Erro ao carregar QR Code</p></div>';
+                }
               }}
             />
           </div>
