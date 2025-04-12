@@ -1,3 +1,4 @@
+
 import { PaymentStatus } from "@/types/checkout";
 import { supabase } from "@/integrations/supabase/client";
 
