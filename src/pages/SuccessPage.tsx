@@ -19,6 +19,7 @@ const SuccessPage = () => {
   useEffect(() => {
     console.log('[SuccessPage] Full location state:', JSON.stringify(location.state, null, 2));
     
+    // Try to get data from navigation state first
     if (location.state?.order) {
       const { order, product } = location.state;
       
@@ -70,12 +71,47 @@ const SuccessPage = () => {
         
       console.log('[SuccessPage] Setting WhatsApp number:', wNumber);
       setWhatsappNumber(wNumber);
+      
+      // Store in localStorage as fallback
+      if (productHasWhatsappSupport || wNumber) {
+        try {
+          localStorage.setItem('whatsapp_support', productHasWhatsappSupport.toString());
+          if (wNumber) localStorage.setItem('whatsapp_number', wNumber);
+          console.log('[SuccessPage] Stored WhatsApp data in localStorage for fallback');
+        } catch (e) {
+          console.error('[SuccessPage] Failed to store in localStorage:', e);
+        }
+      }
     } else {
-      // For testing in development environment only - enable WhatsApp with test number
-      console.log('[SuccessPage] No order data found - testing mode');
-      if (process.env.NODE_ENV === 'development') {
-        setHasWhatsappSupport(true);
-        setWhatsappNumber('5511999999999');
+      // No state available, try to get from localStorage as fallback
+      try {
+        const storedSupport = localStorage.getItem('whatsapp_support');
+        const storedNumber = localStorage.getItem('whatsapp_number');
+        
+        console.log('[SuccessPage] No order data found - checking localStorage:', {
+          storedSupport,
+          storedNumber
+        });
+        
+        if (storedSupport === 'true') {
+          setHasWhatsappSupport(true);
+        }
+        
+        if (storedNumber) {
+          setWhatsappNumber(storedNumber);
+        } else if (process.env.NODE_ENV === 'development') {
+          // For testing in development environment only - enable WhatsApp with test number
+          setHasWhatsappSupport(true);
+          setWhatsappNumber('5511999999999');
+        }
+      } catch (e) {
+        console.error('[SuccessPage] Failed to read from localStorage:', e);
+        
+        // Last resort fallback for development only
+        if (process.env.NODE_ENV === 'development') {
+          setHasWhatsappSupport(true);
+          setWhatsappNumber('5511999999999');
+        }
       }
     }
   }, [location.state, trackPurchase]);
