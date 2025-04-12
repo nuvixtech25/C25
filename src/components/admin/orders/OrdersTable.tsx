@@ -32,6 +32,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   onDeleteOrder,
   loading,
 }) => {
+  // Adicionando log para depuração
+  console.log("OrdersTable rendering with:", { orders, loading });
+
   if (loading) {
     return (
       <div className="py-10 text-center">
@@ -41,7 +44,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
     );
   }
 
-  if (orders.length === 0) {
+  if (!orders || orders.length === 0) {
     return (
       <div className="bg-white p-8 text-center rounded-md shadow-sm">
         <p className="text-gray-500">Nenhum pedido encontrado.</p>
@@ -80,9 +83,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                   <StatusBadge status={order.status} />
                 </TableCell>
                 <TableCell>
-                  {format(new Date(order.createdAt), "dd/MM/yyyy HH:mm", {
+                  {order.createdAt ? format(new Date(order.createdAt), "dd/MM/yyyy HH:mm", {
                     locale: ptBR,
-                  })}
+                  }) : "Data não disponível"}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end space-x-2">

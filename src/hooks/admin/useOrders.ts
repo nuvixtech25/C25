@@ -61,6 +61,12 @@ export function useOrders(initialPaymentMethod: "pix" | "creditCard" = "pix") {
 
   // Fetch orders with current filters
   const fetchOrders = async () => {
+    console.log("Fetching orders with filters:", { 
+      paymentMethod, 
+      statusFilter, 
+      dateFilters 
+    });
+    
     setLoading(true);
     try {
       const data = await orderAdminService.getOrders({
@@ -69,13 +75,18 @@ export function useOrders(initialPaymentMethod: "pix" | "creditCard" = "pix") {
         startDate: dateFilters.startDate,
         endDate: dateFilters.endDate,
       });
+      
+      console.log("Orders fetched:", data);
       setOrders(data);
     } catch (error) {
+      console.error("Error fetching orders:", error);
       toast({
         variant: "destructive",
         title: "Erro ao carregar pedidos",
         description: error instanceof Error ? error.message : "Erro desconhecido",
       });
+      // Definindo orders como array vazio em caso de erro
+      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -155,8 +166,9 @@ export function useOrders(initialPaymentMethod: "pix" | "creditCard" = "pix") {
 
   // Fetch orders when filters change
   useEffect(() => {
+    console.log("Filters changed, fetching orders...");
     fetchOrders();
-  }, [paymentMethod, statusFilter, dateFilters]);
+  }, [paymentMethod, statusFilter, dateFilters.startDate, dateFilters.endDate]);
 
   return {
     orders,

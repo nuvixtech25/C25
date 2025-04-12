@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OrdersTabs from "@/components/admin/orders/OrdersTabs";
@@ -8,7 +8,6 @@ import {
   PaymentModal,
   StatusModal,
   DeleteConfirmModal,
-  // Remove a importação de TestPaymentModal
 } from "@/components/admin/orders/OrderModals";
 import { useFilteredOrders } from "@/hooks/admin/useFilteredOrders";
 
@@ -53,6 +52,11 @@ const OrdersPage: React.FC = () => {
     setShowDeleteAllConfirm,
   } = useFilteredOrders();
 
+  useEffect(() => {
+    console.log("OrdersPage mounted or updated. Orders:", orders);
+    console.log("Loading state:", loading);
+  }, [orders, loading]);
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -66,9 +70,6 @@ const OrdersPage: React.FC = () => {
           Apagar todos
         </Button>
       </div>
-
-      {/* Remover esta linha */}
-      {/* <TestPaymentModal /> */}
 
       <OrdersTabs 
         paymentMethod={paymentMethod}
