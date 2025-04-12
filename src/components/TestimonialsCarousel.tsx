@@ -60,7 +60,6 @@ const testimonials: Testimonial[] = [
 export const TestimonialsCarousel: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Auto-slide functionality
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((current) => (current + 1) % testimonials.length);
@@ -70,7 +69,8 @@ export const TestimonialsCarousel: React.FC = () => {
   }, []);
 
   return (
-    <Carousel className="w-full" 
+    <Carousel 
+      className="w-full" 
       opts={{
         align: "center",
         loop: true,
@@ -81,14 +81,16 @@ export const TestimonialsCarousel: React.FC = () => {
             const selectedIndex = api.selectedScrollSnap();
             setActiveIndex(selectedIndex);
           });
-          // Move to the initial activeIndex
           api.scrollTo(activeIndex);
         }
       }}
     >
       <CarouselContent>
         {testimonials.map((testimonial) => (
-          <CarouselItem key={testimonial.id}>
+          <CarouselItem 
+            key={testimonial.id} 
+            className="transition-transform duration-300 ease-out" // Suave transição sem pulos
+          >
             <Card className="border-gray-100 rounded-lg overflow-hidden">
               <CardContent className="p-4">
                 <div className="flex items-center mb-3">
@@ -127,7 +129,7 @@ export const TestimonialsCarousel: React.FC = () => {
         {testimonials.map((_, index) => (
           <button
             key={index}
-            className={`w-2 h-2 rounded-full ${
+            className={`w-2 h-2 rounded-full transition-colors duration-300 ${
               index === activeIndex ? 'bg-green-500' : 'bg-gray-300'
             }`}
             onClick={() => setActiveIndex(index)}
