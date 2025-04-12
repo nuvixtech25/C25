@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Icon } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 interface SectionTitleProps {
@@ -17,7 +17,7 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
   icon
 }) => {
   // Dynamically get the icon component if provided
-  const IconComponent = icon ? (LucideIcons as Record<string, Icon>)[icon] : null;
+  const IconComponent = icon ? (LucideIcons as Record<string, LucideIcon>)[icon] : null;
 
   return (
     <div className="flex items-center mb-4">
