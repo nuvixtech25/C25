@@ -1,4 +1,3 @@
-
 import { PaymentStatus } from "@/types/checkout";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -37,7 +36,25 @@ const getOrders = async ({
     throw new Error(`Failed to fetch orders: ${error.message}`);
   }
 
-  return data || [];
+  // Validate and transform the data
+  return (data || []).map(order => ({
+    ...order,
+    // Ensure productPrice is a valid number
+    productPrice: typeof order.product_price === 'number' || !isNaN(Number(order.product_price)) 
+      ? Number(order.product_price) 
+      : 0,
+    // Map database columns to frontend properties
+    customerName: order.customer_name,
+    customerEmail: order.customer_email,
+    customerPhone: order.customer_phone,
+    customerCpfCnpj: order.customer_cpf_cnpj,
+    customerId: order.customer_id,
+    productName: order.product_name,
+    paymentMethod: order.payment_method,
+    createdAt: order.created_at,
+    status: order.status,
+    asaasPaymentId: order.asaas_payment_id
+  }));
 };
 
 const updateOrderStatus = async (

@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatCurrency } from "@/utils/formatters";
 
 interface OrdersTableProps {
   orders: Order[];
@@ -52,6 +53,26 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
     );
   }
 
+  // Helper function to safely format price
+  const formatPrice = (price: any): string => {
+    const numericPrice = Number(price);
+    return !isNaN(numericPrice) ? formatCurrency(numericPrice) : "R$ --";
+  };
+
+  // Helper function to safely format date
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return "Data não disponível";
+    
+    try {
+      return format(new Date(dateString), "dd/MM/yyyy HH:mm", {
+        locale: ptBR,
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error, dateString);
+      return "Data inválida";
+    }
+  };
+
   return (
     <div className="bg-white rounded-md shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
@@ -70,22 +91,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
             {orders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell className="font-medium">
-                  {order.customerName}
+                  {order.customerName || "Nome não disponível"}
                 </TableCell>
-                <TableCell>{order.customerEmail}</TableCell>
+                <TableCell>{order.customerEmail || "Email não disponível"}</TableCell>
                 <TableCell>
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(Number(order.productPrice))}
+                  {formatPrice(order.productPrice)}
                 </TableCell>
                 <TableCell>
                   <StatusBadge status={order.status} />
                 </TableCell>
                 <TableCell>
-                  {order.createdAt ? format(new Date(order.createdAt), "dd/MM/yyyy HH:mm", {
-                    locale: ptBR,
-                  }) : "Data não disponível"}
+                  {formatDate(order.createdAt)}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end space-x-2">
