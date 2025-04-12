@@ -16,11 +16,12 @@ interface UsePaymentPollingResult {
 export const usePaymentPolling = (
   paymentId: string, 
   initialStatus: PaymentStatus = 'PENDING', 
-  intervalMs: number = 10000
+  intervalMs: number = 5000  // Reduced from 10000 to 5000 for more frequent checks
 ): UsePaymentPollingResult => {
   const [status, setStatus] = useState<PaymentStatus>(initialStatus);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [lastCheckedAt, setLastCheckedAt] = useState<number>(0);
 
   // Função para verificar status (usando useCallback para estabilizar a referência)
   const checkStatus = useCallback(async () => {
@@ -39,6 +40,9 @@ export const usePaymentPolling = (
         console.log(`Atualizando status de ${status} para ${currentStatus}`);
         setStatus(currentStatus);
       }
+      
+      // Update last checked timestamp
+      setLastCheckedAt(Date.now());
     } catch (err: any) {
       setError(err instanceof Error ? err : new Error(String(err)));
       console.error("Erro ao verificar status:", err);

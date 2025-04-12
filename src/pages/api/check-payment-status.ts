@@ -24,12 +24,12 @@ export async function handler(req: Request) {
   }
   
   try {
-    // First check orders table for the most up-to-date status
+    // First check orders table directly with no cache
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
       .select('status, updated_at')
       .eq('asaas_payment_id', paymentId)
-      .maybeSingle();
+      .single();
     
     if (!orderError && orderData) {
       console.log(`Found payment status in orders table: ${orderData.status}`);
@@ -43,7 +43,10 @@ export async function handler(req: Request) {
         }),
         {
           status: 200,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          },
         }
       );
       
@@ -56,7 +59,7 @@ export async function handler(req: Request) {
       .from('asaas_payments')
       .select('status, updated_at')
       .eq('payment_id', paymentId)
-      .maybeSingle();
+      .single();
     
     if (!paymentError && paymentData) {
       console.log(`Found payment status in asaas_payments table: ${paymentData.status}`);
@@ -70,7 +73,10 @@ export async function handler(req: Request) {
         }),
         {
           status: 200,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          },
         }
       );
       
@@ -90,7 +96,10 @@ export async function handler(req: Request) {
     }),
     {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      },
     }
   );
   

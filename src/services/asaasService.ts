@@ -107,18 +107,23 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
 
     const useNetlifyFunctions = config?.use_netlify_functions ?? false;
     
+    // Add a random cache busting parameter
+    const cacheBuster = `cache_bust=${Date.now()}`;
+    
     // Choose endpoint based on configuration
     const endpoint = useNetlifyFunctions
-      ? `/.netlify/functions/check-payment-status?paymentId=${paymentId}`
-      : `/api/check-payment-status?paymentId=${paymentId}`;
+      ? `/.netlify/functions/check-payment-status?paymentId=${paymentId}&${cacheBuster}`
+      : `/api/check-payment-status?paymentId=${paymentId}&${cacheBuster}`;
     
     console.log(`Checking payment status at: ${endpoint}`);
     
     const response = await fetch(endpoint, {
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      },
+      cache: 'no-store'
     });
     
     if (!response.ok) {
