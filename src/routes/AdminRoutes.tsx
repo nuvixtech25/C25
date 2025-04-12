@@ -3,6 +3,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminTools from '@/pages/admin/AdminTools';
+import DashboardPage from '@/pages/admin/dashboard';
 
 const AdminRoutes: React.FC = () => {
   return (
@@ -12,6 +13,14 @@ const AdminRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <AdminTools />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
           </ProtectedRoute>
         } 
       />

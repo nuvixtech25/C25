@@ -6,8 +6,7 @@ import { SimplifiedPixOption } from './SimplifiedPixOption';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { CreditCard, QrCode } from 'lucide-react';
 import { SectionTitle } from '../SectionTitle';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Input } from '@/components/ui/input';
+import PaymentOptions from './PaymentOptions';
 import { Button } from '@/components/ui/button';
 
 interface PaymentMethodSectionProps {
@@ -36,13 +35,6 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paymentError, setPaymentError] = useState(false);
-  const [cardData, setCardData] = useState({
-    holderName: '',
-    number: '',
-    expiryMonth: '',
-    expiryYear: '',
-    cvv: ''
-  });
 
   const handleSubmit = async (data?: any) => {
     setIsProcessing(true);
@@ -50,40 +42,17 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
     setPaymentSuccess(false);
     
     try {
-      // Simulate API call
-      setTimeout(() => {
-        if (Math.random() > 0.2) { // 80% success rate for demo
-          setPaymentSuccess(true);
-          console.log('Payment data:', {
-            method: paymentMethod,
-            ...data,
-            timestamp: new Date().toISOString()
-          });
-        } else {
-          setPaymentError(true);
-        }
-        setIsProcessing(false);
-      }, 2000);
-      
       // Actually call the real submission handler
       onSubmit(data);
+      
+      if (paymentMethod === 'creditCard') {
+        setPaymentSuccess(true);
+      }
     } catch (error) {
       setPaymentError(true);
+    } finally {
       setIsProcessing(false);
     }
-  };
-
-  const handleCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCardData({
-      ...cardData,
-      [name]: value
-    });
-  };
-
-  const handleCardSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSubmit(cardData);
   };
 
   return (
@@ -92,121 +61,26 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
         <SectionTitle number={3} title="Pagamento" />
         
         <div className="mt-4">
-          <RadioGroup 
-            defaultValue={paymentMethod}
-            value={paymentMethod}
-            onValueChange={(value) => onPaymentMethodChange(value as PaymentMethod)}
-            className="grid grid-cols-2 gap-4 mb-6"
-          >
-            <label 
-              className={`flex items-center border rounded-md p-3 cursor-pointer transition-colors ${
-                paymentMethod === 'creditCard' ? 'border-[#28A745] bg-gray-50' : 'border-gray-200'
-              }`}
-            >
-              <RadioGroupItem value="creditCard" id="creditCard" className="mr-3" />
-              <CreditCard className="h-5 w-5 mr-2 text-blue-500" />
-              <span className="font-medium text-sm">Cartão de Crédito</span>
-            </label>
-            
-            <label 
-              className={`flex items-center border rounded-md p-3 cursor-pointer transition-colors ${
-                paymentMethod === 'pix' ? 'border-[#28A745] bg-gray-50' : 'border-gray-200'
-              }`}
-            >
-              <RadioGroupItem value="pix" id="pix" className="mr-3" />
-              <QrCode className="h-5 w-5 mr-2 text-green-500" />
-              <span className="font-medium text-sm">PIX</span>
-            </label>
-          </RadioGroup>
+          <PaymentOptions 
+            paymentMethod={paymentMethod} 
+            onPaymentMethodChange={onPaymentMethodChange} 
+          />
           
           {paymentMethod === 'creditCard' && (
-            <form onSubmit={handleCardSubmit}>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="holderName" className="block text-sm font-medium mb-1">Nome no cartão</label>
-                  <Input
-                    id="holderName"
-                    name="holderName"
-                    placeholder="Nome como aparece no cartão"
-                    value={cardData.holderName}
-                    onChange={handleCardChange}
-                    className="w-full"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="number" className="block text-sm font-medium mb-1">Número do cartão</label>
-                  <Input
-                    id="number"
-                    name="number"
-                    placeholder="0000 0000 0000 0000"
-                    value={cardData.number}
-                    onChange={handleCardChange}
-                    className="w-full"
-                    required
-                  />
-                </div>
-                
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label htmlFor="expiryMonth" className="block text-sm font-medium mb-1">Mês</label>
-                    <Input
-                      id="expiryMonth"
-                      name="expiryMonth"
-                      placeholder="MM"
-                      value={cardData.expiryMonth}
-                      onChange={handleCardChange}
-                      className="w-full"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="expiryYear" className="block text-sm font-medium mb-1">Ano</label>
-                    <Input
-                      id="expiryYear"
-                      name="expiryYear"
-                      placeholder="AA"
-                      value={cardData.expiryYear}
-                      onChange={handleCardChange}
-                      className="w-full"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="cvv" className="block text-sm font-medium mb-1">CVV</label>
-                    <Input
-                      id="cvv"
-                      name="cvv"
-                      placeholder="123"
-                      value={cardData.cvv}
-                      onChange={handleCardChange}
-                      className="w-full"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full flex items-center justify-center"
-                  style={{ backgroundColor: "#28A745" }}
-                  disabled={isProcessing}
-                >
-                  <CreditCard className="w-5 h-5 mr-2" />
-                  {isProcessing ? 'Processando...' : 'Finalizar Pagamento'}
-                </Button>
-              </div>
-            </form>
+            <CardForm
+              onSubmit={handleSubmit}
+              isLoading={isSubmitting || isProcessing}
+              buttonColor={buttonColor}
+              buttonText={buttonText}
+              productPrice={productPrice}
+            />
           )}
           
           {paymentMethod === 'pix' && (
             <SimplifiedPixOption
-              onSubmit={handleSubmit}
+              onSubmit={() => handleSubmit()}
               isLoading={isSubmitting || isProcessing}
-              buttonColor="#28A745"
+              buttonColor={buttonColor}
               buttonText="Pagar com PIX"
               showQrCode={paymentSuccess}
             />

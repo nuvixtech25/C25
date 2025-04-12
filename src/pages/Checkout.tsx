@@ -1,34 +1,19 @@
 
-import React, { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { fetchProductBySlug } from '@/services/productService';
-import { CountdownBanner } from '@/components/CountdownBanner';
-import { useCheckoutCustomization } from '@/hooks/useCheckoutCustomization';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { Product } from '@/types/checkout';
+import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
 import CheckoutContainer from '@/components/checkout/CheckoutContainer';
-import { CheckoutContent } from '@/components/checkout/CheckoutContent';
-import { CheckoutError } from '@/components/checkout/CheckoutError';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { usePixelEvents } from '@/hooks/usePixelEvents';
+import { supabase } from '@/integrations/supabase/client';
 
-const Checkout = () => {
+const Checkout: React.FC = () => {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
   const navigate = useNavigate();
-  const { slug } = useParams<{ slug: string }>();
-  const { trackPurchase } = usePixelEvents();
-  
-  // Fetch product data by slug
-  const { data: product, isLoading, error } = useQuery({
-    queryKey: ['product', slug],
-    queryFn: () => fetchProductBySlug(slug || ''),
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
 
-  // Get checkout customization based on product - filter out null values
-  const customization = useCheckoutCustomization(product || undefined);
-  
-  // Use checkout state hook
   const {
     customerData,
     paymentMethod,
@@ -38,36 +23,96 @@ const Checkout = () => {
     handlePaymentSubmit
   } = useCheckoutState(product || undefined);
 
-  // If the product is not found, redirect to the 404 page
   useEffect(() => {
-    if (!isLoading && !product && !error) {
-      navigate('/not-found', { replace: true });
-    }
-  }, [product, isLoading, error, navigate]);
-  
-  // Show loading state while fetching product
-  if (isLoading) {
+    const fetchDefaultProduct = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_default', true)
+          .limit(1)
+          .single();
+
+        if (error) {
+          console.error('Error fetching default product:', error);
+          toast({
+            title: "Erro ao carregar produto",
+            description: "Não foi possível carregar o produto padrão.",
+            variant: "destructive",
+          });
+
+          // Fallback to a demo product if no default product is found
+          setProduct({
+            id: 'demo-product',
+            name: 'Produto Demonstração',
+            description: 'Este é um produto de demonstração para testes de checkout.',
+            price: 49.90,
+            imageUrl: '/placeholder.svg',
+            has_whatsapp_support: true,
+            whatsapp_number: '5511999999999',
+            type: 'digital'
+          });
+        } else if (data) {
+          setProduct({
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            price: data.price,
+            imageUrl: data.image_url,
+            has_whatsapp_support: data.has_whatsapp_support,
+            whatsapp_number: data.whatsapp_number,
+            type: data.type || 'digital'
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch product', err);
+        toast({
+          title: "Erro ao carregar",
+          description: "Ocorreu um erro ao carregar o produto.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDefaultProduct();
+  }, [toast]);
+
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner message="Carregando produto..." />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-pulse text-black">Carregando...</div>
       </div>
     );
   }
-  
-  // If there's an error or product is not found but haven't redirected yet
-  if (error || !product) {
-    return <CheckoutError />;
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-red-500">Produto não encontrado</h2>
+          <p className="mt-2 text-gray-600">Não foi possível encontrar o produto solicitado.</p>
+          <button 
+            onClick={() => navigate('/')} 
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Voltar para a página inicial
+          </button>
+        </div>
+      </div>
+    );
   }
-  
+
+  const customization = {
+    headingColor: '#000000',
+    buttonColor: '#28A745',
+    buttonText: 'Finalizar Compra',
+    isDigitalProduct: product.type === 'digital'
+  };
+
   return (
     <CheckoutContainer>
-      {customization.topMessage && customization.countdownEndTime && (
-        <CountdownBanner 
-          message={customization.topMessage}
-          endTime={new Date(customization.countdownEndTime)}
-        />
-      )}
-      
       <CheckoutContent 
         product={product}
         customerData={customerData}
