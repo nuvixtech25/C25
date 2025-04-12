@@ -12,6 +12,8 @@ export const productSchema = z.object({
   }),
   status: z.boolean().default(true),
   slug: z.string().optional(),
+  has_whatsapp_support: z.boolean().default(false),
+  whatsapp_number: z.string().optional(),
 });
 
 export type ProductFormValues = z.infer<typeof productSchema>;

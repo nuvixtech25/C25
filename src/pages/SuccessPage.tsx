@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ShoppingBag, Lock, Mail } from 'lucide-react';
+import { CheckCircle, Lock, Mail, WhatsApp } from 'lucide-react';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 
@@ -10,6 +11,8 @@ const SuccessPage = () => {
   const location = useLocation();
   const { trackPurchase } = usePixelEvents();
   const [isDigitalProduct, setIsDigitalProduct] = useState(false);
+  const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   
   useEffect(() => {
     // Debugging log to show all state details
@@ -34,8 +37,39 @@ const SuccessPage = () => {
         console.log('Setting digital product to true');
         setIsDigitalProduct(true);
       }
+      
+      // Check if the product has WhatsApp support
+      if (
+        location.state.has_whatsapp_support === true ||
+        order.has_whatsapp_support === true ||
+        location.state.product?.has_whatsapp_support === true
+      ) {
+        console.log('Setting WhatsApp support to true');
+        setHasWhatsappSupport(true);
+        
+        // Set WhatsApp number
+        const wNumber = 
+          location.state.whatsapp_number || 
+          order.whatsapp_number || 
+          location.state.product?.whatsapp_number;
+          
+        if (wNumber) {
+          setWhatsappNumber(wNumber);
+        }
+      }
     }
   }, [location.state, trackPurchase]);
+
+  // Function to format WhatsApp URL
+  const formatWhatsAppUrl = () => {
+    if (!whatsappNumber) return '#';
+    
+    // Clean the number to ensure it's only digits
+    const cleanNumber = whatsappNumber.replace(/\D/g, '');
+    
+    // Construct WhatsApp URL with default message
+    return `https://wa.me/${cleanNumber}?text=Olá! Acabei de adquirir um produto e gostaria de obter mais informações.`;
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-gray-50 to-gray-100">
@@ -83,7 +117,7 @@ const SuccessPage = () => {
         </CardContent>
         
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
-          {isDigitalProduct ? (
+          {isDigitalProduct && (
             <Button 
               asChild 
               className="w-full bg-green-600 hover:bg-green-700 transition-colors px-6 py-3 h-auto text-white border-0 text-lg rounded-lg shadow-md"
@@ -93,7 +127,25 @@ const SuccessPage = () => {
                 <Lock className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-          ) : null}
+          )}
+          
+          {hasWhatsappSupport && whatsappNumber && (
+            <Button 
+              asChild 
+              variant="outline"
+              className="w-full border-green-500 bg-white hover:bg-green-50 text-green-600 transition-colors px-6 py-3 h-auto text-lg rounded-lg shadow-sm mt-2"
+            >
+              <a 
+                href={formatWhatsAppUrl()} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center"
+              >
+                Falar no WhatsApp
+                <WhatsApp className="ml-2 h-5 w-5" />
+              </a>
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </div>

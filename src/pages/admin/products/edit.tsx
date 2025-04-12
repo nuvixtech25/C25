@@ -20,6 +20,8 @@ type ProductData = {
   type: 'digital' | 'physical';
   status: boolean;
   slug: string;
+  has_whatsapp_support?: boolean;
+  whatsapp_number?: string | null;
 }
 
 const EditProductPage = () => {
@@ -35,6 +37,8 @@ const EditProductPage = () => {
       image_url: '',
       type: 'physical',
       status: true,
+      has_whatsapp_support: false,
+      whatsapp_number: '',
     },
   });
 
@@ -71,6 +75,8 @@ const EditProductPage = () => {
         type: productData.type,
         status: productData.status,
         slug: productData.slug,
+        has_whatsapp_support: productData.has_whatsapp_support || false,
+        whatsapp_number: productData.whatsapp_number || '',
       });
 
       return productData;
@@ -97,6 +103,8 @@ const EditProductPage = () => {
           type: data.type,
           status: data.status,
           slug: slug,
+          has_whatsapp_support: data.has_whatsapp_support,
+          whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
         })
         .eq('id', id);
 

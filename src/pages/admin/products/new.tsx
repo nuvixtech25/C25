@@ -20,6 +20,8 @@ const NewProductPage = () => {
       image_url: '',
       type: 'physical',
       status: true,
+      has_whatsapp_support: false,
+      whatsapp_number: '',
     },
   });
 
@@ -32,11 +34,13 @@ const NewProductPage = () => {
       const { error } = await supabase.from('products' as any).insert({
         name: data.name,
         description: data.description || null,
-        price: data.price,
         image_url: data.image_url || null,
+        price: data.price,
         type: data.type,
         status: data.status,
         slug: slug,
+        has_whatsapp_support: data.has_whatsapp_support,
+        whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
       } as any);
 
       if (error) {

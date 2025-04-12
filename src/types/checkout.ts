@@ -70,6 +70,8 @@ export interface Product {
   status?: boolean;
   type?: 'digital' | 'physical';
   slug?: string;
+  has_whatsapp_support?: boolean;
+  whatsapp_number?: string;
 }
 
 export type PaymentMethod = "creditCard" | "pix";

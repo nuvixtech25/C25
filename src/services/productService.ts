@@ -34,7 +34,9 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
         : 'physical',
       imageUrl: data.image_url || undefined,
       status: data.status,
-      slug: data.slug
+      slug: data.slug,
+      has_whatsapp_support: data.has_whatsapp_support || false,
+      whatsapp_number: data.whatsapp_number || undefined
     };
   } catch (error) {
     console.error("Error in fetchProductBySlug:", error);
