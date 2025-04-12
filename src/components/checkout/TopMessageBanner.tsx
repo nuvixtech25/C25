@@ -2,6 +2,7 @@
 import React from 'react';
 import { TimerBanner } from './TimerBanner';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Eye } from 'lucide-react';
 
 interface TopMessageBannerProps {
   message: string;
@@ -24,9 +25,10 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   
   return (
     <div className={`flex flex-col items-center ${containerClassName}`}>
-      {/* Changed background from bg-black to bg-transparent */}
-      <div className="w-full bg-transparent py-2 px-4 flex justify-center items-center space-x-4 rounded-t-md">
-        <div className="text-black text-sm md:text-base lg:text-lg font-medium">
+      {/* Black bar with eye icon, message, and timer */}
+      <div className="w-full bg-black py-3 px-4 flex justify-center items-center space-x-4">
+        <Eye className="text-white h-5 w-5 mr-2" />
+        <div className="text-white text-sm md:text-base font-medium">
           {message}
         </div>
         <TimerBanner 
@@ -35,17 +37,16 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
         />
       </div>
 
-      {/* Added mt-4 to create more space between the message and the banner */}
+      {/* Banner image below the timer */}
       {bannerImageUrl && (
         <div 
-          className="w-full flex items-center justify-center overflow-hidden mt-4 mb-4" 
+          className="w-full flex items-center justify-center mt-0" 
           style={{ 
-            backgroundColor,
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            height: isMobile ? '180px' : '220px', // Maintaining the larger height for visibility
+            height: isMobile ? '180px' : '220px',
             maxWidth: '100%'
           }}
         />

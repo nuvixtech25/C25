@@ -32,24 +32,31 @@ const CheckoutPreview: React.FC = () => {
     return <PreviewLoading />;
   }
 
+  // Update customization to use new image
+  const updatedCustomization = {
+    ...customization,
+    topMessage: 'Fique de olho, a oferta termina em:',
+    bannerImageUrl: '/lovable-uploads/9bc6da91-7e27-4e9a-832c-ea9b7ff6b3d2.png'
+  };
+
   return (
     <div className="flex flex-col bg-white max-w-full overflow-x-hidden">
       <div className="w-full flex justify-center">
         <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
           {/* Banners rendered inside the container that has the same width as the form */}
-          {customization.topMessage && customization.countdownEndTime ? (
+          {updatedCustomization.topMessage && updatedCustomization.countdownEndTime ? (
             <CountdownBanner 
-              message={customization.topMessage || 'Preço promocional encerrará em breve'}
-              endTime={new Date(customization.countdownEndTime)}
-              backgroundColor={customization.bannerColor}
-              bannerImageUrl={customization.bannerImageUrl}
+              message={updatedCustomization.topMessage || 'Fique de olho, a oferta termina em:'}
+              endTime={new Date(updatedCustomization.countdownEndTime)}
+              backgroundColor={updatedCustomization.bannerColor}
+              bannerImageUrl={updatedCustomization.bannerImageUrl}
               containerClassName="w-full"
             />
-          ) : customization.topMessage && (
+          ) : updatedCustomization.topMessage && (
             <TopMessageBanner 
-              message={customization.topMessage || 'Oferta por tempo limitado!'}
-              backgroundColor={customization.bannerColor}
-              bannerImageUrl={customization.bannerImageUrl}
+              message={updatedCustomization.topMessage || 'Fique de olho, a oferta termina em:'}
+              backgroundColor={updatedCustomization.bannerColor}
+              bannerImageUrl={updatedCustomization.bannerImageUrl}
               initialMinutes={5}
               initialSeconds={0}
               containerClassName="w-full"
@@ -61,7 +68,7 @@ const CheckoutPreview: React.FC = () => {
             customerData={customerData}
             paymentMethod={paymentMethod}
             isSubmitting={isSubmitting}
-            customization={customization}
+            customization={updatedCustomization}
             onCustomerSubmit={handleCustomerSubmit}
             onPaymentMethodChange={setPaymentMethod}
             onPaymentSubmit={handlePaymentSubmit}

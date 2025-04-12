@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Eye } from 'lucide-react';
 
 interface TimerBannerProps {
   initialMinutes: number;
@@ -33,9 +34,25 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
     return () => clearInterval(timer);
   }, [hours, minutes, seconds]);
 
+  // Format numbers to always have two digits
+  const formatNumber = (num: number) => num.toString().padStart(2, '0');
+
   return (
-    <div className="text-black text-sm md:text-lg lg:text-xl font-medium">
-      {hours > 0 && `${hours}h `}{minutes > 0 && `${minutes}m `}{seconds}s
+    <div className="flex items-center gap-1 md:gap-2">
+      <div className="flex flex-col items-center">
+        <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">{formatNumber(hours)}</span>
+        <span className="text-white text-[8px] md:text-xs uppercase">HORAS</span>
+      </div>
+      <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">:</span>
+      <div className="flex flex-col items-center">
+        <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">{formatNumber(minutes)}</span>
+        <span className="text-white text-[8px] md:text-xs uppercase">MIN</span>
+      </div>
+      <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">:</span>
+      <div className="flex flex-col items-center">
+        <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">{formatNumber(seconds)}</span>
+        <span className="text-white text-[8px] md:text-xs uppercase">SEG</span>
+      </div>
     </div>
   );
 };

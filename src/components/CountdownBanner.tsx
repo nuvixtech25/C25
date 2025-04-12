@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { formatTime } from '@/utils/formatters';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Eye } from 'lucide-react';
 
 interface CountdownBannerProps {
   message: string;
@@ -52,31 +53,45 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
     return null;
   }
 
-  const timeDisplay = `${timeLeft.hours > 0 ? `${timeLeft.hours}h ` : ''}${timeLeft.minutes > 0 ? `${timeLeft.minutes}m ` : ''}${timeLeft.seconds}s`;
+  // Format numbers to always have two digits
+  const formatNumber = (num: number) => num.toString().padStart(2, '0');
 
   return (
     <div className={`flex flex-col items-center ${containerClassName}`}>
-      {/* Changed background from bg-black to bg-transparent */}
-      <div className="w-full bg-transparent py-2 px-4 flex justify-center items-center space-x-4 rounded-t-md">
-        <div className="text-black text-sm md:text-base lg:text-lg font-medium">
+      {/* Black bar with eye icon, message, and countdown */}
+      <div className="w-full bg-black py-3 px-4 flex justify-center items-center space-x-4">
+        <Eye className="text-white h-5 w-5 mr-2" />
+        <div className="text-white text-sm md:text-base font-medium">
           {message}
         </div>
-        <div className="text-black text-sm md:text-lg lg:text-xl font-medium">
-          {timeDisplay}
+        <div className="flex items-center gap-1 md:gap-2">
+          <div className="flex flex-col items-center">
+            <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">{formatNumber(timeLeft.hours)}</span>
+            <span className="text-white text-[8px] md:text-xs uppercase">HORAS</span>
+          </div>
+          <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">:</span>
+          <div className="flex flex-col items-center">
+            <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">{formatNumber(timeLeft.minutes)}</span>
+            <span className="text-white text-[8px] md:text-xs uppercase">MIN</span>
+          </div>
+          <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">:</span>
+          <div className="flex flex-col items-center">
+            <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">{formatNumber(timeLeft.seconds)}</span>
+            <span className="text-white text-[8px] md:text-xs uppercase">SEG</span>
+          </div>
         </div>
       </div>
 
-      {/* Banner image container */}
+      {/* Banner image below the countdown */}
       {bannerImageUrl && (
         <div 
-          className="w-full flex items-center justify-center overflow-hidden mt-4 mb-4" 
+          className="w-full flex items-center justify-center mt-0" 
           style={{ 
-            backgroundColor,
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            height: isMobile ? '180px' : '220px', // Mantendo a altura maior para visibilidade
+            height: isMobile ? '180px' : '220px',
             maxWidth: '100%'
           }}
         />

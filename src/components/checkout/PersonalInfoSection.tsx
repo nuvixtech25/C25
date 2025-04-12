@@ -8,6 +8,7 @@ import { formatCpfCnpj, formatPhone, validateCpfCnpj } from '@/utils/formatters'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { SectionTitle } from './SectionTitle';
+import { User } from 'lucide-react';
 
 const personalInfoFormSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
@@ -60,7 +61,10 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
   return (
     <section id="customer-section" className="mb-4 bg-white rounded-lg border border-[#E0E0E0]">
       <div className="p-4">
-        <SectionTitle number={1} title="Identificação" />
+        <div className="flex items-center mb-4 gap-2">
+          <User className="text-gray-500" size={20} />
+          <h2 className="text-lg font-semibold">Identificação</h2>
+        </div>
       
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -73,7 +77,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
                     <FormLabel className="text-black">Nome completo</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="Digite seu nome" 
+                        placeholder="Seu nome completo" 
                         {...field} 
                         className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
                       />
@@ -92,7 +96,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
                     <FormControl>
                       <Input 
                         type="email" 
-                        placeholder="Digite seu e-mail" 
+                        placeholder="Seu e-mail" 
                         {...field} 
                         className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
                       />
