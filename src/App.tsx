@@ -6,6 +6,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { usePixelEvents } from './hooks/usePixelEvents';
 import AdminRoutes from './routes/AdminRoutes';
 import PublicRoutes from './routes/PublicRoutes';
+import NotFound from './pages/NotFound';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -17,8 +18,8 @@ const AppWithPixels = () => {
   
   return (
     <Routes>
-      <Route path="/*" element={<PublicRoutes />} />
-      <Route path="/admin/*" element={<AdminRoutes />} />
+      <Route path="admin/*" element={<AdminRoutes />} />
+      <Route path="*" element={<PublicRoutes />} />
     </Routes>
   );
 };

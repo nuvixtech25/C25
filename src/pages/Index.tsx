@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CountdownBanner } from '@/components/CountdownBanner';
 
-const Index = () => {
+const Index: React.FC = () => {
   // Create a countdown end time 15 minutes from now
   const countdownEndTime = new Date();
   countdownEndTime.setMinutes(countdownEndTime.getMinutes() + 15);

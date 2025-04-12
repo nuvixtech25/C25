@@ -12,7 +12,7 @@ import { CheckoutError } from '@/components/checkout/CheckoutError';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 
-const Checkout = () => {
+const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const { trackPurchase } = usePixelEvents();
