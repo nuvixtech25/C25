@@ -22,14 +22,13 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
       <div
         className={`flex-1 cursor-pointer p-4 flex justify-center items-center border rounded-md ${
           paymentMethod === 'creditCard' 
-            ? 'bg-green-100 border-green-500 shadow-sm' // Changed to green 
+            ? 'bg-green-100 border-green-500 shadow-sm' 
             : 'bg-white border-gray-300'
         }`}
         onClick={() => onPaymentMethodChange('creditCard')}
       >
         <CreditCard className={`${paymentMethod === 'creditCard' ? 'text-green-600' : 'text-gray-600'}`} size={24} />
         <span className="ml-2 font-medium">Cartão</span>
-        <span className="ml-1 text-sm font-bold">3</span>
       </div>
       
       <div
