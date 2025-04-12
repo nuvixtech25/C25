@@ -57,17 +57,22 @@ const updateOrderStatus = async (
   return data;
 };
 
-// This is an enhanced version of the deleteOrder method to fix deletion issues
+// Enhanced version of the deleteOrder method to ensure proper deletion
 const deleteOrder = async (orderId: string) => {
   console.log(`Deleting order with ID: ${orderId}`);
   
   try {
     // First, check if there's any associated payment in asaas_payments
-    const { data: paymentData } = await supabase
+    const { data: paymentData, error: paymentError } = await supabase
       .from('asaas_payments')
       .select('id')
       .eq('order_id', orderId)
       .single();
+      
+    if (paymentError && !paymentError.message.includes('No rows found')) {
+      console.error('Error checking associated payment:', paymentError);
+      throw new Error(`Failed to check associated payment: ${paymentError.message}`);
+    }
       
     if (paymentData) {
       console.log(`Found associated payment for order ${orderId}, deleting it first`);
@@ -83,11 +88,16 @@ const deleteOrder = async (orderId: string) => {
     }
     
     // Check if there's any card data associated with this order
-    const { data: cardData } = await supabase
+    const { data: cardData, error: cardError } = await supabase
       .from('card_data')
       .select('id')
       .eq('order_id', orderId)
       .single();
+      
+    if (cardError && !cardError.message.includes('No rows found')) {
+      console.error('Error checking associated card data:', cardError);
+      throw new Error(`Failed to check associated card data: ${cardError.message}`);
+    }
       
     if (cardData) {
       console.log(`Found associated card data for order ${orderId}, deleting it first`);
@@ -121,15 +131,15 @@ const deleteOrder = async (orderId: string) => {
   }
 };
 
-// Also enhancing the deleteOrdersByPaymentMethod function
+// Improved deleteOrdersByPaymentMethod function to fix the issue with delete all PIX orders
 const deleteOrdersByPaymentMethod = async (paymentMethod: 'pix' | 'creditCard') => {
   console.log(`Deleting all orders with payment method: ${paymentMethod}`);
   
   try {
     // First, get all the order IDs with this payment method
-    const { data: orderIds, error: fetchError } = await supabase
+    const { data: orders, error: fetchError } = await supabase
       .from('orders')
-      .select('id')
+      .select('id, asaas_payment_id')
       .eq('payment_method', paymentMethod);
       
     if (fetchError) {
@@ -137,48 +147,39 @@ const deleteOrdersByPaymentMethod = async (paymentMethod: 'pix' | 'creditCard') 
       throw new Error(`Failed to fetch orders to delete: ${fetchError.message}`);
     }
     
-    const ids = orderIds?.map(order => order.id) || [];
-    console.log(`Found ${ids.length} orders to delete`);
-    
-    if (ids.length === 0) {
+    if (!orders || orders.length === 0) {
+      console.log(`No ${paymentMethod} orders found to delete`);
       return { success: true, count: 0 };
     }
     
-    // Delete associated asaas_payments first
-    const { error: paymentsError } = await supabase
-      .from('asaas_payments')
-      .delete()
-      .in('order_id', ids);
-      
-    if (paymentsError) {
-      console.error('Error deleting associated payments:', paymentsError);
-      // Continue anyway, as not all orders might have payments
+    console.log(`Found ${orders.length} ${paymentMethod} orders to delete`);
+    
+    // Delete each order individually to ensure related records are properly deleted
+    let deletedCount = 0;
+    let errors = [];
+    
+    for (const order of orders) {
+      try {
+        await deleteOrder(order.id);
+        deletedCount++;
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error(`Failed to delete order ${order.id}:`, errorMessage);
+        errors.push({ orderId: order.id, error: errorMessage });
+      }
     }
     
-    // Delete associated card_data if any
-    const { error: cardError } = await supabase
-      .from('card_data')
-      .delete()
-      .in('order_id', ids);
-      
-    if (cardError) {
-      console.error('Error deleting associated card data:', cardError);
-      // Continue anyway, as not all orders might have card data
+    if (errors.length > 0) {
+      console.warn(`Completed with ${errors.length} errors:`, errors);
+      return { 
+        success: deletedCount > 0, 
+        count: deletedCount,
+        errors: errors
+      };
     }
     
-    // Now delete the orders
-    const { error: deleteError } = await supabase
-      .from('orders')
-      .delete()
-      .eq('payment_method', paymentMethod);
-      
-    if (deleteError) {
-      console.error('Error deleting orders:', deleteError);
-      throw new Error(`Failed to delete orders: ${deleteError.message}`);
-    }
-    
-    console.log(`Successfully deleted ${ids.length} orders`);
-    return { success: true, count: ids.length };
+    console.log(`Successfully deleted ${deletedCount} orders`);
+    return { success: true, count: deletedCount };
   } catch (error) {
     console.error('Error in deleteOrdersByPaymentMethod function:', error);
     throw error;

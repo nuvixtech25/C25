@@ -1,3 +1,6 @@
+
+import { PaymentStatus } from '@/types/checkout';
+
 /**
  * Verifica o status de um pagamento Asaas
  * @param paymentId ID do pagamento no Asaas
@@ -37,5 +40,29 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     console.error('Erro ao verificar status do pagamento:', error);
     // Em caso de erro, assumir que o pagamento ainda está pendente
     return 'PENDING';
+  }
+};
+
+// Add the generatePixPayment function to fix the import error
+export const generatePixPayment = async (billingData: any) => {
+  try {
+    console.log('Generating PIX payment with data:', billingData);
+    
+    const response = await fetch('/api/create-asaas-customer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ billingData }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to generate PIX payment: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error generating PIX payment:', error);
+    throw error;
   }
 };
