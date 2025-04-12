@@ -17,15 +17,11 @@ const AppWithPixels = () => {
   
   return (
     <Routes>
-      {/* Include PublicRoutes with fragment to properly nest routes */}
-      <Route>
-        <PublicRoutes />
-      </Route>
+      {/* Public Routes */}
+      {PublicRoutes()}
       
-      {/* Include AdminRoutes with fragment to properly nest routes */}
-      <Route>
-        <AdminRoutes />
-      </Route>
+      {/* Admin Routes */}
+      {AdminRoutes()}
     </Routes>
   );
 };
