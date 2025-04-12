@@ -1,12 +1,9 @@
 
 import React from 'react';
-import { PixPayment } from '@/components/checkout/payment-methods/PixPayment';
 import { usePaymentPage } from '@/hooks/usePaymentPage';
 import { PaymentHeader } from '@/components/checkout/payment-methods/PaymentHeader';
 import { PaymentFooter } from '@/components/checkout/payment-methods/PaymentFooter';
-import { PaymentLoadingState } from '@/components/checkout/payment-methods/PaymentLoadingState';
-import { PaymentErrorState } from '@/components/checkout/payment-methods/PaymentErrorState';
-import { PaymentEmptyState } from '@/components/checkout/payment-methods/PaymentEmptyState';
+import { PaymentContent } from '@/components/checkout/payment-methods/PaymentContent';
 import { PaymentDecorativeElements } from '@/components/checkout/payment-methods/PaymentDecorativeElements';
 
 const PaymentPage = () => {
@@ -17,28 +14,14 @@ const PaymentPage = () => {
       <PaymentDecorativeElements />
       <PaymentHeader />
       
-      {loading ? (
-        <PaymentLoadingState />
-      ) : error ? (
-        <PaymentErrorState errorMessage={error} />
-      ) : (paymentData && order) ? (
-        <div className="animate-fade-in w-full max-w-md">
-          <PixPayment 
-            orderId={order.id || ''} 
-            qrCode={paymentData.qrCode || ''}
-            qrCodeImage={paymentData.qrCodeImage || ''}
-            copyPasteKey={paymentData.copyPasteKey || ''}
-            expirationDate={paymentData.expirationDate || new Date().toISOString()}
-            value={paymentData.value || 0}
-            description={paymentData.description || ''}
-            paymentId={paymentData.paymentId || ''}
-          />
-          
-          <PaymentFooter />
-        </div>
-      ) : (
-        <PaymentEmptyState />
-      )}
+      <PaymentContent 
+        loading={loading}
+        error={error}
+        paymentData={paymentData}
+        order={order}
+      />
+      
+      {paymentData && order && <PaymentFooter />}
     </div>
   );
 };
