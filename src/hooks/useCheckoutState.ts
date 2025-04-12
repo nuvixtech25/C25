@@ -64,13 +64,23 @@ export const useCheckoutState = (product: Product | undefined) => {
         navigate('/payment', { 
           state: { 
             billingData, 
-            order 
+            order,
+            product: {
+              has_whatsapp_support: product.has_whatsapp_support,
+              whatsapp_number: product.whatsapp_number,
+              type: product.type || 'physical'
+            }
           } 
         });
       } else {
         // Handle credit card payment with manual redirect
         const config = await getAsaasConfig();
         const redirectPage = config?.manual_card_redirect_page || '/success';
+        
+        console.log('[useCheckoutState] Navigating to success with WhatsApp data:', {
+          has_whatsapp_support: product.has_whatsapp_support,
+          whatsapp_number: product.whatsapp_number
+        });
         
         toast({
           title: "Pagamento com cartão processado",
@@ -80,7 +90,12 @@ export const useCheckoutState = (product: Product | undefined) => {
         navigate(redirectPage, { 
           state: { 
             order,
-            billingData
+            billingData,
+            product: {
+              has_whatsapp_support: product.has_whatsapp_support,
+              whatsapp_number: product.whatsapp_number,
+              type: product.type || 'physical'
+            }
           } 
         });
       }
@@ -103,4 +118,3 @@ export const useCheckoutState = (product: Product | undefined) => {
     handlePaymentSubmit
   };
 };
-

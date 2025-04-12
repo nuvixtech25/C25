@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,15 +38,18 @@ const SuccessPage = () => {
       if (
         location.state.productType === 'digital' || 
         order.productType === 'digital' ||
-        order.isDigital === true
+        order.isDigital === true ||
+        product?.type === 'digital'
       ) {
         console.log('[SuccessPage] Digital product detected');
         setIsDigitalProduct(true);
       }
       
-      // Get WhatsApp support status
-      const productHasWhatsappSupport = product?.has_whatsapp_support === true || 
-                                        location.state.has_whatsapp_support === true;
+      // IMPROVED: Process WhatsApp data with more reliable checks
+      const productHasWhatsappSupport = Boolean(
+        product?.has_whatsapp_support === true || 
+        location.state.has_whatsapp_support === true
+      );
                                         
       console.log('[SuccessPage] WhatsApp support status:', productHasWhatsappSupport);
       setHasWhatsappSupport(productHasWhatsappSupport);
@@ -116,7 +120,7 @@ const SuccessPage = () => {
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
           
-          {/* Always render the WhatsApp button with current state */}
+          {/* Always attempt to render the WhatsApp button, let the component decide visibility */}
           <WhatsAppButton 
             hasWhatsappSupport={hasWhatsappSupport} 
             whatsappNumber={whatsappNumber}

@@ -21,10 +21,12 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     });
   }, [hasWhatsappSupport, whatsappNumber]);
 
-  // Skip validation and always render the button with appropriate fallbacks
-  // Only return null if BOTH conditions are explicitly false/empty
-  if (hasWhatsappSupport === false && !whatsappNumber) {
-    console.log('[WhatsAppButton] Not rendering - both conditions failed:', {
+  // Check if we should show the button
+  // Only hide the button if BOTH conditions are explicit false/empty
+  const shouldShowButton = hasWhatsappSupport || !!whatsappNumber;
+  
+  if (!shouldShowButton) {
+    console.log('[WhatsAppButton] Not rendering - button conditions failed:', {
       hasWhatsappSupport,
       whatsappNumber
     });
