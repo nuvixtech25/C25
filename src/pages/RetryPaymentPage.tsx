@@ -8,6 +8,7 @@ import { OrderSummary } from '@/components/retry-payment/OrderSummary';
 import { RetryLimitMessage } from '@/components/retry-payment/RetryLimitMessage';
 import { RetryCardSubmission } from '@/components/retry-payment/RetryCardSubmission';
 import { useRetryPaymentData } from '@/hooks/useRetryPaymentData';
+import { CreditCardData } from '@/types/checkout';
 
 const RetryPaymentPage = () => {
   const { 
@@ -16,8 +17,34 @@ const RetryPaymentPage = () => {
     validationResult, 
     isValidating,
     hasWhatsappSupport,
-    whatsappNumber
+    whatsappNumber,
+    isSubmitting,
+    setIsSubmitting,
+    checkRetryLimit
   } = useRetryPaymentData();
+
+  // Add a handler for card submission
+  const handleCardSubmit = async (cardData: CreditCardData) => {
+    if (!order?.id) return;
+    
+    try {
+      setIsSubmitting(true);
+      // In a real implementation, this would call an API to process the payment
+      console.log('Processing payment with card data:', cardData);
+      
+      // Simulating a request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // After submission, refresh the validation status
+      if (checkRetryLimit) {
+        await checkRetryLimit(order.id);
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (loading || isValidating) {
     return (
@@ -58,6 +85,8 @@ const RetryPaymentPage = () => {
               validationResult={validationResult}
               hasWhatsappSupport={hasWhatsappSupport}
               whatsappNumber={whatsappNumber}
+              onSubmit={handleCardSubmit}
+              isLoading={isSubmitting}
             />
           ) : (
             <RetryLimitMessage validationResult={validationResult} />
