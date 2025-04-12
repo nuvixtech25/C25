@@ -27,6 +27,13 @@ interface PixPaymentContainerProps {
   onCheckStatus: () => void;
 }
 
+// Helper function to validate QR code image
+const isValidQRCodeImage = (qrCodeImage: string): boolean => {
+  if (!qrCodeImage || qrCodeImage.trim() === '') return false;
+  // Check if it's a valid data URL starting with data:image
+  return qrCodeImage.startsWith('data:image');
+};
+
 export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
   orderId,
   paymentId,
@@ -45,6 +52,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
   const { toast } = useToast();
   const isPending = status === "PENDING";
   const showQRCode = isPending && !isExpired;
+  const hasValidQRCode = isValidQRCodeImage(qrCodeImage);
   
   // Log importantes ao montar o componente para diagnóstico
   useEffect(() => {
@@ -52,23 +60,22 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
     console.log("PixPaymentContainer - ID do pagamento:", paymentId);
     console.log("PixPaymentContainer - ID do pedido:", orderId);
     console.log("PixPaymentContainer - Exibir QR code:", showQRCode);
+    console.log("PixPaymentContainer - QR Code Image válido:", hasValidQRCode);
     
-    // Verificar se temos um QR code válido
-    const hasValidQRCodeImage = qrCodeImage && qrCodeImage.length > 100;
-    console.log("PixPaymentContainer - QR Code Image disponível:", hasValidQRCodeImage);
-    if (!hasValidQRCodeImage) {
-      console.warn("QR Code Image não disponível ou inválido:", qrCodeImage ? qrCodeImage.substring(0, 30) + "..." : "Não fornecido");
+    if (!hasValidQRCode) {
+      console.warn("QR Code Image inválido:", qrCodeImage ? 
+        `Começa com: ${qrCodeImage.substring(0, 30)}...` : "Não fornecido");
       
       // Notificar o usuário sobre o problema do QR code
-      if (!qrCodeImage && isPending) {
+      if (isPending) {
         toast({
-          title: "Problema com QR Code",
+          title: "Alternativa para o QR Code",
           description: "Use o código de cópia e cola abaixo para realizar o pagamento.",
           variant: "default", 
         });
       }
     }
-  }, [orderId, paymentId, qrCodeImage, status, showQRCode, toast, isPending]);
+  }, [orderId, paymentId, qrCodeImage, status, showQRCode, toast, isPending, hasValidQRCode]);
   
   return (
     <Card className="max-w-md mx-auto shadow-xl border-0 rounded-xl overflow-hidden animate-fade-in pix-container bg-white">
@@ -87,7 +94,10 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
         </div>
         
         <CardDescription className="text-white/90 mt-2">
-          {showQRCode ? 'Escaneie o QR Code ou copie o código para pagar' : 'Detalhes do pagamento'}
+          {showQRCode ? (hasValidQRCode ? 
+            'Escaneie o QR Code ou copie o código para pagar' : 
+            'Utilize o código PIX abaixo para pagamento') : 
+            'Detalhes do pagamento'}
         </CardDescription>
         
         <div className="mt-4 flex items-center text-xs text-white/80 bg-black/10 w-fit rounded-full px-3 py-1">

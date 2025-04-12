@@ -104,15 +104,26 @@ export const generatePixPayment = async (billingData: any) => {
     const responseData = await response.json();
     console.log('API response data:', responseData);
     
-    // Handle the case where QR code image is missing
-    if (!responseData.qrCodeImage) {
-      console.warn('QR code image is missing from the response');
-      // We'll continue without the QR code image, and the UI will handle this case
+    // Validate QR code image format
+    let validQrCodeImage = responseData.qrCodeImage || '';
+    
+    // Verify if the QR code is a valid data URL
+    if (validQrCodeImage && !validQrCodeImage.startsWith('data:image')) {
+      console.warn('QR code image is not in the expected format, attempting to fix');
+      
+      // Try to fix it by adding data:image/png;base64, prefix if missing
+      if (validQrCodeImage.match(/^[A-Za-z0-9+/=]+$/)) {
+        validQrCodeImage = `data:image/png;base64,${validQrCodeImage}`;
+        console.log('Fixed QR code image by adding proper prefix');
+      } else {
+        console.error('QR code image could not be fixed, it will not be displayed');
+        validQrCodeImage = '';
+      }
     }
     
     // Debug the QR code data for troubleshooting
-    console.log("QR Code Image:", responseData.qrCodeImage ? 
-      `Received (${responseData.qrCodeImage.substring(0, 30)}...)` : "Not received");
+    console.log("QR Code Image:", validQrCodeImage ? 
+      `Received (${validQrCodeImage.substring(0, 30)}...)` : "Not received");
     console.log("QR Code:", responseData.qrCode ? 
       `Received (${responseData.qrCode.substring(0, 30)}...)` : "Not received");
     console.log("Copy Paste Key:", responseData.copyPasteKey ? 
@@ -121,7 +132,7 @@ export const generatePixPayment = async (billingData: any) => {
     // Ensure all expected properties exist with default values if missing
     const safeResponseData = {
       ...responseData,
-      qrCodeImage: responseData.qrCodeImage || '',
+      qrCodeImage: validQrCodeImage,
       qrCode: responseData.qrCode || '',
       copyPasteKey: responseData.copyPasteKey || '',
       expirationDate: responseData.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(), // Default 30 minutes
