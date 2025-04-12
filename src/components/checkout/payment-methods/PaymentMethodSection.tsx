@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PaymentMethod } from '@/types/checkout';
 import { CardForm } from './card/CardForm';
 import { SimplifiedPixOption } from './SimplifiedPixOption';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { CreditCard, QrCode } from 'lucide-react';
+import { SectionTitle } from '../SectionTitle';
 
 interface PaymentMethodSectionProps {
   id: string;
@@ -30,53 +30,97 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
   buttonText,
   productPrice = 0
 }) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentError, setPaymentError] = useState(false);
+
+  const handleSubmit = async (data?: any) => {
+    setIsProcessing(true);
+    setPaymentError(false);
+    setPaymentSuccess(false);
+    
+    try {
+      // Simulate API call
+      setTimeout(() => {
+        if (Math.random() > 0.2) { // 80% success rate for demo
+          setPaymentSuccess(true);
+          console.log('Payment data:', {
+            method: paymentMethod,
+            ...data,
+            timestamp: new Date().toISOString()
+          });
+        } else {
+          setPaymentError(true);
+        }
+        setIsProcessing(false);
+      }, 2000);
+      
+      // Actually call the real submission handler
+      onSubmit(data);
+    } catch (error) {
+      setPaymentError(true);
+      setIsProcessing(false);
+    }
+  };
+
   return (
-    <section id={id} className="bg-[#242424] border border-gray-700 p-6 rounded-xl shadow-lg">
-      <h2 className="text-xl font-bold mb-6 text-white">
-        Forma de pagamento
-      </h2>
+    <section id={id} className="mb-8">
+      <SectionTitle number={3} title="Pagamento" />
       
-      <RadioGroup
+      <Tabs 
+        defaultValue="creditCard" 
         value={paymentMethod}
-        onValueChange={(value: PaymentMethod) => onPaymentMethodChange(value)}
-        className="space-y-3 mb-6"
+        onValueChange={(value) => onPaymentMethodChange(value as PaymentMethod)}
+        className="w-full"
       >
-        <div className={`flex items-center space-x-3 border p-4 rounded-lg cursor-pointer ${
-          paymentMethod === 'creditCard' ? 'border-green-500 bg-green-500/10' : 'border-gray-600 bg-[#333333]'
-        }`}>
-          <RadioGroupItem value="creditCard" id="creditCard" className="text-green-500" />
-          <Label htmlFor="creditCard" className="flex items-center cursor-pointer text-white">
-            <CreditCard className="h-5 w-5 mr-2 text-gray-300" />
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger 
+            value="creditCard"
+            className="flex items-center justify-center gap-2"
+          >
+            <CreditCard className="h-4 w-4" />
             Cartão de Crédito
-          </Label>
-        </div>
-        
-        <div className={`flex items-center space-x-3 border p-4 rounded-lg cursor-pointer ${
-          paymentMethod === 'pix' ? 'border-green-500 bg-green-500/10' : 'border-gray-600 bg-[#333333]'
-        }`}>
-          <RadioGroupItem value="pix" id="pix" className="text-green-500" />
-          <Label htmlFor="pix" className="flex items-center cursor-pointer text-white">
-            <QrCode className="h-5 w-5 mr-2 text-gray-300" />
+          </TabsTrigger>
+          <TabsTrigger 
+            value="pix"
+            className="flex items-center justify-center gap-2"
+          >
+            <QrCode className="h-4 w-4" />
             PIX
-          </Label>
-        </div>
-      </RadioGroup>
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="creditCard" className="mt-2">
+          <CardForm 
+            onSubmit={handleSubmit} 
+            isLoading={isSubmitting || isProcessing}
+            buttonColor="#28A745"
+            buttonText="Finalizar Pagamento"
+            productPrice={productPrice}
+          />
+        </TabsContent>
+        
+        <TabsContent value="pix" className="mt-2">
+          <SimplifiedPixOption
+            onSubmit={handleSubmit}
+            isLoading={isSubmitting || isProcessing}
+            buttonColor="#28A745"
+            buttonText="Pagar com PIX"
+            showQrCode={paymentSuccess}
+          />
+        </TabsContent>
+      </Tabs>
       
-      {paymentMethod === 'creditCard' ? (
-        <CardForm 
-          onSubmit={onSubmit} 
-          isLoading={isSubmitting}
-          buttonColor={buttonColor}
-          buttonText={buttonText}
-          productPrice={productPrice}
-        />
-      ) : (
-        <SimplifiedPixOption
-          onSubmit={() => onSubmit()} 
-          isLoading={isSubmitting}
-          buttonColor={buttonColor}
-          buttonText="Pagar com PIX"
-        />
+      {paymentSuccess && paymentMethod === 'creditCard' && (
+        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-800">
+          Pagamento realizado com sucesso! Verifique seu e-mail.
+        </div>
+      )}
+      
+      {paymentError && (
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-800">
+          Erro no pagamento. Verifique os dados.
+        </div>
       )}
     </section>
   );

@@ -8,6 +8,7 @@ import { formatCpfCnpj, formatPhone, validateCpfCnpj } from '@/utils/formatters'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { SectionTitle } from './SectionTitle';
 
 const personalInfoFormSchema = z.object({
   name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
@@ -58,10 +59,8 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
   };
 
   return (
-    <section id="customer-section" className="bg-[#242424] border border-gray-700 p-6 rounded-xl shadow-lg">
-      <h2 className="text-xl font-bold mb-6 text-white">
-        Seus dados
-      </h2>
+    <section id="customer-section" className="mb-8">
+      <SectionTitle number={1} title="Identificação" />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <FormField
@@ -69,15 +68,15 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-300">Nome completo</FormLabel>
+                <FormLabel className="text-black">Nome completo</FormLabel>
                 <FormControl>
                   <Input 
-                    placeholder="Seu nome completo" 
+                    placeholder="Digite seu nome" 
                     {...field} 
-                    className="bg-[#333333] border-gray-600 text-white"
+                    className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
                   />
                 </FormControl>
-                <FormMessage className="text-red-400" />
+                <FormMessage className="text-red-500 text-xs" />
               </FormItem>
             )}
           />
@@ -87,16 +86,16 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-300">E-mail</FormLabel>
+                <FormLabel className="text-black">E-mail</FormLabel>
                 <FormControl>
                   <Input 
                     type="email" 
-                    placeholder="seu@email.com" 
+                    placeholder="Digite seu e-mail" 
                     {...field} 
-                    className="bg-[#333333] border-gray-600 text-white"
+                    className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
                   />
                 </FormControl>
-                <FormMessage className="text-red-400" />
+                <FormMessage className="text-red-500 text-xs" />
               </FormItem>
             )}
           />
@@ -106,16 +105,16 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
             name="cpfCnpj"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-300">CPF/CNPJ</FormLabel>
+                <FormLabel className="text-black">CPF/CNPJ</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="123.456.789-01"
+                    placeholder="Digite seu CPF"
                     {...field}
                     onChange={handleCpfCnpjChange}
-                    className="bg-[#333333] border-gray-600 text-white"
+                    className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
                   />
                 </FormControl>
-                <FormMessage className="text-red-400" />
+                <FormMessage className="text-red-500 text-xs" />
               </FormItem>
             )}
           />
@@ -125,28 +124,28 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-300">Celular com DDD</FormLabel>
+                <FormLabel className="text-black">Celular</FormLabel>
                 <div className="flex">
-                  <div className="flex items-center px-3 bg-[#333333] border border-r-0 border-gray-600 rounded-l-md text-sm text-gray-300">
+                  <div className="flex items-center px-3 border border-r-0 border-[#E0E0E0] rounded-l-md text-sm text-black bg-white">
                     +55
                   </div>
                   <FormControl>
                     <Input 
-                      className="rounded-l-none bg-[#333333] border-gray-600 text-white"
-                      placeholder="(99) 99999-9999"
+                      className="rounded-l-none border border-[#E0E0E0] p-2 text-sm text-black bg-white"
+                      placeholder="(00) 00000-0000"
                       {...field}
                       onChange={handlePhoneChange}
                     />
                   </FormControl>
                 </div>
-                <FormMessage className="text-red-400" />
+                <FormMessage className="text-red-500 text-xs" />
               </FormItem>
             )}
           />
           
           <Button 
             type="submit" 
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 mt-4"
+            className="w-full bg-[#28A745] hover:bg-[#218838] text-white font-semibold py-3 mt-4 rounded"
           >
             Continuar para pagamento
           </Button>

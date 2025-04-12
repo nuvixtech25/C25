@@ -4,6 +4,7 @@ import { CheckoutHeader } from './CheckoutHeader';
 import { CheckoutFooter } from './CheckoutFooter';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { TimerBanner } from './TimerBanner';
 
 interface CheckoutContainerProps {
   children: React.ReactNode;
@@ -22,7 +23,7 @@ interface CheckoutCustomization {
 const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
   const { toast } = useToast();
   const [customization, setCustomization] = useState<CheckoutCustomization>({
-    button_color: '#3b82f6',
+    button_color: '#28A745',
     button_text_color: '#ffffff',
     button_text: 'Finalizar Pagamento',
     header_message: 'Oferta por tempo limitado!',
@@ -72,7 +73,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
 
   // Add CSS variables for checkout button styling
   const customStyles = {
-    '--button-color': customization.button_color || '#3b82f6',
+    '--button-color': customization.button_color || '#28A745',
     '--button-text-color': customization.button_text_color || '#ffffff',
     '--button-text': `'${customization.button_text || 'Finalizar Pagamento'}'`,
     '--heading-color': customization.heading_color || '#000000',
@@ -88,11 +89,17 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black touch-manipulation" style={customStyles}>
+    <div className="min-h-screen bg-white text-black" style={customStyles}>
+      <TimerBanner message="Oferta por tempo limitado!" initialMinutes={5} initialSeconds={2} />
       <CheckoutHeader />
-      <main className="max-w-xl mx-auto py-2 px-4">
-        {children}
-      </main>
+      <div className="w-full flex justify-center">
+        <div className="w-full md:w-1/2 max-w-xl mx-auto p-4 md:p-6 bg-white rounded-lg shadow-md">
+          <h1 className="text-2xl font-bold text-center text-black mb-6">Finalizar Compra</h1>
+          <main>
+            {children}
+          </main>
+        </div>
+      </div>
       <CheckoutFooter />
     </div>
   );

@@ -3,22 +3,19 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import CheckoutContainer from '@/components/checkout/CheckoutContainer';
-import { PersonalInfoSection } from '@/components/checkout/PersonalInfoSection';
-import { TestimonialSection } from '@/components/checkout/TestimonialSection';
-import { PaymentMethodSection } from '@/components/checkout/payment-methods/PaymentMethodSection';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
-import { CountdownBanner } from '@/components/CountdownBanner';
 import { BillingData, CheckoutCustomization, CustomerData, PaymentMethod, PaymentStatus, Product } from '@/types/checkout';
 import { supabase } from '@/integrations/supabase/client';
+import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 
 // Mock data - In a real app, this would come from Supabase
 const mockProduct: Product = {
   id: '1',
-  name: 'Curso de Marketing Digital',
-  description: 'Curso completo de marketing digital para iniciantes e profissionais',
-  price: 79.90,
+  name: 'Assinatura Anual - Cineflick Card',
+  description: 'Acesso a todos os benefícios da assinatura premium por 12 meses',
+  price: 29.90,
   isDigital: true,
-  imageUrl: 'https://via.placeholder.com/300x200'
+  imageUrl: 'https://via.placeholder.com/60x60?text=Card'
 };
 
 // Create a valid Date object for the countdown that's 24 hours from now
@@ -29,12 +26,12 @@ const createValidCountdownDate = (): Date => {
 };
 
 const mockCustomization: CheckoutCustomization = {
-  buttonColor: '#6E59A5', // Default Asaas primary color
-  buttonText: 'Finalizar Compra',
-  headingColor: '#6E59A5',
+  buttonColor: '#28A745', 
+  buttonText: 'Finalizar Pagamento',
+  headingColor: '#000000',
   bannerImageUrl: null,
   topMessage: 'Oferta por tempo limitado!',
-  countdownEndTime: createValidCountdownDate().toISOString(), // 24h from now, using a valid date
+  countdownEndTime: createValidCountdownDate().toISOString(),
   isDigitalProduct: true
 };
 
@@ -99,48 +96,16 @@ const Index = () => {
   
   return (
     <CheckoutContainer>
-      {customization.topMessage && customization.countdownEndTime && (
-        <CountdownBanner 
-          message={customization.topMessage}
-          endTime={new Date(customization.countdownEndTime)}
-        />
-      )}
-      
-      <div className="grid md:grid-cols-12 gap-6 mt-6">
-        <div className="md:col-span-7 space-y-8">
-          <PersonalInfoSection 
-            onSubmit={handleCustomerSubmit}
-            headingColor={customization.headingColor}
-          />
-          
-          <TestimonialSection
-            headingColor={customization.headingColor}
-          />
-          
-          {customerData && (
-            <PaymentMethodSection
-              id="payment-section"
-              paymentMethod={paymentMethod}
-              onPaymentMethodChange={setPaymentMethod}
-              onSubmit={handlePaymentSubmit}
-              isSubmitting={isSubmitting}
-              headingColor={customization.headingColor}
-              buttonColor={customization.buttonColor}
-              buttonText={customization.buttonText}
-              productPrice={product.price}
-            />
-          )}
-        </div>
-        
-        <div className="md:col-span-5">
-          <div className="sticky top-4">
-            <OrderSummary 
-              product={product}
-              isDigitalProduct={customization.isDigitalProduct}
-            />
-          </div>
-        </div>
-      </div>
+      <CheckoutContent 
+        product={product}
+        customerData={customerData}
+        paymentMethod={paymentMethod}
+        isSubmitting={isSubmitting}
+        customization={customization}
+        onCustomerSubmit={handleCustomerSubmit}
+        onPaymentMethodChange={setPaymentMethod}
+        onPaymentSubmit={handlePaymentSubmit}
+      />
     </CheckoutContainer>
   );
 };
