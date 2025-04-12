@@ -26,7 +26,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     button_text_color: '#ffffff',
     button_text: 'Finalizar Pagamento',
     header_message: 'Oferta por tempo limitado!',
-    banner_image_url: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png', // Use the new banner image
+    banner_image_url: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png',
     show_banner: true,
     heading_color: '#000000',
     banner_color: '#000000'
@@ -94,20 +94,23 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     <div className="flex flex-col bg-white text-black max-w-full overflow-x-hidden" style={customStyles}>
       <div className="w-full flex justify-center">
         <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
-          {/* Render the banner only here, inside the container that has the same width as the form */}
-          {customization.show_banner && (
-            <TopMessageBanner 
-              message={customization.header_message || 'Oferta por tempo limitado!'} 
-              initialMinutes={5} 
-              initialSeconds={0} 
-              bannerImageUrl={customization.banner_image_url}
-              containerClassName="w-full" // Use a largura completa do container pai
-            />
-          )}
-          
-          <main className="mt-0">
-            {children}
-          </main>
+          {/* Add more vertical spacing with py-12 (padding top and bottom) */}
+          <div className="py-12 md:py-20">
+            {/* Render the banner only here, inside the container that has the same width as the form */}
+            {customization.show_banner && (
+              <TopMessageBanner 
+                message={customization.header_message || 'Oferta por tempo limitado!'} 
+                initialMinutes={5} 
+                initialSeconds={0} 
+                bannerImageUrl={customization.banner_image_url}
+                containerClassName="w-full"
+              />
+            )}
+            
+            <main className="mt-0">
+              {children}
+            </main>
+          </div>
         </div>
       </div>
       <CheckoutFooter />
