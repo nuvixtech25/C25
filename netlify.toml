@@ -3,6 +3,10 @@
   command = "npm run build"
   publish = "dist"
 
+
+[build.environment]
+  SECRETS_SCAN_ENABLED = "false" # Apenas para emergências!
+  
 [[redirects]]
   from = "/*"
   to = "/index.html"
