@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -67,7 +66,31 @@ export default {
 					primary: '#6E59A5',
 					secondary: '#9b87f5',
 					light: '#E5DEFF'
-				}
+				},
+        'custom-purple': {
+          50: '#F5F3FF',
+          100: '#EDE9FE',
+          200: '#DDD6FE',
+          300: '#C4B5FD',
+          400: '#A78BFA',
+          500: '#8B5CF6',
+          600: '#7C3AED',
+          700: '#6D28D9',
+          800: '#5B21B6',
+          900: '#4C1D95'
+        },
+        'custom-teal': {
+          50: '#F0FDFA',
+          100: '#CCFBF1',
+          200: '#99F6E4',
+          300: '#5EEAD4',
+          400: '#2DD4BF',
+          500: '#14B8A6',
+          600: '#0D9488',
+          700: '#0F766E',
+          800: '#115E59',
+          900: '#134E4A'
+        }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -94,12 +117,22 @@ export default {
 				'pulse-slow': {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.5' }
-				}
+				},
+        'subtle-pulse': {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.02)' }
+        },
+        'background-shine': {
+          '0%': { backgroundPosition: '0 0' },
+          '100%': { backgroundPosition: '100% 0' }
+        }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'pulse-slow': 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+				'pulse-slow': 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'subtle-pulse': 'subtle-pulse 2s ease-in-out infinite',
+        'background-shine': 'background-shine 3s linear infinite'
 			}
 		}
 	},

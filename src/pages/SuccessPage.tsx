@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,30 +27,19 @@ const SuccessPage = () => {
   }, [location.state, trackPurchase]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white via-green-50/20 to-white">
-      {/* Decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-green-300/5 via-green-200/10 to-green-100/5 pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-r from-green-100/5 via-green-200/10 to-green-300/5 pointer-events-none"></div>
-      
-      {/* Floating circles for decoration */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-green-500/5 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-20 right-10 w-40 h-40 bg-green-400/5 rounded-full blur-3xl pointer-events-none"></div>
-      
-      <Card className="max-w-md w-full shadow-xl border-0 rounded-xl overflow-hidden animate-scale-in relative bg-white">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-green-400 via-green-500 to-green-600"></div>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-custom-purple-50 via-white to-custom-teal-50 animate-background-shine">
+      <Card className="max-w-md w-full shadow-2xl border-0 rounded-2xl overflow-hidden relative transform transition-all duration-300 hover:scale-[1.02] animate-subtle-pulse">
+        <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-custom-purple-500 via-custom-teal-500 to-custom-purple-500"></div>
         
-        <CardHeader className="text-center bg-gradient-to-r from-green-50 to-white pb-6 relative">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,255,127,0.05),transparent_50%)]"></div>
-          
+        <CardHeader className="text-center bg-gradient-to-r from-custom-purple-50 to-white pb-6 relative">
           <div className="relative">
-            <div className="absolute inset-0 -mt-2 bg-green-400 rounded-full blur-lg opacity-20"></div>
-            <div className="relative w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div className="relative w-20 h-20 bg-gradient-to-br from-custom-purple-400 to-custom-teal-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <CheckCircle className="h-10 w-10 text-white" />
             </div>
           </div>
           
-          <CardTitle className="text-2xl font-bold text-green-700 mt-2">Pagamento Confirmado!</CardTitle>
-          <CardDescription className="text-green-600 font-medium">
+          <CardTitle className="text-2xl font-bold text-custom-purple-700 mt-2">Pagamento Confirmado!</CardTitle>
+          <CardDescription className="text-custom-teal-600 font-medium">
             Seu pagamento foi processado com sucesso
           </CardDescription>
         </CardHeader>
@@ -102,7 +90,7 @@ const SuccessPage = () => {
             <>
               <Button 
                 asChild 
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 px-6 py-2 h-auto transition-all duration-300 shadow-md hover:shadow-lg text-white border-0"
+                className="w-full bg-gradient-to-r from-custom-purple-500 to-custom-teal-500 hover:from-custom-purple-600 hover:to-custom-teal-600 px-6 py-2 h-auto transition-all duration-300 shadow-md hover:shadow-lg text-white border-0"
               >
                 <Link to="/access-data" className="flex items-center justify-center">
                   Ver dados de acesso
@@ -112,7 +100,7 @@ const SuccessPage = () => {
               
               <Button 
                 asChild 
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 py-2 h-auto transition-all duration-300 shadow-md hover:shadow-lg text-white border-0"
+                className="w-full bg-gradient-to-r from-custom-teal-500 to-custom-purple-500 hover:from-custom-teal-600 hover:to-custom-purple-600 px-6 py-2 h-auto transition-all duration-300 shadow-md hover:shadow-lg text-white border-0"
               >
                 <Link to="/access-product" className="flex items-center justify-center">
                   Acessar produto
@@ -123,7 +111,7 @@ const SuccessPage = () => {
           ) : (
             <Button 
               asChild 
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 px-6 py-2 h-auto transition-all duration-300 shadow-md hover:shadow-lg text-white border-0"
+              className="w-full bg-gradient-to-r from-custom-teal-500 to-custom-purple-500 hover:from-custom-teal-600 hover:to-custom-purple-600 px-6 py-2 h-auto transition-all duration-300 shadow-md hover:shadow-lg text-white border-0"
             >
               <Link to="/" className="flex items-center justify-center">
                 Voltar ao início
