@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { CustomerData, PaymentMethod, Product } from '@/types/checkout';
-import { CheckoutFormContainer } from '@/components/checkout/CheckoutFormContainer';
-import { OrderSummary } from '@/components/checkout/OrderSummary';
-import { CheckoutCustomization } from '@/types/checkout';
+import { CheckoutCustomization, CustomerData, PaymentMethod, Product } from '@/types/checkout';
+import { PersonalInfoSection } from './PersonalInfoSection';
+import { TestimonialSection } from './TestimonialSection';
+import { PaymentMethodSection } from './PaymentMethodSection';
+import { OrderSummary } from './OrderSummary';
 
 interface CheckoutContentProps {
   product: Product;
@@ -11,9 +12,9 @@ interface CheckoutContentProps {
   paymentMethod: PaymentMethod;
   isSubmitting: boolean;
   customization: CheckoutCustomization;
-  onCustomerSubmit: (data: CustomerData) => void;
+  onCustomerSubmit: (customerData: CustomerData) => void;
   onPaymentMethodChange: (method: PaymentMethod) => void;
-  onPaymentSubmit: () => void;
+  onPaymentSubmit: (data?: any) => void;
 }
 
 export const CheckoutContent: React.FC<CheckoutContentProps> = ({
@@ -28,18 +29,29 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
 }) => {
   return (
     <div className="grid md:grid-cols-12 gap-6 mt-6">
-      <div className="md:col-span-7">
-        <CheckoutFormContainer
-          customerData={customerData}
-          paymentMethod={paymentMethod}
-          isSubmitting={isSubmitting}
+      <div className="md:col-span-7 space-y-8">
+        <PersonalInfoSection 
+          onSubmit={onCustomerSubmit}
           headingColor={customization.headingColor}
-          buttonColor={customization.buttonColor}
-          buttonText={customization.buttonText}
-          onCustomerSubmit={onCustomerSubmit}
-          onPaymentMethodChange={onPaymentMethodChange}
-          onPaymentSubmit={onPaymentSubmit}
         />
+        
+        <TestimonialSection
+          headingColor={customization.headingColor}
+        />
+        
+        {customerData && (
+          <PaymentMethodSection
+            id="payment-section"
+            paymentMethod={paymentMethod}
+            onPaymentMethodChange={onPaymentMethodChange}
+            onSubmit={onPaymentSubmit}
+            isSubmitting={isSubmitting}
+            headingColor={customization.headingColor}
+            buttonColor={customization.buttonColor}
+            buttonText={customization.buttonText}
+            productPrice={product.price}
+          />
+        )}
       </div>
       
       <div className="md:col-span-5">

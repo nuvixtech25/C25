@@ -16,13 +16,15 @@ interface CardFormProps {
   isLoading: boolean;
   buttonColor?: string;
   buttonText?: string;
+  productPrice?: number;
 }
 
 export const CardForm: React.FC<CardFormProps> = ({ 
   onSubmit, 
   isLoading, 
   buttonColor = '#6E59A5',
-  buttonText = 'Finalizar Pagamento'
+  buttonText = 'Finalizar Pagamento',
+  productPrice = 0
 }) => {
   const { toast } = useToast();
   
@@ -57,7 +59,7 @@ export const CardForm: React.FC<CardFormProps> = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 text-left">
-        <CardFormFields form={form} />
+        <CardFormFields form={form} productPrice={productPrice} />
         
         <Button 
           type="submit" 

@@ -15,6 +15,7 @@ interface PaymentMethodSectionProps {
   headingColor: string;
   buttonColor: string;
   buttonText: string;
+  productPrice?: number;
 }
 
 export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
@@ -25,7 +26,8 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
   isSubmitting,
   headingColor,
   buttonColor,
-  buttonText
+  buttonText,
+  productPrice = 0
 }) => {
   return (
     <section id={id} className="bg-white p-6 rounded-lg shadow-md">
@@ -73,6 +75,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
           isLoading={isSubmitting}
           buttonColor={buttonColor}
           buttonText={buttonText}
+          productPrice={productPrice}
         />
       ) : (
         <SimplifiedPixOption

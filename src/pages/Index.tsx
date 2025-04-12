@@ -127,6 +127,7 @@ const Index = () => {
               headingColor={customization.headingColor}
               buttonColor={customization.buttonColor}
               buttonText={customization.buttonText}
+              productPrice={product.price}
             />
           )}
         </div>

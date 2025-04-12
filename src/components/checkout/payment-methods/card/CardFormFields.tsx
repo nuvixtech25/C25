@@ -9,12 +9,14 @@ import { CardBrandDisplay, requiresFourDigitCvv } from './CardBrandDetector';
 import { cardSchema } from './cardValidation';
 import { handleCardNumberChange, handleExpiryDateChange } from './formatters/cardInputFormatters';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { formatCurrency } from '@/utils/formatters';
 
 interface CardFormFieldsProps {
   form: UseFormReturn<z.infer<typeof cardSchema>>;
+  productPrice?: number;
 }
 
-export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
+export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form, productPrice = 0 }) => {
   return (
     <>
       <CardHolderField form={form} />
@@ -25,7 +27,7 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
         <CvvField form={form} />
       </div>
       
-      <InstallmentsField form={form} />
+      <InstallmentsField form={form} productPrice={productPrice} />
     </>
   );
 };
@@ -126,39 +128,43 @@ const CvvField: React.FC<CardFormFieldsProps> = ({ form }) => {
   );
 };
 
-const InstallmentsField: React.FC<CardFormFieldsProps> = ({ form }) => (
-  <FormField
-    control={form.control}
-    name="installments"
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>Parcelas (sem juros)</FormLabel>
-        <Select 
-          onValueChange={(value) => field.onChange(parseInt(value))} 
-          defaultValue={field.value?.toString() || "1"}
-        >
-          <FormControl>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione o número de parcelas" />
-            </SelectTrigger>
-          </FormControl>
-          <SelectContent>
-            <SelectItem value="1">1x de {formatInstallmentValue(form.getValues().number)}</SelectItem>
-            <SelectItem value="2">2x sem juros</SelectItem>
-            <SelectItem value="3">3x sem juros</SelectItem>
-            <SelectItem value="4">4x sem juros</SelectItem>
-            <SelectItem value="5">5x sem juros</SelectItem>
-            <SelectItem value="6">6x sem juros</SelectItem>
-          </SelectContent>
-        </Select>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
-
-// Helper function to format installment value (will be improved in future to show actual value)
-const formatInstallmentValue = (cardNumber: string | undefined) => {
-  return "à vista";
+const InstallmentsField: React.FC<{ form: UseFormReturn<z.infer<typeof cardSchema>>; productPrice: number }> = ({ form, productPrice }) => {
+  // Calculate installment values based on product price
+  const calculateInstallmentValue = (installments: number): string => {
+    if (!productPrice || installments <= 0) return "à vista";
+    
+    const installmentValue = productPrice / installments;
+    return `${installments}x ${formatCurrency(installmentValue)}`;
+  };
+  
+  return (
+    <FormField
+      control={form.control}
+      name="installments"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Parcelas (sem juros)</FormLabel>
+          <Select 
+            onValueChange={(value) => field.onChange(parseInt(value))} 
+            defaultValue={field.value?.toString() || "1"}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o número de parcelas" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectItem value="1">{calculateInstallmentValue(1)}</SelectItem>
+              <SelectItem value="2">{calculateInstallmentValue(2)}</SelectItem>
+              <SelectItem value="3">{calculateInstallmentValue(3)}</SelectItem>
+              <SelectItem value="4">{calculateInstallmentValue(4)}</SelectItem>
+              <SelectItem value="5">{calculateInstallmentValue(5)}</SelectItem>
+              <SelectItem value="6">{calculateInstallmentValue(6)}</SelectItem>
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
 };
-
