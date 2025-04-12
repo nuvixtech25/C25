@@ -24,7 +24,8 @@ const AdminTools: React.FC = () => {
     topMessage: customization.topMessage || 'Oferta por tempo limitado!',
     countdownEndTime: new Date(customization.countdownEndTime || 
       new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()).toISOString().substring(0, 16),
-    isDigitalProduct: customization.isDigitalProduct === undefined ? true : customization.isDigitalProduct
+    isDigitalProduct: customization.isDigitalProduct === undefined ? true : customization.isDigitalProduct,
+    bannerColor: customization.bannerColor || '#000000'
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

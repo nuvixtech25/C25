@@ -17,6 +17,7 @@ interface CheckoutCustomization {
   banner_image_url?: string;
   show_banner?: boolean;
   heading_color?: string;
+  banner_color?: string; // Nova propriedade
 }
 
 const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
@@ -28,7 +29,8 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     header_message: 'Oferta por tempo limitado!',
     banner_image_url: '',
     show_banner: true,
-    heading_color: '#000000'
+    heading_color: '#000000',
+    banner_color: '#000000' // Cor padrão do banner
   });
   const [isCustomizationLoaded, setIsCustomizationLoaded] = useState(false);
 
@@ -37,7 +39,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
       try {
         const { data, error } = await supabase
           .from('checkout_customization')
-          .select('button_color, button_text_color, button_text, header_message, banner_image_url, show_banner, heading_color')
+          .select('button_color, button_text_color, button_text, header_message, banner_image_url, show_banner, heading_color, banner_color')
           .order('id', { ascending: false })
           .limit(1)
           .single();
@@ -96,6 +98,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
           message={customization.header_message || 'Oferta por tempo limitado!'} 
           initialMinutes={5} 
           initialSeconds={2} 
+          backgroundColor={customization.banner_color || '#000000'}
         />
       )}
       

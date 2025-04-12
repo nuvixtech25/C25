@@ -6,9 +6,14 @@ import { Clock } from 'lucide-react';
 interface CountdownBannerProps {
   message: string;
   endTime: Date;
+  backgroundColor?: string;
 }
 
-export const CountdownBanner: React.FC<CountdownBannerProps> = ({ message, endTime }) => {
+export const CountdownBanner: React.FC<CountdownBannerProps> = ({ 
+  message, 
+  endTime, 
+  backgroundColor = '#000000' 
+}) => {
   const [timeLeft, setTimeLeft] = useState({
     minutes: 0,
     seconds: 0
@@ -41,7 +46,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({ message, endTi
   }
 
   return (
-    <div className="bg-gradient-to-r from-black to-gray-800 text-white py-3 px-4 text-center mb-6">
+    <div className="text-white py-3 px-4 text-center mb-6" style={{ backgroundColor }}>
       <div className="max-w-5xl mx-auto flex items-center justify-center">
         <Clock className="h-5 w-5 mr-2 text-yellow-300" />
         <span className="text-base md:text-lg">

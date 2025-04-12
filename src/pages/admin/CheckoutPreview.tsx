@@ -37,6 +37,7 @@ const CheckoutPreview: React.FC = () => {
         <CountdownBanner 
           message={customization.topMessage}
           endTime={new Date(customization.countdownEndTime)}
+          backgroundColor={customization.bannerColor}
         />
       )}
       

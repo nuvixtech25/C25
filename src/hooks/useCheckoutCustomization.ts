@@ -10,7 +10,8 @@ const defaultCustomization: CheckoutCustomization = {
   bannerImageUrl: null,
   topMessage: 'Oferta por tempo limitado!',
   countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-  isDigitalProduct: true
+  isDigitalProduct: true,
+  bannerColor: '#000000' // Cor padrão do banner
 };
 
 export const useCheckoutCustomization = (product?: Product) => {

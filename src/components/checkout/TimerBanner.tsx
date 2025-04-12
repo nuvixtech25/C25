@@ -5,12 +5,14 @@ interface TimerBannerProps {
   message: string;
   initialMinutes: number;
   initialSeconds: number;
+  backgroundColor?: string; // Nova propriedade para cor personalizada
 }
 
 export const TimerBanner: React.FC<TimerBannerProps> = ({ 
   message, 
   initialMinutes, 
-  initialSeconds 
+  initialSeconds,
+  backgroundColor = '#000000' // Cor padrão preta
 }) => {
   const [minutes, setMinutes] = useState(initialMinutes);
   const [seconds, setSeconds] = useState(initialSeconds);
@@ -35,7 +37,7 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
   };
 
   return (
-    <div className="sticky top-0 w-full bg-black text-white py-2 z-10">
+    <div className="sticky top-0 w-full text-white py-2 z-10" style={{ backgroundColor }}>
       <div className="max-w-xl mx-auto text-center">
         <p className="text-sm font-bold flex items-center justify-center">
           <span className="mr-2">⏰</span>

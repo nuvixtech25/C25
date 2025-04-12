@@ -13,7 +13,8 @@ const defaultCustomization: CheckoutCustomization = {
   bannerImageUrl: null,
   topMessage: 'Oferta por tempo limitado!',
   countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-  isDigitalProduct: true
+  isDigitalProduct: true,
+  bannerColor: '#000000' // Cor padrão do banner
 };
 
 export const usePreviewCustomization = (searchParams: URLSearchParams) => {
@@ -29,6 +30,7 @@ export const usePreviewCustomization = (searchParams: URLSearchParams) => {
     const topMessage = searchParams.get('topMessage') || defaultCustomization.topMessage;
     const countdownEndTime = searchParams.get('countdownEndTime') || defaultCustomization.countdownEndTime;
     const isDigitalProduct = searchParams.get('isDigitalProduct') !== 'false';
+    const bannerColor = searchParams.get('bannerColor') || defaultCustomization.bannerColor;
 
     // Update demo product's digital status based on URL params
     const product = getDemoProduct();
@@ -42,7 +44,8 @@ export const usePreviewCustomization = (searchParams: URLSearchParams) => {
       bannerImageUrl,
       topMessage,
       countdownEndTime,
-      isDigitalProduct
+      isDigitalProduct,
+      bannerColor
     });
   }, [searchParams]);
 

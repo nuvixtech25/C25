@@ -8,4 +8,5 @@ export interface CheckoutCustomizationSettings {
   topMessage: string;
   countdownEndTime: string;
   isDigitalProduct: boolean;
+  bannerColor: string; // Nova propriedade para cor do banner
 }

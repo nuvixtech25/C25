@@ -4,7 +4,7 @@ import { Product } from '@/types/checkout';
 
 // Function to create the URL of checkout preview
 export const createPreviewUrl = (settings: CheckoutCustomizationSettings): string => {
-  let url = `/checkout/preview?buttonColor=${encodeURIComponent(settings.buttonColor)}&buttonText=${encodeURIComponent(settings.buttonText)}&headingColor=${encodeURIComponent(settings.headingColor)}&topMessage=${encodeURIComponent(settings.topMessage)}&countdownEndTime=${encodeURIComponent(settings.countdownEndTime)}&isDigitalProduct=${settings.isDigitalProduct}`;
+  let url = `/checkout/preview?buttonColor=${encodeURIComponent(settings.buttonColor)}&buttonText=${encodeURIComponent(settings.buttonText)}&headingColor=${encodeURIComponent(settings.headingColor)}&topMessage=${encodeURIComponent(settings.topMessage)}&countdownEndTime=${encodeURIComponent(settings.countdownEndTime)}&isDigitalProduct=${settings.isDigitalProduct}&bannerColor=${encodeURIComponent(settings.bannerColor)}`;
   
   if (settings.bannerImageUrl) {
     url += `&bannerImageUrl=${encodeURIComponent(settings.bannerImageUrl)}`;

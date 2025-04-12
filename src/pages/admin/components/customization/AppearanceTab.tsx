@@ -60,6 +60,23 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
       </div>
       
       <div className="space-y-2">
+        <Label htmlFor="bannerColor">Cor do Banner</Label>
+        <div className="flex gap-2">
+          <ColorPicker 
+            color={settings.bannerColor} 
+            onChange={(color) => handleColorChange('bannerColor', color)} 
+          />
+          <Input 
+            id="bannerColor"
+            name="bannerColor"
+            value={settings.bannerColor}
+            onChange={handleChange}
+          />
+        </div>
+        <p className="text-sm text-muted-foreground">Cor de fundo do banner de contagem regressiva no topo da página.</p>
+      </div>
+      
+      <div className="space-y-2">
         <Label htmlFor="bannerImageUrl">URL da Imagem de Banner</Label>
         <Input 
           id="bannerImageUrl"
