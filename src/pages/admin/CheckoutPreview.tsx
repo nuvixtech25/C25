@@ -34,7 +34,7 @@ const CheckoutPreview: React.FC = () => {
 
   return (
     <div className="flex flex-col bg-white max-w-full overflow-x-hidden">
-      <div className="flex justify-center w-full py-4 md:py-6">
+      <div className="flex justify-center w-full py-4">
         {customization.topMessage && customization.countdownEndTime ? (
           <CountdownBanner 
             message={customization.topMessage || 'Preço promocional encerrará em breve'}
@@ -51,7 +51,7 @@ const CheckoutPreview: React.FC = () => {
         )}
       </div>
       
-      <div className="w-full flex justify-center mt-4 md:mt-8">
+      <div className="w-full flex justify-center mt-4 md:mt-6">
         <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
           <CheckoutContent 
             product={demoProduct}

@@ -52,14 +52,14 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
 
   const timeDisplay = `${timeLeft.hours > 0 ? `${timeLeft.hours}h ` : ''}${timeLeft.minutes > 0 ? `${timeLeft.minutes}m ` : ''}${timeLeft.seconds}s`;
 
-  // Responsive container classes based on device
+  // Responsive container classes - adjusted to match form width
   const containerClass = isMobile 
-    ? "w-full px-4 py-6 max-w-full" 
-    : "w-full max-w-[800px] h-[600px]";
+    ? "w-full px-4 py-3 max-w-full" 
+    : "w-full max-w-4xl px-4 py-4";
   
   const contentClass = isMobile
-    ? "p-4"
-    : "p-8";
+    ? "p-3"
+    : "p-4";
 
   // Render banner with background image if URL is provided
   if (bannerImageUrl) {
