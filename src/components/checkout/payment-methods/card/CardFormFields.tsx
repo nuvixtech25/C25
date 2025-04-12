@@ -97,7 +97,7 @@ const ExpiryDateField: React.FC<CardFormFieldsProps> = ({ form }) => (
             onChange={(e) => handleExpiryDateChange(e, onChange, formatExpiryDate)}
             autoComplete="cc-exp"
             maxLength={5}
-            className="border border-gray-300 rounded py-3 px-4 w-full text-gray-700"
+            className="border border-gray-300 rounded py-3 px-4 w-full text-gray-700 text-center"
           />
         </FormControl>
         <FormMessage />
