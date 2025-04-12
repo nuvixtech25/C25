@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Paintbrush, LayoutTemplate, Clock, Text, Store } from 'lucide-react';
+import { Paintbrush, LayoutTemplate, Clock, Text, Store, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { ColorPicker } from './components/ColorPicker';
 
@@ -47,8 +47,35 @@ const AdminTools = () => {
   };
 
   const handlePreview = () => {
-    // Open a preview in a new tab
-    window.open('/checkout/preview', '_blank');
+    // Construir URL com os parâmetros atuais
+    const previewUrl = `/checkout/preview?buttonColor=${encodeURIComponent(settings.buttonColor)}&buttonText=${encodeURIComponent(settings.buttonText)}&headingColor=${encodeURIComponent(settings.headingColor)}&topMessage=${encodeURIComponent(settings.topMessage)}&countdownEndTime=${encodeURIComponent(settings.countdownEndTime)}&isDigitalProduct=${settings.isDigitalProduct}`;
+    
+    if (settings.bannerImageUrl) {
+      previewUrl += `&bannerImageUrl=${encodeURIComponent(settings.bannerImageUrl)}`;
+    }
+    
+    // Abre em uma nova janela com dimensões controladas (não uma nova aba completa)
+    window.open(previewUrl, 'checkout_preview', 'width=1024,height=768,location=yes,resizable=yes,scrollbars=yes,status=yes');
+  };
+
+  const handleSidePreview = () => {
+    // Construir URL com os parâmetros atuais
+    const previewUrl = `/checkout/preview?buttonColor=${encodeURIComponent(settings.buttonColor)}&buttonText=${encodeURIComponent(settings.buttonText)}&headingColor=${encodeURIComponent(settings.headingColor)}&topMessage=${encodeURIComponent(settings.topMessage)}&countdownEndTime=${encodeURIComponent(settings.countdownEndTime)}&isDigitalProduct=${settings.isDigitalProduct}`;
+    
+    if (settings.bannerImageUrl) {
+      previewUrl += `&bannerImageUrl=${encodeURIComponent(settings.bannerImageUrl)}`;
+    }
+    
+    // Abre em uma nova janela com dimensões que ocupam metade da tela
+    const width = window.innerWidth / 2;
+    const height = window.innerHeight;
+    const left = window.innerWidth / 2;
+    
+    window.open(
+      previewUrl, 
+      'checkout_preview', 
+      `width=${width},height=${height},left=${left},top=0,location=yes,resizable=yes,scrollbars=yes,status=yes`
+    );
   };
 
   return (
@@ -61,7 +88,14 @@ const AdminTools = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handlePreview}>Visualizar</Button>
+          <Button variant="outline" onClick={handlePreview}>
+            <ExternalLink className="h-4 w-4 mr-2" />
+            Visualizar
+          </Button>
+          <Button variant="secondary" onClick={handleSidePreview}>
+            <LayoutTemplate className="h-4 w-4 mr-2" />
+            Visualizar ao lado
+          </Button>
           <Button onClick={handleSave}>Salvar Alterações</Button>
         </div>
       </div>

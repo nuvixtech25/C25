@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -32,6 +31,7 @@ import PaymentPendingPage from './pages/PaymentPendingPage'; // Import the new P
 import { usePixelEvents } from './hooks/usePixelEvents';
 import AccessDataPage from './pages/AccessDataPage';
 import AccessProductPage from './pages/AccessProductPage';
+import CheckoutPreview from './pages/admin/CheckoutPreview'; // Import the new CheckoutPreview component
 
 // Importações temporárias para funcionar sem os arquivos reais
 const ProductPage = () => <div>Product Page</div>;
@@ -58,6 +58,7 @@ const AppWithPixels = () => {
       {/* Existing routes */}
       <Route path="/product/:slug" element={<ProductPage />} />
       <Route path="/checkout/:slug" element={<Checkout />} />
+      <Route path="/checkout/preview" element={<CheckoutPreview />} /> {/* Add checkout preview route */}
       <Route path="/confirmation" element={<ConfirmationPage />} />
       <Route path="/payment-pending" element={<PaymentPendingPage />} />
       <Route path="/retry-payment" element={<RetryPaymentPage />} />
