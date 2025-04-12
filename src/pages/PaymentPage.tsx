@@ -142,11 +142,11 @@ const PaymentPage = () => {
           
           <div className="mt-8 text-center">
             <div className="inline-flex items-center justify-center mb-3">
-              <Star className="h-4 w-4 text-yellow-400" filled />
-              <Star className="h-4 w-4 text-yellow-400" filled />
-              <Star className="h-4 w-4 text-yellow-400" filled />
-              <Star className="h-4 w-4 text-yellow-400" filled />
-              <Star className="h-4 w-4 text-yellow-400" filled />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
             </div>
             <p className="text-sm text-gray-600">
               "Compra super fácil e rápida! Recomendo!"

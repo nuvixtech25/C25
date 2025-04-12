@@ -65,11 +65,11 @@ const SuccessPage = () => {
           
           <div className="flex flex-col items-center mt-6">
             <div className="flex items-center mb-2">
-              <Star className="h-4 w-4 text-yellow-400" filled />
-              <Star className="h-4 w-4 text-yellow-400" filled />
-              <Star className="h-4 w-4 text-yellow-400" filled />
-              <Star className="h-4 w-4 text-yellow-400" filled />
-              <Star className="h-4 w-4 text-yellow-400" filled />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+              <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
             </div>
             <p className="text-sm text-gray-600 italic">"Processo de pagamento muito simples e rápido!"</p>
             <div className="flex items-center mt-3 text-xs text-gray-500">
