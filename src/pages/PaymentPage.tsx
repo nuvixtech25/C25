@@ -45,7 +45,21 @@ const PaymentPage = () => {
       
       try {
         console.log("Generating PIX payment for order:", orderData.id);
-        const data = await generatePixPayment(billingData);
+        
+        // Make sure we have all required fields properly formatted
+        const formattedBillingData = {
+          customer: {
+            name: billingData.customer.name,
+            cpfCnpj: billingData.customer.cpfCnpj?.replace(/[^0-9]/g, ''),
+            email: billingData.customer.email,
+            phone: billingData.customer.phone?.replace(/[^0-9]/g, '')
+          },
+          orderId: orderData.id || billingData.orderId,
+          value: billingData.value,
+          description: billingData.description || `Pedido ${orderData.id}`
+        };
+        
+        const data = await generatePixPayment(formattedBillingData);
         console.log("Payment data received:", data);
         
         // Update the order with the Asaas payment ID if it was generated
