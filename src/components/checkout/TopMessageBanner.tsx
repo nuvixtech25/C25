@@ -9,7 +9,7 @@ interface TopMessageBannerProps {
   initialSeconds?: number;
   backgroundColor?: string;
   bannerImageUrl?: string | null;
-  containerClassName?: string; // Nova propriedade para customizar a largura
+  containerClassName?: string;
 }
 
 export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
@@ -18,7 +18,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   initialSeconds = 0,
   backgroundColor = '#000000',
   bannerImageUrl = null,
-  containerClassName = 'w-full' // Padrão é largura total
+  containerClassName = 'w-full'
 }) => {
   const isMobile = useIsMobile();
   
@@ -35,16 +35,16 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
         />
       </div>
 
-      {/* Main banner below the timer - optimized dimensions */}
+      {/* Main banner below the timer - optimized dimensions with added margin */}
       {bannerImageUrl && (
         <div 
-          className="w-full flex items-center justify-center overflow-hidden"
+          className="w-full flex items-center justify-center overflow-hidden mb-4" // Added mb-4 for bottom margin
           style={{ 
             backgroundColor,
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            height: isMobile ? '80px' : '110px' // Altura reduzida para corresponder ao banner de referência
+            height: isMobile ? '80px' : '110px'
           }}
         />
       )}
