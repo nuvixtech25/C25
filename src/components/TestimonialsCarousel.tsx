@@ -89,18 +89,18 @@ export const TestimonialsCarousel: React.FC = () => {
         {testimonials.map((testimonial) => (
           <CarouselItem 
             key={testimonial.id} 
-            className="transition-transform duration-300 ease-out" // Suave transição sem pulos
+            className="transition-transform duration-300 ease-out"
           >
-            <Card className="border-gray-100 rounded-lg overflow-hidden">
+            <Card className="border-0 shadow-sm rounded-lg overflow-hidden bg-white">
               <CardContent className="p-4">
                 <div className="flex items-center mb-3">
                   <img 
                     src={testimonial.photo} 
                     alt={testimonial.name} 
-                    className="w-12 h-12 rounded-full object-cover mr-3"
+                    className="w-14 h-14 rounded-full object-cover mr-3 border-2 border-blue-100"
                   />
                   <div>
-                    <h4 className="font-medium text-gray-800">{testimonial.name}</h4>
+                    <h4 className="font-medium text-gray-800 text-lg">{testimonial.name}</h4>
                     <div className="flex">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <svg 
@@ -115,7 +115,7 @@ export const TestimonialsCarousel: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-700 mb-3">{testimonial.comment}</p>
+                <p className="text-gray-700 mb-3 text-base italic">"{testimonial.comment}"</p>
                 <div className="flex items-center text-gray-500 text-sm">
                   <Clock className="w-3 h-3 mr-1" />
                   <span>{testimonial.timeAgo}</span>
@@ -137,8 +137,8 @@ export const TestimonialsCarousel: React.FC = () => {
           />
         ))}
       </div>
-      <CarouselPrevious className="left-0 -translate-x-1/2" />
-      <CarouselNext className="right-0 translate-x-1/2" />
+      <CarouselPrevious className="left-0 -translate-x-1/2 bg-white/80 border border-gray-200 text-gray-700 hover:bg-white" />
+      <CarouselNext className="right-0 translate-x-1/2 bg-white/80 border border-gray-200 text-gray-700 hover:bg-white" />
     </Carousel>
   );
 };

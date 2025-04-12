@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ShoppingBag, Lock, X } from 'lucide-react';
+import { CheckCircle, ShoppingBag, Lock, X, Mail } from 'lucide-react';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 
@@ -43,9 +43,9 @@ const SuccessPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-      <Card className="max-w-md w-full shadow-md border border-gray-100 rounded-lg overflow-hidden">
-        <CardHeader className="text-center bg-white pb-6 relative">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-gray-50 to-gray-100">
+      <Card className="max-w-md w-full shadow-lg border border-gray-100 rounded-xl overflow-hidden">
+        <CardHeader className="text-center bg-white pb-8 relative">
           <button 
             onClick={handleCloseWindow}
             className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
@@ -54,56 +54,56 @@ const SuccessPage = () => {
             <X className="h-5 w-5" />
           </button>
           
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+          <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-green-100">
+            <CheckCircle className="h-10 w-10 text-green-500" />
           </div>
           
-          <CardTitle className="text-xl font-bold text-gray-800">Pagamento Confirmado</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-2xl font-bold text-gray-800 mb-2">Pagamento Confirmado!</CardTitle>
+          <CardDescription className="text-gray-600 text-lg">
             Seu pagamento foi processado com sucesso
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="text-center space-y-4 px-6 py-6">
-          <p className="text-gray-700">Obrigado pela sua compra. Seu pedido foi confirmado e está sendo processado.</p>
+        <CardContent className="text-center space-y-5 px-6 py-6 bg-white">
+          <p className="text-gray-700 text-lg">Obrigado pela sua compra. Seu pedido foi confirmado e está sendo processado.</p>
           
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 my-4 flex items-start">
-            <div className="bg-gray-100 p-2 rounded-full mr-3 mt-1">
-              <ShoppingBag className="h-4 w-4 text-gray-600" />
+          <div className="p-5 bg-blue-50 rounded-lg border border-blue-100 my-4 flex items-start">
+            <div className="bg-blue-100 p-3 rounded-full mr-4 mt-1">
+              <Mail className="h-5 w-5 text-blue-600" />
             </div>
             <div className="text-left">
-              <p className="text-gray-800 font-medium">Um e-mail com os detalhes da compra foi enviado para você.</p>
-              <p className="text-gray-600 text-sm mt-1">Verifique sua caixa de entrada e a pasta de spam.</p>
+              <p className="text-gray-800 font-medium text-lg">Um e-mail com os detalhes da compra foi enviado para você.</p>
+              <p className="text-gray-600 mt-1">Verifique sua caixa de entrada e a pasta de spam.</p>
             </div>
           </div>
           
           {isDigitalProduct && (
-            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 my-4 flex items-start">
-              <div className="bg-gray-100 p-2 rounded-full mr-3 mt-1">
-                <Lock className="h-4 w-4 text-gray-600" />
+            <div className="p-5 bg-purple-50 rounded-lg border border-purple-100 my-4 flex items-start">
+              <div className="bg-purple-100 p-3 rounded-full mr-4 mt-1">
+                <Lock className="h-5 w-5 text-purple-600" />
               </div>
               <div className="text-left">
-                <p className="text-gray-800 font-medium">Seus dados de acesso estão prontos!</p>
-                <p className="text-gray-600 text-sm mt-1">Clique no botão abaixo para ver seus dados de acesso ao produto digital.</p>
+                <p className="text-gray-800 font-medium text-lg">Seus dados de acesso estão prontos!</p>
+                <p className="text-gray-600 mt-1">Clique no botão abaixo para ver seus dados de acesso ao produto digital.</p>
               </div>
             </div>
           )}
           
-          <div className="mt-6">
-            <h3 className="font-medium text-gray-800 mb-3">O que nossos clientes estão dizendo:</h3>
+          <div className="mt-8 bg-gray-50 p-5 rounded-xl border border-gray-100">
+            <h3 className="font-medium text-gray-800 mb-4 text-lg">O que nossos clientes estão dizendo:</h3>
             <TestimonialsCarousel />
           </div>
         </CardContent>
         
-        <CardFooter className="flex flex-col pb-6 gap-3">
+        <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           {isDigitalProduct ? (
             <Button 
               asChild 
-              className="w-full bg-green-600 hover:bg-green-700 transition-colors px-6 py-2 h-auto text-white border-0"
+              className="w-full bg-green-600 hover:bg-green-700 transition-colors px-6 py-3 h-auto text-white border-0 text-lg rounded-lg shadow-md"
             >
               <Link to="/access-data" className="flex items-center justify-center">
                 Ver dados de acesso
-                <Lock className="ml-2 h-4 w-4" />
+                <Lock className="ml-2 h-5 w-5" />
               </Link>
             </Button>
           ) : null}
@@ -111,10 +111,10 @@ const SuccessPage = () => {
           <Button 
             onClick={handleCloseWindow}
             variant="outline"
-            className="w-full border-gray-200 hover:bg-gray-50 px-6 py-2 h-auto transition-colors"
+            className="w-full border-gray-200 hover:bg-gray-50 px-6 py-3 h-auto transition-colors text-gray-700"
           >
             Fechar página
-            <X className="ml-2 h-4 w-4" />
+            <X className="ml-2 h-5 w-5" />
           </Button>
         </CardFooter>
       </Card>
