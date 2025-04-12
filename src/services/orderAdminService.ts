@@ -1,3 +1,4 @@
+
 import { PaymentStatus } from "@/types/checkout";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -8,7 +9,7 @@ interface GetOrdersParams {
   endDate?: Date;
 }
 
-export const getOrders = async ({
+const getOrders = async ({
   paymentMethod,
   status,
   startDate,
@@ -39,7 +40,7 @@ export const getOrders = async ({
   return data || [];
 };
 
-export const updateOrderStatus = async (
+const updateOrderStatus = async (
   orderId: string,
   status: PaymentStatus
 ) => {
@@ -57,7 +58,7 @@ export const updateOrderStatus = async (
 };
 
 // This is an enhanced version of the deleteOrder method to fix deletion issues
-export const deleteOrder = async (orderId: string) => {
+const deleteOrder = async (orderId: string) => {
   console.log(`Deleting order with ID: ${orderId}`);
   
   try {
@@ -121,7 +122,7 @@ export const deleteOrder = async (orderId: string) => {
 };
 
 // Also enhancing the deleteOrdersByPaymentMethod function
-export const deleteOrdersByPaymentMethod = async (paymentMethod: 'pix' | 'creditCard') => {
+const deleteOrdersByPaymentMethod = async (paymentMethod: 'pix' | 'creditCard') => {
   console.log(`Deleting all orders with payment method: ${paymentMethod}`);
   
   try {
@@ -182,4 +183,12 @@ export const deleteOrdersByPaymentMethod = async (paymentMethod: 'pix' | 'credit
     console.error('Error in deleteOrdersByPaymentMethod function:', error);
     throw error;
   }
+};
+
+// Export all functions as a service object
+export const orderAdminService = {
+  getOrders,
+  updateOrderStatus,
+  deleteOrder,
+  deleteOrdersByPaymentMethod
 };
