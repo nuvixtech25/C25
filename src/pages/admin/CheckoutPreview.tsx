@@ -32,11 +32,11 @@ const CheckoutPreview: React.FC = () => {
     return <PreviewLoading />;
   }
 
-  // Update customization to use new image
+  // Update customization to use new image and message
   const updatedCustomization = {
     ...customization,
-    topMessage: 'Fique de olho, a oferta termina em:',
-    bannerImageUrl: '/lovable-uploads/9bc6da91-7e27-4e9a-832c-ea9b7ff6b3d2.png'
+    topMessage: 'Oferta por tempo limitado!',
+    bannerImageUrl: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png'
   };
 
   return (
@@ -46,16 +46,14 @@ const CheckoutPreview: React.FC = () => {
           {/* Banners rendered inside the container that has the same width as the form */}
           {updatedCustomization.topMessage && updatedCustomization.countdownEndTime ? (
             <CountdownBanner 
-              message={updatedCustomization.topMessage || 'Fique de olho, a oferta termina em:'}
+              message={updatedCustomization.topMessage}
               endTime={new Date(updatedCustomization.countdownEndTime)}
-              backgroundColor={updatedCustomization.bannerColor}
               bannerImageUrl={updatedCustomization.bannerImageUrl}
               containerClassName="w-full"
             />
           ) : updatedCustomization.topMessage && (
             <TopMessageBanner 
-              message={updatedCustomization.topMessage || 'Fique de olho, a oferta termina em:'}
-              backgroundColor={updatedCustomization.bannerColor}
+              message={updatedCustomization.topMessage}
               bannerImageUrl={updatedCustomization.bannerImageUrl}
               initialMinutes={5}
               initialSeconds={0}

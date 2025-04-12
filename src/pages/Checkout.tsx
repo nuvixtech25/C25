@@ -119,8 +119,8 @@ const Checkout: React.FC = () => {
     headingColor: '#000000',
     buttonColor: '#28A745',
     buttonText: 'Finalizar Compra',
-    bannerImageUrl: '/lovable-uploads/9bc6da91-7e27-4e9a-832c-ea9b7ff6b3d2.png',
-    topMessage: 'Fique de olho, a oferta termina em:',
+    bannerImageUrl: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png',
+    topMessage: 'Oferta por tempo limitado!',
     countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     isDigitalProduct: product.type === 'digital',
     bannerColor: '#000000'

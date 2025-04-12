@@ -7,7 +7,6 @@ import { Eye } from 'lucide-react';
 interface CountdownBannerProps {
   message: string;
   endTime: Date;
-  backgroundColor?: string;
   bannerImageUrl?: string | null;
   containerClassName?: string;
 }
@@ -15,7 +14,6 @@ interface CountdownBannerProps {
 export const CountdownBanner: React.FC<CountdownBannerProps> = ({ 
   message, 
   endTime, 
-  backgroundColor = 'transparent',
   bannerImageUrl = null,
   containerClassName = 'w-full'
 }) => {
@@ -59,24 +57,24 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
   return (
     <div className={`flex flex-col items-center ${containerClassName}`}>
       {/* Black bar with eye icon, message, and countdown */}
-      <div className="w-full bg-black py-3 px-4 flex justify-center items-center space-x-4">
+      <div className="w-full bg-black py-2 px-4 flex justify-center items-center">
         <Eye className="text-white h-5 w-5 mr-2" />
-        <div className="text-white text-sm md:text-base font-medium">
+        <div className="text-white text-sm md:text-base mr-2">
           {message}
         </div>
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center">
           <div className="flex flex-col items-center">
-            <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">{formatNumber(timeLeft.hours)}</span>
+            <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(timeLeft.hours)}</span>
             <span className="text-white text-[8px] md:text-xs uppercase">HORAS</span>
           </div>
-          <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">:</span>
+          <span className="text-white text-xl md:text-2xl font-bold mx-1">:</span>
           <div className="flex flex-col items-center">
-            <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">{formatNumber(timeLeft.minutes)}</span>
+            <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(timeLeft.minutes)}</span>
             <span className="text-white text-[8px] md:text-xs uppercase">MIN</span>
           </div>
-          <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">:</span>
+          <span className="text-white text-xl md:text-2xl font-bold mx-1">:</span>
           <div className="flex flex-col items-center">
-            <span className="text-white text-lg md:text-2xl lg:text-3xl font-bold">{formatNumber(timeLeft.seconds)}</span>
+            <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(timeLeft.seconds)}</span>
             <span className="text-white text-[8px] md:text-xs uppercase">SEG</span>
           </div>
         </div>

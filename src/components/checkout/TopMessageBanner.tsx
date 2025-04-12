@@ -2,13 +2,11 @@
 import React from 'react';
 import { TimerBanner } from './TimerBanner';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Eye } from 'lucide-react';
 
 interface TopMessageBannerProps {
   message: string;
   initialMinutes?: number;
   initialSeconds?: number;
-  backgroundColor?: string;
   bannerImageUrl?: string | null;
   containerClassName?: string;
 }
@@ -17,7 +15,6 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   message,
   initialMinutes = 5,
   initialSeconds = 0,
-  backgroundColor = 'transparent',
   bannerImageUrl = null,
   containerClassName = 'w-full'
 }) => {
@@ -26,16 +23,11 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   return (
     <div className={`flex flex-col items-center ${containerClassName}`}>
       {/* Black bar with eye icon, message, and timer */}
-      <div className="w-full bg-black py-3 px-4 flex justify-center items-center space-x-4">
-        <Eye className="text-white h-5 w-5 mr-2" />
-        <div className="text-white text-sm md:text-base font-medium">
-          {message}
-        </div>
-        <TimerBanner 
-          initialMinutes={initialMinutes} 
-          initialSeconds={initialSeconds} 
-        />
-      </div>
+      <TimerBanner 
+        initialMinutes={initialMinutes} 
+        initialSeconds={initialSeconds}
+        message={message}
+      />
 
       {/* Banner image below the timer */}
       {bannerImageUrl && (

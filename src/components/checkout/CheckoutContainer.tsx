@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -27,7 +26,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     button_text_color: '#ffffff',
     button_text: 'Finalizar Pagamento',
     header_message: 'Oferta por tempo limitado!',
-    banner_image_url: '/lovable-uploads/16f24441-4ee0-4dc8-b774-d2f6ea7024bc.png', // Use the uploaded banner image
+    banner_image_url: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png', // Use the new banner image
     show_banner: true,
     heading_color: '#000000',
     banner_color: '#000000'
@@ -98,10 +97,9 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
           {/* Render the banner only here, inside the container that has the same width as the form */}
           {customization.show_banner && (
             <TopMessageBanner 
-              message={customization.header_message || 'Preço promocional encerrará em breve'} 
+              message={customization.header_message || 'Oferta por tempo limitado!'} 
               initialMinutes={5} 
-              initialSeconds={2} 
-              backgroundColor={customization.banner_color || '#000000'}
+              initialSeconds={0} 
               bannerImageUrl={customization.banner_image_url}
               containerClassName="w-full" // Use a largura completa do container pai
             />
