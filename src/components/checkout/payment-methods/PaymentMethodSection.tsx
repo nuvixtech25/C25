@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { PaymentMethod } from '@/types/checkout';
-import { PaymentOptions } from './PaymentOptions';
+import PaymentOptions from './PaymentOptions';
 import { CardForm } from './card';
 import { SimplifiedPixOption } from './SimplifiedPixOption';
 import { Button } from '@/components/ui/button';
@@ -45,13 +45,19 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
         <Separator className="my-4" />
         
         {paymentMethod === 'creditCard' ? (
-          <CardForm onSubmit={onSubmit} isSubmitting={isSubmitting} productPrice={productPrice} />
+          <CardForm 
+            onSubmit={onSubmit} 
+            isLoading={isSubmitting} 
+            productPrice={productPrice}
+            buttonText={buttonText || 'Finalizar Pagamento'}
+            buttonColor={buttonColor || '#28A745'}
+          />
         ) : (
           <SimplifiedPixOption
             onSubmit={onSubmit}
-            isSubmitting={isSubmitting}
+            isLoading={isSubmitting}
             buttonText={buttonText || 'Pagar com PIX'}
-            buttonColor={buttonColor}
+            buttonColor={buttonColor || '#28A745'}
           />
         )}
       </div>

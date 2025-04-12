@@ -6,7 +6,7 @@ import { QrCode } from 'lucide-react';
 interface SimplifiedPixOptionProps {
   onSubmit: () => void;
   isLoading: boolean;
-  buttonColor: string;
+  buttonColor?: string;
   buttonText: string;
   showQrCode?: boolean;
 }
@@ -14,7 +14,7 @@ interface SimplifiedPixOptionProps {
 export const SimplifiedPixOption: React.FC<SimplifiedPixOptionProps> = ({ 
   onSubmit,
   isLoading,
-  buttonColor,
+  buttonColor = '#28A745',
   buttonText,
   showQrCode = false
 }) => {
