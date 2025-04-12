@@ -40,16 +40,32 @@ export const usePaymentPolling = (
     setError(null);
     
     try {
-      const newStatus = await checkPaymentStatus(paymentId);
-      console.log(`Received payment status: ${newStatus}`);
+      const response = await checkPaymentStatus(paymentId);
+      console.log(`Received payment status:`, response);
+      
+      // Extract status based on response type
+      let normalizedStatus: PaymentStatus;
+      
+      if (typeof response === 'object' && response !== null && 'status' in response) {
+        // Handle case when response is an object with status property
+        normalizedStatus = response.status as PaymentStatus;
+        
+        // If there's an error, set it
+        if ('error' in response && response.error) {
+          setError(response.error);
+        }
+      } else {
+        // Handle case when response is directly the status string
+        normalizedStatus = response as PaymentStatus;
+      }
       
       // Only update if status changed
-      if (newStatus !== status) {
-        console.log(`Payment status changed from ${status} to ${newStatus}`);
-        setStatus(newStatus);
+      if (normalizedStatus !== status) {
+        console.log(`Payment status changed from ${status} to ${normalizedStatus}`);
+        setStatus(normalizedStatus);
         
         // If payment is completed (confirmed/cancelled/refunded), stop polling
-        if (['CONFIRMED', 'CANCELLED', 'REFUNDED', 'OVERDUE'].includes(newStatus)) {
+        if (['CONFIRMED', 'CANCELLED', 'REFUNDED', 'OVERDUE'].includes(normalizedStatus)) {
           console.log('Payment completed, stopping polling');
           stopPolling();
         }
