@@ -21,16 +21,20 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     });
   }, [hasWhatsappSupport, whatsappNumber]);
 
-  if (!hasWhatsappSupport || !whatsappNumber) {
-    console.log('[WhatsAppButton] Not rendering - support disabled or missing number', {
+  // Add more specific validation checks
+  const shouldRender = Boolean(hasWhatsappSupport) && Boolean(whatsappNumber);
+  
+  if (!shouldRender) {
+    console.log('[WhatsAppButton] Not rendering - validation failed', {
       hasWhatsappSupport,
-      whatsappNumber
+      whatsappNumber,
+      shouldRender
     });
     return null;
   }
 
   const formatWhatsAppUrl = () => {
-    const cleanNumber = whatsappNumber.replace(/\D/g, '');
+    const cleanNumber = whatsappNumber?.replace(/\D/g, '') || '';
     const url = `https://wa.me/${cleanNumber}?text=Olá! Acabei de adquirir um produto e gostaria de obter mais informações.`;
     console.log('[WhatsAppButton] Generated WhatsApp URL:', url);
     return url;

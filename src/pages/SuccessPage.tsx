@@ -41,21 +41,22 @@ const SuccessPage = () => {
         setIsDigitalProduct(true);
       }
       
-      // Check WhatsApp support from multiple possible sources
-      const locationStateWhatsApp = location.state.has_whatsapp_support;
-      const orderWhatsApp = order.has_whatsapp_support;
-      const productWhatsApp = product?.has_whatsapp_support;
+      // Enhanced WhatsApp support detection logic
+      const locationStateWhatsApp = location.state.has_whatsapp_support === true;
+      const orderWhatsApp = order.has_whatsapp_support === true;
+      const productWhatsApp = product?.has_whatsapp_support === true;
       
       console.log('[SuccessPage] WhatsApp support details:', {
         locationStateWhatsApp,
         orderWhatsApp,
         productWhatsApp,
-        locationWhatsAppType: typeof locationStateWhatsApp,
-        orderWhatsAppType: typeof orderWhatsApp,
-        productWhatsAppType: typeof productWhatsApp
+        locationWhatsAppType: typeof location.state.has_whatsapp_support,
+        orderWhatsAppType: typeof order.has_whatsapp_support,
+        productWhatsAppType: typeof product?.has_whatsapp_support
       });
 
-      const checkWhatsAppSupport = locationStateWhatsApp || orderWhatsApp || productWhatsApp;
+      // Use Boolean to handle falsy values properly
+      const checkWhatsAppSupport = Boolean(locationStateWhatsApp || orderWhatsApp || productWhatsApp);
 
       if (checkWhatsAppSupport) {
         console.log('[SuccessPage] WhatsApp support is enabled');
@@ -87,6 +88,16 @@ const SuccessPage = () => {
     }
   }, [location.state, trackPurchase]);
 
+  // Add debug rendering information
+  useEffect(() => {
+    console.log('[SuccessPage] Current component state:', {
+      isDigitalProduct,
+      hasWhatsappSupport,
+      whatsappNumber,
+      whatsappNumberLength: whatsappNumber?.length
+    });
+  }, [isDigitalProduct, hasWhatsappSupport, whatsappNumber]);
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-gray-50 to-gray-100">
       <Card className="max-w-md w-full shadow-lg border border-gray-100 rounded-xl overflow-hidden">
@@ -116,6 +127,12 @@ const SuccessPage = () => {
         
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
+          
+          {/* Force render WhatsApp button when debug values are available */}
+          {console.log('[SuccessPage] Rendering WhatsApp button with props:', { 
+            hasWhatsappSupport, 
+            whatsappNumber 
+          })}
           
           <WhatsAppButton 
             hasWhatsappSupport={hasWhatsappSupport} 
