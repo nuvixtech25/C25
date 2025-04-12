@@ -356,6 +356,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          has_whatsapp_support: boolean | null
           id: string
           image_url: string | null
           name: string
@@ -364,10 +365,12 @@ export type Database = {
           status: boolean
           type: string
           updated_at: string
+          whatsapp_number: string | null
         }
         Insert: {
           created_at?: string
           description?: string | null
+          has_whatsapp_support?: boolean | null
           id?: string
           image_url?: string | null
           name: string
@@ -376,10 +379,12 @@ export type Database = {
           status?: boolean
           type: string
           updated_at?: string
+          whatsapp_number?: string | null
         }
         Update: {
           created_at?: string
           description?: string | null
+          has_whatsapp_support?: boolean | null
           id?: string
           image_url?: string | null
           name?: string
@@ -388,6 +393,7 @@ export type Database = {
           status?: boolean
           type?: string
           updated_at?: string
+          whatsapp_number?: string | null
         }
         Relationships: []
       }

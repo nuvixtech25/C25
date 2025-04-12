@@ -17,14 +17,12 @@ const SuccessPage = () => {
   const [whatsappNumber, setWhatsappNumber] = useState('');
   
   useEffect(() => {
-    // Debugging log to show all state details
     console.log('Location state details:', JSON.stringify(location.state, null, 2));
     
-    // Track purchase event if we have order data from location state
     if (location.state?.order) {
-      const { order } = location.state;
-      console.log('Order details:', JSON.stringify(order, null, 2));
+      const { order, product } = location.state;
       
+      // Track purchase event
       trackPurchase(
         order.id || 'unknown-order',
         order.productPrice || 0
@@ -40,21 +38,29 @@ const SuccessPage = () => {
         setIsDigitalProduct(true);
       }
       
-      // Check if the product has WhatsApp support
-      if (
-        location.state.has_whatsapp_support === true ||
-        order.has_whatsapp_support === true ||
-        location.state.product?.has_whatsapp_support === true
-      ) {
+      // Check WhatsApp support from multiple possible sources
+      const checkWhatsAppSupport = 
+        location.state.has_whatsapp_support || 
+        order.has_whatsapp_support || 
+        product?.has_whatsapp_support;
+
+      console.log('WhatsApp support check:', {
+        locationState: location.state.has_whatsapp_support,
+        orderState: order.has_whatsapp_support,
+        productState: product?.has_whatsapp_support
+      });
+
+      if (checkWhatsAppSupport) {
         console.log('Setting WhatsApp support to true');
         setHasWhatsappSupport(true);
         
         const wNumber = 
           location.state.whatsapp_number || 
           order.whatsapp_number || 
-          location.state.product?.whatsapp_number;
+          product?.whatsapp_number;
           
         if (wNumber) {
+          console.log('WhatsApp number found:', wNumber);
           setWhatsappNumber(wNumber);
         }
       }

@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/checkout';
 
 /**
- * Fetches a product by its slug
+ * Fetches a product by its slug with enhanced WhatsApp support details
  */
 export const fetchProductBySlug = async (slug: string): Promise<Product | null> => {
   try {
@@ -22,7 +22,7 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
       return null;
     }
 
-    // Map the database product to our Product type
+    // Map the database product to our Product type with WhatsApp support
     return {
       id: data.id,
       name: data.name,
