@@ -6,6 +6,7 @@ import { usePreviewCustomization } from '@/hooks/usePreviewCustomization';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { PreviewLoading } from '@/components/preview/PreviewLoading';
 import { CountdownBanner } from '@/components/CountdownBanner';
+import { TopMessageBanner } from '@/components/checkout/TopMessageBanner';
 import CheckoutContainer from '@/components/checkout/CheckoutContainer';
 
 const CheckoutPreview: React.FC = () => {
@@ -23,8 +24,6 @@ const CheckoutPreview: React.FC = () => {
   } = useCheckoutState(demoProduct);
 
   useEffect(() => {
-    // Log customization to verify banner color
-    console.log('CheckoutPreview customization:', customization);
     // Set loading to false once customization is loaded
     setLoading(false);
   }, [customization]);
@@ -35,10 +34,16 @@ const CheckoutPreview: React.FC = () => {
 
   return (
     <div className="flex flex-col bg-white">
-      {customization.topMessage && customization.countdownEndTime && (
+      {customization.topMessage && customization.countdownEndTime ? (
         <CountdownBanner 
           message={customization.topMessage || 'Preço promocional encerrará em breve'}
           endTime={new Date(customization.countdownEndTime)}
+          backgroundColor={customization.bannerColor}
+          bannerImageUrl={customization.bannerImageUrl}
+        />
+      ) : customization.topMessage && (
+        <TopMessageBanner 
+          message={customization.topMessage || 'Oferta por tempo limitado!'}
           backgroundColor={customization.bannerColor}
           bannerImageUrl={customization.bannerImageUrl}
         />

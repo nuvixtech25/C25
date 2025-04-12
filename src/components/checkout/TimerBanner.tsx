@@ -1,21 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Eye } from 'lucide-react';
 
 interface TimerBannerProps {
-  message: string;
   initialMinutes: number;
   initialSeconds: number;
-  backgroundColor?: string;
-  bannerImageUrl?: string | null;
 }
 
 export const TimerBanner: React.FC<TimerBannerProps> = ({ 
-  message, 
   initialMinutes, 
-  initialSeconds,
-  backgroundColor = '#000000',
-  bannerImageUrl = null
+  initialSeconds
 }) => {
   const [hours, setHours] = useState(Math.floor(initialMinutes / 60));
   const [minutes, setMinutes] = useState(initialMinutes % 60);
@@ -40,29 +33,9 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
     return () => clearInterval(timer);
   }, [hours, minutes, seconds]);
 
-  // Render banner with background image if URL is provided
-  if (bannerImageUrl) {
-    return (
-      <div 
-        className="w-[800px] h-[600px] bg-cover bg-center flex items-center justify-center" 
-        style={{ backgroundImage: `url(${bannerImageUrl})` }}
-      >
-        <div className="text-white text-sm font-medium">
-          {message}
-        </div>
-      </div>
-    );
-  }
-
-  // Fallback to color background if no image URL
   return (
-    <div 
-      className="w-[800px] h-[600px] flex items-center justify-center" 
-      style={{ backgroundColor }}
-    >
-      <div className="text-white text-sm font-medium">
-        {message}
-      </div>
+    <div className="text-white text-sm font-medium">
+      {hours > 0 && `${hours}h `}{minutes > 0 && `${minutes}m `}{seconds}s
     </div>
   );
 };

@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { TimerBanner } from './TimerBanner';
+import { TopMessageBanner } from './TopMessageBanner';
 import { CheckoutFooter } from './CheckoutFooter';
 
 interface CheckoutContainerProps {
@@ -93,10 +92,11 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col bg-white text-black" style={customStyles}>
-      {/* Render the timer banner at the top */}
+      {/* Render the top message banner at the top */}
       {customization.show_banner && (
-        <TimerBanner 
+        <TopMessageBanner 
           message={customization.header_message || 'Preço promocional encerrará em breve'} 
+          showTimer={true}
           initialMinutes={5} 
           initialSeconds={2} 
           backgroundColor={customization.banner_color || '#000000'}

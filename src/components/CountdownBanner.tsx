@@ -1,7 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { formatTime } from '@/utils/formatters';
-import { Eye } from 'lucide-react';
 
 interface CountdownBannerProps {
   message: string;
@@ -49,6 +48,8 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
     return null;
   }
 
+  const timeDisplay = `${timeLeft.hours > 0 ? `${timeLeft.hours}h ` : ''}${timeLeft.minutes > 0 ? `${timeLeft.minutes}m ` : ''}${timeLeft.seconds}s`;
+
   // Render banner with background image if URL is provided
   if (bannerImageUrl) {
     return (
@@ -56,8 +57,13 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
         className="w-[800px] h-[600px] bg-cover bg-center flex items-center justify-center" 
         style={{ backgroundImage: `url(${bannerImageUrl})` }}
       >
-        <div className="text-white text-sm font-medium">
-          {message}
+        <div className="flex flex-col items-center">
+          <div className="text-white text-sm font-medium mb-2">
+            {message}
+          </div>
+          <div className="text-white text-sm font-medium">
+            {timeDisplay}
+          </div>
         </div>
       </div>
     );
@@ -69,8 +75,13 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
       className="w-[800px] h-[600px] flex items-center justify-center" 
       style={{ backgroundColor }}
     >
-      <div className="text-white text-sm font-medium">
-        {message}
+      <div className="flex flex-col items-center">
+        <div className="text-white text-sm font-medium mb-2">
+          {message}
+        </div>
+        <div className="text-white text-sm font-medium">
+          {timeDisplay}
+        </div>
       </div>
     </div>
   );
