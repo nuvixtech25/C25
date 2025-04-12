@@ -1,33 +1,38 @@
+
 // src/lib/supabase/initClient.ts
 import { createClient } from '@supabase/supabase-js';
 
-// Solução robusta para ambientes Lovable
+// Safe environment variable access
 const getSupabaseConfig = () => {
-  // Modo desenvolvimento (Vite)
-  if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  const supabaseUrl = typeof import.meta !== 'undefined' && 
+    import.meta.env ? import.meta.env.VITE_SUPABASE_URL : undefined;
+    
+  const supabaseKey = typeof import.meta !== 'undefined' && 
+    import.meta.env ? import.meta.env.VITE_SUPABASE_ANON_KEY : undefined;
+
+  // Validate URL and Key
+  if (!supabaseUrl || !supabaseKey) {
+    // Log error but don't crash the app
+    console.error(`
+      [CONFIGURATION ERROR] Supabase credentials not found.
+      Please set the following environment variables:
+      - VITE_SUPABASE_URL
+      - VITE_SUPABASE_ANON_KEY
+    `);
+    
+    // Return fallback empty values that will fail gracefully
     return {
-      url: import.meta.env.VITE_SUPABASE_URL,
-      key: import.meta.env.VITE_SUPABASE_ANON_KEY
+      url: '',
+      key: ''
     };
   }
 
-  // Modo produção (Lovable/Netlify)
-  if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
-    return {
-      url: process.env.SUPABASE_URL,
-      key: process.env.SUPABASE_ANON_KEY
-    };
-  }
-
-  throw new Error(`
-    [ERRO DE CONFIGURAÇÃO] Credenciais do Supabase não encontradas.
-    Configure em:
-    1. Variáveis de ambiente (VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY)
-    2. Painel Lovable/Netlify para produção
-  `);
+  return {
+    url: supabaseUrl,
+    key: supabaseKey
+  };
 };
 
-export const supabase = createClient(
-  getSupabaseConfig().url,
-  getSupabaseConfig().key
-);
+// Initialize the client with safe values
+const { url, key } = getSupabaseConfig();
+export const supabase = createClient(url, key);

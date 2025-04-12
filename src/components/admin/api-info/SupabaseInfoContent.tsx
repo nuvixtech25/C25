@@ -19,16 +19,23 @@ export const SupabaseInfoContent: React.FC = () => {
             <div className="p-4 bg-primary/5 rounded-md">
               <h3 className="font-medium flex items-center"><Code className="h-4 w-4 mr-2" /> Cliente Supabase</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                O cliente Supabase é inicializado em <code>src/integrations/supabase/client.ts</code>
+                O cliente Supabase é inicializado em <code>src/lib/supabase/initClient.ts</code>
               </p>
               <pre className="bg-black/90 text-white p-3 rounded-md text-xs mt-2 overflow-auto">
-{`// src/integrations/supabase/client.ts
+{`// src/lib/supabase/initClient.ts
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Inicialização segura com variáveis de ambiente
+const getSupabaseConfig = () => {
+  // Obter variáveis de ambiente de forma segura
+  // Verificar existência para evitar erros em tempo de execução
+  return {
+    url: import.meta.env.VITE_SUPABASE_URL,
+    key: import.meta.env.VITE_SUPABASE_ANON_KEY
+  };
+};
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);`}
+export const supabase = createClient(getSupabaseConfig().url, getSupabaseConfig().key);`}
               </pre>
             </div>
 

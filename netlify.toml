@@ -18,17 +18,17 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://*.supabase.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://*.supabase.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
     Cache-Control = "public, max-age=31536000"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
 
-# Configuração específica para recursos de API
+# Configuration for API resources
 [[headers]]
   for = "/api/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# Configuração para arquivos estáticos
+# Configuration for static files
 [[headers]]
   for = "*.js"
   [headers.values]
