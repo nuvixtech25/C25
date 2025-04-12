@@ -27,7 +27,7 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
     let { value } = e.target;
     
     // First remove any existing spaces
-    const valueWithoutSpaces = value.replace(/ /g, '');
+    const valueWithoutSpaces = value.replace(/\s/g, '');
     
     // Remove any other non-numeric characters
     const cleaned = valueWithoutSpaces.replace(/\D/g, '');
