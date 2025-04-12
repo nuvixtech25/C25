@@ -86,11 +86,15 @@ const SuccessPage = () => {
         }
       }
     } else {
-      // For testing purposes, we'll set some mock data when there's no state
-      // REMOVE THIS IN PRODUCTION
-      console.log('[SuccessPage] No order data found - setting test data for WhatsApp');
-      setHasWhatsappSupport(true);
-      setWhatsappNumber('5511999999999');
+      // For development testing only - remove or disable this in production
+      console.log('[SuccessPage] No order data found - development mode only');
+      
+      // Only enable test data in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[SuccessPage] Setting test data for WhatsApp in development mode');
+        setHasWhatsappSupport(true);
+        setWhatsappNumber('5511999999999');
+      }
     }
   }, [location.state, trackPurchase]);
 
