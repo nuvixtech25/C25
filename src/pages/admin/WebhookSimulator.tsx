@@ -96,7 +96,7 @@ const WebhookSimulator = () => {
       </div>
 
       <OrdersTable
-        orders={orders || []} {/* Provide a default empty array */}
+        orders={orders || []} {/* Fix: JSX comment caused syntax error */}
         isLoading={isLoading}
         processingOrders={processingOrders}
         onSimulatePayment={simulatePaymentWebhook}
