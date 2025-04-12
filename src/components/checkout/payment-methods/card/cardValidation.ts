@@ -7,7 +7,10 @@ import { requiresFourDigitCvv } from './CardBrandDetector';
 export const cardSchema = z.object({
   holderName: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
   number: z.string().min(13, 'Número inválido').max(19, 'Número inválido')
-    .regex(/^\d+$/, 'Apenas números são permitidos'),
+    .refine(
+      (val) => /^\d[\d\s]*$/.test(val), 
+      'Apenas números são permitidos'
+    ),
   expiryDate: z.string()
     .refine(
       (val) => isExpiryDateValid(val),
