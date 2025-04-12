@@ -1,12 +1,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CheckoutContainer } from '@/components/checkout/CheckoutContainer';
-import { CountdownBanner } from '@/components/CountdownBanner';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
 import { usePreviewCustomization } from '@/hooks/usePreviewCustomization';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { PreviewLoading } from '@/components/preview/PreviewLoading';
+import { CountdownBanner } from '@/components/CountdownBanner';
+import CheckoutContainer from '@/components/checkout/CheckoutContainer';
 
 const CheckoutPreview: React.FC = () => {
   const [searchParams] = useSearchParams();

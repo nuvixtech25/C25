@@ -25,7 +25,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
         value="creditCard"
         label="Cartão de Crédito"
         Icon={CreditCard}
-        iconColor="text-gray-300"
+        iconColor="text-gray-500"
       />
       
       <RadioOption
@@ -33,7 +33,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
         value="pix"
         label="PIX"
         Icon={QrCode}
-        iconColor="text-gray-300"
+        iconColor="text-green-500"
       />
     </RadioGroup>
   );
