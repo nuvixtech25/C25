@@ -227,6 +227,45 @@ export type Database = {
           },
         ]
       }
+      checkout_customization: {
+        Row: {
+          banner_image_url: string | null
+          button_color: string
+          button_text: string
+          button_text_color: string
+          created_at: string
+          header_message: string | null
+          heading_color: string | null
+          id: number
+          show_banner: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          banner_image_url?: string | null
+          button_color?: string
+          button_text?: string
+          button_text_color?: string
+          created_at?: string
+          header_message?: string | null
+          heading_color?: string | null
+          id?: number
+          show_banner?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          banner_image_url?: string | null
+          button_color?: string
+          button_text?: string
+          button_text_color?: string
+          created_at?: string
+          header_message?: string | null
+          heading_color?: string | null
+          id?: number
+          show_banner?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           asaas_payment_id: string | null

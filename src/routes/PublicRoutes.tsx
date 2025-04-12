@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import Index from '@/pages/Index';
 import CheckoutPreview from '@/pages/admin/CheckoutPreview';
 import PaymentPage from '@/pages/PaymentPage';
@@ -28,6 +28,8 @@ const PublicRoutes: React.FC = () => {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/failed" element={<FailedPage />} />
+      {/* Add redirect from /payment-failed to /failed */}
+      <Route path="/payment-failed" element={<Navigate to="/failed" replace />} />
       <Route path="/pending" element={<PaymentPendingPage />} />
       <Route path="/retry" element={<RetryPaymentPage />} />
       <Route path="/access" element={<AccessDataPage />} />
