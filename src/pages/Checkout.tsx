@@ -12,7 +12,7 @@ import { CheckoutError } from '@/components/checkout/CheckoutError';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 
-const Checkout: React.FC = () => {
+const Checkout = () => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const { trackPurchase } = usePixelEvents();
@@ -25,7 +25,7 @@ const Checkout: React.FC = () => {
     refetchOnWindowFocus: false,
   });
 
-  // Get checkout customization based on product
+  // Get checkout customization based on product - filter out null values
   const customization = useCheckoutCustomization(product || undefined);
   
   // Use checkout state hook
@@ -45,10 +45,6 @@ const Checkout: React.FC = () => {
     }
   }, [product, isLoading, error, navigate]);
   
-  // Create a countdown end time 15 minutes from now
-  const countdownEndTime = new Date();
-  countdownEndTime.setMinutes(countdownEndTime.getMinutes() + 15);
-  
   // Show loading state while fetching product
   if (isLoading) {
     return (
@@ -65,10 +61,12 @@ const Checkout: React.FC = () => {
   
   return (
     <CheckoutContainer>
-      <CountdownBanner 
-        message="Oferta por tempo limitado!"
-        endTime={countdownEndTime}
-      />
+      {customization.topMessage && customization.countdownEndTime && (
+        <CountdownBanner 
+          message={customization.topMessage}
+          endTime={new Date(customization.countdownEndTime)}
+        />
+      )}
       
       <CheckoutContent 
         product={product}

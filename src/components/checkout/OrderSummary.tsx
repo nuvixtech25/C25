@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Product } from '@/types/checkout';
-import { formatCurrency } from '@/utils/formatters';
+import { Shield } from 'lucide-react';
 import { SectionTitle } from './SectionTitle';
 
 interface OrderSummaryProps {
@@ -11,39 +11,60 @@ interface OrderSummaryProps {
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({ product, isDigitalProduct = true }) => {
   return (
-    <section className="bg-white rounded-lg border border-[#E0E0E0]">
-      <div className="p-4">
-        <SectionTitle number={4} title="Resumo do Pedido" />
+    <section id="order-summary-section" className="mb-8">
+      <SectionTitle number={4} title="Resumo do pedido" />
+      
+      <div className="border border-[#E0E0E0] rounded-lg p-4 bg-white">
+        <h3 className="font-bold text-sm mb-4">Sua Compra</h3>
         
-        <div className="space-y-3">
-          <div className="flex justify-between">
-            <span className="text-gray-700">Produto:</span>
-            <span className="font-medium">{product.name}</span>
+        <div className="flex items-center py-3 border-b border-[#E0E0E0]">
+          <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded p-2 mr-3 flex items-center justify-center">
+            {product.imageUrl ? (
+              <img 
+                src={product.imageUrl} 
+                alt={product.name} 
+                className="max-w-full max-h-full object-contain"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-300 rounded flex items-center justify-center text-xs text-gray-600">
+                Imagem
+              </div>
+            )}
           </div>
           
-          <div className="flex justify-between">
-            <span className="text-gray-700">Tipo:</span>
-            <span>{isDigitalProduct ? 'Digital' : 'Físico'}</span>
+          <div className="flex-grow">
+            <h4 className="font-medium text-sm">{product.name}</h4>
+            <p className="text-xs text-gray-600">1 item</p>
           </div>
           
-          <div className="flex justify-between">
-            <span className="text-gray-700">Entrega:</span>
-            <span>{isDigitalProduct ? 'Acesso Imediato' : 'Envio em até 7 dias'}</span>
+          <div className="flex-shrink-0 font-medium">
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}
+          </div>
+        </div>
+        
+        <div className="pt-3 space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Subtotal:</span>
+            <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}</span>
           </div>
           
           <div className="flex justify-between text-lg font-bold">
-            <span>Total:</span>
-            <span>{formatCurrency(product.price)}</span>
+            <span>TOTAL:</span>
+            <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}</span>
+          </div>
+        </div>
+        
+        <div className="mt-4 border-t border-[#E0E0E0] pt-4">
+          <div className="flex items-center text-xs text-gray-600">
+            <Shield className="w-4 h-4 mr-1" />
+            <span>Compra segura e protegida</span>
           </div>
           
-          <div className="text-xs text-gray-500 mt-2">
-            <p>Ao finalizar a compra, você concorda com os termos de uso e política de privacidade.</p>
-            {isDigitalProduct && (
-              <p className="mt-1">
-                Por ser um produto digital, não há direito de arrependimento após o acesso ao conteúdo.
-              </p>
-            )}
-          </div>
+          {isDigitalProduct && (
+            <p className="text-xs text-gray-600 mt-2">
+              *Produto digital: entrega imediata após confirmação do pagamento
+            </p>
+          )}
         </div>
       </div>
     </section>
