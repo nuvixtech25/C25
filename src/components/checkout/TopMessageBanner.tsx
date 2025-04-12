@@ -30,7 +30,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
 
       {bannerImageUrl && (
         <div 
-          className="w-full flex items-center justify-center" 
+          className="w-full flex items-center justify-center mt-4" 
           style={{ 
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'contain',
