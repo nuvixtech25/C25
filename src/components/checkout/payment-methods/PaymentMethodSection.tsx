@@ -67,61 +67,63 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
     <section id={id} className="mb-8">
       <SectionTitle number={3} title="Pagamento" />
       
-      <Tabs 
-        defaultValue="creditCard" 
-        value={paymentMethod}
-        onValueChange={(value) => onPaymentMethodChange(value as PaymentMethod)}
-        className="w-full"
-      >
-        <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger 
-            value="creditCard"
-            className="flex items-center justify-center gap-2"
-          >
-            <CreditCard className="h-4 w-4" />
-            Cartão de Crédito
-          </TabsTrigger>
-          <TabsTrigger 
-            value="pix"
-            className="flex items-center justify-center gap-2"
-          >
-            <QrCode className="h-4 w-4" />
-            PIX
-          </TabsTrigger>
-        </TabsList>
+      <div className="border border-[#E0E0E0] rounded-lg p-4 bg-white">
+        <Tabs 
+          defaultValue="creditCard" 
+          value={paymentMethod}
+          onValueChange={(value) => onPaymentMethodChange(value as PaymentMethod)}
+          className="w-full"
+        >
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger 
+              value="creditCard"
+              className="flex items-center justify-center gap-2"
+            >
+              <CreditCard className="h-4 w-4" />
+              Cartão de Crédito
+            </TabsTrigger>
+            <TabsTrigger 
+              value="pix"
+              className="flex items-center justify-center gap-2"
+            >
+              <QrCode className="h-4 w-4" />
+              PIX
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="creditCard" className="mt-2">
+            <CardForm 
+              onSubmit={handleSubmit} 
+              isLoading={isSubmitting || isProcessing}
+              buttonColor="#28A745"
+              buttonText="Finalizar Pagamento"
+              productPrice={productPrice}
+            />
+          </TabsContent>
+          
+          <TabsContent value="pix" className="mt-2">
+            <SimplifiedPixOption
+              onSubmit={handleSubmit}
+              isLoading={isSubmitting || isProcessing}
+              buttonColor="#28A745"
+              buttonText="Pagar com PIX"
+              showQrCode={paymentSuccess}
+            />
+          </TabsContent>
+        </Tabs>
         
-        <TabsContent value="creditCard" className="mt-2">
-          <CardForm 
-            onSubmit={handleSubmit} 
-            isLoading={isSubmitting || isProcessing}
-            buttonColor="#28A745"
-            buttonText="Finalizar Pagamento"
-            productPrice={productPrice}
-          />
-        </TabsContent>
+        {paymentSuccess && paymentMethod === 'creditCard' && (
+          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-800">
+            Pagamento realizado com sucesso! Verifique seu e-mail.
+          </div>
+        )}
         
-        <TabsContent value="pix" className="mt-2">
-          <SimplifiedPixOption
-            onSubmit={handleSubmit}
-            isLoading={isSubmitting || isProcessing}
-            buttonColor="#28A745"
-            buttonText="Pagar com PIX"
-            showQrCode={paymentSuccess}
-          />
-        </TabsContent>
-      </Tabs>
-      
-      {paymentSuccess && paymentMethod === 'creditCard' && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-800">
-          Pagamento realizado com sucesso! Verifique seu e-mail.
-        </div>
-      )}
-      
-      {paymentError && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-800">
-          Erro no pagamento. Verifique os dados.
-        </div>
-      )}
+        {paymentError && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-800">
+            Erro no pagamento. Verifique os dados.
+          </div>
+        )}
+      </div>
     </section>
   );
 };

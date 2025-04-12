@@ -61,96 +61,98 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ onSubm
   return (
     <section id="customer-section" className="mb-8">
       <SectionTitle number={1} title="Identificação" />
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-black">Nome completo</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Digite seu nome" 
-                    {...field} 
-                    className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
-                  />
-                </FormControl>
-                <FormMessage className="text-red-500 text-xs" />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-black">E-mail</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder="Digite seu e-mail" 
-                    {...field} 
-                    className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
-                  />
-                </FormControl>
-                <FormMessage className="text-red-500 text-xs" />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="cpfCnpj"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-black">CPF/CNPJ</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Digite seu CPF"
-                    {...field}
-                    onChange={handleCpfCnpjChange}
-                    className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
-                  />
-                </FormControl>
-                <FormMessage className="text-red-500 text-xs" />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-black">Celular</FormLabel>
-                <div className="flex">
-                  <div className="flex items-center px-3 border border-r-0 border-[#E0E0E0] rounded-l-md text-sm text-black bg-white">
-                    +55
-                  </div>
+      <div className="border border-[#E0E0E0] rounded-lg p-4 bg-white">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-black">Nome completo</FormLabel>
                   <FormControl>
                     <Input 
-                      className="rounded-l-none border border-[#E0E0E0] p-2 text-sm text-black bg-white"
-                      placeholder="(00) 00000-0000"
-                      {...field}
-                      onChange={handlePhoneChange}
+                      placeholder="Digite seu nome" 
+                      {...field} 
+                      className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
                     />
                   </FormControl>
-                </div>
-                <FormMessage className="text-red-500 text-xs" />
-              </FormItem>
-            )}
-          />
-          
-          <Button 
-            type="submit" 
-            className="w-full bg-[#28A745] hover:bg-[#218838] text-white font-semibold py-3 mt-4 rounded"
-          >
-            Continuar para pagamento
-          </Button>
-        </form>
-      </Form>
+                  <FormMessage className="text-red-500 text-xs" />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-black">E-mail</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="email" 
+                      placeholder="Digite seu e-mail" 
+                      {...field} 
+                      className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-500 text-xs" />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="cpfCnpj"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-black">CPF/CNPJ</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Digite seu CPF"
+                      {...field}
+                      onChange={handleCpfCnpjChange}
+                      className="border border-[#E0E0E0] rounded p-2 text-sm text-black bg-white"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-500 text-xs" />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-black">Celular</FormLabel>
+                  <div className="flex">
+                    <div className="flex items-center px-3 border border-r-0 border-[#E0E0E0] rounded-l-md text-sm text-black bg-white">
+                      +55
+                    </div>
+                    <FormControl>
+                      <Input 
+                        className="rounded-l-none border border-[#E0E0E0] p-2 text-sm text-black bg-white"
+                        placeholder="(00) 00000-0000"
+                        {...field}
+                        onChange={handlePhoneChange}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="text-red-500 text-xs" />
+                </FormItem>
+              )}
+            />
+            
+            <Button 
+              type="submit" 
+              className="w-full bg-[#28A745] hover:bg-[#218838] text-white font-semibold py-3 mt-4 rounded"
+            >
+              Continuar para pagamento
+            </Button>
+          </form>
+        </Form>
+      </div>
     </section>
   );
 };
