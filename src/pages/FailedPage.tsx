@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,14 +6,11 @@ import { Button } from '@/components/ui/button';
 import { AlertCircle, RefreshCcw, XCircle, CreditCard } from 'lucide-react';
 import { Order, PaymentMethod } from '@/types/checkout';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
-import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
 
 const FailedPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
-  const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false);
-  const [whatsappNumber, setWhatsappNumber] = useState('');
   const { trackPurchase } = usePixelEvents();
 
   useEffect(() => {
@@ -26,81 +24,8 @@ const FailedPage = () => {
       if (state.order.id && state.order.productPrice) {
         trackPurchase(state.order.id, 0); // Value 0 for failed payment
       }
-      
-      // Process WhatsApp data if available in state
-      const product = state.product || {};
-      
-      console.log('[FailedPage] Product data:', {
-        hasWhatsappSupport: product?.has_whatsapp_support,
-        whatsappNumber: product?.whatsapp_number
-      });
-      
-      // Check if WhatsApp support is enabled
-      const productHasWhatsappSupport = Boolean(
-        product?.has_whatsapp_support === true || 
-        state.has_whatsapp_support === true
-      );
-      
-      console.log('[FailedPage] WhatsApp support status:', productHasWhatsappSupport);
-      setHasWhatsappSupport(productHasWhatsappSupport);
-      
-      // Get WhatsApp number from any available source
-      const productNumber = product?.whatsapp_number;
-      const locationNumber = state.whatsapp_number;
-      
-      console.log('[FailedPage] WhatsApp number sources:', {
-        productNumber,
-        locationNumber
-      });
-      
-      // Use the first available number
-      const wNumber = productNumber || locationNumber || '';
-      
-      console.log('[FailedPage] Setting WhatsApp number:', wNumber);
-      setWhatsappNumber(wNumber);
-      
-      // Store in localStorage as fallback
-      if (productHasWhatsappSupport || wNumber) {
-        try {
-          localStorage.setItem('whatsapp_support', productHasWhatsappSupport.toString());
-          if (wNumber) localStorage.setItem('whatsapp_number', wNumber);
-          console.log('[FailedPage] Stored WhatsApp data in localStorage for fallback');
-        } catch (e) {
-          console.error('[FailedPage] Failed to store in localStorage:', e);
-        }
-      }
-    } else {
-      // No state available, try to get from localStorage as fallback
-      try {
-        const storedSupport = localStorage.getItem('whatsapp_support');
-        const storedNumber = localStorage.getItem('whatsapp_number');
-        
-        console.log('[FailedPage] No order data found - checking localStorage:', {
-          storedSupport,
-          storedNumber
-        });
-        
-        if (storedSupport === 'true') {
-          setHasWhatsappSupport(true);
-        }
-        
-        if (storedNumber) {
-          setWhatsappNumber(storedNumber);
-        }
-      } catch (e) {
-        console.error('[FailedPage] Failed to read from localStorage:', e);
-      }
     }
   }, [state, trackPurchase]);
-
-  // Add debug rendering information
-  useEffect(() => {
-    console.log('[FailedPage] Current component state:', {
-      hasWhatsappSupport,
-      whatsappNumber,
-      orderExists: !!order
-    });
-  }, [hasWhatsappSupport, whatsappNumber, order]);
 
   const handleRetry = () => {
     if (order) {
@@ -161,13 +86,6 @@ const FailedPage = () => {
               <RefreshCcw className="h-5 w-5" />
               Tentar com outro cartão
             </Button>
-          )}
-          
-          {hasWhatsappSupport && whatsappNumber && (
-            <WhatsAppButton 
-              hasWhatsappSupport={hasWhatsappSupport} 
-              whatsappNumber={whatsappNumber}
-            />
           )}
         </CardFooter>
       </Card>
