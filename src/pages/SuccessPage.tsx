@@ -12,12 +12,14 @@ const SuccessPage = () => {
   const [isDigitalProduct, setIsDigitalProduct] = useState(false);
   
   useEffect(() => {
-    // For debugging
-    console.log('Location state:', location.state);
+    // Debugging log para mostrar TODOS os detalhes do estado
+    console.log('Location state COMPLETO:', JSON.stringify(location.state, null, 2));
     
     // Track purchase event if we have order data from location state
     if (location.state?.order) {
       const { order } = location.state;
+      console.log('Order details:', JSON.stringify(order, null, 2));
+      
       trackPurchase(
         order.id || 'unknown-order',
         order.productPrice || 0
