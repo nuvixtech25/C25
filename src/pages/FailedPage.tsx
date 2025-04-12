@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -96,7 +95,7 @@ const FailedPage = () => {
           {order && order.paymentMethod === 'creditCard' && (
             <Button 
               onClick={handleRetry} 
-              className="w-full flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md transition-all duration-300 py-6 h-auto text-base font-medium"
+              className="w-full flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md transition-all duration-300 py-6 h-auto text-base font-medium rounded-xl"
             >
               <RefreshCcw className="h-5 w-5" />
               Tentar com outro cartão
