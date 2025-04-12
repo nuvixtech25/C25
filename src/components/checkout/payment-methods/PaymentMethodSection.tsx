@@ -1,13 +1,10 @@
 
 import React, { useState } from 'react';
 import { PaymentMethod } from '@/types/checkout';
-import { CardForm } from './card/CardForm';
-import { SimplifiedPixOption } from './SimplifiedPixOption';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { CreditCard, QrCode } from 'lucide-react';
 import { SectionTitle } from '../SectionTitle';
 import PaymentOptions from './PaymentOptions';
-import { Button } from '@/components/ui/button';
+import { PaymentMethodForms } from './PaymentMethodForms';
+import { PaymentStatusMessage } from './PaymentStatusMessage';
 
 interface PaymentMethodSectionProps {
   id: string;
@@ -66,37 +63,21 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
             onPaymentMethodChange={onPaymentMethodChange} 
           />
           
-          {paymentMethod === 'creditCard' && (
-            <CardForm
-              onSubmit={handleSubmit}
-              isLoading={isSubmitting || isProcessing}
-              buttonColor={buttonColor}
-              buttonText={buttonText}
-              productPrice={productPrice}
-            />
-          )}
+          <PaymentMethodForms
+            paymentMethod={paymentMethod}
+            onSubmit={handleSubmit}
+            isLoading={isSubmitting || isProcessing}
+            buttonColor={buttonColor}
+            buttonText={buttonText}
+            productPrice={productPrice}
+            showQrCode={paymentSuccess}
+          />
           
-          {paymentMethod === 'pix' && (
-            <SimplifiedPixOption
-              onSubmit={() => handleSubmit()}
-              isLoading={isSubmitting || isProcessing}
-              buttonColor={buttonColor}
-              buttonText="Pagar com PIX"
-              showQrCode={paymentSuccess}
-            />
-          )}
-          
-          {paymentSuccess && paymentMethod === 'creditCard' && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-800">
-              Pagamento realizado com sucesso! Verifique seu e-mail.
-            </div>
-          )}
-          
-          {paymentError && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-800">
-              Erro no pagamento. Verifique os dados.
-            </div>
-          )}
+          <PaymentStatusMessage
+            success={paymentSuccess}
+            error={paymentError}
+            paymentMethod={paymentMethod}
+          />
         </div>
       </div>
     </section>

@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { Product } from '@/types/checkout';
+import { Product, CheckoutCustomization } from '@/types/checkout';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
 import CheckoutContainer from '@/components/checkout/CheckoutContainer';
@@ -104,10 +103,13 @@ const Checkout: React.FC = () => {
     );
   }
 
-  const customization = {
+  const customization: CheckoutCustomization = {
     headingColor: '#000000',
     buttonColor: '#28A745',
     buttonText: 'Finalizar Compra',
+    bannerImageUrl: null,
+    topMessage: 'Oferta por tempo limitado!',
+    countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     isDigitalProduct: product.type === 'digital'
   };
 
