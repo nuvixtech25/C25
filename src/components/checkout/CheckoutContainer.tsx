@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -92,22 +93,21 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col bg-white text-black max-w-full overflow-x-hidden" style={customStyles}>
-      {/* Render the top message banner without extra container padding */}
-      <div className="w-full">
-        {customization.show_banner && (
-          <TopMessageBanner 
-            message={customization.header_message || 'Preço promocional encerrará em breve'} 
-            initialMinutes={5} 
-            initialSeconds={2} 
-            backgroundColor={customization.banner_color || '#000000'}
-            bannerImageUrl={customization.banner_image_url}
-          />
-        )}
-      </div>
-      
-      <div className="w-full flex justify-center mt-4 md:mt-6">
+      <div className="w-full flex justify-center">
         <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
-          <main>
+          {/* Render the banner only here, inside the container that has the same width as the form */}
+          {customization.show_banner && (
+            <TopMessageBanner 
+              message={customization.header_message || 'Preço promocional encerrará em breve'} 
+              initialMinutes={5} 
+              initialSeconds={2} 
+              backgroundColor={customization.banner_color || '#000000'}
+              bannerImageUrl={customization.banner_image_url}
+              containerClassName="w-full" // Use a largura completa do container pai
+            />
+          )}
+          
+          <main className="mt-0">
             {children}
           </main>
         </div>

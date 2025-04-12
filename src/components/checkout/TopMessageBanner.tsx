@@ -9,6 +9,7 @@ interface TopMessageBannerProps {
   initialSeconds?: number;
   backgroundColor?: string;
   bannerImageUrl?: string | null;
+  containerClassName?: string; // Nova propriedade para customizar a largura
 }
 
 export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
@@ -16,14 +17,15 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   initialMinutes = 5,
   initialSeconds = 0,
   backgroundColor = '#000000',
-  bannerImageUrl = null
+  bannerImageUrl = null,
+  containerClassName = 'w-full' // Padrão é largura total
 }) => {
   const isMobile = useIsMobile();
   
   return (
-    <div className="flex flex-col w-full items-center">
+    <div className={`flex flex-col items-center ${containerClassName}`}>
       {/* Black bar with message and timer side by side */}
-      <div className="w-full bg-black py-2 px-4 flex justify-center items-center space-x-4">
+      <div className="w-full bg-black py-2 px-4 flex justify-center items-center space-x-4 rounded-t-md">
         <div className="text-white text-sm md:text-base lg:text-lg font-medium">
           {message}
         </div>
@@ -42,7 +44,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            height: isMobile ? '80px' : '110px' // Reduced height to match the reference banner
+            height: isMobile ? '80px' : '110px' // Altura reduzida para corresponder ao banner de referência
           }}
         />
       )}

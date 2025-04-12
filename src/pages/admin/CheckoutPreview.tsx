@@ -34,28 +34,28 @@ const CheckoutPreview: React.FC = () => {
 
   return (
     <div className="flex flex-col bg-white max-w-full overflow-x-hidden">
-      {/* Banners rendered without extra container padding */}
-      <div className="w-full">
-        {customization.topMessage && customization.countdownEndTime ? (
-          <CountdownBanner 
-            message={customization.topMessage || 'Preço promocional encerrará em breve'}
-            endTime={new Date(customization.countdownEndTime)}
-            backgroundColor={customization.bannerColor}
-            bannerImageUrl={customization.bannerImageUrl}
-          />
-        ) : customization.topMessage && (
-          <TopMessageBanner 
-            message={customization.topMessage || 'Oferta por tempo limitado!'}
-            backgroundColor={customization.bannerColor}
-            bannerImageUrl={customization.bannerImageUrl}
-            initialMinutes={5}
-            initialSeconds={0}
-          />
-        )}
-      </div>
-      
-      <div className="w-full flex justify-center mt-4 md:mt-6">
+      <div className="w-full flex justify-center">
         <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
+          {/* Banners rendered inside the container that has the same width as the form */}
+          {customization.topMessage && customization.countdownEndTime ? (
+            <CountdownBanner 
+              message={customization.topMessage || 'Preço promocional encerrará em breve'}
+              endTime={new Date(customization.countdownEndTime)}
+              backgroundColor={customization.bannerColor}
+              bannerImageUrl={customization.bannerImageUrl}
+              containerClassName="w-full"
+            />
+          ) : customization.topMessage && (
+            <TopMessageBanner 
+              message={customization.topMessage || 'Oferta por tempo limitado!'}
+              backgroundColor={customization.bannerColor}
+              bannerImageUrl={customization.bannerImageUrl}
+              initialMinutes={5}
+              initialSeconds={0}
+              containerClassName="w-full"
+            />
+          )}
+          
           <CheckoutContent 
             product={demoProduct}
             customerData={customerData}

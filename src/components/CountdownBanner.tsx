@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { formatTime } from '@/utils/formatters';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -7,13 +8,15 @@ interface CountdownBannerProps {
   endTime: Date;
   backgroundColor?: string;
   bannerImageUrl?: string | null;
+  containerClassName?: string; // Nova propriedade para customizar a largura
 }
 
 export const CountdownBanner: React.FC<CountdownBannerProps> = ({ 
   message, 
   endTime, 
   backgroundColor = '#000000',
-  bannerImageUrl = null
+  bannerImageUrl = null,
+  containerClassName = 'w-full' // Padrão é largura total
 }) => {
   const isMobile = useIsMobile();
   const [timeLeft, setTimeLeft] = useState({
@@ -52,9 +55,9 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
   const timeDisplay = `${timeLeft.hours > 0 ? `${timeLeft.hours}h ` : ''}${timeLeft.minutes > 0 ? `${timeLeft.minutes}m ` : ''}${timeLeft.seconds}s`;
 
   return (
-    <div className="flex flex-col w-full items-center">
+    <div className={`flex flex-col items-center ${containerClassName}`}>
       {/* Black bar with message and countdown side by side */}
-      <div className="w-full bg-black py-2 px-4 flex justify-center items-center space-x-4">
+      <div className="w-full bg-black py-2 px-4 flex justify-center items-center space-x-4 rounded-t-md">
         <div className="text-white text-sm md:text-base lg:text-lg font-medium">
           {message}
         </div>
@@ -72,7 +75,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            height: isMobile ? '80px' : '110px' // Reduced height to match the reference banner
+            height: isMobile ? '80px' : '110px' // Altura reduzida para corresponder ao banner de referência
           }}
         />
       )}
