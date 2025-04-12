@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import AdminLayout from '@/layouts/AdminLayout';
 import AdminTools from '@/pages/admin/AdminTools';
 import DashboardPage from '@/pages/admin/dashboard';
 import PixSettings from '@/pages/admin/PixSettings';
@@ -24,20 +25,32 @@ const AdminRoutes: React.FC = () => {
       {/* Rota de login (não protegida) */}
       <Route path="/login" element={<Login />} />
       
-      {/* Rotas protegidas */}
-      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-      <Route path="/tools" element={<ProtectedRoute><AdminTools /></ProtectedRoute>} />
-      <Route path="/products" element={<ProtectedRoute><ProductsPage /></ProtectedRoute>} />
-      <Route path="/products/new" element={<ProtectedRoute><NewProductPage /></ProtectedRoute>} />
-      <Route path="/products/:id" element={<ProtectedRoute><EditProductPage /></ProtectedRoute>} />
-      <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
-      <Route path="/credit-cards" element={<ProtectedRoute><CreditCardsPage /></ProtectedRoute>} />
-      <Route path="/pix-settings" element={<ProtectedRoute><PixSettings /></ProtectedRoute>} />
-      <Route path="/pixel-settings" element={<ProtectedRoute><PixelSettings /></ProtectedRoute>} />
-      <Route path="/asaas-settings" element={<ProtectedRoute><AsaasSettings /></ProtectedRoute>} />
-      <Route path="/webhook-simulator" element={<ProtectedRoute><WebhookSimulator /></ProtectedRoute>} />
-      <Route path="/api-information" element={<ProtectedRoute><ApiInformation /></ProtectedRoute>} />
-      <Route path="/analytics/payment-retry" element={<ProtectedRoute><PaymentRetryAnalytics /></ProtectedRoute>} />
+      {/* Rota raiz - redireciona para dashboard */}
+      <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+      
+      {/* Rotas protegidas com AdminLayout */}
+      <Route path="/" element={
+        <ProtectedRoute>
+          <AdminLayout>
+            {/* Nested routes inside the AdminLayout */}
+            <Routes>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/tools" element={<AdminTools />} />
+              <Route path="/products" element={<ProductsPage />} />
+              <Route path="/products/new" element={<NewProductPage />} />
+              <Route path="/products/:id" element={<EditProductPage />} />
+              <Route path="/orders" element={<OrdersPage />} />
+              <Route path="/credit-cards" element={<CreditCardsPage />} />
+              <Route path="/pix-settings" element={<PixSettings />} />
+              <Route path="/pixel-settings" element={<PixelSettings />} />
+              <Route path="/asaas-settings" element={<AsaasSettings />} />
+              <Route path="/webhook-simulator" element={<WebhookSimulator />} />
+              <Route path="/api-information" element={<ApiInformation />} />
+              <Route path="/analytics/payment-retry" element={<PaymentRetryAnalytics />} />
+            </Routes>
+          </AdminLayout>
+        </ProtectedRoute>
+      } />
       
       {/* Rota de fallback para páginas administrativas não encontradas */}
       <Route path="*" element={<NotFound />} />
