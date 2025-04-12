@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { SectionTitle } from './SectionTitle';
 import { CustomerData } from '@/types/checkout';
@@ -35,19 +34,29 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
       cpfCnpj: '',
       phone: '',
     },
+    mode: 'onChange' // Validate as user types
   });
 
-  // Submit handler
-  const handleSubmit = (data: CustomerData) => {
-    onSubmit(data);
-  };
+  // Submit handler will be called automatically on valid form data
+  React.useEffect(() => {
+    const subscription = form.watch((formValues) => {
+      if (form.formState.isValid) {
+        const { name, email, cpfCnpj, phone } = formValues;
+        if (name && email && cpfCnpj && phone) {
+          onSubmit(formValues as CustomerData);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form.watch, form.formState.isValid, onSubmit]);
 
   return (
     <div className="mb-6 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
       <SectionTitle number={1} title="Identificação" />
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 mt-4">
+        <form className="space-y-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -126,15 +135,6 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                 </FormItem>
               )}
             />
-          </div>
-          
-          <div className="flex justify-center mt-6">
-            <Button 
-              type="submit" 
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-medium rounded py-3 px-6"
-            >
-              Continuar
-            </Button>
           </div>
         </form>
       </Form>
