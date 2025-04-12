@@ -23,9 +23,6 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
   });
 
   useEffect(() => {
-    console.log('CountdownBanner rendered with backgroundColor:', backgroundColor);
-    console.log('CountdownBanner rendered with bannerImageUrl:', bannerImageUrl);
-    
     const calculateTimeLeft = () => {
       const now = new Date();
       const difference = endTime.getTime() - now.getTime();
@@ -46,7 +43,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
     const timer = setInterval(calculateTimeLeft, 1000);
     
     return () => clearInterval(timer);
-  }, [endTime, backgroundColor, bannerImageUrl]);
+  }, [endTime]);
 
   if (timeLeft.hours <= 0 && timeLeft.minutes <= 0 && timeLeft.seconds <= 0) {
     return null;
@@ -56,7 +53,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
   if (bannerImageUrl) {
     return (
       <div 
-        className="w-full bg-cover bg-center h-8 flex items-center justify-center" 
+        className="w-[800px] h-[600px] bg-cover bg-center flex items-center justify-center" 
         style={{ backgroundImage: `url(${bannerImageUrl})` }}
       >
         <div className="text-white text-sm font-medium">
@@ -68,7 +65,10 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
 
   // Fallback to color background if no image URL
   return (
-    <div className="w-full h-8 flex items-center justify-center" style={{ backgroundColor }}>
+    <div 
+      className="w-[800px] h-[600px] flex items-center justify-center" 
+      style={{ backgroundColor }}
+    >
       <div className="text-white text-sm font-medium">
         {message}
       </div>

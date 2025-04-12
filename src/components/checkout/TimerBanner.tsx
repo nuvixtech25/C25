@@ -22,9 +22,6 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
   const [seconds, setSeconds] = useState(initialSeconds);
 
   useEffect(() => {
-    console.log('TimerBanner rendered with backgroundColor:', backgroundColor);
-    console.log('TimerBanner rendered with bannerImageUrl:', bannerImageUrl);
-    
     const timer = setInterval(() => {
       if (seconds > 0) {
         setSeconds(seconds - 1);
@@ -41,13 +38,13 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [hours, minutes, seconds, backgroundColor, bannerImageUrl]);
+  }, [hours, minutes, seconds]);
 
   // Render banner with background image if URL is provided
   if (bannerImageUrl) {
     return (
       <div 
-        className="w-full bg-cover bg-center h-8 flex items-center justify-center" 
+        className="w-[800px] h-[600px] bg-cover bg-center flex items-center justify-center" 
         style={{ backgroundImage: `url(${bannerImageUrl})` }}
       >
         <div className="text-white text-sm font-medium">
@@ -59,7 +56,10 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
 
   // Fallback to color background if no image URL
   return (
-    <div className="w-full h-8 flex items-center justify-center" style={{ backgroundColor }}>
+    <div 
+      className="w-[800px] h-[600px] flex items-center justify-center" 
+      style={{ backgroundColor }}
+    >
       <div className="text-white text-sm font-medium">
         {message}
       </div>
