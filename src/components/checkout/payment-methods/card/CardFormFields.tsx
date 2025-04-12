@@ -41,15 +41,17 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
       formatted += cleaned[i];
     }
     
-    // Update form value with the cleaned value (no spaces)
-    onChange(cleaned);
-    
-    // Set the formatted value with spaces back into the input
+    // Update the input field with the formatted value
     e.target.value = formatted;
     
+    // Update form value with the formatted value WITH spaces
+    onChange(formatted);
+    
     // Calculate new cursor position after formatting
-    const addedSpaces = formatted.length - cleaned.length;
-    const newCursorPos = cursorPos + (addedSpaces - (value.length - valueWithoutSpaces.length));
+    // For example, if user typed a digit at position 4, we need to move cursor to position 5 (after the space)
+    let newCursorPos = cursorPos;
+    const spacesBeforeCursor = Math.floor((cursorPos > 0 ? cursorPos - 1 : 0) / 4);
+    newCursorPos = Math.min(cursorPos + spacesBeforeCursor, formatted.length);
     
     // Set the cursor position to where it should be after formatting
     // Only attempt to set selection range if the element is focused
@@ -83,20 +85,21 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
       <FormField
         control={form.control}
         name="number"
-        render={({ field: { onChange, ...rest } }) => (
+        render={({ field: { onChange, value, ...rest } }) => (
           <FormItem>
             <FormLabel>Número do Cartão</FormLabel>
             <div className="relative">
               <FormControl>
                 <Input 
                   placeholder="0000 0000 0000 0000" 
+                  value={value} 
                   {...rest}
                   onChange={(e) => handleCardNumberChange(e, onChange)}
                   autoComplete="cc-number"
                   maxLength={19}  // 16 digits + 3 spaces
                 />
               </FormControl>
-              {rest.value && <CardBrandDisplay cardNumber={rest.value} />}
+              {value && <CardBrandDisplay cardNumber={value} />}
             </div>
             <FormMessage />
           </FormItem>
