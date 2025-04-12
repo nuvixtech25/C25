@@ -18,7 +18,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
     <RadioGroup
       value={paymentMethod}
       onValueChange={(value: PaymentMethod) => onPaymentMethodChange(value)}
-      className="space-y-3 mb-6"
+      className="flex flex-row gap-4 mb-6"
     >
       <RadioOption
         id="creditCard"
@@ -26,6 +26,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
         label="Cartão de Crédito"
         Icon={CreditCard}
         iconColor="text-gray-500"
+        className="flex-1"
       />
       
       <RadioOption
@@ -34,6 +35,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
         label="PIX"
         Icon={QrCode}
         iconColor="text-green-500"
+        className="flex-1"
       />
     </RadioGroup>
   );
