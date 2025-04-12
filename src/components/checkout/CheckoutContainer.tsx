@@ -93,10 +93,8 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
   return (
     <div className="flex flex-col bg-white text-black max-w-full overflow-x-hidden" style={customStyles}>
       <div className="w-full flex justify-center">
-        <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
-          {/* Remover py-12 e py-20 para não deixar espaço vertical */}
+        <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white py-4"> {/* Added py-4 for vertical padding */}
           <div>
-            {/* Render the banner only here, inside the container that has the same width as the form */}
             {customization.show_banner && (
               <TopMessageBanner 
                 message={customization.header_message || 'Oferta por tempo limitado!'} 

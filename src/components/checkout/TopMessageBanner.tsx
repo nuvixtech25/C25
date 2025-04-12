@@ -30,7 +30,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
 
       {bannerImageUrl && (
         <div 
-          className="w-full flex items-center justify-center mt-4" 
+          className="w-full flex items-center justify-center my-4" // Changed from mt-4 to my-4 to add vertical margin
           style={{ 
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'contain',
