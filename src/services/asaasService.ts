@@ -82,6 +82,8 @@ export const generatePixPayment = async (billingData: any) => {
       throw new Error(`Campos obrigatórios faltando: ${missingFields.join(', ')}`);
     }
     
+    console.log('Making API request to create-asaas-customer endpoint');
+    
     const response = await fetch('/api/create-asaas-customer', {
       method: 'POST',
       headers: {
@@ -90,13 +92,24 @@ export const generatePixPayment = async (billingData: any) => {
       body: JSON.stringify(formattedData),
     });
     
+    console.log('Response status:', response.status);
+    
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Error response from server:', errorText);
       throw new Error(`Failed to generate PIX payment: ${response.status}`);
     }
     
-    return await response.json();
+    const responseData = await response.json();
+    console.log('API response data:', responseData);
+    
+    // Handle the case where QR code image is missing
+    if (!responseData.qrCodeImage) {
+      console.warn('QR code image is missing from the response');
+      // We'll continue without the QR code image, and the UI will handle this case
+    }
+    
+    return responseData;
   } catch (error) {
     console.error('Error generating PIX payment:', error);
     throw error;

@@ -24,10 +24,18 @@ const PaymentPage = () => {
   const { trackPurchase } = usePixelEvents();
   
   useEffect(() => {
+    // Debug the location state
+    console.log("PaymentPage - Location state:", location.state);
+    
     const billingData = location.state?.billingData as BillingData;
     const orderData = location.state?.order as Order;
     
     if (!billingData || !orderData) {
+      console.error("Missing required data for payment page", { 
+        hasBillingData: !!billingData, 
+        hasOrderData: !!orderData 
+      });
+      
       toast({
         title: "Erro",
         description: "Informações de pagamento não encontradas. Por favor, volte e tente novamente.",
@@ -38,6 +46,7 @@ const PaymentPage = () => {
     }
     
     setOrder(orderData);
+    console.log("Order data set:", orderData);
     
     const fetchPixPayment = async () => {
       setLoading(true);
@@ -59,6 +68,8 @@ const PaymentPage = () => {
           description: billingData.description || `Pedido ${orderData.id}`
         };
         
+        console.log("Formatted billing data:", formattedBillingData);
+        
         const data = await generatePixPayment(formattedBillingData);
         console.log("Payment data received:", data);
         
@@ -79,7 +90,13 @@ const PaymentPage = () => {
         }
         
         setPaymentData(data);
+        
+        // Debug what data was received for QR code
+        console.log("QR Code Image:", data.qrCodeImage ? `Received (${data.qrCodeImage.substring(0, 30)}...)` : "Not received");
+        console.log("QR Code:", data.qrCode ? `Received (${data.qrCode.substring(0, 30)}...)` : "Not received");
+        console.log("Copy Paste Key:", data.copyPasteKey ? `Received (${data.copyPasteKey.substring(0, 30)}...)` : "Not received");
       } catch (error) {
+        console.error("Error generating payment:", error);
         const errorMessage = handleApiError(error, {
           defaultMessage: "Não foi possível gerar o pagamento PIX. Por favor, tente novamente."
         });
@@ -97,6 +114,14 @@ const PaymentPage = () => {
     
     fetchPixPayment();
   }, [location.state, navigate, toast]);
+  
+  // Debug what's being rendered
+  console.log("Rendering PaymentPage:", { 
+    loading, 
+    hasPaymentData: !!paymentData, 
+    hasOrder: !!order, 
+    error 
+  });
   
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white via-purple-50/30 to-white">
@@ -145,13 +170,13 @@ const PaymentPage = () => {
         <div className="animate-fade-in w-full max-w-md">
           <PixPayment 
             orderId={order.id || ''} 
-            qrCode={paymentData.qrCode}
-            qrCodeImage={paymentData.qrCodeImage}
-            copyPasteKey={paymentData.copyPasteKey}
-            expirationDate={paymentData.expirationDate}
-            value={paymentData.value}
-            description={paymentData.description}
-            paymentId={paymentData.paymentId}
+            qrCode={paymentData.qrCode || ''}
+            qrCodeImage={paymentData.qrCodeImage || ''}
+            copyPasteKey={paymentData.copyPasteKey || ''}
+            expirationDate={paymentData.expirationDate || new Date().toISOString()}
+            value={paymentData.value || 0}
+            description={paymentData.description || ''}
+            paymentId={paymentData.paymentId || ''}
           />
           
           <div className="mt-8 text-center">
@@ -174,7 +199,21 @@ const PaymentPage = () => {
           </div>
         </div>
       ) : (
-        <CheckoutError message="Erro ao carregar dados do pagamento" />
+        <div className="w-full max-w-md h-64 flex items-center justify-center bg-white rounded-xl shadow-lg border border-gray-100">
+          <div className="text-center p-6">
+            <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+            <p className="text-gray-700 font-medium text-lg mb-2">Dados de pagamento incompletos</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Não foi possível carregar os dados necessários para o pagamento.
+            </p>
+            <Button 
+              onClick={() => navigate('/')} 
+              className="mt-2 bg-asaas-primary hover:bg-asaas-secondary transition-colors"
+            >
+              Voltar ao início
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );

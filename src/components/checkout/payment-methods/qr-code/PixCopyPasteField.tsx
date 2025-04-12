@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface PixCopyPasteFieldProps {
@@ -13,6 +13,15 @@ export const PixCopyPasteField: React.FC<PixCopyPasteFieldProps> = ({ copyPasteK
   const [copied, setCopied] = useState(false);
   
   const copyToClipboard = () => {
+    if (!copyPasteKey) {
+      toast({
+        title: "Código PIX não disponível",
+        description: "Não foi possível obter o código PIX para cópia",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     navigator.clipboard.writeText(copyPasteKey).then(
       () => {
         setCopied(true);
@@ -32,6 +41,15 @@ export const PixCopyPasteField: React.FC<PixCopyPasteFieldProps> = ({ copyPasteK
       }
     );
   };
+  
+  if (!copyPasteKey) {
+    return (
+      <div className="flex items-center justify-center p-4 bg-gray-50 rounded border border-gray-200">
+        <AlertCircle className="h-4 w-4 text-amber-500 mr-2" />
+        <span className="text-sm text-gray-600">Código PIX não disponível</span>
+      </div>
+    );
+  }
   
   return (
     <div className="flex items-center justify-between p-2 bg-white rounded border">
