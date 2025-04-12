@@ -100,6 +100,7 @@ export interface Testimonial {
   photo: string;
   rating: number;
   comment: string;
+  timeAgo?: string; // Added the timeAgo property
 }
 
 // Payment method data (used in checkout form)

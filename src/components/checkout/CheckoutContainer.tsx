@@ -1,8 +1,13 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { TimerBanner } from './TimerBanner';
 import { CheckoutFooter } from './CheckoutFooter';
+
+interface CheckoutContainerProps {
+  children: React.ReactNode;
+}
 
 interface CheckoutCustomization {
   button_color?: string;
