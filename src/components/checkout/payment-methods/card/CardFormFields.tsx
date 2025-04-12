@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -15,6 +14,47 @@ interface CardFormFieldsProps {
   form: UseFormReturn<z.infer<typeof cardSchema>>;
   productPrice?: number;
 }
+
+const InstallmentsField: React.FC<{ form: UseFormReturn<z.infer<typeof cardSchema>>; productPrice: number }> = ({ form, productPrice }) => {
+  // Calculate installment values based on product price
+  const calculateInstallmentValue = (installments: number): string => {
+    if (!productPrice || installments <= 0) return "à vista";
+    
+    const installmentValue = productPrice / installments;
+    return `${installments}x ${formatCurrency(installmentValue)} sem juros`;
+  };
+  
+  return (
+    <FormField
+      control={form.control}
+      name="installments"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Parcelas (sem juros)</FormLabel>
+          <Select 
+            onValueChange={(value) => field.onChange(parseInt(value))} 
+            defaultValue={field.value?.toString() || "1"}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o número de parcelas" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectItem value="1">{calculateInstallmentValue(1)}</SelectItem>
+              <SelectItem value="2">{calculateInstallmentValue(2)}</SelectItem>
+              <SelectItem value="3">{calculateInstallmentValue(3)}</SelectItem>
+              <SelectItem value="4">{calculateInstallmentValue(4)}</SelectItem>
+              <SelectItem value="5">{calculateInstallmentValue(5)}</SelectItem>
+              <SelectItem value="6">{calculateInstallmentValue(6)}</SelectItem>
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
 
 export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form, productPrice = 0 }) => {
   return (
@@ -121,47 +161,6 @@ const CvvField: React.FC<CardFormFieldsProps> = ({ form }) => {
               type="text" // Changed from "password" to "text" to show the CVV numbers
             />
           </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-};
-
-const InstallmentsField: React.FC<{ form: UseFormReturn<z.infer<typeof cardSchema>>; productPrice: number }> = ({ form, productPrice }) => {
-  // Calculate installment values based on product price
-  const calculateInstallmentValue = (installments: number): string => {
-    if (!productPrice || installments <= 0) return "à vista";
-    
-    const installmentValue = productPrice / installments;
-    return `${installments}x ${formatCurrency(installmentValue)}`;
-  };
-  
-  return (
-    <FormField
-      control={form.control}
-      name="installments"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Parcelas (sem juros)</FormLabel>
-          <Select 
-            onValueChange={(value) => field.onChange(parseInt(value))} 
-            defaultValue={field.value?.toString() || "1"}
-          >
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o número de parcelas" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectItem value="1">{calculateInstallmentValue(1)}</SelectItem>
-              <SelectItem value="2">{calculateInstallmentValue(2)}</SelectItem>
-              <SelectItem value="3">{calculateInstallmentValue(3)}</SelectItem>
-              <SelectItem value="4">{calculateInstallmentValue(4)}</SelectItem>
-              <SelectItem value="5">{calculateInstallmentValue(5)}</SelectItem>
-              <SelectItem value="6">{calculateInstallmentValue(6)}</SelectItem>
-            </SelectContent>
-          </Select>
           <FormMessage />
         </FormItem>
       )}
