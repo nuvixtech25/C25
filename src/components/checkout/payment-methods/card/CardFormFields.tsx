@@ -6,8 +6,6 @@ import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { formatExpiryDate } from '@/utils/cardValidationUtils';
 import { CardBrandDisplay } from './CardBrandDetector';
-
-// Import card schema - we'll define this in the main CardForm component
 import { cardSchema } from './CardForm';
 
 interface CardFormFieldsProps {
@@ -23,8 +21,14 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
   
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
     const { value } = e.target;
+    // Remove todos os espaços e caracteres não numéricos
     const cleaned = value.replace(/\D/g, '');
-    onChange(cleaned);
+    
+    // Adiciona espaço a cada 4 dígitos
+    const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
+    
+    onChange(cleaned); // Mantém o valor limpo para validação
+    e.target.value = formatted; // Atualiza o input visualmente
   };
 
   return (
