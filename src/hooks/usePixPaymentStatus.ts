@@ -19,7 +19,9 @@ interface UsePixPaymentStatusResult {
   isExpired: boolean;
 }
 
-// Function to calculate time left until expiration
+/**
+ * Calculates time left until expiration
+ */
 const calculateTimeLeft = (expirationDate: string): { timeLeftString: string; isExpired: boolean } => {
   try {
     // Parse the expiration date string safely
@@ -52,8 +54,15 @@ const calculateTimeLeft = (expirationDate: string): { timeLeftString: string; is
   }
 };
 
-// Separate function to handle payment confirmation redirection
-const handlePaymentConfirmation = (orderId: string, navigate: ReturnType<typeof useNavigate>, toast: ReturnType<typeof useToast>, setRedirecting: (val: boolean) => void) => {
+/**
+ * Handles payment confirmation and redirection
+ */
+const handlePaymentConfirmation = (
+  orderId: string, 
+  navigate: ReturnType<typeof useNavigate>, 
+  { toast }: ReturnType<typeof useToast>, 
+  setRedirecting: (val: boolean) => void
+) => {
   setRedirecting(true);
   
   // Show confirmation toast
@@ -179,8 +188,15 @@ const handlePaymentConfirmation = (orderId: string, navigate: ReturnType<typeof 
   }), 1800);
 };
 
-// Separate function to handle failed payment redirection
-const handleFailedPayment = (status: PaymentStatus, navigate: ReturnType<typeof useNavigate>, toast: ReturnType<typeof useToast>, setRedirecting: (val: boolean) => void) => {
+/**
+ * Handles failed payment redirection
+ */
+const handleFailedPayment = (
+  status: PaymentStatus, 
+  navigate: ReturnType<typeof useNavigate>, 
+  { toast }: ReturnType<typeof useToast>, 
+  setRedirecting: (val: boolean) => void
+) => {
   setRedirecting(true);
   toast({
     title: "Pagamento não aprovado",
@@ -193,13 +209,15 @@ const handleFailedPayment = (status: PaymentStatus, navigate: ReturnType<typeof 
   setTimeout(() => navigate("/payment-failed"), 1500);
 };
 
-// Main hook function
+/**
+ * Hook to manage PIX payment status and timeout
+ */
 export const usePixPaymentStatus = ({
   paymentId,
   orderId,
   expirationDate
 }: UsePixPaymentStatusProps): UsePixPaymentStatusResult => {
-  const { toast } = useToast();
+  const toastUtils = useToast();
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState('');
   const [isExpired, setIsExpired] = useState(false);
@@ -213,11 +231,11 @@ export const usePixPaymentStatus = ({
     if (redirecting) return;
     
     if (status === "CONFIRMED") {
-      handlePaymentConfirmation(orderId, navigate, toast, setRedirecting);
+      handlePaymentConfirmation(orderId, navigate, toastUtils, setRedirecting);
     } else if (["CANCELLED", "REFUNDED", "OVERDUE"].includes(status)) {
-      handleFailedPayment(status, navigate, toast, setRedirecting);
+      handleFailedPayment(status, navigate, toastUtils, setRedirecting);
     }
-  }, [status, navigate, toast, orderId, redirecting]);
+  }, [status, navigate, toastUtils, orderId, redirecting]);
   
   // Effect to update the time left counter
   useEffect(() => {
