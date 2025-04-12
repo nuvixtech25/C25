@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PixPaymentStatus } from './PixPaymentStatus';
 import { PixQRCodeDisplay } from './PixQRCodeDisplay';
@@ -46,21 +46,12 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
   const showQRCode = isPending && !isExpired;
   
   // Effects for debugging QR code
-  React.useEffect(() => {
-    console.log("QR Code Image URL:", qrCodeImage);
-    console.log("Payment Status:", status);
-  }, [qrCodeImage, status]);
+  useEffect(() => {
+    console.log("PixPaymentContainer - QR Code Image URL:", qrCodeImage ? `${qrCodeImage.substring(0, 30)}...` : 'No QR Code');
+    console.log("PixPaymentContainer - Payment Status:", status);
+    console.log("PixPaymentContainer - Copy/Paste Key Length:", copyPasteKey ? copyPasteKey.length : 0);
+  }, [qrCodeImage, status, copyPasteKey]);
 
-  // Handle image error
-  const handleImageError = () => {
-    console.error("QR Code image failed to load:", qrCodeImage);
-    toast({
-      title: "Erro ao carregar QR Code",
-      description: "Não foi possível exibir o QR Code. Por favor, use o código PIX copia e cola.",
-      variant: "destructive",
-    });
-  };
-  
   return (
     <Card className="max-w-md mx-auto shadow-lg pix-container">
       <CardHeader>
@@ -77,23 +68,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
         {/* Exibe o QR Code apenas se o pagamento estiver pendente e não expirado */}
         {showQRCode && (
           <>
-            <div className="flex justify-center">
-              {qrCodeImage ? (
-                <img 
-                  src={qrCodeImage} 
-                  alt="QR Code PIX" 
-                  className="w-48 h-48 border-4 border-white shadow-md rounded-lg" 
-                  onError={handleImageError}
-                />
-              ) : (
-                <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg">
-                  <div className="text-center">
-                    <p className="text-sm text-gray-500 mb-2">QR Code não disponível</p>
-                    <p className="text-xs text-gray-400">Use o código copia e cola abaixo</p>
-                  </div>
-                </div>
-              )}
-            </div>
+            <PixQRCodeDisplay qrCodeImage={qrCodeImage} />
             
             <PixExpirationTimer timeLeft={timeLeft} isExpired={isExpired} />
             

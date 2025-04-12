@@ -72,8 +72,15 @@ export const generatePixPayment = async (billingData: BillingData): Promise<PixP
     const paymentId = data.payment?.id || data.paymentId || 'unknown_payment_id';
     console.log("Extracted payment ID:", paymentId);
     
-    // Extract QR code image
+    // Extract QR code image and improve logging
     let qrCodeImage = data.qrCodeImage || data.qrCodeImageUrl || data.pixQrCode?.encodedImage || '';
+    
+    // Log raw QR code data for debugging
+    console.log("Raw QR code data received:", {
+      qrCodeImage,
+      qrCode: data.qrCode || data.pixQrCode?.payload,
+      pixQrCode: data.pixQrCode
+    });
     
     // Ensure QR code image is properly formatted
     if (qrCodeImage && !qrCodeImage.startsWith('data:image') && !qrCodeImage.startsWith('http')) {

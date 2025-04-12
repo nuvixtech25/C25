@@ -1,4 +1,3 @@
-
 import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
@@ -114,7 +113,11 @@ export const handler: Handler = async (event) => {
     
     // 3. Buscar o QR Code do PIX
     const pixQrCode = await getAsaasPixQrCode(payment.id, asaasApiKey);
-    console.log('QR Code PIX gerado');
+    console.log('QR Code PIX recebido:', {
+      success: pixQrCode.success,
+      payloadLength: pixQrCode.payload ? pixQrCode.payload.length : 0,
+      encodedImageLength: pixQrCode.encodedImage ? pixQrCode.encodedImage.length : 0
+    });
     
     // 4. Salvar os dados no Supabase (tabela asaas_payments)
     const saveResult = await savePaymentData(
@@ -141,7 +144,11 @@ export const handler: Handler = async (event) => {
         customer,
         payment,
         pixQrCode,
-        paymentData: saveResult
+        paymentData: saveResult,
+        qrCodeImage: pixQrCode.encodedImage,  // Add explicit qrCodeImage field
+        qrCode: pixQrCode.payload,            // Add explicit qrCode field
+        copyPasteKey: pixQrCode.payload,      // Add explicit copyPasteKey field
+        expirationDate: pixQrCode.expirationDate  // Add explicit expirationDate field
       }),
     };
     
@@ -262,6 +269,8 @@ async function getAsaasPixQrCode(
   apiKey: string
 ): Promise<AsaasPixQrCodeResponse> {
   try {
+    console.log(`Requesting QR code for payment ID: ${paymentId}`);
+    
     const response = await fetch(`${ASAAS_API_URL}/payments/${paymentId}/pixQrCode`, {
       method: 'GET',
       headers: {
@@ -281,7 +290,12 @@ async function getAsaasPixQrCode(
       throw new Error(`Erro ao buscar QR Code PIX: ${JSON.stringify(errorData)}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    
+    // Log information about the QR code
+    console.log(`QR code received successfully. Encoded image length: ${data.encodedImage ? data.encodedImage.length : 0}`);
+    
+    return data;
   } catch (error) {
     console.error('Erro ao buscar QR Code:', error);
     throw error;
