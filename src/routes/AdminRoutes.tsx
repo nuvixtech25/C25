@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminLayout from '@/layouts/AdminLayout';
 import AdminTools from '@/pages/admin/AdminTools';
@@ -29,11 +29,15 @@ const AdminRoutes: React.FC = () => {
       <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
       
       {/* Rotas protegidas com AdminLayout */}
-      <Route element={
-        <ProtectedRoute>
-          <AdminLayout />
-        </ProtectedRoute>
-      }>
+      <Route 
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <Outlet />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      >
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/tools" element={<AdminTools />} />
         <Route path="/products" element={<ProductsPage />} />
