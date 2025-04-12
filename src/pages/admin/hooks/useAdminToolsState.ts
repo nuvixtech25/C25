@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { CheckoutCustomizationSettings } from '@/types/customization';
 import { createPreviewUrl } from '@/utils/previewUtils';
 import { supabase } from '@/integrations/supabase/client';
 
-export const useAdminToolsState = (initialCustomization) => {
+export const useAdminToolsState = (initialCustomization: CheckoutCustomizationSettings) => {
   const { toast } = useToast();
   const [settings, setSettings] = useState<CheckoutCustomizationSettings>({
     buttonColor: initialCustomization.buttonColor || '#6E59A5',
@@ -112,4 +111,3 @@ export const useAdminToolsState = (initialCustomization) => {
     handlePreview
   };
 };
-
