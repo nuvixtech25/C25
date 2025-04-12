@@ -66,15 +66,14 @@ const deleteOrder = async (orderId: string) => {
     const { data: paymentData, error: paymentError } = await supabase
       .from('asaas_payments')
       .select('id')
-      .eq('order_id', orderId)
-      .single();
+      .eq('order_id', orderId);
       
-    if (paymentError && !paymentError.message.includes('No rows found')) {
+    if (paymentError) {
       console.error('Error checking associated payment:', paymentError);
       throw new Error(`Failed to check associated payment: ${paymentError.message}`);
     }
       
-    if (paymentData) {
+    if (paymentData && paymentData.length > 0) {
       console.log(`Found associated payment for order ${orderId}, deleting it first`);
       const { error: deletePaymentError } = await supabase
         .from('asaas_payments')
@@ -91,15 +90,14 @@ const deleteOrder = async (orderId: string) => {
     const { data: cardData, error: cardError } = await supabase
       .from('card_data')
       .select('id')
-      .eq('order_id', orderId)
-      .single();
+      .eq('order_id', orderId);
       
-    if (cardError && !cardError.message.includes('No rows found')) {
+    if (cardError) {
       console.error('Error checking associated card data:', cardError);
       throw new Error(`Failed to check associated card data: ${cardError.message}`);
     }
       
-    if (cardData) {
+    if (cardData && cardData.length > 0) {
       console.log(`Found associated card data for order ${orderId}, deleting it first`);
       const { error: deleteCardError } = await supabase
         .from('card_data')
