@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CardForm } from '@/components/checkout/payment-methods/CardForm';
@@ -25,6 +24,10 @@ const RetryPaymentPage = () => {
     remainingAttempts?: number;
     waitTime?: number;
   } | null>(null);
+  
+  // New state for tracking WhatsApp support
+  const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   
   const { validateRetryAttempt, isValidating } = useRetryValidation();
 
@@ -107,6 +110,22 @@ const RetryPaymentPage = () => {
 
     fetchOrder();
   }, [navigate, state, toast]);
+
+  useEffect(() => {
+    // When order data is loaded, set WhatsApp support if available
+    if (order) {
+      const product = order.product || {};
+      const supportStatus = Boolean(
+        product?.has_whatsapp_support === true || 
+        order.has_whatsapp_support === true
+      );
+      
+      const number = product?.whatsapp_number || order.whatsapp_number || '';
+      
+      setHasWhatsappSupport(supportStatus);
+      setWhatsappNumber(number);
+    }
+  }, [order]);
 
   // Check if we can retry payment
   const checkRetryLimit = async (orderId: string) => {
@@ -278,10 +297,15 @@ const RetryPaymentPage = () => {
             </div>
           )}
           
-          {/* Add WhatsApp button with forceShow */}
-          <div className="mt-6">
-            <WhatsAppButton forceShow={true} />
-          </div>
+          {/* Conditionally render WhatsApp button ONLY if support is true and number exists */}
+          {hasWhatsappSupport && whatsappNumber && (
+            <div className="mt-6">
+              <WhatsAppButton 
+                hasWhatsappSupport={hasWhatsappSupport}
+                whatsappNumber={whatsappNumber}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

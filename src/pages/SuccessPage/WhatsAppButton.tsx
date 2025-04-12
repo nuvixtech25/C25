@@ -4,45 +4,38 @@ import { MessageCircleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface WhatsAppButtonProps {
-  hasWhatsappSupport?: boolean;
+  hasWhatsappSupport: boolean;
   whatsappNumber?: string;
-  forceShow?: boolean;
 }
 
 export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ 
   hasWhatsappSupport, 
-  whatsappNumber,
-  forceShow = false
+  whatsappNumber 
 }) => {
   useEffect(() => {
     console.log('[WhatsAppButton] Rendering with props:', { 
       hasWhatsappSupport, 
       whatsappNumber,
-      forceShow,
       hasWhatsappSupportType: typeof hasWhatsappSupport,
       whatsappNumberType: typeof whatsappNumber
     });
-  }, [hasWhatsappSupport, whatsappNumber, forceShow]);
+  }, [hasWhatsappSupport, whatsappNumber]);
 
-  // More lenient check - show by default on failed payment page
-  const shouldShowButton = forceShow || Boolean(hasWhatsappSupport || whatsappNumber);
+  // More strict check - only show if hasWhatsappSupport is true and a number exists
+  const shouldShowButton = hasWhatsappSupport === true && Boolean(whatsappNumber);
   
   if (!shouldShowButton) {
     console.log('[WhatsAppButton] Not rendering - button conditions failed:', {
       hasWhatsappSupport,
-      whatsappNumber,
-      forceShow
+      whatsappNumber
     });
     return null;
   }
 
   const formatWhatsAppUrl = () => {
-    // Default to a fallback number if none provided but support is enabled
-    const numberToUse = whatsappNumber || '5511999999999';
-    const cleanNumber = numberToUse.replace(/\D/g, '') || '';
+    const cleanNumber = whatsappNumber?.replace(/\D/g, '') || '';
     console.log('[WhatsAppButton] Creating WhatsApp URL with number:', cleanNumber);
-    const url = `https://wa.me/${cleanNumber}?text=Olá! Acabei de tentar fazer uma compra e tive um problema. Gostaria de obter ajuda.`;
-    return url;
+    return `https://wa.me/${cleanNumber}?text=Olá! Acabei de tentar fazer uma compra e tive um problema. Gostaria de obter ajuda.`;
   };
 
   return (

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -164,12 +163,12 @@ const FailedPage = () => {
             </Button>
           )}
           
-          {/* Always show WhatsApp button with forceShow prop */}
-          <WhatsAppButton 
-            hasWhatsappSupport={hasWhatsappSupport} 
-            whatsappNumber={whatsappNumber}
-            forceShow={true}
-          />
+          {hasWhatsappSupport && whatsappNumber && (
+            <WhatsAppButton 
+              hasWhatsappSupport={hasWhatsappSupport} 
+              whatsappNumber={whatsappNumber}
+            />
+          )}
         </CardFooter>
       </Card>
     </div>
