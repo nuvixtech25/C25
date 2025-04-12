@@ -9,7 +9,6 @@ interface CheckoutContainerProps {
   className?: string;
 }
 
-// Change from named export to default export
 const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ 
   children, 
   className 
@@ -18,7 +17,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
     <div className="min-h-screen bg-[#1A1A1A] text-white">
       <CheckoutHeader />
       
-      <main className={cn("container mx-auto px-4 py-4", className)}>
+      <main className={cn("container mx-auto px-4 py-8", className)}>
         {children}
       </main>
       
@@ -27,5 +26,4 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
   );
 };
 
-// Export as default instead of named export
 export default CheckoutContainer;

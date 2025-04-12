@@ -28,38 +28,40 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
   onPaymentSubmit
 }) => {
   return (
-    <div className="grid md:grid-cols-12 gap-6">
-      <div className="md:col-span-7 space-y-6">
-        <PersonalInfoSection 
-          onSubmit={onCustomerSubmit}
-          headingColor={customization.headingColor}
-        />
-        
-        {customerData && (
-          <PaymentMethodSection
-            id="payment-section"
-            paymentMethod={paymentMethod}
-            onPaymentMethodChange={onPaymentMethodChange}
-            onSubmit={onPaymentSubmit}
-            isSubmitting={isSubmitting}
+    <div className="max-w-6xl mx-auto">
+      <div className="grid md:grid-cols-12 gap-8">
+        <div className="md:col-span-7 space-y-6">
+          <PersonalInfoSection 
+            onSubmit={onCustomerSubmit}
             headingColor={customization.headingColor}
-            buttonColor={customization.buttonColor}
-            buttonText={customization.buttonText}
-            productPrice={product.price}
           />
-        )}
-      </div>
-      
-      <div className="md:col-span-5">
-        <div className="sticky top-4 space-y-6">
-          <OrderSummary 
-            product={product}
-            isDigitalProduct={customization.isDigitalProduct}
-          />
+          
+          {customerData && (
+            <PaymentMethodSection
+              id="payment-section"
+              paymentMethod={paymentMethod}
+              onPaymentMethodChange={onPaymentMethodChange}
+              onSubmit={onPaymentSubmit}
+              isSubmitting={isSubmitting}
+              headingColor={customization.headingColor}
+              buttonColor={customization.buttonColor}
+              buttonText={customization.buttonText}
+              productPrice={product.price}
+            />
+          )}
           
           <TestimonialSection
             headingColor={customization.headingColor}
           />
+        </div>
+        
+        <div className="md:col-span-5">
+          <div className="sticky top-4">
+            <OrderSummary 
+              product={product}
+              isDigitalProduct={customization.isDigitalProduct}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,74 +1,52 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { formatTime } from '@/utils/formatters';
+import { Clock } from 'lucide-react';
 
 interface CountdownBannerProps {
   message: string;
-  endTime: Date | string;
+  endTime: Date;
 }
 
-export const CountdownBanner: React.FC<CountdownBannerProps> = ({
-  message,
-  endTime
-}) => {
+export const CountdownBanner: React.FC<CountdownBannerProps> = ({ message, endTime }) => {
   const [timeLeft, setTimeLeft] = useState({
-    hours: 0,
     minutes: 0,
     seconds: 0
   });
-  
+
   useEffect(() => {
     const calculateTimeLeft = () => {
-      // Handle both Date objects and ISO strings
-      const endTimeDate = endTime instanceof Date ? endTime : new Date(endTime);
-      
-      // Make sure the date is valid before proceeding
-      if (isNaN(endTimeDate.getTime())) {
-        console.error('Invalid date provided to CountdownBanner:', endTime);
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
-      
-      const difference = endTimeDate.getTime() - new Date().getTime();
+      const now = new Date();
+      const difference = endTime.getTime() - now.getTime();
       
       if (difference <= 0) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        setTimeLeft({ minutes: 0, seconds: 0 });
         return;
       }
       
-      setTimeLeft({
-        hours: Math.floor((difference / (1000 * 60 * 60))),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60)
-      });
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      
+      setTimeLeft({ minutes, seconds });
     };
-    
+
     calculateTimeLeft();
-    const timerId = setInterval(calculateTimeLeft, 1000);
+    const timer = setInterval(calculateTimeLeft, 1000);
     
-    return () => clearInterval(timerId);
+    return () => clearInterval(timer);
   }, [endTime]);
-  
-  const formatTime = (value: number) => {
-    return value.toString().padStart(2, '0');
-  };
-  
+
+  if (timeLeft.minutes <= 0 && timeLeft.seconds <= 0) {
+    return null;
+  }
+
   return (
-    <div className="bg-gradient-to-r from-asaas-primary to-asaas-secondary text-white py-3 px-4 rounded-lg text-center">
-      <div className="flex flex-col md:flex-row items-center justify-center gap-3">
-        <p className="font-medium">{message}</p>
-        <div className="flex items-center">
-          <div className="bg-white/20 px-2 py-1 rounded text-white font-mono">
-            {formatTime(timeLeft.hours)}
-          </div>
-          <span className="mx-1">:</span>
-          <div className="bg-white/20 px-2 py-1 rounded text-white font-mono">
-            {formatTime(timeLeft.minutes)}
-          </div>
-          <span className="mx-1">:</span>
-          <div className="bg-white/20 px-2 py-1 rounded text-white font-mono">
-            {formatTime(timeLeft.seconds)}
-          </div>
-        </div>
+    <div className="bg-gradient-to-r from-black to-gray-800 text-white py-3 px-4 text-center mb-6">
+      <div className="max-w-5xl mx-auto flex items-center justify-center">
+        <Clock className="h-5 w-5 mr-2 text-yellow-300" />
+        <span className="text-base md:text-lg">
+          {message} <span className="font-bold text-yellow-300">{formatTime(timeLeft.minutes, timeLeft.seconds)}</span>
+        </span>
       </div>
     </div>
   );

@@ -4,9 +4,9 @@ import { CheckoutCustomization, Product } from '@/types/checkout';
 
 // Default customization values
 const defaultCustomization: CheckoutCustomization = {
-  buttonColor: '#F2FCE2', // Updated to soft green
+  buttonColor: '#22c55e', // Verde mais forte
   buttonText: 'Finalizar Compra',
-  headingColor: '#6E59A5',
+  headingColor: '#ffffff',
   bannerImageUrl: null,
   topMessage: 'Oferta por tempo limitado!',
   countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
