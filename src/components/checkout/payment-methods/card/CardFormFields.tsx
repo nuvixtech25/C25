@@ -21,14 +21,17 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form }) => {
   
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
     const { value } = e.target;
-    // Remove todos os espaços e caracteres não numéricos
+    // Remove all spaces and non-numeric characters
     const cleaned = value.replace(/\D/g, '');
     
-    // Adiciona espaço a cada 4 dígitos
+    // Format with spaces every 4 digits
     const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
     
-    onChange(cleaned); // Mantém o valor limpo para validação
-    e.target.value = formatted; // Atualiza o input visualmente
+    // Update the form value with the cleaned value (no spaces)
+    onChange(cleaned);
+    
+    // Update the displayed value with formatted spaces
+    e.target.value = formatted;
   };
 
   return (
