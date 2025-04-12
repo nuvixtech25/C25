@@ -22,12 +22,11 @@ export const CardFormFields: React.FC<CardFormFieldsProps> = ({ form, productPri
       <CardHolderField form={form} />
       <CardNumberField form={form} />
       
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <ExpiryDateField form={form} />
         <CvvField form={form} />
+        <InstallmentsField form={form} productPrice={productPrice} />
       </div>
-      
-      <InstallmentsField form={form} productPrice={productPrice} />
     </div>
   );
 };
@@ -124,7 +123,7 @@ const CvvField: React.FC<CardFormFieldsProps> = ({ form }) => {
               autoComplete="cc-csc"
               maxLength={isFourDigitCvv ? 4 : 3}
               type="text"
-              className="border border-gray-300 rounded py-3 px-4 w-full text-gray-700"
+              className="border border-gray-300 rounded py-3 px-4 w-full text-gray-700 text-center"
             />
           </FormControl>
           <FormMessage />
