@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Product } from '@/types/checkout';
 import { formatCurrency } from '@/utils/formatters';
 import { ShieldCheck, CreditCard, QrCode } from 'lucide-react';
