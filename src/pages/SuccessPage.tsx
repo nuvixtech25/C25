@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ShoppingBag, ArrowRight, Lock, ExternalLink } from 'lucide-react';
+import { CheckCircle, ShoppingBag, Lock, ExternalLink } from 'lucide-react';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 
 const SuccessPage = () => {
@@ -35,11 +34,6 @@ const SuccessPage = () => {
         setIsDigitalProduct(true);
       }
     }
-    
-    // Temporary check for testing digital product mode
-    // Uncomment this to force digital product buttons to appear
-    // setIsDigitalProduct(true);
-    
   }, [location.state, trackPurchase]);
 
   return (
@@ -84,39 +78,16 @@ const SuccessPage = () => {
         
         <CardFooter className="flex flex-col pb-6 gap-3">
           {isDigitalProduct ? (
-            <>
-              <Button 
-                asChild 
-                className="w-full bg-green-600 hover:bg-green-700 transition-colors px-6 py-2 h-auto text-white border-0"
-              >
-                <Link to="/access-data" className="flex items-center justify-center">
-                  Ver dados de acesso
-                  <Lock className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              
-              <Button 
-                asChild 
-                variant="outline"
-                className="w-full border-gray-200 hover:bg-gray-50 px-6 py-2 h-auto transition-colors"
-              >
-                <Link to="/access-product" className="flex items-center justify-center">
-                  Acessar produto
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </>
-          ) : (
             <Button 
               asChild 
               className="w-full bg-green-600 hover:bg-green-700 transition-colors px-6 py-2 h-auto text-white border-0"
             >
-              <Link to="/" className="flex items-center justify-center">
-                Voltar ao início
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Link to="/access-data" className="flex items-center justify-center">
+                Ver dados de acesso
+                <Lock className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-          )}
+          ) : null}
         </CardFooter>
       </Card>
     </div>
