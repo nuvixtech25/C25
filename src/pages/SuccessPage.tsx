@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ShoppingBag, Lock, X, Mail } from 'lucide-react';
+import { CheckCircle, ShoppingBag, Lock, Mail } from 'lucide-react';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 
@@ -38,22 +37,10 @@ const SuccessPage = () => {
     }
   }, [location.state, trackPurchase]);
 
-  const handleCloseWindow = () => {
-    window.close();
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-gray-50 to-gray-100">
       <Card className="max-w-md w-full shadow-lg border border-gray-100 rounded-xl overflow-hidden">
-        <CardHeader className="text-center bg-white pb-8 relative">
-          <button 
-            onClick={handleCloseWindow}
-            className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
-            aria-label="Fechar página"
-          >
-            <X className="h-5 w-5" />
-          </button>
-          
+        <CardHeader className="text-center bg-white pb-8">
           <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-green-100">
             <CheckCircle className="h-10 w-10 text-green-500" />
           </div>
@@ -107,15 +94,6 @@ const SuccessPage = () => {
               </Link>
             </Button>
           ) : null}
-          
-          <Button 
-            onClick={handleCloseWindow}
-            variant="outline"
-            className="w-full border-gray-200 hover:bg-gray-50 px-6 py-3 h-auto transition-colors text-gray-700"
-          >
-            Fechar página
-            <X className="ml-2 h-5 w-5" />
-          </Button>
         </CardFooter>
       </Card>
     </div>
