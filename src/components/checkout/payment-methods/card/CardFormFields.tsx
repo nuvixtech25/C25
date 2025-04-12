@@ -20,6 +20,12 @@ const InstallmentsField: React.FC<{ form: UseFormReturn<z.infer<typeof cardSchem
   const calculateInstallmentValue = (installments: number): string => {
     if (!productPrice || installments <= 0) return "à vista";
     
+    // For 1x, show "à vista" (in full)
+    if (installments === 1) {
+      return "à vista";
+    }
+    
+    // For 2x and above, show installment amount with "sem juros"
     const installmentValue = productPrice / installments;
     return `${installments}x ${formatCurrency(installmentValue)} sem juros`;
   };
