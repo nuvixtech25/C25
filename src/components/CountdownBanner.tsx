@@ -75,7 +75,7 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            height: isMobile ? '80px' : '110px'
+            height: isMobile ? '180px' : '220px' // Significativamente maior para mostrar o banner completo
           }}
         />
       )}

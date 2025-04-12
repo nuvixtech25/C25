@@ -44,7 +44,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
             backgroundImage: `url(${bannerImageUrl})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            height: isMobile ? '120px' : '150px' // Increased height to show full banner
+            height: isMobile ? '180px' : '220px' // Significativamente maior para mostrar o banner completo
           }}
         />
       )}
