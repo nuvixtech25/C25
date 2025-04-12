@@ -49,7 +49,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
         <Link to={checkoutUrl} className="block w-full">
-          <Button className="w-full bg-[#10B981] hover:bg-[#0D9668]">
+          <Button size="lg" className="w-full bg-[#10B981] hover:bg-[#0D9668]">
             Comprar agora
           </Button>
         </Link>
