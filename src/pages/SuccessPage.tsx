@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +12,9 @@ const SuccessPage = () => {
   const [isDigitalProduct, setIsDigitalProduct] = useState(false);
   
   useEffect(() => {
+    // For debugging
+    console.log('Location state:', location.state);
+    
     // Track purchase event if we have order data from location state
     if (location.state?.order) {
       const { order } = location.state;
@@ -19,11 +23,22 @@ const SuccessPage = () => {
         order.productPrice || 0
       );
       
-      // Check if the product is digital based on location state
-      if (location.state.productType === 'digital') {
+      // Check if the product is digital based on location state or order data
+      // Consider multiple possible properties that might indicate a digital product
+      if (
+        location.state.productType === 'digital' || 
+        order.productType === 'digital' ||
+        order.isDigital === true
+      ) {
+        console.log('Setting digital product to true');
         setIsDigitalProduct(true);
       }
     }
+    
+    // Force digital product mode for testing if needed
+    // Comment this out in production
+    // setIsDigitalProduct(true);
+    
   }, [location.state, trackPurchase]);
 
   return (
