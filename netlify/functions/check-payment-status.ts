@@ -38,7 +38,8 @@ export const handler: Handler = async (event) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'access_token': ASAAS_API_KEY
+        'access_token': ASAAS_API_KEY,
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     });
     
@@ -56,6 +57,8 @@ export const handler: Handler = async (event) => {
     const paymentData = await response.json();
     const status = paymentData.status;
     
+    console.log(`Payment status from Asaas API: ${status} for payment ${paymentId}`);
+    
     // Atualizar o status do pagamento no Supabase
     const { data: asaasPayment, error: findError } = await supabase
       .from('asaas_payments')
@@ -69,27 +72,34 @@ export const handler: Handler = async (event) => {
       // Atualizar o status na tabela asaas_payments
       const { error: updatePaymentError } = await supabase
         .from('asaas_payments')
-        .update({ status })
+        .update({ status, updated_at: new Date().toISOString() })
         .eq('payment_id', paymentId);
       
       if (updatePaymentError) {
         console.error('Erro ao atualizar status do pagamento:', updatePaymentError);
+      } else {
+        console.log(`Updated asaas_payments status to ${status}`);
       }
       
       // Atualizar o status na tabela orders
       const { error: updateOrderError } = await supabase
         .from('orders')
-        .update({ status })
+        .update({ status, updated_at: new Date().toISOString() })
         .eq('id', asaasPayment.order_id);
       
       if (updateOrderError) {
         console.error('Erro ao atualizar status do pedido:', updateOrderError);
+      } else {
+        console.log(`Updated orders status to ${status} for order ${asaasPayment.order_id}`);
       }
     }
     
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
+      },
       body: JSON.stringify({
         paymentId,
         status,

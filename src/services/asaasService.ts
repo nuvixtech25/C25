@@ -71,12 +71,24 @@ export const generatePixPayment = async (billingData: BillingData): Promise<PixP
     // Extract the payment ID correctly from the response
     const paymentId = data.payment?.id || data.paymentId || 'unknown_payment_id';
     console.log("Extracted payment ID:", paymentId);
+    
+    // Extract QR code image
+    let qrCodeImage = data.qrCodeImage || data.qrCodeImageUrl || data.pixQrCode?.encodedImage || '';
+    
+    // Ensure QR code image is properly formatted
+    if (qrCodeImage && !qrCodeImage.startsWith('data:image') && !qrCodeImage.startsWith('http')) {
+      qrCodeImage = `data:image/png;base64,${qrCodeImage}`;
+      console.log("Reformatted QR code image URL");
+    }
+    
+    // Log the final QR code image for debugging
+    console.log("QR code image to display:", qrCodeImage ? `${qrCodeImage.substring(0, 30)}...` : 'None');
 
     // Map response to a consistent format regardless of source (mock or Netlify function)
     return {
       paymentId: paymentId,
       qrCode: data.qrCode || data.pixQrCode?.payload || '',
-      qrCodeImage: data.qrCodeImage || data.qrCodeImageUrl || data.pixQrCode?.encodedImage || '',
+      qrCodeImage: qrCodeImage,
       copyPasteKey: data.copyPasteKey || data.qrCode || data.pixQrCode?.payload || '',
       expirationDate: data.expirationDate || data.pixQrCode?.expirationDate || new Date(Date.now() + 30 * 60000).toISOString(),
       status: (data.status || 'PENDING') as PaymentStatus,
@@ -118,6 +130,7 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
     console.log(`Checking payment status at: ${endpoint}`);
     
     const response = await fetch(endpoint, {
+      method: 'GET',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

@@ -8,6 +8,7 @@ import { PixCopyPasteField } from './PixCopyPasteField';
 import { PixStatusChecker } from './PixStatusChecker';
 import { PixPaymentDetails } from './PixPaymentDetails';
 import { PaymentStatus } from '@/types/checkout';
+import { useToast } from '@/hooks/use-toast';
 
 interface PixPaymentContainerProps {
   orderId: string;
@@ -40,8 +41,25 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
   isExpired,
   onCheckStatus
 }) => {
+  const { toast } = useToast();
   const isPending = status === "PENDING";
   const showQRCode = isPending && !isExpired;
+  
+  // Effects for debugging QR code
+  React.useEffect(() => {
+    console.log("QR Code Image URL:", qrCodeImage);
+    console.log("Payment Status:", status);
+  }, [qrCodeImage, status]);
+
+  // Handle image error
+  const handleImageError = () => {
+    console.error("QR Code image failed to load:", qrCodeImage);
+    toast({
+      title: "Erro ao carregar QR Code",
+      description: "Não foi possível exibir o QR Code. Por favor, use o código PIX copia e cola.",
+      variant: "destructive",
+    });
+  };
   
   return (
     <Card className="max-w-md mx-auto shadow-lg pix-container">
@@ -59,7 +77,23 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
         {/* Exibe o QR Code apenas se o pagamento estiver pendente e não expirado */}
         {showQRCode && (
           <>
-            <PixQRCodeDisplay qrCodeImage={qrCodeImage} />
+            <div className="flex justify-center">
+              {qrCodeImage ? (
+                <img 
+                  src={qrCodeImage} 
+                  alt="QR Code PIX" 
+                  className="w-48 h-48 border-4 border-white shadow-md rounded-lg" 
+                  onError={handleImageError}
+                />
+              ) : (
+                <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500 mb-2">QR Code não disponível</p>
+                    <p className="text-xs text-gray-400">Use o código copia e cola abaixo</p>
+                  </div>
+                </div>
+              )}
+            </div>
             
             <PixExpirationTimer timeLeft={timeLeft} isExpired={isExpired} />
             
