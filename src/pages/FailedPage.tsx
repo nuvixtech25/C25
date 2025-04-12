@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -92,7 +93,7 @@ const FailedPage = () => {
         </CardContent>
         
         <CardFooter className="flex flex-col gap-3 pb-8">
-          {order && order.paymentMethod === 'creditCard' && (
+          {order && (
             <Button 
               onClick={handleRetry} 
               className="w-full flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md transition-all duration-300 py-6 h-auto text-base font-medium rounded-xl"

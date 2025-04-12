@@ -31,7 +31,7 @@ const PublicRoutes: React.FC = () => {
       {/* Add redirect from /payment-failed to /failed */}
       <Route path="/payment-failed" element={<Navigate to="/failed" replace />} />
       <Route path="/pending" element={<PaymentPendingPage />} />
-      <Route path="/retry" element={<RetryPaymentPage />} />
+      <Route path="/retry-payment" element={<RetryPaymentPage />} />
       <Route path="/access" element={<AccessDataPage />} />
       <Route path="/product" element={<AccessProductPage />} />
       <Route path="/register" element={<BusinessRegistration />} />
