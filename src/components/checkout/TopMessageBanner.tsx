@@ -22,20 +22,24 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
-  // Adjustments for mobile view
+  // Responsive container classes based on device
   const containerClass = isMobile 
-    ? "w-full max-w-[100vw] h-auto aspect-video overflow-hidden" 
-    : "w-[800px] h-[600px]";
+    ? "w-full px-4 py-6 max-w-full" 
+    : "w-full max-w-[800px] h-[600px]";
   
+  const contentClass = isMobile
+    ? "p-4"
+    : "p-8";
+
   // Render banner with background image if URL is provided
   if (bannerImageUrl) {
     return (
       <div 
-        className={`${containerClass} bg-cover bg-center flex items-center justify-center`}
+        className={`${containerClass} bg-cover bg-center flex items-center justify-center rounded-lg overflow-hidden`}
         style={{ backgroundImage: `url(${bannerImageUrl})` }}
       >
-        <div className="flex flex-col items-center">
-          <div className="text-white text-sm font-medium mb-2">
+        <div className={`flex flex-col items-center ${contentClass}`}>
+          <div className="text-white text-center text-sm md:text-base lg:text-lg font-medium mb-2">
             {message}
           </div>
           {showTimer && (
@@ -52,11 +56,11 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   // Fallback to color background if no image URL
   return (
     <div 
-      className={`${containerClass} flex items-center justify-center`}
+      className={`${containerClass} flex items-center justify-center rounded-lg overflow-hidden`}
       style={{ backgroundColor }}
     >
-      <div className="flex flex-col items-center">
-        <div className="text-white text-sm font-medium mb-2">
+      <div className={`flex flex-col items-center ${contentClass}`}>
+        <div className="text-white text-center text-sm md:text-base lg:text-lg font-medium mb-2">
           {message}
         </div>
         {showTimer && (
