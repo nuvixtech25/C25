@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useRetryValidation } from '@/hooks/useRetryValidation';
@@ -25,6 +25,8 @@ export const useRetryPaymentData = () => {
   const { validateRetryAttempt, isValidating } = useRetryValidation();
   const { hasWhatsappSupport, whatsappNumber } = useWhatsAppSupport(order?.productId);
   const [hasError, setHasError] = useState(false);
+  // Use uma ref para rastrear se a validação já foi realizada para este orderId
+  const validatedOrderIds = useRef<Set<string>>(new Set());
 
   // Fetch order data if not provided in location state
   useEffect(() => {
@@ -89,10 +91,10 @@ export const useRetryPaymentData = () => {
           setOrder(fetchedOrder);
         }
 
-        // Check retry limit for the order
+        // Check retry limit for the order, mas apenas uma vez
         const currentOrder = state?.order || order;
         if (currentOrder?.id) {
-          checkRetryLimit(currentOrder.id);
+          await checkRetryLimit(currentOrder.id);
         }
       } catch (error) {
         logPaymentError("RetryPaymentPage", error, "Error fetching order");
@@ -108,12 +110,18 @@ export const useRetryPaymentData = () => {
     };
 
     fetchOrder();
-  }, [navigate, state, toast, getOrderIdFromUrl, fetchOrderById, setOrder, order]);
+  }, [navigate, state, toast, getOrderIdFromUrl, fetchOrderById, setOrder]);
 
   // Check if we can retry payment
   const checkRetryLimit = async (orderId: string) => {
     try {
       if (!orderId) return;
+      
+      // Evita verificações repetidas para o mesmo orderId
+      if (validatedOrderIds.current.has(orderId)) {
+        console.log('[RetryPaymentPage] Skipping validation for already validated order:', orderId);
+        return;
+      }
       
       console.log('[RetryPaymentPage] Checking retry limit for order:', orderId);
       
@@ -126,6 +134,8 @@ export const useRetryPaymentData = () => {
       console.log('[RetryPaymentPage] Validation result:', result);
       
       setValidationResult(result);
+      // Marca este orderId como já validado
+      validatedOrderIds.current.add(orderId);
       
       if (!result.canProceed) {
         toast({

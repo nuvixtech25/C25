@@ -47,20 +47,20 @@ const FailedPage = () => {
         console.log('[FailedPage] Order found in location state:', state.order);
         setOrder(state.order);
         
-        // Check if this is a direct redirect from a "FAILED" payment status and should
-        // go straight to retry page
-        if (state.autoRetry && state.order.id) {
-          console.log('[FailedPage] Auto-redirecting to retry page due to failed payment');
-          setHasRedirected(true);
-          
-          // Short delay to allow state to be set properly
-          setTimeout(() => {
-            navigate(`/retry-payment?orderId=${state.order.id}`, { 
-              state: { order: state.order } 
-            });
-          }, 300);
-          return;
-        }
+        // Desativando o redirecionamento automático para retry page
+        // Ao invés disso, mostramos a página de erro e o botão de retry para o usuário
+        // if (state.autoRetry && state.order.id) {
+        //   console.log('[FailedPage] Auto-redirecting to retry page due to failed payment');
+        //   setHasRedirected(true);
+        //   
+        //   // Short delay to allow state to be set properly
+        //   setTimeout(() => {
+        //     navigate(`/retry-payment?orderId=${state.order.id}`, { 
+        //       state: { order: state.order } 
+        //     });
+        //   }, 300);
+        //   return;
+        // }
         
         // Track failed purchase
         if (state.order.id && state.order.productPrice) {

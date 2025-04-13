@@ -101,7 +101,8 @@ export const useCheckoutState = (product: Product | undefined) => {
             navigate('/failed', { 
               state: { 
                 order: currentOrder,
-                autoRetry: true,
+                // Remover autoRetry para evitar o redirecionamento automático
+                // autoRetry: true,
                 product: {
                   has_whatsapp_support: product.has_whatsapp_support,
                   whatsapp_number: product.whatsapp_number,
@@ -139,7 +140,8 @@ export const useCheckoutState = (product: Product | undefined) => {
       navigate(failedUrl, {
         state: {
           order: currentOrder,
-          autoRetry: true
+          // Remover autoRetry para evitar o redirecionamento automático
+          // autoRetry: true
         }
       });
     } finally {
