@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -109,6 +110,13 @@ export const useCheckoutState = (product: Product | undefined) => {
         toast,
         defaultMessage: "Ocorreu um erro ao processar o pagamento. Tente novamente."
       });
+      
+      // Here we add the orderId to redirect on the failed page
+      if (existingOrderId) {
+        navigate(`/failed?orderId=${existingOrderId}`);
+      } else {
+        navigate('/failed');
+      }
     } finally {
       setIsSubmitting(false);
     }

@@ -1,17 +1,22 @@
 
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, RefreshCcw, XCircle, CreditCard } from 'lucide-react';
 import { Order, PaymentMethod } from '@/types/checkout';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const FailedPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(false);
   const { trackPurchase } = usePixelEvents();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Clear any WhatsApp data from localStorage to prevent it from being used
@@ -22,20 +27,80 @@ const FailedPage = () => {
       console.error('Failed to clear localStorage:', e);
     }
     
-    console.log('[FailedPage] Full location state:', JSON.stringify(state, null, 2));
-    
-    // Get order from location state if available
-    if (state?.order) {
-      setOrder(state.order);
-      
-      // We can still track failed purchases for remarketing
-      if (state.order.id && state.order.productPrice) {
-        trackPurchase(state.order.id, 0); // Value 0 for failed payment
+    const fetchOrderData = async () => {
+      // If we have order in state, use it
+      if (state?.order) {
+        console.log('[FailedPage] Order found in location state:', state.order);
+        setOrder(state.order);
+        
+        // Track failed purchase
+        if (state.order.id && state.order.productPrice) {
+          trackPurchase(state.order.id, 0); // Value 0 for failed payment
+        }
+        return;
       }
-    } else {
-      console.log('[FailedPage] No order found in location state');
-    }
-  }, [state, trackPurchase]);
+      
+      // Try to get orderId from URL query params if not in state
+      const orderId = searchParams.get('orderId');
+      if (orderId) {
+        setLoading(true);
+        try {
+          console.log('[FailedPage] Fetching order with ID:', orderId);
+          
+          const { data, error } = await supabase
+            .from('orders')
+            .select('*')
+            .eq('id', orderId)
+            .single();
+            
+          if (error) {
+            console.error('[FailedPage] Error fetching order:', error);
+            toast({
+              title: "Erro ao carregar pedido",
+              description: "Não foi possível recuperar os dados do seu pedido.",
+              variant: "destructive",
+            });
+            return;
+          }
+          
+          if (data) {
+            const fetchedOrder: Order = {
+              id: data.id,
+              customerId: data.customer_id,
+              customerName: data.customer_name,
+              customerEmail: data.customer_email,
+              customerCpfCnpj: data.customer_cpf_cnpj,
+              customerPhone: data.customer_phone,
+              productId: data.product_id,
+              productName: data.product_name,
+              productPrice: data.product_price,
+              status: data.status,
+              paymentMethod: data.payment_method,
+              asaasPaymentId: data.asaas_payment_id,
+              createdAt: data.created_at,
+              updatedAt: data.updated_at
+            };
+            
+            console.log('[FailedPage] Fetched order from database:', fetchedOrder);
+            setOrder(fetchedOrder);
+            
+            // Track failed purchase
+            if (fetchedOrder.id && fetchedOrder.productPrice) {
+              trackPurchase(fetchedOrder.id, 0); // Value 0 for failed payment
+            }
+          }
+        } catch (error) {
+          console.error('[FailedPage] Error in fetchOrderData:', error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        console.log('[FailedPage] No order found in location state and no orderId in URL');
+      }
+    };
+    
+    fetchOrderData();
+  }, [state, searchParams, trackPurchase, toast]);
 
   // Debug logs to help troubleshoot the issue
   useEffect(() => {
@@ -99,10 +164,16 @@ const FailedPage = () => {
               <p className="text-amber-700 font-medium">Não tente novamente com o mesmo cartão! O problema persistirá.</p>
             </div>
           </div>
+          
+          {loading && (
+            <div className="flex justify-center my-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500"></div>
+            </div>
+          )}
         </CardContent>
         
         <CardFooter className="flex flex-col gap-3 pb-8">
-          {order && (
+          {!loading && (
             <Button 
               onClick={handleRetry} 
               className="w-full flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md transition-all duration-300 py-6 h-auto text-base font-medium rounded-xl"
