@@ -49,15 +49,17 @@ const PaymentAnalysisPage = () => {
         setOrder(currentOrder);
         
         // Check if payment ID exists, if not or starts with temp_, proceed directly to success page
-        if (!currentOrder.asaasPaymentId || currentOrder.asaasPaymentId.startsWith('temp_')) {
+        if (!currentOrder.asaasPaymentId || 
+            currentOrder.asaasPaymentId.startsWith('temp_') || 
+            currentOrder.asaasPaymentId.startsWith('temp_retry_')) {
           console.log('[PaymentAnalysisPage] Using temporary payment ID or no payment ID, proceeding to success');
           // Wait 2 seconds before redirecting for better UX
           setTimeout(() => {
             navigate('/success', { 
               state: { 
                 order: currentOrder,
-                has_whatsapp_support: state?.product?.has_whatsapp_support || false,
-                whatsapp_number: state?.product?.whatsapp_number || ''
+                has_whatsapp_support: state?.hasWhatsappSupport || state?.product?.has_whatsapp_support || false,
+                whatsapp_number: state?.whatsappNumber || state?.product?.whatsapp_number || ''
               }
             });
           }, 2000);
@@ -77,8 +79,8 @@ const PaymentAnalysisPage = () => {
               navigate('/success', { 
                 state: { 
                   order: currentOrder,
-                  has_whatsapp_support: state?.product?.has_whatsapp_support || false,
-                  whatsapp_number: state?.product?.whatsapp_number || ''
+                  has_whatsapp_support: state?.hasWhatsappSupport || state?.product?.has_whatsapp_support || false,
+                  whatsapp_number: state?.whatsappNumber || state?.product?.whatsapp_number || ''
                 }
               });
               return;
@@ -94,8 +96,8 @@ const PaymentAnalysisPage = () => {
               navigate('/success', { 
                 state: { 
                   order: currentOrder,
-                  has_whatsapp_support: state?.product?.has_whatsapp_support || false,
-                  whatsapp_number: state?.product?.whatsapp_number || ''
+                  has_whatsapp_support: state?.hasWhatsappSupport || state?.product?.has_whatsapp_support || false,
+                  whatsapp_number: state?.whatsappNumber || state?.product?.whatsapp_number || ''
                 }
               });
               return;

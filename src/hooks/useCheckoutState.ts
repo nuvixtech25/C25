@@ -5,7 +5,6 @@ import { useToast } from '@/hooks/use-toast';
 import { CustomerData, PaymentMethod, Product, CreditCardData } from '@/types/checkout';
 import { useCheckoutOrder } from '@/hooks/useCheckoutOrder';
 import { handleApiError } from '@/utils/errorHandling';
-import { getAsaasConfig } from '@/services/asaasConfigService';
 
 export const useCheckoutState = (product: Product | undefined) => {
   const { toast } = useToast();
@@ -21,11 +20,6 @@ export const useCheckoutState = (product: Product | undefined) => {
     // Validate customer data
     if (!data.name || !data.email || !data.cpfCnpj || !data.phone) {
       console.error('Missing required customer data fields');
-      toast({
-        title: "Erro de validação",
-        description: "Por favor, preencha todos os campos corretamente",
-        variant: "destructive",
-      });
       return;
     }
     
@@ -45,7 +39,7 @@ export const useCheckoutState = (product: Product | undefined) => {
     }
     
     // Check if we have customer data in state before proceeding
-    if (!customerData) {
+    if (!customerData || !customerData.name || !customerData.email || !customerData.cpfCnpj || !customerData.phone) {
       console.error('Missing customer data');
       toast({
         title: "Erro",

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PaymentMethod } from '@/types/checkout';
 import { SectionTitle } from '../SectionTitle';
 import PaymentOptions from './PaymentOptions';
@@ -7,6 +7,7 @@ import { PaymentMethodForms } from './PaymentMethodForms';
 import { PaymentStatusMessage } from './PaymentStatusMessage';
 import { CreditCard } from 'lucide-react';
 import { CustomerData } from '@/types/checkout';
+import { useToast } from '@/hooks/use-toast';
 
 interface PaymentMethodSectionProps {
   id: string;
@@ -38,6 +39,62 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paymentError, setPaymentError] = useState(false);
+  const { toast } = useToast();
+  
+  // Add state to store customer data
+  const [customerData, setCustomerData] = useState<CustomerData | null>(null);
+  
+  // Function to extract customer data from the form
+  const extractCustomerData = (): CustomerData | null => {
+    if (!customerFormRef.current) return null;
+    
+    const formData = new FormData(customerFormRef.current);
+    const data: CustomerData = {
+      name: formData.get('name') as string || '',
+      email: formData.get('email') as string || '',
+      cpfCnpj: formData.get('cpfCnpj') as string || '',
+      phone: formData.get('phone') as string || '',
+    };
+    
+    // Validate all fields are filled
+    if (!data.name || !data.email || !data.cpfCnpj || !data.phone) {
+      return null;
+    }
+    
+    return data;
+  };
+  
+  // Update customer data when form changes
+  useEffect(() => {
+    if (!customerFormRef.current) return;
+    
+    const handleFormChange = () => {
+      const data = extractCustomerData();
+      if (data) {
+        setCustomerData(data);
+        // Submit customer data silently in the background
+        onCustomerDataSubmit(data);
+      }
+    };
+    
+    const form = customerFormRef.current;
+    
+    // Add listeners to all form inputs
+    const inputs = form.querySelectorAll('input');
+    inputs.forEach(input => {
+      input.addEventListener('blur', handleFormChange);
+    });
+    
+    // Initial extraction attempt
+    handleFormChange();
+    
+    return () => {
+      // Clean up event listeners
+      inputs.forEach(input => {
+        input.removeEventListener('blur', handleFormChange);
+      });
+    };
+  }, [customerFormRef, onCustomerDataSubmit]);
   
   const handleSubmit = async (data?: any) => {
     setIsProcessing(true);
@@ -45,45 +102,39 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
     setPaymentSuccess(false);
     
     try {
-      // Trigger the customer form validation and submission
-      if (customerFormRef.current) {
-        const formData = new FormData(customerFormRef.current);
-        const customerData: CustomerData = {
-          name: formData.get('name') as string || '',
-          email: formData.get('email') as string || '',
-          cpfCnpj: formData.get('cpfCnpj') as string || '',
-          phone: formData.get('phone') as string || '',
-        };
-        
-        // Validate customer data before submitting
-        if (!customerData.name || !customerData.email || !customerData.cpfCnpj || !customerData.phone) {
-          throw new Error("Por favor, preencha seus dados pessoais");
-        }
-        
-        console.log("Customer data before submission:", customerData);
-        
-        // Submit customer data first
-        onCustomerDataSubmit(customerData);
-        
-        // Then handle the payment with a small delay to ensure customer data is saved
-        setTimeout(() => {
-          onSubmit(data);
-        }, 100);
-        
-        // Only set success for PIX payments
-        // Credit card payments will redirect to success page
-        if (paymentMethod === 'pix') {
-          setPaymentSuccess(true);
-        }
-      } else {
-        throw new Error("Formulário não encontrado");
+      // Get the latest customer data
+      const latestCustomerData = extractCustomerData();
+      
+      // Validate customer data before submitting
+      if (!latestCustomerData) {
+        throw new Error("Por favor, preencha seus dados pessoais");
+      }
+      
+      console.log("Customer data before submission:", latestCustomerData);
+      
+      // Submit customer data first
+      onCustomerDataSubmit(latestCustomerData);
+      
+      // Then handle the payment with a small delay to ensure customer data is saved
+      setTimeout(() => {
+        onSubmit(data);
+      }, 100);
+      
+      // Only set success for PIX payments
+      // Credit card payments will redirect to success page
+      if (paymentMethod === 'pix') {
+        setPaymentSuccess(true);
       }
     } catch (error) {
       console.error('Error submitting payment:', error);
       setPaymentError(true);
       // Show toast error
       const errorMessage = error instanceof Error ? error.message : "Erro ao processar pagamento";
-      alert(errorMessage);
+      toast({
+        title: "Erro de validação",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,14 +38,18 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     mode: 'onChange'
   });
 
-  // Modified to use form.getValues() instead of explicit submit
-  const prepareCustomerDataSubmission = () => {
-    const isValid = form.formState.isValid;
-    if (isValid) {
-      const data = form.getValues();
-      onSubmit(data);
-    }
-  };
+  // Automatically submit valid form data when values change
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      // Only attempt to submit when fields change and the form is valid
+      if (type === 'change' && form.formState.isValid) {
+        const data = form.getValues();
+        onSubmit(data);
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, [form, onSubmit]);
 
   return (
     <div className="mb-6 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
@@ -147,4 +151,3 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     </div>
   );
 };
-

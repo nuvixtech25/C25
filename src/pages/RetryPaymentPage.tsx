@@ -9,7 +9,6 @@ import { useToast } from '@/hooks/use-toast';
 import { RetryPaymentLoading } from '@/components/retry-payment/RetryPaymentLoading';
 import { RetryPaymentHeader } from '@/components/retry-payment/RetryPaymentHeader';
 import { RetryCardSubmission } from '@/components/retry-payment/RetryCardSubmission';
-import { getAsaasConfig } from '@/services/asaasConfigService';
 
 const RetryPaymentPage = () => {
   const navigate = useNavigate();
