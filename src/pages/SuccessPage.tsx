@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -161,12 +160,6 @@ const SuccessPage = () => {
             hasWhatsappSupport={hasWhatsappSupport} 
             whatsappNumber={whatsappNumber}
           />
-          
-          {/* Debug info - keep this in all environments for troubleshooting */}
-          <div className="mt-3 text-xs bg-gray-100 p-2 rounded text-gray-500">
-            Debug: WhatsApp Support: {hasWhatsappSupport ? 'Yes' : 'No'}, 
-            Number: {whatsappNumber || 'None'}
-          </div>
         </CardFooter>
       </Card>
     </div>
