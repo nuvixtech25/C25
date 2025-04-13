@@ -1,4 +1,3 @@
-
 import { PaymentStatus } from '@/types/checkout';
 
 interface PaymentStatusResponse {

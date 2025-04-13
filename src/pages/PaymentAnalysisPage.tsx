@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -12,8 +11,8 @@ import { logPaymentError } from '@/utils/paymentErrorHandler';
 // Lista definitiva de status que são considerados como falha
 const FAILURE_STATUSES: PaymentStatus[] = ['DECLINED', 'FAILED', 'CANCELLED'];
 
-// Lista definitiva de status que são considerados como sucesso
-const SUCCESS_STATUSES: PaymentStatus[] = ['CONFIRMED', 'RECEIVED'];
+// Lista definitiva de status que são considerados como sucesso - Removed 'RECEIVED'
+const SUCCESS_STATUSES: PaymentStatus[] = ['CONFIRMED'];
 
 const PaymentAnalysisPage = () => {
   const { state } = useLocation();
