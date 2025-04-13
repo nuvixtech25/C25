@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Product } from '@/types/checkout';
 import ProductList from './ProductList';
 import { fetchProducts, handleDeleteProduct } from '@/services/productAdminService';
@@ -13,6 +14,7 @@ import { fetchProducts, handleDeleteProduct } from '@/services/productAdminServi
 const ProductsPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [productTypeTab, setProductTypeTab] = useState<'all' | 'digital' | 'physical'>('all');
 
   const { data: products, isLoading, error, refetch } = useQuery({
     queryKey: ['products'],
@@ -33,6 +35,20 @@ const ProductsPage = () => {
       setProductToDelete(null);
     });
   };
+
+  // Filtrar produtos com base na aba selecionada
+  const filteredProducts = React.useMemo(() => {
+    if (!products) return [];
+    
+    switch (productTypeTab) {
+      case 'digital':
+        return products.filter(product => product.type === 'digital');
+      case 'physical':
+        return products.filter(product => product.type === 'physical');
+      default:
+        return products;
+    }
+  }, [products, productTypeTab]);
 
   if (error) {
     return (
@@ -62,11 +78,41 @@ const ProductsPage = () => {
           <CardTitle>Lista de Produtos</CardTitle>
         </CardHeader>
         <CardContent>
-          <ProductList 
-            products={products} 
-            isLoading={isLoading} 
-            onDeleteClick={handleDeleteClick} 
-          />
+          <Tabs 
+            defaultValue="all" 
+            className="w-full" 
+            onValueChange={(value) => setProductTypeTab(value as 'all' | 'digital' | 'physical')}
+          >
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="all">Todos</TabsTrigger>
+              <TabsTrigger value="digital">Digitais</TabsTrigger>
+              <TabsTrigger value="physical">Físicos</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="all">
+              <ProductList 
+                products={filteredProducts} 
+                isLoading={isLoading} 
+                onDeleteClick={handleDeleteClick} 
+              />
+            </TabsContent>
+            
+            <TabsContent value="digital">
+              <ProductList 
+                products={filteredProducts} 
+                isLoading={isLoading} 
+                onDeleteClick={handleDeleteClick} 
+              />
+            </TabsContent>
+            
+            <TabsContent value="physical">
+              <ProductList 
+                products={filteredProducts} 
+                isLoading={isLoading} 
+                onDeleteClick={handleDeleteClick} 
+              />
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 
