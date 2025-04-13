@@ -19,8 +19,8 @@ export const detectCardBrand = (cardNumber: string): { brand: string; icon: Reac
     return { 
       brand: 'mastercard', 
       icon: (
-        <div className="bg-gradient-to-r from-red-500 to-yellow-400 rounded-md h-6 w-10 flex items-center justify-center text-white">
-          <span className="font-bold text-[10px]">MC</span>
+        <div className="bg-gradient-to-r from-red-600 to-yellow-500 rounded-md h-6 w-10 flex items-center justify-center text-white">
+          <span className="font-bold text-[10px] tracking-tighter">MC</span>
         </div>
       )
     };
