@@ -12,6 +12,7 @@ interface PaymentMethodFormsProps {
   buttonText: string;
   productPrice?: number;
   showQrCode?: boolean;
+  hasValidCustomerData?: boolean;
 }
 
 export const PaymentMethodForms: React.FC<PaymentMethodFormsProps> = ({
@@ -21,7 +22,8 @@ export const PaymentMethodForms: React.FC<PaymentMethodFormsProps> = ({
   buttonColor,
   buttonText,
   productPrice = 0,
-  showQrCode = false
+  showQrCode = false,
+  hasValidCustomerData = true
 }) => {
   if (paymentMethod === 'creditCard') {
     return (
@@ -43,6 +45,7 @@ export const PaymentMethodForms: React.FC<PaymentMethodFormsProps> = ({
         buttonColor={buttonColor}
         buttonText="Pagar com PIX"
         showQrCode={showQrCode}
+        hasValidCustomerData={hasValidCustomerData}
       />
     );
   }

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -10,7 +9,7 @@ import { CustomerData } from '@/types/checkout';
 import { handleCpfCnpjChange, handlePhoneChange } from '@/utils/formatters';
 
 const customerSchema = z.object({
-  name: z.string().min(1, { message: 'Nome é obrigatório' }),
+  name: z.string().min(3, { message: 'Nome completo é obrigatório (mínimo 3 caracteres)' }),
   email: z.string().email({ message: 'Email inválido' }),
   cpfCnpj: z.string().min(11, { message: 'CPF/CNPJ deve ter no mínimo 11 dígitos' }),
   phone: z.string().min(10, { message: 'Telefone deve ter no mínimo 10 dígitos' }),
@@ -109,7 +108,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   }, [form, onSubmit]);
 
   return (
-    <div className="mb-6 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
+    <div id="personal-info-section" className="mb-6 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
       <SectionTitle number={1} title="Identificação" />
       
       <Form {...form}>

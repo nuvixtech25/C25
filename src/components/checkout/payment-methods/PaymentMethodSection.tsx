@@ -43,12 +43,13 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
   
   // Add state to store customer data
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
+  const [hasValidCustomerData, setHasValidCustomerData] = useState(false);
   const lastExtractTimeRef = useRef<number>(0);
   const extractTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Function to extract customer data from the form
-  const extractCustomerData = (): CustomerData | null => {
-    if (!customerFormRef.current) return null;
+  // Function to extract and validate customer data from the form
+  const extractCustomerData = (): { data: CustomerData | null, isValid: boolean } => {
+    if (!customerFormRef.current) return { data: null, isValid: false };
     
     const formData = new FormData(customerFormRef.current);
     const data: CustomerData = {
@@ -58,12 +59,15 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
       phone: formData.get('phone') as string || '',
     };
     
-    // Validate all fields are filled
-    if (!data.name || !data.email || !data.cpfCnpj || !data.phone) {
-      return null;
-    }
+    // Validate all fields are filled and meet minimum requirements
+    const isValid = !!(
+      data.name && data.name.trim().length > 2 && 
+      data.email && data.email.includes('@') && 
+      data.cpfCnpj && data.cpfCnpj.replace(/\D/g, '').length >= 11 && 
+      data.phone && data.phone.replace(/\D/g, '').length >= 10
+    );
     
-    return data;
+    return { data, isValid };
   };
   
   // Update customer data when form changes with debouncing
@@ -81,7 +85,10 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
         const now = Date.now();
         // Only process if it's been at least 1 second since the last extraction
         if (now - lastExtractTimeRef.current > 1000) {
-          const data = extractCustomerData();
+          const { data, isValid } = extractCustomerData();
+          
+          setHasValidCustomerData(isValid);
+          
           if (data) {
             setCustomerData(data);
             // Submit customer data silently in the background
@@ -98,6 +105,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
     const inputs = form.querySelectorAll('input');
     inputs.forEach(input => {
       input.addEventListener('blur', handleFormChange);
+      input.addEventListener('input', handleFormChange);
     });
     
     // Initial extraction attempt
@@ -107,6 +115,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
       // Clean up event listeners
       inputs.forEach(input => {
         input.removeEventListener('blur', handleFormChange);
+        input.removeEventListener('input', handleFormChange);
       });
       
       // Clear any pending timeout
@@ -123,11 +132,11 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
     
     try {
       // Get the latest customer data
-      const latestCustomerData = extractCustomerData();
+      const { data: latestCustomerData, isValid } = extractCustomerData();
       
       // Validate customer data before submitting
-      if (!latestCustomerData) {
-        throw new Error("Por favor, preencha seus dados pessoais");
+      if (!isValid || !latestCustomerData) {
+        throw new Error("Por favor, preencha seus dados pessoais corretamente");
       }
       
       console.log("Customer data before submission:", latestCustomerData);
@@ -189,6 +198,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
           buttonText={buttonText}
           productPrice={productPrice}
           showQrCode={paymentSuccess}
+          hasValidCustomerData={hasValidCustomerData}
         />
         
         <PaymentStatusMessage

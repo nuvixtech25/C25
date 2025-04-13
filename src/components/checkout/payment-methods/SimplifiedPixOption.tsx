@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, AlertCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface SimplifiedPixOptionProps {
   onSubmit: () => void;
@@ -9,6 +10,7 @@ interface SimplifiedPixOptionProps {
   buttonColor: string;
   buttonText: string;
   showQrCode?: boolean;
+  hasValidCustomerData?: boolean;
 }
 
 export const SimplifiedPixOption: React.FC<SimplifiedPixOptionProps> = ({ 
@@ -16,8 +18,29 @@ export const SimplifiedPixOption: React.FC<SimplifiedPixOptionProps> = ({
   isLoading,
   buttonColor,
   buttonText,
-  showQrCode = false
+  showQrCode = false,
+  hasValidCustomerData = true
 }) => {
+  const { toast } = useToast();
+  
+  const handleSubmit = () => {
+    if (!hasValidCustomerData) {
+      toast({
+        title: "Dados incompletos",
+        description: "Por favor, preencha seus dados pessoais antes de continuar.",
+        variant: "destructive",
+      });
+      
+      // Scroll to personal info section
+      const personalInfoSection = document.getElementById('personal-info-section');
+      if (personalInfoSection) {
+        personalInfoSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      return;
+    }
+    
+    onSubmit();
+  };
   
   return (
     <div className="flex flex-col items-center">
@@ -27,8 +50,17 @@ export const SimplifiedPixOption: React.FC<SimplifiedPixOptionProps> = ({
             Finalize o pagamento para gerar o QR Code do PIX.
           </p>
           
+          {!hasValidCustomerData && (
+            <div className="w-full p-3 mb-4 bg-orange-50 border border-orange-200 rounded-md flex items-start">
+              <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5 mr-2 flex-shrink-0" />
+              <p className="text-sm text-orange-700">
+                Preencha seus dados pessoais na seção de identificação antes de prosseguir.
+              </p>
+            </div>
+          )}
+          
           <Button
-            onClick={onSubmit}
+            onClick={handleSubmit}
             disabled={isLoading}
             className="w-full"
             style={{ backgroundColor: buttonColor }}
