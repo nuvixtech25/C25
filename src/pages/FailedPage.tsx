@@ -112,22 +112,15 @@ const FailedPage = () => {
   }, [order]);
 
   const handleRetry = () => {
-    if (order) {
-      console.log('[FailedPage] Navigating to retry-payment with order:', order);
+    if (order && order.id) {
+      console.log('[FailedPage] Navigating to retry-payment with order ID:', order.id);
       
-      // Use the proper way to add query parameters in React Router v6
-      navigate(`/retry-payment?orderId=${order.id}`, { 
-        state: { 
-          order,
-          // Explicitly passing empty WhatsApp data
-          has_whatsapp_support: false,
-          whatsapp_number: ''
-        },
-        replace: true, // Use replace to avoid history issues
-      });
+      // Use the correct path to retry-payment page with orderId
+      navigate(`/retry-payment?orderId=${order.id}`);
     } else {
-      console.log('[FailedPage] No order available for retry, going to home page');
-      navigate('/');
+      console.log('[FailedPage] No order available for retry, going to retry-payment without orderId');
+      // Even without an order, still try to navigate to retry-payment
+      navigate('/retry-payment');
     }
   };
 
