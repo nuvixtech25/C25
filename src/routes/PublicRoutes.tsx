@@ -30,7 +30,7 @@ const PublicRoutes: React.FC = () => {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/failed" element={<FailedPage />} />
-      {/* Manter o redirecionamento para /failed */}
+      {/* Importante: payment-failed deve redirecionar para /failed, não para /retry-payment */}
       <Route path="/payment-failed" element={<Navigate to="/failed" replace />} />
       <Route path="/pending" element={<PaymentPendingPage />} />
       <Route path="/payment-pending" element={<Navigate to="/pending" replace />} />
