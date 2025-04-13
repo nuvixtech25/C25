@@ -61,11 +61,15 @@ const RetryPaymentPage = () => {
         id: order.id,
         customerName: order.customerName,
         customerEmail: order.customerEmail,
+        customerCpfCnpj: order.customerCpfCnpj || '',
+        customerPhone: order.customerPhone || '',
         productName: order.productName,
         productPrice: order.productPrice,
         status: order.status,
+        paymentMethod: 'creditCard',
         createdAt: order.createdAt,
-        updatedAt: order.updatedAt
+        updatedAt: order.updatedAt,
+        asaasPaymentId: `temp_retry_${Date.now()}`  // Adicionar ID temporário para garantir redirecionamento correto
       } : null;
       
       // Sempre redirecionar para a página de análise de pagamento

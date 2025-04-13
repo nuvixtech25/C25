@@ -60,6 +60,8 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
           throw new Error("Por favor, preencha seus dados pessoais");
         }
         
+        console.log("Customer data before submission:", customerData);
+        
         // Submit customer data first
         onCustomerDataSubmit(customerData);
         
