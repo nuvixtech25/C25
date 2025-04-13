@@ -14,12 +14,8 @@ export const PixStatusCheck: React.FC<PixStatusCheckProps> = ({
   onCheck, 
   hidden = false  // Default to false to maintain existing behavior
 }) => {
-  if (hidden) {
-    return null; // Return null instead of using CSS to completely remove it from the DOM
-  }
-  
   return (
-    <div className="pt-2">
+    <div className={`pt-2 ${hidden ? 'hidden' : ''}`}>
       <Button 
         onClick={onCheck} 
         disabled={checking}

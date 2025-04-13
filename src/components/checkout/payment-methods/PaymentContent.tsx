@@ -1,72 +1,93 @@
+
 import React from 'react';
-import { PaymentData, Order } from '@/types/checkout';
-import { PixPaymentContainer } from './qr-code/PixPaymentContainer';
-import { PixStatusChecker } from './qr-code/PixStatusChecker';
-import { CreditCardForm } from './credit-card/CreditCardForm';
-import { PaymentStatusMessage } from './PaymentStatusMessage';
-import { PaymentErrorMessage } from './PaymentErrorMessage';
-import { PaymentLoading } from './PaymentLoading';
+import { PixPayment } from '@/components/checkout/payment-methods/PixPayment';
+import { PaymentLoadingState } from '@/components/checkout/payment-methods/PaymentLoadingState';
+import { PaymentErrorState } from '@/components/checkout/payment-methods/PaymentErrorState';
+import { PaymentEmptyState } from '@/components/checkout/payment-methods/PaymentEmptyState';
+import { Order, PixPaymentData, PaymentStatus } from '@/types/checkout';
 
 interface PaymentContentProps {
   loading: boolean;
-  error: any;
-  paymentData: PaymentData | null;
+  error: string | null;
+  paymentData: PixPaymentData | null;
   order: Order | null;
-  paymentStatus: string | null;
+  paymentStatus: PaymentStatus | null;
   isCheckingStatus: boolean;
-  refreshStatus: () => void;
+  refreshStatus: () => Promise<void>;
 }
 
-export const PaymentContent: React.FC<PaymentContentProps> = ({
-  loading,
-  error,
-  paymentData,
+export const PaymentContent: React.FC<PaymentContentProps> = ({ 
+  loading, 
+  error, 
+  paymentData, 
   order,
   paymentStatus,
   isCheckingStatus,
   refreshStatus
 }) => {
+  console.log("PaymentContent - Props:", { 
+    loading, 
+    hasError: !!error, 
+    hasPaymentData: !!paymentData, 
+    hasOrder: !!order,
+    paymentStatus,
+    isCheckingStatus,
+    paymentValue: paymentData?.value,
+    paymentValueType: paymentData ? typeof paymentData.value : 'undefined',
+    productType: order?.productType
+  });
+  
   if (loading) {
-    return <PaymentLoading />;
+    return <PaymentLoadingState />;
   }
-
+  
   if (error) {
-    return <PaymentErrorMessage message={error.message} />;
+    return <PaymentErrorState errorMessage={error} />;
   }
-
+  
   if (!paymentData || !order) {
-    return <PaymentErrorMessage message="Dados de pagamento ou pedido não encontrados." />;
+    console.warn("PaymentContent - Dados incompletos:", { 
+      paymentData: paymentData ? "presente" : "ausente", 
+      order: order ? "presente" : "ausente" 
+    });
+    return <PaymentEmptyState />;
   }
-
-  if (paymentData.paymentMethod === 'pix') {
-    return (
-      <div>
-        <PixPaymentContainer
-          qrCodeImage={paymentData.qrCodeImage}
-          qrCode={paymentData.qrCode}
-          copyPasteKey={paymentData.copyPasteKey}
-          expirationTime={paymentData.expirationTime}
-        />
-        
-        <PixStatusChecker
-          orderId={order.id}
-          status={paymentStatus}
-          isChecking={isCheckingStatus}
-          onCheckStatus={refreshStatus}
-          hideVerifyButton={true} // Always hide the button
-        />
-      </div>
-    );
-  }
-
-  if (paymentData.paymentMethod === 'credit_card') {
-    return (
-      <CreditCardForm 
-        orderId={order.id}
-        productPrice={order.productPrice}
+  
+  console.log("PaymentContent - Renderizando PixPayment com dados:", {
+    orderId: order.id || "N/A",
+    paymentId: paymentData.paymentId || "N/A",
+    qrCodeLength: paymentData.qrCode?.length || 0,
+    imageLength: paymentData.qrCodeImage?.length || 0,
+    copyPasteKeyLength: paymentData.copyPasteKey?.length || 0,
+    value: paymentData.value,
+    valueType: typeof paymentData.value,
+    productType: order.productType
+  });
+  
+  // Ensure we have valid values for all required props
+  // More robust validation for value - ensure it's a valid number
+  const safeValue = typeof paymentData.value === 'number' && !isNaN(paymentData.value) ? 
+    paymentData.value : 
+    (typeof paymentData.value === 'string' ? parseFloat(paymentData.value) || 0 : 0);
+    
+  const safeDescription = paymentData.description || 'Pagamento';
+  
+  return (
+    <div className="animate-fade-in w-full max-w-md">
+      <PixPayment 
+        orderId={order.id || ''} 
+        qrCode={paymentData.qrCode || ''}
+        qrCodeImage={paymentData.qrCodeImage || ''}
+        copyPasteKey={paymentData.copyPasteKey || ''}
+        expirationDate={paymentData.expirationDate || new Date().toISOString()}
+        value={safeValue}
+        description={safeDescription}
+        paymentId={paymentData.paymentId || ''}
+        productType={order.productType}
+        status={paymentStatus}
+        isCheckingStatus={isCheckingStatus}
+        onCheckStatus={refreshStatus}
       />
-    );
-  }
-
-  return <PaymentStatusMessage status={paymentStatus} />;
+    </div>
+  );
 };
