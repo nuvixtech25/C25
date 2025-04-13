@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -17,20 +16,44 @@ export const useCheckoutState = (product: Product | undefined) => {
   
   const handleCustomerSubmit = (data: CustomerData) => {
     console.log('Customer data submitted:', data);
-    setCustomerData(data);
-  };
-  
-  const handlePaymentSubmit = async (paymentData?: CreditCardData, existingOrderId?: string) => {
-    if (!product || !customerData) {
-      console.error('Missing product or customer data');
+    
+    // Validate customer data
+    if (!data.name || !data.email || !data.cpfCnpj || !data.phone) {
+      console.error('Missing required customer data fields');
       toast({
-        title: "Erro",
+        title: "Erro de validação",
         description: "Por favor, preencha todos os campos corretamente",
         variant: "destructive",
       });
       return;
     }
     
+    setCustomerData(data);
+  };
+  
+  const handlePaymentSubmit = async (paymentData?: CreditCardData, existingOrderId?: string) => {
+    if (!product) {
+      console.error('Missing product data');
+      toast({
+        title: "Erro",
+        description: "Produto não encontrado",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Ensure we have customer data before proceeding
+    if (!customerData) {
+      console.error('Missing customer data');
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha seus dados pessoais",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    console.log("Processing payment with customer data:", customerData);
     setIsSubmitting(true);
     
     // Define order variable outside the try block so it's accessible in catch

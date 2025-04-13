@@ -45,9 +45,21 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
     setPaymentSuccess(false);
     
     try {
-      // Trigger the customer form submission first
+      // Check if form is valid before submission
       if (customerFormRef.current) {
-        const isValid = await customerFormRef.current.requestSubmit();
+        // Get form data
+        const formData = new FormData(customerFormRef.current);
+        
+        // Convert form data to customer data object
+        const customerData: CustomerData = {
+          name: formData.get('name') as string || '',
+          email: formData.get('email') as string || '',
+          cpfCnpj: formData.get('cpfCnpj') as string || '',
+          phone: formData.get('phone') as string || '',
+        };
+        
+        // Submit the customer data first
+        onCustomerDataSubmit(customerData);
       }
       
       // Then handle the payment
@@ -59,6 +71,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
         setPaymentSuccess(true);
       }
     } catch (error) {
+      console.error('Error submitting payment:', error);
       setPaymentError(true);
     } finally {
       setIsProcessing(false);

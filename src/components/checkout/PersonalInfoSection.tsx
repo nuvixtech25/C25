@@ -131,7 +131,6 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
               )}
             />
           </div>
-          {/* The button is removed from here */}
         </form>
       </Form>
     </div>
