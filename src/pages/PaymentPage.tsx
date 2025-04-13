@@ -9,6 +9,11 @@ import { PaymentDecorativeElements } from '@/components/checkout/payment-methods
 const PaymentPage = () => {
   const { loading, paymentData, order, error, paymentStatus, isCheckingStatus, refreshStatus } = usePaymentPage();
   
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   // Adicionar logs para diagnosticar problemas na renderização
   useEffect(() => {
     console.group('PaymentPage Component');
