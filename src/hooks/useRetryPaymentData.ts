@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -6,6 +7,7 @@ import { Order } from '@/types/checkout';
 import { useOrderData } from '@/hooks/useOrderData';
 import { useWhatsAppSupport } from '@/hooks/useWhatsAppSupport';
 import { logPaymentError } from '@/utils/paymentErrorHandler';
+import { PaymentErrorMessages } from '@/utils/paymentErrorHandler';
 
 export const useRetryPaymentData = () => {
   const { state } = useLocation();
@@ -22,6 +24,7 @@ export const useRetryPaymentData = () => {
   
   const { validateRetryAttempt, isValidating } = useRetryValidation();
   const { hasWhatsappSupport, whatsappNumber } = useWhatsAppSupport(order?.productId);
+  const [hasError, setHasError] = useState(false);
 
   // Fetch order data if not provided in location state
   useEffect(() => {
@@ -36,7 +39,13 @@ export const useRetryPaymentData = () => {
           // Check if the order object has all required fields
           if (!state.order.id || !state.order.productPrice) {
             console.error('[RetryPaymentPage] Order from state is missing required fields:', state.order);
-            throw new Error("Dados do pedido incompletos");
+            setHasError(true);
+            toast({
+              title: "Erro",
+              description: "Dados do pedido incompletos",
+              variant: "destructive",
+            });
+            return;
           }
         } else {
           // Otherwise, get orderId from URL parameters
@@ -44,31 +53,37 @@ export const useRetryPaymentData = () => {
           
           if (!orderId) {
             console.error('[RetryPaymentPage] No orderId found in URL parameters');
+            setHasError(true);
             toast({
               title: "Erro",
-              description: "ID do pedido não encontrado",
+              description: PaymentErrorMessages.ORDER_NOT_FOUND,
               variant: "destructive",
             });
-            navigate('/');
             return;
           }
 
           const fetchedOrder = await fetchOrderById(orderId);
           
           if (!fetchedOrder) {
+            setHasError(true);
             toast({
               title: "Erro",
-              description: "Pedido não encontrado",
+              description: PaymentErrorMessages.ORDER_NOT_FOUND,
               variant: "destructive",
             });
-            navigate('/');
             return;
           }
           
           // Check if all required fields are present
           if (!fetchedOrder.id || !fetchedOrder.productPrice) {
             console.error('[RetryPaymentPage] Fetched order is missing required fields:', fetchedOrder);
-            throw new Error("Dados do pedido incompletos");
+            setHasError(true);
+            toast({
+              title: "Erro",
+              description: PaymentErrorMessages.INVALID_ORDER,
+              variant: "destructive",
+            });
+            return;
           }
           
           setOrder(fetchedOrder);
@@ -81,12 +96,12 @@ export const useRetryPaymentData = () => {
         }
       } catch (error) {
         logPaymentError("RetryPaymentPage", error, "Error fetching order");
+        setHasError(true);
         toast({
           title: "Erro",
-          description: "Não foi possível carregar os dados do pedido",
+          description: PaymentErrorMessages.LOAD_ERROR,
           variant: "destructive",
         });
-        navigate('/');
       } finally {
         setLoading(false);
       }
@@ -134,6 +149,7 @@ export const useRetryPaymentData = () => {
     hasWhatsappSupport,
     whatsappNumber,
     validateRetryAttempt,
-    checkRetryLimit
+    checkRetryLimit,
+    hasError
   };
 };

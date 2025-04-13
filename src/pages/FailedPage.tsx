@@ -9,6 +9,7 @@ import FailedPageHeader from '@/components/failed-payment/FailedPageHeader';
 import FailureReasons from '@/components/failed-payment/FailureReasons';
 import RetryPaymentButton from '@/components/failed-payment/RetryPaymentButton';
 import { logPaymentError } from '@/utils/paymentErrorHandler';
+import { supabaseClientService } from '@/services/supabaseClientService';
 
 const FailedPage = () => {
   const { state } = useLocation();
@@ -18,6 +19,7 @@ const FailedPage = () => {
   const { toast } = useToast();
   const [hasRedirected, setHasRedirected] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [shouldShowRetryButton, setShouldShowRetryButton] = useState(true);
 
   useEffect(() => {
     // Clear any WhatsApp data from localStorage to prevent it from being used
@@ -43,10 +45,37 @@ const FailedPage = () => {
         console.log('[FailedPage] Order found in location state:', state.order);
         setOrder(state.order);
         
+        // Check if this is a direct redirect from a "FAILED" payment status and should
+        // go straight to retry page
+        if (state.autoRetry && state.order.id) {
+          console.log('[FailedPage] Auto-redirecting to retry page due to failed payment');
+          setHasRedirected(true);
+          
+          // Short delay to allow state to be set properly
+          setTimeout(() => {
+            navigate(`/retry-payment?orderId=${state.order.id}`, { 
+              state: { order: state.order } 
+            });
+          }, 300);
+          return;
+        }
+        
         // Track failed purchase
         if (state.order.id && state.order.productPrice) {
           trackPurchase(state.order.id, 0); // Value 0 for failed payment
         }
+        
+        // Check card attempts to decide if we should show retry button
+        if (state.order.id) {
+          try {
+            const attemptsCount = await supabaseClientService.getCardAttemptsCount(state.order.id);
+            console.log('[FailedPage] Card attempts count:', attemptsCount);
+            setShouldShowRetryButton(attemptsCount < 3); // Hide retry button if max attempts reached
+          } catch (err) {
+            console.error('[FailedPage] Error checking card attempts:', err);
+          }
+        }
+        
         return;
       }
       
@@ -61,6 +90,15 @@ const FailedPage = () => {
           
           if (fetchedOrder) {
             setOrder(fetchedOrder);
+            
+            // Check card attempts to decide if we should show retry button
+            try {
+              const attemptsCount = await supabaseClientService.getCardAttemptsCount(orderId);
+              console.log('[FailedPage] Card attempts count:', attemptsCount);
+              setShouldShowRetryButton(attemptsCount < 3); // Hide retry button if max attempts reached
+            } catch (err) {
+              console.error('[FailedPage] Error checking card attempts:', err);
+            }
             
             // Track failed purchase
             if (fetchedOrder.id && fetchedOrder.productPrice) {
@@ -106,7 +144,8 @@ const FailedPage = () => {
   // Debug logs to help troubleshoot the issue
   useEffect(() => {
     console.log('[FailedPage] Current order state:', order);
-  }, [order]);
+    console.log('[FailedPage] Should show retry button:', shouldShowRetryButton);
+  }, [order, shouldShowRetryButton]);
 
   // If we've already redirected, show a loading spinner while redirect happens
   if (hasRedirected) {
@@ -134,7 +173,7 @@ const FailedPage = () => {
         </CardContent>
         
         <CardFooter className="flex flex-col gap-3 pb-8">
-          {!loading && order && (
+          {!loading && order && shouldShowRetryButton && (
             <RetryPaymentButton order={order} isLoading={loading} />
           )}
         </CardFooter>

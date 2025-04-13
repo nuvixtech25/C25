@@ -11,9 +11,9 @@ interface RedirectPageSelectorProps {
 }
 
 export const MANUAL_REDIRECT_OPTIONS = [
-  { value: '/payment-success', label: '✅ Pagamento Concluído' },
+  { value: '/success', label: '✅ Pagamento Concluído' },
   { value: '/payment-pending', label: '⏳ Pagamento Pendente' },
-  { value: '/payment-failed', label: '❌ Pagamento Falhou' },
+  { value: '/payment-failed', label: '❌ Pagamento Falhou (Auto-Retry)' },
   { value: '/payment-analysis', label: '🔍 Pagamento em Análise' },
   { value: '/thank-you-card', label: '🙏 Agradecimento (Cartão)' },
 ] as const;

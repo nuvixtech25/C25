@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { RetryPaymentLoading } from '@/components/retry-payment/RetryPaymentLoading';
 import { RetryPaymentHeader } from '@/components/retry-payment/RetryPaymentHeader';
 import { RetryCardSubmission } from '@/components/retry-payment/RetryCardSubmission';
+import { getAsaasConfig } from '@/services/asaasConfigService';
 
 const RetryPaymentPage = () => {
   const navigate = useNavigate();
@@ -55,9 +56,14 @@ const RetryPaymentPage = () => {
         description: "Seu pagamento está sendo processado. Por favor, aguarde.",
       });
       
-      // Navigate to success page with a slight delay
+      // Get admin configuration for card redirect
+      const config = await getAsaasConfig();
+      // Use the configured redirect page, with fallback to payment analysis if not set
+      const redirectPage = config?.manual_card_redirect_page || '/payment-pending';
+      
+      // Navigate to the configured redirect page instead of hardcoded success
       setTimeout(() => {
-        navigate('/success', { 
+        navigate(redirectPage, { 
           state: { 
             order,
             has_whatsapp_support: hasWhatsappSupport,

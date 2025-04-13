@@ -46,7 +46,9 @@ const RetryPaymentButton: React.FC<RetryPaymentButtonProps> = ({ order, isLoadin
       status: order!.status || 'PENDING',
       paymentMethod: order!.paymentMethod || 'creditCard',
       createdAt: order!.createdAt,
-      updatedAt: order!.updatedAt
+      updatedAt: order!.updatedAt,
+      has_whatsapp_support: order!.has_whatsapp_support,
+      whatsapp_number: order!.whatsapp_number
     };
     
     // Log the complete object for verification

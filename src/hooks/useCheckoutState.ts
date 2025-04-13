@@ -79,16 +79,15 @@ export const useCheckoutState = (product: Product | undefined) => {
           } 
         });
       } else {
-        // Handle credit card payment with manual redirect
+        // Handle credit card payment with admin configuration
         const config = await getAsaasConfig();
-        const redirectPage = config?.manual_card_redirect_page || '/success';
+        const redirectPage = config?.manual_card_redirect_page || '/payment-pending';
         
-        console.log('[useCheckoutState] Navigating to success with WhatsApp data:', {
+        console.log('[useCheckoutState] Navigating to configured page:', redirectPage);
+        console.log('[useCheckoutState] With WhatsApp data:', {
           has_whatsapp_support: product.has_whatsapp_support,
           whatsapp_number: product.whatsapp_number
         });
-        
-        // Removed toast notification
         
         // Adding a small delay to ensure smooth navigation
         setTimeout(() => {

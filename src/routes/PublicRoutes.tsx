@@ -8,6 +8,7 @@ import Checkout from '@/pages/Checkout';
 import SuccessPage from '@/pages/SuccessPage';
 import FailedPage from '@/pages/FailedPage';
 import PaymentPendingPage from '@/pages/PaymentPendingPage';
+import PaymentAnalysisPage from '@/pages/PaymentAnalysisPage';
 import RetryPaymentPage from '@/pages/RetryPaymentPage';
 import LandingPage from '@/pages/LandingPage';
 import AccessDataPage from '@/pages/AccessDataPage';
@@ -31,6 +32,8 @@ const PublicRoutes: React.FC = () => {
       {/* Add redirect from /payment-failed to /failed */}
       <Route path="/payment-failed" element={<Navigate to="/failed" replace />} />
       <Route path="/pending" element={<PaymentPendingPage />} />
+      <Route path="/payment-pending" element={<Navigate to="/pending" replace />} />
+      <Route path="/payment-analysis" element={<PaymentAnalysisPage />} />
       <Route path="/retry-payment" element={<RetryPaymentPage />} />
       <Route path="/access" element={<AccessDataPage />} />
       <Route path="/product" element={<AccessProductPage />} />
