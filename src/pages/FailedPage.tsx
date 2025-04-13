@@ -17,6 +17,7 @@ const FailedPage = () => {
   const { trackPurchase } = usePixelEvents();
   const { toast } = useToast();
   const [hasRedirected, setHasRedirected] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     // Clear any WhatsApp data from localStorage to prevent it from being used
@@ -30,10 +31,12 @@ const FailedPage = () => {
     console.log('[FailedPage] Full location state:', state);
     
     const loadOrderData = async () => {
-      // Prevent infinite redirects
-      if (hasRedirected) {
+      // Prevent processing if we've already redirected or if this isn't the initial load
+      if (hasRedirected || !isInitialLoad) {
         return;
       }
+      
+      setIsInitialLoad(false);
       
       // If we have order in state, use it
       if (state?.order) {
@@ -53,6 +56,7 @@ const FailedPage = () => {
       const orderId = getOrderIdFromUrl();
       if (orderId) {
         try {
+          setLoading(true);
           const fetchedOrder = await fetchOrderById(orderId);
           
           if (fetchedOrder) {
@@ -68,6 +72,8 @@ const FailedPage = () => {
         } catch (error) {
           logPaymentError('FailedPage', error, 'Error fetching order by ID');
           handleMissingOrder();
+        } finally {
+          setLoading(false);
         }
       } else {
         console.log('[FailedPage] No order found in location state and no orderId in URL');
@@ -76,8 +82,11 @@ const FailedPage = () => {
     };
     
     const handleMissingOrder = () => {
+      // Only redirect once
       if (!hasRedirected) {
         setHasRedirected(true);
+        console.log('[FailedPage] Redirecting due to missing order data');
+        
         toast({
           title: "Pedido não encontrado",
           description: "Não foi possível identificar seu pedido.",
@@ -92,14 +101,14 @@ const FailedPage = () => {
     };
     
     loadOrderData();
-  }, [state, getOrderIdFromUrl, fetchOrderById, setOrder, toast, trackPurchase, navigate, hasRedirected]);
+  }, [state, getOrderIdFromUrl, fetchOrderById, setOrder, toast, trackPurchase, navigate, hasRedirected, isInitialLoad, setLoading]);
 
   // Debug logs to help troubleshoot the issue
   useEffect(() => {
     console.log('[FailedPage] Current order state:', order);
   }, [order]);
 
-  // If we've already redirected, don't render the component
+  // If we've already redirected, show a loading spinner while redirect happens
   if (hasRedirected) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-red-50">
