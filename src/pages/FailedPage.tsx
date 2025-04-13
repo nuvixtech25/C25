@@ -27,6 +27,8 @@ const FailedPage = () => {
       console.error('Failed to clear localStorage:', e);
     }
     
+    console.log('[FailedPage] Full location state:', state);
+    
     const fetchOrderData = async () => {
       // If we have order in state, use it
       if (state?.order) {
@@ -39,6 +41,8 @@ const FailedPage = () => {
         }
         return;
       }
+      
+      console.log('[FailedPage] No order found in location state');
       
       // Try to get orderId from URL query params if not in state
       const orderId = searchParams.get('orderId');
@@ -111,16 +115,16 @@ const FailedPage = () => {
     if (order) {
       console.log('[FailedPage] Navigating to retry-payment with order:', order);
       
-      // Use the proper route for retry payment and make sure it doesn't 
-      // interfere with the original checkout by using a dedicated route
-      navigate(`/retry-payment?orderId=${order.id}`, { 
+      // Instead of replace: true, use push to create a new history entry
+      // This prevents issues with the browser back button
+      navigate(`/retry-payment`, { 
+        search: `?orderId=${order.id}`, // Use the search property for query params
         state: { 
           order,
           // Explicitly passing empty WhatsApp data
           has_whatsapp_support: false,
           whatsapp_number: ''
         },
-        replace: true // Replace current history entry to prevent back button issues
       });
     } else {
       console.log('[FailedPage] No order available for retry, going to home page');

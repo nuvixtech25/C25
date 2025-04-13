@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { RefreshCcw, CreditCard } from 'lucide-react';
@@ -9,8 +10,12 @@ import { RetryLimitMessage } from '@/components/retry-payment/RetryLimitMessage'
 import { RetryCardSubmission } from '@/components/retry-payment/RetryCardSubmission';
 import { useRetryPaymentData } from '@/hooks/useRetryPaymentData';
 import { CreditCardData } from '@/types/checkout';
+import { useCheckoutOrder } from '@/hooks/useCheckoutOrder';
+import { useToast } from '@/hooks/use-toast';
 
 const RetryPaymentPage = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const { 
     order, 
     loading, 
@@ -23,24 +28,53 @@ const RetryPaymentPage = () => {
     checkRetryLimit
   } = useRetryPaymentData();
 
-  // Add a handler for card submission
+  const { saveCardData } = useCheckoutOrder();
+
+  // Process the card payment with proper error handling
   const handleCardSubmit = async (cardData: CreditCardData) => {
-    if (!order?.id) return;
+    if (!order?.id) {
+      toast({
+        title: "Erro",
+        description: "Dados do pedido não encontrados",
+        variant: "destructive",
+      });
+      return;
+    }
     
     try {
       setIsSubmitting(true);
-      // In a real implementation, this would call an API to process the payment
-      console.log('Processing payment with card data:', cardData);
+      console.log('[RetryPaymentPage] Processing payment with card data for order:', order.id);
       
-      // Simulating a request
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Save the card data to the database
+      await saveCardData(order.id, cardData);
       
-      // After submission, refresh the validation status
+      // After saving card data, refresh the validation status
       if (checkRetryLimit) {
         await checkRetryLimit(order.id);
       }
+      
+      toast({
+        title: "Processando pagamento",
+        description: "Seu pagamento está sendo processado. Por favor, aguarde.",
+      });
+      
+      // Navigate to success page with a slight delay
+      setTimeout(() => {
+        navigate('/success', { 
+          state: { 
+            order,
+            has_whatsapp_support: hasWhatsappSupport,
+            whatsapp_number: whatsappNumber
+          }
+        });
+      }, 1000);
     } catch (error) {
-      console.error('Error processing payment:', error);
+      console.error('[RetryPaymentPage] Error processing payment:', error);
+      toast({
+        title: "Erro no processamento",
+        description: "Não foi possível processar seu pagamento. Tente novamente.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
