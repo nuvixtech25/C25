@@ -17,6 +17,9 @@ import BusinessRegistration from '@/pages/BusinessRegistration';
 import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
 
+// Importe a página ThankYouCardPage
+import ThankYouCardPage from '@/pages/ThankYouCardPage';
+
 const PublicRoutes: React.FC = () => {
   return (
     <Routes>
@@ -42,6 +45,9 @@ const PublicRoutes: React.FC = () => {
       <Route path="/product" element={<AccessProductPage />} />
       <Route path="/register" element={<BusinessRegistration />} />
       <Route path="/login" element={<Login />} />
+      
+      {/* Nova rota para página de agradecimento do cartão */}
+      <Route path="/thank-you-card" element={<ThankYouCardPage />} />
       
       {/* Rota de fallback para páginas não encontradas */}
       <Route path="*" element={<NotFound />} />

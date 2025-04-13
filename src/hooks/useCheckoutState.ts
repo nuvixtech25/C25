@@ -1,18 +1,46 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { CustomerData, PaymentMethod, Product, CreditCardData } from '@/types/checkout';
 import { useCheckoutOrder } from '@/hooks/useCheckoutOrder';
 import { handleApiError } from '@/utils/errorHandling';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useCheckoutState = (product: Product | undefined) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('creditCard');
+  const [redirectPage, setRedirectPage] = useState<string>('/payment-analysis');
   
   const { isSubmitting, setIsSubmitting, createOrder, prepareBillingData, saveCardData } = useCheckoutOrder();
+  
+  // Carregar a configuração de redirecionamento do Asaas
+  useEffect(() => {
+    const loadRedirectConfig = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('asaas_config')
+          .select('manual_card_redirect_page')
+          .single();
+        
+        if (error) {
+          console.error('Erro ao carregar configuração de redirecionamento:', error);
+          return; // Use o valor padrão definido no estado
+        }
+        
+        if (data && data.manual_card_redirect_page) {
+          console.log('Configuração de redirecionamento carregada:', data.manual_card_redirect_page);
+          setRedirectPage(data.manual_card_redirect_page);
+        }
+      } catch (err) {
+        console.error('Falha ao carregar configuração de redirecionamento:', err);
+      }
+    };
+    
+    loadRedirectConfig();
+  }, []);
   
   const handleCustomerSubmit = (data: CustomerData) => {
     console.log('Customer data submitted:', data);
@@ -105,8 +133,8 @@ export const useCheckoutState = (product: Product | undefined) => {
           } 
         });
       } else {
-        // Para cartão de crédito, sempre redirecionar para análise de pagamento
-        console.log('[useCheckoutState] Navigating to payment analysis page');
+        // Para cartão de crédito, usar a página configurada no painel de administrador
+        console.log(`[useCheckoutState] Navigating to configured redirect page: ${redirectPage}`);
                 
         // Extract only serializable data for navigation
         const safeOrderData = currentOrder ? {
@@ -142,7 +170,7 @@ export const useCheckoutState = (product: Product | undefined) => {
         setTimeout(() => {
           // Make sure safeOrderData is not null before navigating
           if (safeOrderData) {
-            navigate('/payment-analysis', { 
+            navigate(redirectPage, { 
               state: { 
                 order: safeOrderData,
                 billingData,
