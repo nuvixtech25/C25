@@ -123,11 +123,25 @@ export const useCheckoutState = (product: Product | undefined) => {
         console.error("Error accessing order ID:", err);
       }
       
-      // Navigate to failed page, including orderId if available
+      // Navigate to failed page, including orderId if available AND pass the order object in state
       if (orderId) {
-        navigate(`/failed?orderId=${orderId}`);
+        console.log('[useCheckoutState] Redirecting to failed page with order ID:', orderId);
+        console.log('[useCheckoutState] Order object:', order);
+        
+        navigate(`/failed`, {
+          state: {
+            order,
+            autoRetry: true
+          }
+        });
       } else {
-        navigate('/failed');
+        // Even without orderId, we should pass any available order data
+        navigate('/failed', {
+          state: {
+            order,
+            autoRetry: true
+          }
+        });
       }
     } finally {
       setIsSubmitting(false);

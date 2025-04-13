@@ -101,7 +101,7 @@ const PaymentAnalysisPage = () => {
             }
             
             // If payment status is FAILED, CANCELLED, or DECLINED, navigate to failed
-            if (['FAILED', 'CANCELLED', 'DECLINED'].includes(status)) {
+            if (status === 'FAILED' || status === 'CANCELLED' || status === 'DECLINED') {
               clearInterval(pollingInterval);
               // Redirect to the failed page with autoRetry flag to trigger immediate retry
               navigate('/failed', { 
@@ -129,7 +129,11 @@ const PaymentAnalysisPage = () => {
         
         // Navigate to homepage on error
         setTimeout(() => {
-          navigate('/');
+          navigate('/', {
+            state: {
+              errorMessage: "Falha ao processar pagamento. Tente novamente."
+            }
+          });
         }, 2000);
       } finally {
         setLoading(false);
