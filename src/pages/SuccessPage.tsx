@@ -25,7 +25,6 @@ const SuccessPage = () => {
         const { order, product } = location.state;
         
         try {
-          // Fetch additional WhatsApp info from the product
           const productInfo = await supabaseClientService.getProductWhatsAppInfo(order.productId);
           
           console.log('[SuccessPage] Product WhatsApp Info:', {
@@ -35,7 +34,6 @@ const SuccessPage = () => {
             locationWhatsappNumber: location.state.whatsapp_number
           });
 
-          // Prioritize WhatsApp support details
           const finalWhatsappSupport = 
             productInfo.hasWhatsappSupport || 
             location.state.has_whatsapp_support || 
@@ -56,7 +54,6 @@ const SuccessPage = () => {
           setHasWhatsappSupport(finalWhatsappSupport);
           setWhatsappNumber(finalWhatsappNumber);
 
-          // Fallback to localStorage if needed
           if (finalWhatsappSupport || finalWhatsappNumber) {
             localStorage.setItem('whatsapp_support', finalWhatsappSupport.toString());
             if (finalWhatsappNumber) {
@@ -71,6 +68,16 @@ const SuccessPage = () => {
 
     fetchWhatsAppInfo();
   }, [location.state]);
+
+  // Log WhatsApp button props before rendering
+  useEffect(() => {
+    console.log('[SuccessPage] WhatsApp Button Props:', { 
+      hasWhatsappSupport, 
+      whatsappNumber,
+      hasWhatsappSupportType: typeof hasWhatsappSupport,
+      whatsappNumberType: typeof whatsappNumber
+    });
+  }, [hasWhatsappSupport, whatsappNumber]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-gray-50 to-gray-100">
@@ -102,14 +109,6 @@ const SuccessPage = () => {
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
           
-          {/* Log WhatsApp Button props here instead of inline rendering */}
-          {console.log('[SuccessPage] Rendering WhatsApp Button with:', { 
-            hasWhatsappSupport, 
-            whatsappNumber,
-            hasWhatsappSupportType: typeof hasWhatsappSupport,
-            whatsappNumberType: typeof whatsappNumber
-          })}
-          
           <WhatsAppButton 
             hasWhatsappSupport={hasWhatsappSupport} 
             whatsappNumber={whatsappNumber}
@@ -122,3 +121,4 @@ const SuccessPage = () => {
 };
 
 export default SuccessPage;
+
