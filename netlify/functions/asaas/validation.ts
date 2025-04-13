@@ -34,7 +34,8 @@ export function parseAndValidateRequestData(event: any) {
       hasPhone: !!(data.phone || data.customer?.phone),
       hasOrderId: !!data.orderId,
       hasValue: !!data.value,
-      valueType: typeof data.value
+      valueType: typeof data.value,
+      valueRaw: data.value
     });
 
     // Validações básicas
@@ -54,6 +55,30 @@ export function parseAndValidateRequestData(event: any) {
       throw new Error('Valor não fornecido');
     }
     
+    // Normalizar e verificar o valor
+    let normalizedValue;
+    if (typeof data.value === 'string') {
+      // Remover caracteres não numéricos, exceto ponto e vírgula
+      const cleanedValue = data.value.replace(/[^\d.,]/g, '').replace(',', '.');
+      normalizedValue = parseFloat(cleanedValue);
+      
+      if (isNaN(normalizedValue)) {
+        console.error(`Erro ao converter valor para número: "${data.value}" -> "${cleanedValue}" -> NaN`);
+        throw new Error(`Valor inválido: "${data.value}" não é um número válido`);
+      }
+    } else if (typeof data.value === 'number') {
+      normalizedValue = data.value;
+    } else {
+      console.error(`Tipo de valor não suportado: ${typeof data.value}`);
+      throw new Error(`Tipo de valor não suportado: ${typeof data.value}`);
+    }
+    
+    if (normalizedValue <= 0) {
+      throw new Error(`Valor deve ser maior que zero, valor recebido: ${normalizedValue}`);
+    }
+    
+    console.log(`Valor normalizado: ${normalizedValue}`);
+    
     // Normalizar estrutura dos dados
     return {
       name: data.name || data.customer?.name,
@@ -61,7 +86,7 @@ export function parseAndValidateRequestData(event: any) {
       email: data.email || data.customer?.email || '',
       phone: data.phone || data.customer?.phone || '',
       orderId: data.orderId,
-      value: typeof data.value === 'string' ? parseFloat(data.value) : data.value,
+      value: normalizedValue,
       description: data.description || `Pedido #${data.orderId}`
     };
   } catch (error) {

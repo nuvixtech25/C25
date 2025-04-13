@@ -55,23 +55,49 @@ export const handler: Handler = async (event) => {
     console.log(`Chave API definida: ${asaasApiKey ? 'Sim' : 'Não'}`);
     
     if (!asaasApiKey) {
-      console.error(`Chave de API ${usesSandbox ? 'sandbox' : 'produção'} não configurada`);
-      return createErrorResponse(500, `Chave de API ${usesSandbox ? 'sandbox' : 'produção'} não configurada`);
+      const modoAtual = usesSandbox ? 'sandbox' : 'produção';
+      console.error(`Chave de API ${modoAtual} não configurada`);
+      return createErrorResponse(500, `Chave de API ${modoAtual} não configurada. Por favor, configure a chave ${modoAtual} no painel administrativo.`);
     }
 
+    // Log do corpo da requisição para inspeção
+    console.log('Corpo da requisição recebida:', event.body);
+    
     // Parse and validate request data
     const requestData = parseAndValidateRequestData(event);
-    console.log('Dados recebidos:', requestData);
+    console.log('Dados processados e validados:', requestData);
 
     // Main process flow
-    const result = await processPaymentFlow(requestData, asaasApiKey, supabase, apiUrl);
-
-    // Return successful response
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(result),
-    };
+    try {
+      const result = await processPaymentFlow(requestData, asaasApiKey, supabase, apiUrl);
+      
+      // Return successful response
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(result),
+      };
+    } catch (processingError) {
+      console.error('Erro no processamento do pagamento:', processingError);
+      
+      let errorMessage = 'Erro ao processar o pagamento';
+      if (processingError.name === 'AsaasApiError') {
+        errorMessage = processingError.message;
+        
+        // Log de detalhes específicos para diagnóstico
+        if (processingError.details) {
+          console.error('Detalhes do erro da API Asaas:', JSON.stringify(processingError.details, null, 2));
+          
+          // Se houver mensagens de erro específicas da API, incluí-las na resposta
+          if (processingError.details.errors && Array.isArray(processingError.details.errors)) {
+            const errorDetails = processingError.details.errors.map(e => e.description || e.message).join('; ');
+            errorMessage += `: ${errorDetails}`;
+          }
+        }
+      }
+      
+      return createErrorResponse(500, errorMessage);
+    }
   } catch (error) {
     console.error('Erro na função:', error);
     
