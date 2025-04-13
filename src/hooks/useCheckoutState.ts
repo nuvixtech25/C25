@@ -114,16 +114,23 @@ export const useCheckoutState = (product: Product | undefined) => {
         defaultMessage: "Ocorreu um erro ao processar o pagamento. Tente novamente."
       });
       
-      // Here we need to be more defensive - we need to check if order exists before using it
-      if (typeof error === 'object' && error !== null) {
-        // Pass the orderId as a query parameter if it exists
-        if (order && order.id) {
-          navigate(`/failed?orderId=${order.id}`);
-        } else {
-          navigate('/failed');
-        }
+      // Store the current orderId to use for navigation
+      let orderId: string | undefined;
+      
+      // Here we need to be more defensive - we need to check if a created order exists
+      try {
+        // Try to safely access order.id if it was defined during the try block
+        // @ts-ignore - Using optional chaining to be safe
+        orderId = order?.id;
+      } catch (err) {
+        // If there's any error accessing order.id, just leave orderId as undefined
+        console.error("Error accessing order ID:", err);
+      }
+      
+      // Navigate to failed page, including orderId if available
+      if (orderId) {
+        navigate(`/failed?orderId=${orderId}`);
       } else {
-        // Generic error case with no order information
         navigate('/failed');
       }
     } finally {
