@@ -114,11 +114,16 @@ export const useCheckoutState = (product: Product | undefined) => {
         defaultMessage: "Ocorreu um erro ao processar o pagamento. Tente novamente."
       });
       
-      // Here we pass the orderId in the URL query params for the failed page
-      // so that the FailedPage component can retrieve the order data
-      if (order?.id) {
-        navigate(`/failed?orderId=${order.id}`);
+      // Here we need to be more defensive - we need to check if order exists before using it
+      if (typeof error === 'object' && error !== null) {
+        // Pass the orderId as a query parameter if it exists
+        if (order && order.id) {
+          navigate(`/failed?orderId=${order.id}`);
+        } else {
+          navigate('/failed');
+        }
       } else {
+        // Generic error case with no order information
         navigate('/failed');
       }
     } finally {

@@ -115,16 +115,15 @@ const FailedPage = () => {
     if (order) {
       console.log('[FailedPage] Navigating to retry-payment with order:', order);
       
-      // Instead of replace: true, use push to create a new history entry
-      // This prevents issues with the browser back button
-      navigate(`/retry-payment`, { 
-        search: `?orderId=${order.id}`, // Use the search property for query params
+      // Use the proper way to add query parameters in React Router v6
+      navigate(`/retry-payment?orderId=${order.id}`, { 
         state: { 
           order,
           // Explicitly passing empty WhatsApp data
           has_whatsapp_support: false,
           whatsapp_number: ''
         },
+        replace: true, // Use replace to avoid history issues
       });
     } else {
       console.log('[FailedPage] No order available for retry, going to home page');
