@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PaymentStatus } from '@/types/checkout';
 import { PixPaymentContainer } from './qr-code/PixPaymentContainer';
 
@@ -35,6 +35,29 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
   // Ensure value is a valid number
   const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
   
+  // Calculate the time left in seconds (15 minutes = 900 seconds)
+  const [timeLeft, setTimeLeft] = useState<number>(900);
+  const [isExpired, setIsExpired] = useState(false);
+  
+  // Initialize timer on component mount
+  useEffect(() => {
+    // Start with 15 minutes (900 seconds)
+    setTimeLeft(900);
+    
+    const timer = setInterval(() => {
+      setTimeLeft(prevTime => {
+        if (prevTime <= 1) {
+          clearInterval(timer);
+          setIsExpired(true);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, []);
+  
   console.log("PixPayment - Rendering with props:", {
     orderId,
     paymentId: paymentId || "N/A",
@@ -47,14 +70,12 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
     description,
     productType,
     status,
-    isCheckingStatus
+    isCheckingStatus,
+    timeLeft
   });
   
   // Ensure we have valid values for all props before passing them to child components
   const safeDescription = description || 'Pagamento PIX';
-  
-  // Use um hook personalizado para gerenciar o status do pagamento e timeout se nenhum status for fornecido
-  // Se status e onCheckStatus forem fornecidos, usamos eles em vez do hook
   
   // Log when payment status changes
   useEffect(() => {
@@ -73,8 +94,8 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
       description={safeDescription}
       status={status || "PENDING"}
       isCheckingStatus={isCheckingStatus}
-      timeLeft={""} // Isso será calculado internamente se necessário
-      isExpired={false} // Será determinado internamente se necessário
+      timeLeft={timeLeft.toString()} 
+      isExpired={isExpired}
       onCheckStatus={onCheckStatus}
       productType={productType}
     />

@@ -7,24 +7,19 @@ interface PixExpirationTimerProps {
   isExpired: boolean;
 }
 
-// Helper function to format time in HH:MM:SS
+// Helper function to format time in MM:SS format
 const formatTime = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
+  const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
   
-  return [
-    hours > 0 ? String(hours).padStart(2, '0') : null,
-    String(minutes).padStart(2, '0'),
-    String(remainingSeconds).padStart(2, '0')
-  ].filter(Boolean).join(':');
+  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 };
 
 export const PixExpirationTimer: React.FC<PixExpirationTimerProps> = ({ 
   timeLeft,
   isExpired 
 }) => {
-  // Convert timeLeft to number since it might come as string
+  // Convert timeLeft to number since it comes as string
   const timeLeftNumber = parseInt(timeLeft, 10) || 0;
   
   if (isExpired) {
