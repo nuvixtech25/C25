@@ -19,7 +19,7 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   fullWidth = false
 }) => {
   useEffect(() => {
-    console.log('[WhatsAppButton] Rendering with props:', { 
+    console.log('[WhatsAppButton] Detailed Rendering Props:', { 
       hasWhatsappSupport, 
       whatsappNumber,
       number,
@@ -28,12 +28,18 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     });
   }, [hasWhatsappSupport, whatsappNumber, number]);
 
-  // Use number prop if provided, otherwise use whatsappNumber
   const phoneNumber = number || whatsappNumber;
   
-  // More strict check - only show if we have a phone number and either hasWhatsappSupport is true or it's not provided
-  const shouldShowButton = Boolean(phoneNumber) && (hasWhatsappSupport !== false);
+  // More robust check for displaying the WhatsApp button
+  const shouldShowButton = Boolean(phoneNumber) && 
+    (hasWhatsappSupport !== false && hasWhatsappSupport !== undefined);
   
+  console.log('[WhatsAppButton] Button Visibility Checks:', {
+    phoneNumber,
+    hasWhatsappSupport,
+    shouldShowButton
+  });
+
   if (!shouldShowButton) {
     console.log('[WhatsAppButton] Not rendering - button conditions failed:', {
       hasWhatsappSupport,
@@ -67,3 +73,4 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     </Button>
   );
 };
+

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +7,7 @@ import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 import { EmailConfirmationSection } from './SuccessPage/EmailConfirmationSection';
 import { DigitalProductSection, DigitalProductButton } from './SuccessPage/DigitalProductSection';
 import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
+import { supabaseClientService } from '@/services/supabaseClientService';
 
 const SuccessPage = () => {
   const location = useLocation();
@@ -17,114 +17,59 @@ const SuccessPage = () => {
   const [whatsappNumber, setWhatsappNumber] = useState(''); 
   
   useEffect(() => {
-    console.log('[SuccessPage] Full location state:', JSON.stringify(location.state, null, 2));
-    
-    // Try to get data from navigation state first
-    if (location.state?.order) {
-      const { order, product } = location.state;
+    const fetchWhatsAppInfo = async () => {
+      console.log('[SuccessPage] Full location state:', JSON.stringify(location.state, null, 2));
       
-      console.log('[SuccessPage] Product data:', {
-        hasWhatsappSupport: product?.has_whatsapp_support,
-        whatsappNumber: product?.whatsapp_number,
-        orderWhatsappNumber: order.whatsapp_number
-      });
-      
-      // Track purchase event
-      trackPurchase(
-        order.id || 'unknown-order',
-        order.productPrice || 0
-      );
-      
-      // Check if the product is digital
-      if (
-        location.state.productType === 'digital' || 
-        order.productType === 'digital' ||
-        order.isDigital === true ||
-        product?.type === 'digital'
-      ) {
-        console.log('[SuccessPage] Digital product detected');
-        setIsDigitalProduct(true);
-      }
-      
-      // IMPROVED: Process WhatsApp data with more reliable checks
-      const productHasWhatsappSupport = Boolean(
-        product?.has_whatsapp_support === true || 
-        location.state.has_whatsapp_support === true
-      );
-                                        
-      console.log('[SuccessPage] WhatsApp support status:', productHasWhatsappSupport);
-      setHasWhatsappSupport(productHasWhatsappSupport);
-      
-      // Get WhatsApp number from any available source with priority
-      const productNumber = product?.whatsapp_number;
-      const locationNumber = location.state.whatsapp_number;
-      const orderNumber = order.whatsapp_number;
+      if (location.state?.order) {
+        const { order, product } = location.state;
         
-      console.log('[SuccessPage] WhatsApp number sources:', {
-        productNumber,
-        locationNumber,
-        orderNumber
-      });
-      
-      // Use the first available number with priority order
-      const wNumber = productNumber || locationNumber || orderNumber || '';
-        
-      console.log('[SuccessPage] Setting WhatsApp number:', wNumber);
-      setWhatsappNumber(wNumber);
-      
-      // Store in localStorage as fallback
-      if (productHasWhatsappSupport || wNumber) {
         try {
-          localStorage.setItem('whatsapp_support', productHasWhatsappSupport.toString());
-          if (wNumber) localStorage.setItem('whatsapp_number', wNumber);
-          console.log('[SuccessPage] Stored WhatsApp data in localStorage for fallback');
-        } catch (e) {
-          console.error('[SuccessPage] Failed to store in localStorage:', e);
-        }
-      }
-    } else {
-      // No state available, try to get from localStorage as fallback
-      try {
-        const storedSupport = localStorage.getItem('whatsapp_support');
-        const storedNumber = localStorage.getItem('whatsapp_number');
-        
-        console.log('[SuccessPage] No order data found - checking localStorage:', {
-          storedSupport,
-          storedNumber
-        });
-        
-        if (storedSupport === 'true') {
-          setHasWhatsappSupport(true);
-        }
-        
-        if (storedNumber) {
-          setWhatsappNumber(storedNumber);
-        } else if (process.env.NODE_ENV === 'development') {
-          // For testing in development environment only - enable WhatsApp with test number
-          setHasWhatsappSupport(true);
-          setWhatsappNumber('5511999999999');
-        }
-      } catch (e) {
-        console.error('[SuccessPage] Failed to read from localStorage:', e);
-        
-        // Last resort fallback for development only
-        if (process.env.NODE_ENV === 'development') {
-          setHasWhatsappSupport(true);
-          setWhatsappNumber('5511999999999');
-        }
-      }
-    }
-  }, [location.state, trackPurchase]);
+          // Fetch additional WhatsApp info from the product
+          const productInfo = await supabaseClientService.getProductWhatsAppInfo(order.productId);
+          
+          console.log('[SuccessPage] Product WhatsApp Info:', {
+            productHasWhatsappSupport: productInfo.hasWhatsappSupport,
+            productWhatsappNumber: productInfo.whatsappNumber,
+            orderWhatsappNumber: order.whatsapp_number,
+            locationWhatsappNumber: location.state.whatsapp_number
+          });
 
-  // Add debug rendering information
-  useEffect(() => {
-    console.log('[SuccessPage] Current component state:', {
-      isDigitalProduct,
-      hasWhatsappSupport,
-      whatsappNumber,
-      whatsappNumberLength: whatsappNumber?.length || 0
-    });
-  }, [isDigitalProduct, hasWhatsappSupport, whatsappNumber]);
+          // Prioritize WhatsApp support details
+          const finalWhatsappSupport = 
+            productInfo.hasWhatsappSupport || 
+            location.state.has_whatsapp_support || 
+            order.has_whatsapp_support || 
+            false;
+
+          const finalWhatsappNumber = 
+            productInfo.whatsappNumber || 
+            location.state.whatsapp_number || 
+            order.whatsapp_number || 
+            '';
+
+          console.log('[SuccessPage] Final WhatsApp Details:', {
+            hasWhatsappSupport: finalWhatsappSupport,
+            whatsappNumber: finalWhatsappNumber
+          });
+
+          setHasWhatsappSupport(finalWhatsappSupport);
+          setWhatsappNumber(finalWhatsappNumber);
+
+          // Fallback to localStorage if needed
+          if (finalWhatsappSupport || finalWhatsappNumber) {
+            localStorage.setItem('whatsapp_support', finalWhatsappSupport.toString());
+            if (finalWhatsappNumber) {
+              localStorage.setItem('whatsapp_number', finalWhatsappNumber);
+            }
+          }
+        } catch (error) {
+          console.error('[SuccessPage] Error fetching WhatsApp info:', error);
+        }
+      }
+    };
+
+    fetchWhatsAppInfo();
+  }, [location.state]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-gray-50 to-gray-100">
@@ -156,10 +101,17 @@ const SuccessPage = () => {
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
           
-          {/* Always attempt to render the WhatsApp button, let the component decide visibility */}
+          {console.log('[SuccessPage] Rendering WhatsApp Button with:', { 
+            hasWhatsappSupport, 
+            whatsappNumber,
+            hasWhatsappSupportType: typeof hasWhatsappSupport,
+            whatsappNumberType: typeof whatsappNumber
+          })}
+          
           <WhatsAppButton 
             hasWhatsappSupport={hasWhatsappSupport} 
             whatsappNumber={whatsappNumber}
+            message={`Olá! Acabei de fazer um pagamento para o pedido ${location.state?.order?.id || 'recente'} e gostaria de confirmar o recebimento.`}
           />
         </CardFooter>
       </Card>
