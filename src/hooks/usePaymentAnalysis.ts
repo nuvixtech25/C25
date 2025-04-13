@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -107,21 +108,24 @@ export const usePaymentAnalysis = ({
         
         // First check status in our database
         try {
-          const refreshedOrder = await fetchOrderById(currentOrder.id);
-          
-          if (refreshedOrder && FAILURE_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
-            clearInterval(pollingInterval);
-            console.log('[PaymentAnalysis] Order status updated to failed in database');
-            navigateToRetryPayment(refreshedOrder);
-            return;
-          }
-          
-          // If status has been updated to confirmed, go to success page
-          if (refreshedOrder && SUCCESS_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
-            clearInterval(pollingInterval);
-            console.log('[PaymentAnalysis] Order confirmed in database, navigating to success');
-            navigateToSuccess(refreshedOrder);
-            return;
+          // Ensure the order ID is available and not undefined
+          if (currentOrder.id) {
+            const refreshedOrder = await fetchOrderById(currentOrder.id);
+            
+            if (refreshedOrder && FAILURE_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
+              clearInterval(pollingInterval);
+              console.log('[PaymentAnalysis] Order status updated to failed in database');
+              navigateToRetryPayment(refreshedOrder);
+              return;
+            }
+            
+            // If status has been updated to confirmed, go to success page
+            if (refreshedOrder && SUCCESS_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
+              clearInterval(pollingInterval);
+              console.log('[PaymentAnalysis] Order confirmed in database, navigating to success');
+              navigateToSuccess(refreshedOrder);
+              return;
+            }
           }
         } catch (err) {
           console.error('[PaymentAnalysis] Error checking order status in database:', err);
