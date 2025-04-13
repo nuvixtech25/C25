@@ -40,7 +40,7 @@ export const useRetryPaymentData = () => {
           orderData = state.order;
           
           // Verifique se o objeto do pedido tem todos os campos necessários
-          if (!orderData.id || !orderData.productPrice) {
+          if (orderData && (!orderData.id || !orderData.productPrice)) {
             console.error('[RetryPaymentPage] Order from state is missing required fields:', orderData);
             throw new Error("Dados do pedido incompletos");
           }
