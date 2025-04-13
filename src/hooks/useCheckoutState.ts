@@ -88,12 +88,9 @@ export const useCheckoutState = (product: Product | undefined) => {
           whatsapp_number: product.whatsapp_number
         });
         
-        toast({
-          title: "Pagamento com cartão processado",
-          description: "Redirecionando para a página de sucesso.",
-        });
+        // Removed toast notification
         
-        // Adding a small delay to ensure the user sees the toast message before redirect
+        // Adding a small delay to ensure smooth navigation
         setTimeout(() => {
           navigate(redirectPage, { 
             state: { 
