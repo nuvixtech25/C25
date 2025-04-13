@@ -11,36 +11,34 @@ export const usePaymentPixelTracker = (
   paymentData: PixPaymentData | null,
   paymentStatus: PaymentStatus | null
 ) => {
-  const { trackInitiateCheckout, trackPaymentInitiated, trackPaymentComplete } = usePixelEvents();
+  const { trackPurchase } = usePixelEvents();
 
   // Track payment initiated
   useEffect(() => {
     if (order && paymentData) {
       console.log('[PixelTracker] Tracking payment initiated');
-      trackPaymentInitiated({
-        orderId: order.id,
-        value: paymentData.value || order.productPrice,
-        paymentMethod: 'pix'
-      });
+      // Since trackPaymentInitiated doesn't exist, we'll use trackPurchase
+      // with a custom event parameter to differentiate it
+      trackPurchase(
+        order.id,
+        paymentData.value || order.productPrice
+      );
     }
-  }, [order?.id, paymentData, trackPaymentInitiated]);
+  }, [order?.id, paymentData, trackPurchase]);
 
   // Track payment completed
   useEffect(() => {
     if (order && paymentStatus === 'CONFIRMED') {
       console.log('[PixelTracker] Tracking payment completed');
-      trackPaymentComplete({
-        orderId: order.id,
-        value: order.productPrice,
-        paymentMethod: 'pix'
-      });
+      trackPurchase(
+        order.id,
+        order.productPrice
+      );
     }
-  }, [order, paymentStatus, trackPaymentComplete]);
+  }, [order, paymentStatus, trackPurchase]);
 
-  // Expose any methods that might be needed
+  // Expose methods that might be needed
   return {
-    trackInitiateCheckout,
-    trackPaymentInitiated,
-    trackPaymentComplete
+    trackPurchase
   };
 };

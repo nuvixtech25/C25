@@ -12,9 +12,7 @@ export const usePixStatusTracker = (
   paymentData: PixPaymentData | null,
   order: Order | null
 ) => {
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(
-    paymentData?.status as PaymentStatus || null
-  );
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const { toast } = useToast();
 
@@ -30,7 +28,7 @@ export const usePixStatusTracker = (
         if (typeof status === 'string') {
           setPaymentStatus(status as PaymentStatus);
         } else if (status && 'status' in status) {
-          setPaymentStatus(status.status);
+          setPaymentStatus(status.status as PaymentStatus);
         }
 
         // If payment is confirmed, show success toast
@@ -41,7 +39,7 @@ export const usePixStatusTracker = (
           toast({
             title: "Pagamento confirmado!",
             description: "Seu pagamento foi recebido com sucesso.",
-            variant: "success",
+            variant: "default",
           });
         }
       } catch (error) {
@@ -72,7 +70,7 @@ export const usePixStatusTracker = (
       if (typeof status === 'string') {
         setPaymentStatus(status as PaymentStatus);
       } else if (status && 'status' in status) {
-        setPaymentStatus(status.status);
+        setPaymentStatus(status.status as PaymentStatus);
       }
     } catch (error) {
       console.error("Error refreshing payment status:", error);
