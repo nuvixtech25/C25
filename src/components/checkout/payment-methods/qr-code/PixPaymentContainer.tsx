@@ -30,9 +30,7 @@ interface PixPaymentContainerProps {
 
 // Helper function to validate QR code image
 const isValidQRCodeImage = (qrCodeImage: string): boolean => {
-  if (!qrCodeImage || qrCodeImage.trim() === '') return false;
-  // Check if it's a valid data URL starting with data:image
-  return qrCodeImage.startsWith('data:image');
+  return !!qrCodeImage && qrCodeImage.trim() !== '';
 };
 
 export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
@@ -53,7 +51,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
 }) => {
   const { toast } = useToast();
   const isPending = status === "PENDING";
-  const showQRCode = isPending && !isExpired;
+  const showQRCode = isPending;
   const hasValidQRCode = isValidQRCodeImage(qrCodeImage);
   
   // Log importantes ao montar o componente para diagnóstico
@@ -115,7 +113,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
         {/* Status de pagamento */}
         <PixPaymentStatus status={status} />
         
-        {/* Exibe o QR Code apenas se o pagamento estiver pendente e não expirado */}
+        {/* Exibe o QR Code apenas se o pagamento estiver pendente */}
         {showQRCode && (
           <div className="space-y-6 animate-scale-in relative z-10">
             <PixQRCodeDisplay qrCodeImage={qrCodeImage} />

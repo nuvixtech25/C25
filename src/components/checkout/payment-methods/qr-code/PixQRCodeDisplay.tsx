@@ -10,6 +10,7 @@ interface PixQRCodeDisplayProps {
 export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage }) => {
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [fixedQRCodeImage, setFixedQRCodeImage] = useState<string>('');
   
   // Renderizar um componente para debugging do QR code
   useEffect(() => {
@@ -26,18 +27,22 @@ export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage 
       if (!qrCodeImage.startsWith('data:image')) {
         console.warn("QR code não é uma URL de dados válida, tentando corrigir");
         
-        // Se parece base64 mas sem o prefixo, poderíamos tentar consertar
-        // mas vamos registrar o erro por enquanto
-        setImageError(true);
+        // Tentar corrigir o QR code adicionando o prefixo necessário
+        const fixedImage = `data:image/png;base64,${qrCodeImage}`;
+        console.log("QR code corrigido para:", fixedImage.substring(0, 30) + "...");
+        setFixedQRCodeImage(fixedImage);
+      } else {
+        setFixedQRCodeImage(qrCodeImage);
       }
     } else {
       console.warn("QR code está vazio ou indefinido");
       setImageError(true);
+      setIsLoading(false);
     }
   }, [qrCodeImage]);
 
   const handleDownloadQRCode = () => {
-    if (!qrCodeImage || qrCodeImage.trim() === '' || imageError) {
+    if (!fixedQRCodeImage || fixedQRCodeImage.trim() === '' || imageError) {
       console.warn("Tentativa de download do QR code, mas a imagem não está disponível");
       return;
     }
@@ -45,7 +50,7 @@ export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage 
     try {
       // Criar um elemento de link temporário
       const link = document.createElement('a');
-      link.href = qrCodeImage;
+      link.href = fixedQRCodeImage;
       link.download = 'pix-qrcode.png';
       document.body.appendChild(link);
       link.click();
@@ -56,7 +61,7 @@ export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage 
   };
   
   // Renderizar estado de erro se tivermos um erro ou nenhum QR code
-  if (imageError || !qrCodeImage || qrCodeImage.trim() === '') {
+  if (imageError || (!qrCodeImage && !fixedQRCodeImage) || (qrCodeImage?.trim() === '' && fixedQRCodeImage?.trim() === '')) {
     return (
       <div className="flex flex-col items-center justify-center">
         <div className="relative">
@@ -77,12 +82,12 @@ export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage 
         <div className="relative p-4 bg-white rounded-xl w-64 h-64 mx-auto flex items-center justify-center overflow-hidden">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
-              <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
           )}
           
           <img 
-            src={qrCodeImage} 
+            src={fixedQRCodeImage || qrCodeImage} 
             alt="QR Code PIX" 
             className="max-w-full max-h-full object-contain"
             onLoad={() => {
@@ -90,7 +95,7 @@ export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage 
               setIsLoading(false);
             }}
             onError={(e) => {
-              console.error("Falha ao carregar imagem do QR code");
+              console.error("Falha ao carregar imagem do QR code:", e);
               setImageError(true);
               setIsLoading(false);
             }}

@@ -110,10 +110,19 @@ export const usePaymentPage = () => {
           }
         }
         
+        // Verificar se o QR code está no formato correto
+        let fixedQrCodeImage = data.qrCodeImage || '';
+        // Se temos QR code mas não começa com data:image, adicionar o prefixo
+        if (fixedQrCodeImage && !fixedQrCodeImage.startsWith('data:image')) {
+          console.log("QR code image is not in the expected format, attempting to fix");
+          fixedQrCodeImage = `data:image/png;base64,${fixedQrCodeImage}`;
+          console.log("Fixed QR code image by adding proper prefix");
+        }
+        
         // Ensure payment data has valid values for all required fields, especially value
         const safePaymentData = {
           ...data,
-          qrCodeImage: data.qrCodeImage || '',
+          qrCodeImage: fixedQrCodeImage,
           qrCode: data.qrCode || '',
           copyPasteKey: data.copyPasteKey || '',
           expirationDate: data.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
@@ -125,9 +134,13 @@ export const usePaymentPage = () => {
           status: data.status || 'PENDING'
         };
         
-        console.log("Payment data set:", safePaymentData);
-        console.log("Payment value type:", typeof safePaymentData.value);
-        console.log("Payment value:", safePaymentData.value);
+        console.log("Safe response data prepared:", { 
+          paymentId: safePaymentData.paymentId,
+          value: safePaymentData.value,
+          valueType: typeof safePaymentData.value,
+          hasQRCode: !!safePaymentData.qrCode,
+          hasQRImage: !!safePaymentData.qrCodeImage
+        });
         
         // Verificar explicitamente se o QR code foi gerado
         console.log("QR Code Image:", safePaymentData.qrCodeImage ? `Received (${safePaymentData.qrCodeImage.substring(0, 30)}...)` : "Not received");

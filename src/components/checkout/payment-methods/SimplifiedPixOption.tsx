@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { QrCode } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface SimplifiedPixOptionProps {
   onSubmit: () => void;
@@ -33,13 +33,19 @@ export const SimplifiedPixOption: React.FC<SimplifiedPixOptionProps> = ({
             className="w-full"
             style={{ backgroundColor: buttonColor }}
           >
-            {isLoading ? 'Processando...' : buttonText}
+            {isLoading ? 'Processando...' : (
+              <span className="flex items-center justify-center">
+                {buttonText} <ArrowRight className="ml-2 h-4 w-4" />
+              </span>
+            )}
           </Button>
         </>
       ) : (
         <div className="border border-gray-200 rounded-lg p-6 w-full max-w-sm mx-auto text-center">
-          <QrCode className="w-48 h-48 mx-auto mb-4" />
-          <p className="font-medium">Escaneie o QR Code para pagar</p>
+          <div className="w-48 h-48 mx-auto mb-4 animate-pulse bg-gray-200 rounded-md flex items-center justify-center">
+            <p className="text-sm text-gray-500">Carregando QR Code...</p>
+          </div>
+          <p className="font-medium">Gerando o QR Code PIX</p>
           <p className="text-sm text-gray-500 mt-2">
             O pagamento será confirmado automaticamente
           </p>
