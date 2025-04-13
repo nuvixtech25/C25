@@ -30,7 +30,14 @@ export const usePaymentNavigation = () => {
       });
     } else {
       // For credit card, use the configured redirect page from the admin panel
-      console.log(`[usePaymentNavigation] Navigating to configured redirect page: ${redirectPage}`);
+      // BUT, ensure it's NOT /payment-failed, as that should go to /failed
+      let targetPage = redirectPage;
+      if (targetPage === '/payment-failed') {
+        console.log(`[usePaymentNavigation] Redirecting /payment-failed to /failed`);
+        targetPage = '/failed';
+      } else {
+        console.log(`[usePaymentNavigation] Navigating to configured redirect page: ${targetPage}`);
+      }
               
       // Extract only serializable data for navigation
       const safeOrderData = currentOrder ? {
@@ -66,7 +73,7 @@ export const usePaymentNavigation = () => {
       setTimeout(() => {
         // Make sure safeOrderData is not null before navigating
         if (safeOrderData) {
-          navigate(redirectPage, { 
+          navigate(targetPage, { 
             state: { 
               order: safeOrderData,
               billingData,

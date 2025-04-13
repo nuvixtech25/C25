@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PaymentMethod } from '@/types/checkout';
 import { SectionTitle } from '../SectionTitle';
 import PaymentOptions from './PaymentOptions';
@@ -43,6 +43,8 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
   
   // Add state to store customer data
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
+  const lastExtractTimeRef = useRef<number>(0);
+  const extractTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Function to extract customer data from the form
   const extractCustomerData = (): CustomerData | null => {
@@ -64,17 +66,30 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
     return data;
   };
   
-  // Update customer data when form changes
+  // Update customer data when form changes with debouncing
   useEffect(() => {
     if (!customerFormRef.current) return;
     
     const handleFormChange = () => {
-      const data = extractCustomerData();
-      if (data) {
-        setCustomerData(data);
-        // Submit customer data silently in the background
-        onCustomerDataSubmit(data);
+      // Clear any existing timeout
+      if (extractTimeoutRef.current) {
+        clearTimeout(extractTimeoutRef.current);
       }
+      
+      // Use debouncing to prevent excessive data extraction
+      extractTimeoutRef.current = setTimeout(() => {
+        const now = Date.now();
+        // Only process if it's been at least 1 second since the last extraction
+        if (now - lastExtractTimeRef.current > 1000) {
+          const data = extractCustomerData();
+          if (data) {
+            setCustomerData(data);
+            // Submit customer data silently in the background
+            onCustomerDataSubmit(data);
+            lastExtractTimeRef.current = now;
+          }
+        }
+      }, 500);
     };
     
     const form = customerFormRef.current;
@@ -93,6 +108,11 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
       inputs.forEach(input => {
         input.removeEventListener('blur', handleFormChange);
       });
+      
+      // Clear any pending timeout
+      if (extractTimeoutRef.current) {
+        clearTimeout(extractTimeoutRef.current);
+      }
     };
   }, [customerFormRef, onCustomerDataSubmit]);
   

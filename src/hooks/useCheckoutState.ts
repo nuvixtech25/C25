@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { CustomerData, PaymentMethod, Product, CreditCardData } from '@/types/checkout';
 import { useRedirectConfig } from './checkout/useRedirectConfig';
@@ -10,24 +10,40 @@ export const useCheckoutState = (product: Product | undefined) => {
   const { toast } = useToast();
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('creditCard');
+  const lastSubmitTimeRef = useRef<number>(0);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const { redirectPage } = useRedirectConfig();
   const { navigateToPayment, navigateToFailure } = usePaymentNavigation();
   const { handleOrderCreation, isSubmitting, setIsSubmitting } = useOrderHandler();
   
-  const handleCustomerSubmit = (data: CustomerData) => {
-    // Only log once when debugging
-    console.log('Customer data received');
-    
-    // Validate customer data
-    if (!data.name || !data.email || !data.cpfCnpj || !data.phone) {
-      console.error('Missing required customer data fields');
-      return;
+  // Debounced customer data submission to prevent excessive logging
+  const handleCustomerSubmit = useCallback((data: CustomerData) => {
+    // Clear any existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
     }
     
-    // Store customer data in state for later use
-    setCustomerData(data);
-  };
+    // Use debouncing to prevent too many calls
+    debounceTimeoutRef.current = setTimeout(() => {
+      const now = Date.now();
+      // Only process if it's been at least 1 second since the last submission
+      if (now - lastSubmitTimeRef.current > 1000) {
+        // Log only once when debugging
+        console.log('Customer data received');
+        
+        // Validate customer data
+        if (!data.name || !data.email || !data.cpfCnpj || !data.phone) {
+          console.error('Missing required customer data fields');
+          return;
+        }
+        
+        // Store customer data in state for later use
+        setCustomerData(data);
+        lastSubmitTimeRef.current = now;
+      }
+    }, 500);
+  }, []);
   
   const handlePaymentSubmit = async (paymentData?: CreditCardData, existingOrderId?: string) => {
     if (!product) {
