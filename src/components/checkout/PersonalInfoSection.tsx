@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,38 +39,52 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   });
 
   // Track last submitted values to avoid excessive submissions
-  const lastSubmittedRef = React.useRef<CustomerData | null>(null);
+  const lastSubmittedRef = useRef<CustomerData | null>(null);
   // Add a debounce timer reference
-  const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // Track if this is the first render to prevent submission on mount
+  const isFirstRender = useRef(true);
+
+  // Function to check if data is different from last submission
+  const isDataDifferent = (data: CustomerData): boolean => {
+    if (!lastSubmittedRef.current) return true;
+    
+    const last = lastSubmittedRef.current;
+    return (
+      last.name !== data.name ||
+      last.email !== data.email ||
+      last.cpfCnpj !== data.cpfCnpj ||
+      last.phone !== data.phone
+    );
+  };
 
   // Automatically submit valid form data when values change with debounce
   useEffect(() => {
+    // Skip the first render to prevent unwanted submission on mount
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     const subscription = form.watch((value, { name, type }) => {
       // Only attempt to submit when fields change and the form is valid
       if (type === 'change' && form.formState.isValid) {
         const data = form.getValues();
         
-        // Compare with last submitted data to prevent duplicate submissions
-        const lastSubmitted = lastSubmittedRef.current;
-        const isDifferent = !lastSubmitted || 
-          lastSubmitted.name !== data.name || 
-          lastSubmitted.email !== data.email || 
-          lastSubmitted.cpfCnpj !== data.cpfCnpj || 
-          lastSubmitted.phone !== data.phone;
-        
-        if (isDifferent) {
+        // Only submit if data is different from last submission
+        if (isDataDifferent(data)) {
           // Clear any existing timer
           if (debounceTimerRef.current) {
             clearTimeout(debounceTimerRef.current);
           }
           
-          // Set a new timer to delay the submission
+          // Set a new timer with longer debounce time
           debounceTimerRef.current = setTimeout(() => {
-            console.log('Submitting customer data after debounce:', data);
+            console.log('[PersonalInfoSection] Submitting customer data after debounce:', data);
             lastSubmittedRef.current = { ...data };
             onSubmit(data);
             debounceTimerRef.current = null;
-          }, 500); // 500ms debounce time
+          }, 1000); // 1 second debounce time to reduce frequency
         }
       }
     });
