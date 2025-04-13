@@ -7,12 +7,10 @@ import {
   AsaasApiError
 } from './types';
 
-// API URL constant
-const ASAAS_API_URL = 'https://sandbox.asaas.com/api/v3';
-
 export async function createAsaasCustomer(
   data: AsaasCustomerRequest, 
-  apiKey: string
+  apiKey: string,
+  apiUrl: string = 'https://sandbox.asaas.com/api/v3'
 ): Promise<AsaasCustomerResponse> {
   // Format phone: remove all non-numeric characters
   const formattedPhone = data.phone.replace(/\D/g, '');
@@ -27,7 +25,11 @@ export async function createAsaasCustomer(
   };
   
   try {
-    const response = await fetch(`${ASAAS_API_URL}/customers`, {
+    console.log(`Enviando requisição para ${apiUrl}/customers`);
+    console.log('Dados do cliente:', customerData);
+    console.log('Usando chave API:', apiKey ? `${apiKey.substring(0, 8)}...` : 'Não definida');
+    
+    const response = await fetch(`${apiUrl}/customers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,12 +38,18 @@ export async function createAsaasCustomer(
       body: JSON.stringify(customerData)
     });
     
+    const statusText = response.statusText;
+    const status = response.status;
+    console.log(`Resposta da API: ${status} - ${statusText}`);
+    
     if (!response.ok) {
       const errorResponse = await handleApiError(response, 'criar cliente no Asaas');
-      throw new AsaasApiError(`Erro ao criar cliente no Asaas: ${errorResponse.message}`);
+      throw new AsaasApiError(`Erro ao criar cliente no Asaas: ${errorResponse.message || statusText}`);
     }
     
-    return await response.json();
+    const responseData = await response.json();
+    console.log('Cliente criado com sucesso:', responseData.id);
+    return responseData;
   } catch (error) {
     console.error('Erro ao criar cliente:', error);
     throw error;
@@ -53,7 +61,8 @@ export async function createAsaasPayment(
   value: number, 
   description: string,
   externalReference: string,
-  apiKey: string
+  apiKey: string,
+  apiUrl: string = 'https://sandbox.asaas.com/api/v3'
 ): Promise<AsaasPaymentResponse> {
   // Set due date to today
   const today = new Date();
@@ -70,7 +79,10 @@ export async function createAsaasPayment(
   };
   
   try {
-    const response = await fetch(`${ASAAS_API_URL}/payments`, {
+    console.log(`Enviando requisição para ${apiUrl}/payments`);
+    console.log('Dados do pagamento:', paymentData);
+    
+    const response = await fetch(`${apiUrl}/payments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -79,12 +91,18 @@ export async function createAsaasPayment(
       body: JSON.stringify(paymentData)
     });
     
+    const statusText = response.statusText;
+    const status = response.status;
+    console.log(`Resposta da API (pagamento): ${status} - ${statusText}`);
+    
     if (!response.ok) {
       const errorResponse = await handleApiError(response, 'criar pagamento PIX no Asaas');
-      throw new AsaasApiError(`Erro ao criar pagamento PIX no Asaas: ${errorResponse.message}`);
+      throw new AsaasApiError(`Erro ao criar pagamento PIX no Asaas: ${errorResponse.message || statusText}`);
     }
     
-    return await response.json();
+    const responseData = await response.json();
+    console.log('Pagamento criado com sucesso:', responseData.id);
+    return responseData;
   } catch (error) {
     console.error('Erro ao criar pagamento:', error);
     throw error;
@@ -93,12 +111,14 @@ export async function createAsaasPayment(
 
 export async function getAsaasPixQrCode(
   paymentId: string, 
-  apiKey: string
+  apiKey: string,
+  apiUrl: string = 'https://sandbox.asaas.com/api/v3'
 ): Promise<AsaasPixQrCodeResponse> {
   try {
     console.log(`Requesting QR code for payment ID: ${paymentId}`);
+    console.log(`API URL: ${apiUrl}/payments/${paymentId}/pixQrCode`);
     
-    const response = await fetch(`${ASAAS_API_URL}/payments/${paymentId}/pixQrCode`, {
+    const response = await fetch(`${apiUrl}/payments/${paymentId}/pixQrCode`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -106,9 +126,13 @@ export async function getAsaasPixQrCode(
       }
     });
     
+    const statusText = response.statusText;
+    const status = response.status;
+    console.log(`Resposta da API (QR Code): ${status} - ${statusText}`);
+    
     if (!response.ok) {
       const errorResponse = await handleApiError(response, 'buscar QR Code PIX');
-      throw new AsaasApiError(`Erro ao buscar QR Code PIX: ${errorResponse.message}`);
+      throw new AsaasApiError(`Erro ao buscar QR Code PIX: ${errorResponse.message || statusText}`);
     }
     
     const data = await response.json();
@@ -124,7 +148,13 @@ export async function getAsaasPixQrCode(
 }
 
 export async function handleApiError(response: Response, operation: string) {
-  const errorText = await response.text();
+  let errorText;
+  try {
+    errorText = await response.text();
+  } catch (e) {
+    errorText = `Não foi possível obter texto de erro: ${e.message}`;
+  }
+  
   let errorData;
   
   try {
@@ -133,6 +163,10 @@ export async function handleApiError(response: Response, operation: string) {
     errorData = { message: errorText };
   }
   
-  console.error(`Erro ao ${operation}:`, errorData);
+  console.error(`Erro ao ${operation}:`, {
+    status: response.status,
+    statusText: response.statusText,
+    errorData: errorData
+  });
   return errorData;
 }

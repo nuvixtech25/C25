@@ -2,15 +2,6 @@
 import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
-// Inicializar cliente Supabase
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-// Configuração da API Asaas
-const ASAAS_API_URL = 'https://sandbox.asaas.com/api/v3';
-const ASAAS_API_KEY = process.env.ASAAS_API_KEY || '';
-
 export const handler: Handler = async (event) => {
   // Verificar se o método é GET
   if (event.httpMethod !== 'GET') {
@@ -33,24 +24,92 @@ export const handler: Handler = async (event) => {
   }
 
   try {
+    // Inicializar cliente Supabase
+    const supabaseUrl = process.env.SUPABASE_URL || '';
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Credenciais do Supabase não configuradas');
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Erro de configuração do servidor' }),
+      };
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Obter a configuração do Asaas
+    console.log('Buscando configuração do Asaas do banco de dados...');
+    const { data: asaasConfig, error: configError } = await supabase
+      .from('asaas_config')
+      .select('*')
+      .limit(1)
+      .single();
+      
+    if (configError) {
+      console.error('Erro ao buscar configuração do Asaas:', configError);
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Erro ao buscar configuração do gateway de pagamento' }),
+      };
+    }
+    
+    // Determinar qual chave API usar com base no modo (sandbox/produção)
+    const usesSandbox = asaasConfig.sandbox === true;
+    const asaasApiKey = usesSandbox ? asaasConfig.sandbox_key : asaasConfig.production_key;
+    
+    const apiUrl = usesSandbox 
+      ? 'https://sandbox.asaas.com/api/v3' 
+      : 'https://www.asaas.com/api/v3';
+    
+    console.log(`Modo: ${usesSandbox ? 'Sandbox' : 'Produção'}`);
+    console.log(`API URL: ${apiUrl}`);
+    console.log(`Chave API definida: ${asaasApiKey ? 'Sim' : 'Não'}`);
+    
+    if (!asaasApiKey) {
+      console.error(`Chave de API ${usesSandbox ? 'sandbox' : 'produção'} não configurada`);
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: `Chave de API ${usesSandbox ? 'sandbox' : 'produção'} não configurada` }),
+      };
+    }
+
     // Consultar o status do pagamento no Asaas
-    const response = await fetch(`${ASAAS_API_URL}/payments/${paymentId}`, {
+    console.log(`Consultando status do pagamento ${paymentId} no Asaas...`);
+    console.log(`URL: ${apiUrl}/payments/${paymentId}`);
+    
+    const response = await fetch(`${apiUrl}/payments/${paymentId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'access_token': ASAAS_API_KEY,
+        'access_token': asaasApiKey,
         'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     });
     
     if (!response.ok) {
-      const errorText = await response.text();
+      const statusText = response.statusText;
+      const status = response.status;
+      console.error(`Erro na resposta do Asaas: ${status} - ${statusText}`);
+      
+      let errorText;
+      try {
+        errorText = await response.text();
+      } catch (e) {
+        errorText = 'Não foi possível obter texto de erro';
+      }
+      
       let errorData;
       try {
         errorData = JSON.parse(errorText);
       } catch (e) {
         errorData = { message: errorText };
       }
+      
+      console.error('Erro detalhado:', errorData);
       throw new Error(`Erro ao consultar pagamento no Asaas: ${JSON.stringify(errorData)}`);
     }
     
@@ -115,4 +174,4 @@ export const handler: Handler = async (event) => {
       body: JSON.stringify({ error: error.message || 'Erro interno no servidor' }),
     };
   }
-};
+}

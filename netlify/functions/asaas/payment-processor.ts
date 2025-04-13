@@ -6,10 +6,14 @@ import { savePaymentData, updateOrderAsaasPaymentId } from './supabase-operation
 export async function processPaymentFlow(
   requestData: AsaasCustomerRequest,
   apiKey: string,
-  supabase: any
+  supabase: any,
+  apiUrl: string = 'https://sandbox.asaas.com/api/v3'
 ) {
+  console.log(`Iniciando fluxo de pagamento com API URL: ${apiUrl}`);
+  console.log(`Valor do pagamento: ${requestData.value}`);
+  
   // 1. Create customer in Asaas
-  const customer = await createAsaasCustomer(requestData, apiKey);
+  const customer = await createAsaasCustomer(requestData, apiKey, apiUrl);
   console.log('Cliente criado no Asaas:', customer);
   
   // 2. Create PIX payment
@@ -19,12 +23,13 @@ export async function processPaymentFlow(
     requestData.value, 
     description, 
     requestData.orderId,
-    apiKey
+    apiKey,
+    apiUrl
   );
   console.log('Pagamento criado no Asaas:', payment);
   
   // 3. Get PIX QR Code
-  const pixQrCode = await getAsaasPixQrCode(payment.id, apiKey);
+  const pixQrCode = await getAsaasPixQrCode(payment.id, apiKey, apiUrl);
   console.log('QR Code PIX recebido:', {
     success: pixQrCode.success,
     payloadLength: pixQrCode.payload ? pixQrCode.payload.length : 0,
