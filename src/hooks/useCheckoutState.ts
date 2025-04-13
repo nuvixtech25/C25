@@ -167,7 +167,8 @@ export const useCheckoutState = (product: Product | undefined) => {
         customerName: currentOrder.customerName || (customerData ? customerData.name : 'Cliente Anônimo'),
         customerEmail: currentOrder.customerEmail || (customerData ? customerData.email : 'anonimo@example.com'),
         productName: currentOrder.productName || '',
-        productPrice: currentOrder.productPrice || 0
+        productPrice: currentOrder.productPrice || 0,
+        status: 'FAILED'  // Garantir que o status seja FAILED para o fluxo de falha
       } : null;
       
       // Adding orderId to URL params as a fallback mechanism

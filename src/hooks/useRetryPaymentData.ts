@@ -3,11 +3,20 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useRetryValidation } from '@/hooks/useRetryValidation';
-import { Order } from '@/types/checkout';
+import { Order, PaymentStatus } from '@/types/checkout';
 import { useOrderData } from '@/hooks/useOrderData';
 import { useWhatsAppSupport } from '@/hooks/useWhatsAppSupport';
-import { logPaymentError } from '@/utils/paymentErrorHandler';
-import { PaymentErrorMessages } from '@/utils/paymentErrorHandler';
+import { logPaymentError, PaymentErrorMessages } from '@/utils/paymentErrorHandler';
+
+// Lista centralizada de status de pagamento que permitem retry
+export const RETRYABLE_STATUSES: PaymentStatus[] = ['FAILED', 'DECLINED', 'CANCELLED'];
+
+// Configuração padrão para limites de retry
+export const DEFAULT_RETRY_CONFIG = {
+  maxAttempts: 3,
+  minMinutes: 5,
+  enforceDelay: false
+};
 
 export const useRetryPaymentData = () => {
   const { state } = useLocation();
@@ -42,18 +51,18 @@ export const useRetryPaymentData = () => {
       try {
         // Check if this is an auto-retry from a failed payment
         if (state?.autoRetry) {
-          console.log('[RetryPaymentPage] Auto-retry flag detected');
+          console.log('[RetryPaymentData] Auto-retry flag detected');
           setAutoRetry(true);
         }
         
         // If order is provided in location state, use it
         if (state?.order) {
-          console.log('[RetryPaymentPage] Using order from state:', state.order);
+          console.log('[RetryPaymentData] Using order from state:', state.order);
           setOrder(state.order);
           
           // Check if the order object has all required fields
           if (!state.order.id || !state.order.productPrice) {
-            console.error('[RetryPaymentPage] Order from state is missing required fields:', state.order);
+            console.error('[RetryPaymentData] Order from state is missing required fields:', state.order);
             setHasError(true);
             toast({
               title: "Erro",
@@ -62,12 +71,18 @@ export const useRetryPaymentData = () => {
             });
             return;
           }
+
+          // Verificar se o status do pedido permite retry
+          if (state.order.status && !RETRYABLE_STATUSES.includes(state.order.status as PaymentStatus)) {
+            console.warn('[RetryPaymentData] Order status is not retryable:', state.order.status);
+            // Não bloqueia o retry, apenas loga como alerta
+          }
         } else {
           // Otherwise, get orderId from URL parameters
           const orderId = getOrderIdFromUrl();
           
           if (!orderId) {
-            console.error('[RetryPaymentPage] No orderId found in URL parameters');
+            console.error('[RetryPaymentData] No orderId found in URL parameters');
             setHasError(true);
             toast({
               title: "Erro",
@@ -91,7 +106,7 @@ export const useRetryPaymentData = () => {
           
           // Check if all required fields are present
           if (!fetchedOrder.id || !fetchedOrder.productPrice) {
-            console.error('[RetryPaymentPage] Fetched order is missing required fields:', fetchedOrder);
+            console.error('[RetryPaymentData] Fetched order is missing required fields:', fetchedOrder);
             setHasError(true);
             toast({
               title: "Erro",
@@ -99,6 +114,12 @@ export const useRetryPaymentData = () => {
               variant: "destructive",
             });
             return;
+          }
+
+          // Verificar se o status do pedido permite retry
+          if (fetchedOrder.status && !RETRYABLE_STATUSES.includes(fetchedOrder.status as PaymentStatus)) {
+            console.warn('[RetryPaymentData] Order status is not retryable:', fetchedOrder.status);
+            // Não bloqueia o retry, apenas loga como alerta
           }
           
           setOrder(fetchedOrder);
@@ -110,7 +131,7 @@ export const useRetryPaymentData = () => {
           await checkRetryLimit(currentOrder.id);
         }
       } catch (error) {
-        logPaymentError("RetryPaymentPage", error, "Error fetching order");
+        logPaymentError("RetryPaymentData", error, "Error fetching order");
         setHasError(true);
         toast({
           title: "Erro",
@@ -132,19 +153,15 @@ export const useRetryPaymentData = () => {
       
       // Avoid repeated validations for the same orderId
       if (validatedOrderIds.current.has(orderId)) {
-        console.log('[RetryPaymentPage] Skipping validation for already validated order:', orderId);
+        console.log('[RetryPaymentData] Skipping validation for already validated order:', orderId);
         return;
       }
       
-      console.log('[RetryPaymentPage] Checking retry limit for order:', orderId);
+      console.log('[RetryPaymentData] Checking retry limit for order:', orderId);
       
-      const result = await validateRetryAttempt(orderId, {
-        maxAttempts: 3,
-        minMinutes: 5,
-        enforceDelay: false // For now, we don't block by time
-      });
+      const result = await validateRetryAttempt(orderId, DEFAULT_RETRY_CONFIG);
       
-      console.log('[RetryPaymentPage] Validation result:', result);
+      console.log('[RetryPaymentData] Validation result:', result);
       
       setValidationResult(result);
       // Mark this orderId as already validated
@@ -158,7 +175,7 @@ export const useRetryPaymentData = () => {
         });
       }
     } catch (error) {
-      logPaymentError("RetryPaymentPage", error, "Error checking retry limit");
+      logPaymentError("RetryPaymentData", error, "Error checking retry limit");
     }
   };
 

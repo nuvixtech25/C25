@@ -9,6 +9,12 @@ import { checkPaymentStatus } from '@/services/asaasService';
 import { Order, PaymentStatus } from '@/types/checkout';
 import { logPaymentError } from '@/utils/paymentErrorHandler';
 
+// Lista definitiva de status que são considerados como falha
+const FAILURE_STATUSES: PaymentStatus[] = ['DECLINED', 'FAILED', 'CANCELLED'];
+
+// Lista definitiva de status que são considerados como sucesso
+const SUCCESS_STATUSES: PaymentStatus[] = ['CONFIRMED', 'RECEIVED'];
+
 const PaymentAnalysisPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -29,15 +35,28 @@ const PaymentAnalysisPage = () => {
           console.log('[PaymentAnalysisPage] Using order from state:', state.order);
           currentOrder = state.order;
           
-          // Immediately redirect to failed/retry page if the order is already marked as failed/declined/cancelled in state
-          if (currentOrder.status === 'DECLINED' || currentOrder.status === 'FAILED' || 
-              currentOrder.status === 'CANCELLED') {
-            console.log('[PaymentAnalysisPage] Order already marked as failed/declined/cancelled in state, redirecting to failed page');
+          // Processar imediatamente se o pedido já estiver marcado como falha no state
+          if (currentOrder.status && FAILURE_STATUSES.includes(currentOrder.status as PaymentStatus)) {
+            console.log('[PaymentAnalysisPage] Order already marked as failed in state, redirecting to retry-payment page');
             
             navigate('/retry-payment', { 
               state: { 
                 order: currentOrder,
                 autoRetry: true
+              }
+            });
+            return;
+          }
+
+          // Processar imediatamente se o pedido já estiver marcado como sucesso no state
+          if (currentOrder.status && SUCCESS_STATUSES.includes(currentOrder.status as PaymentStatus)) {
+            console.log('[PaymentAnalysisPage] Order already confirmed in state, redirecting to success page');
+            
+            navigate('/success', { 
+              state: { 
+                order: currentOrder,
+                has_whatsapp_support: state?.hasWhatsappSupport || state?.product?.has_whatsapp_support || false,
+                whatsapp_number: state?.whatsappNumber || state?.product?.whatsapp_number || ''
               }
             });
             return;
@@ -59,15 +78,28 @@ const PaymentAnalysisPage = () => {
             throw new Error("Order not found");
           }
           
-          // Immediately redirect to failed/retry page if the order is already marked as failed/declined/cancelled in database
-          if (currentOrder.status === 'DECLINED' || currentOrder.status === 'FAILED' || 
-              currentOrder.status === 'CANCELLED') {
-            console.log('[PaymentAnalysisPage] Order status is failed/declined/cancelled in database, redirecting to retry-payment page');
+          // Processar imediatamente se o pedido já estiver marcado como falha na base de dados
+          if (currentOrder.status && FAILURE_STATUSES.includes(currentOrder.status as PaymentStatus)) {
+            console.log('[PaymentAnalysisPage] Order status is failed in database, redirecting to retry-payment page');
             
             navigate('/retry-payment', { 
               state: { 
                 order: currentOrder,
                 autoRetry: true
+              }
+            });
+            return;
+          }
+
+          // Processar imediatamente se o pedido já estiver marcado como sucesso na base de dados
+          if (currentOrder.status && SUCCESS_STATUSES.includes(currentOrder.status as PaymentStatus)) {
+            console.log('[PaymentAnalysisPage] Order already confirmed in database, redirecting to success page');
+            
+            navigate('/success', { 
+              state: { 
+                order: currentOrder,
+                has_whatsapp_support: state?.hasWhatsappSupport || state?.product?.has_whatsapp_support || false,
+                whatsapp_number: state?.whatsappNumber || state?.product?.whatsapp_number || ''
               }
             });
             return;
@@ -81,9 +113,9 @@ const PaymentAnalysisPage = () => {
         if (currentOrder.asaasPaymentId && 
             (currentOrder.asaasPaymentId.startsWith('temp_') || 
              currentOrder.asaasPaymentId.startsWith('temp_retry_'))) {
-          console.log('[PaymentAnalysisPage] Using temporary ID or no payment ID, proceeding to success');
+          console.log('[PaymentAnalysisPage] Using temporary ID, proceeding to success after delay');
           
-          // Short delay to allow for manual testing time
+          // Short delay to allow for simulation time
           setTimeout(() => {
             navigate('/success', { 
               state: { 
@@ -119,12 +151,10 @@ const PaymentAnalysisPage = () => {
             // First check status in our database
             try {
               const refreshedOrder = await fetchOrderById(currentOrder.id);
-              if (refreshedOrder && 
-                  (refreshedOrder.status === 'DECLINED' || 
-                   refreshedOrder.status === 'FAILED' || 
-                   refreshedOrder.status === 'CANCELLED')) {
+              
+              if (refreshedOrder && FAILURE_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
                 clearInterval(pollingInterval);
-                console.log('[PaymentAnalysisPage] Order status updated to failed/declined/cancelled in database');
+                console.log('[PaymentAnalysisPage] Order status updated to failed in database');
                 navigate('/retry-payment', { 
                   state: { 
                     order: refreshedOrder,
@@ -135,7 +165,7 @@ const PaymentAnalysisPage = () => {
               }
               
               // If status has been updated to confirmed, go to success page
-              if (refreshedOrder && refreshedOrder.status === 'CONFIRMED') {
+              if (refreshedOrder && SUCCESS_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
                 clearInterval(pollingInterval);
                 console.log('[PaymentAnalysisPage] Order confirmed in database, navigating to success');
                 navigate('/success', { 
@@ -159,8 +189,8 @@ const PaymentAnalysisPage = () => {
               const status = await checkPaymentStatus(currentOrder.asaasPaymentId);
               console.log(`[PaymentAnalysisPage] Payment status check #${newCount}:`, status);
               
-              // If payment status is now CONFIRMED, navigate to success
-              if (status === 'CONFIRMED') {
+              // If payment status is now CONFIRMED or RECEIVED, navigate to success
+              if (typeof status === 'string' && SUCCESS_STATUSES.includes(status as PaymentStatus)) {
                 clearInterval(pollingInterval);
                 navigate('/success', { 
                   state: { 
@@ -173,12 +203,15 @@ const PaymentAnalysisPage = () => {
               }
               
               // If payment status is FAILED, CANCELLED, or DECLINED, navigate to retry-payment
-              if (status === 'FAILED' || status === 'CANCELLED' || status === 'DECLINED') {
+              if (typeof status === 'string' && FAILURE_STATUSES.includes(status as PaymentStatus)) {
                 clearInterval(pollingInterval);
                 // Redirect to the retry-payment page with autoRetry flag
                 navigate('/retry-payment', { 
                   state: { 
-                    order: currentOrder,
+                    order: {
+                      ...currentOrder,
+                      status: status // Atualizar o status para o valor atual
+                    },
                     autoRetry: true
                   }
                 });

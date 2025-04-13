@@ -29,7 +29,7 @@ const PublicRoutes: React.FC = () => {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/failed" element={<FailedPage />} />
-      {/* Update the redirect from /payment-failed to redirect to retry-payment to preserve location state */}
+      {/* Update the redirect from /payment-failed to redirect to retry-payment with state preservation */}
       <Route 
         path="/payment-failed" 
         element={<Navigate to="/retry-payment" replace state={(location: Location) => location.state} />} 

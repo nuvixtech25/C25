@@ -10,6 +10,7 @@ interface RedirectPageSelectorProps {
   form: UseFormReturn<AsaasSettingsFormValues>;
 }
 
+// Lista de opções de redirecionamento centralizada
 export const MANUAL_REDIRECT_OPTIONS = [
   { value: '/success', label: '✅ Pagamento Concluído' },
   { value: '/payment-pending', label: '⏳ Pagamento Pendente' },
