@@ -96,17 +96,32 @@ export const useCheckoutState = (product: Product | undefined) => {
         
         // Adding a small delay to ensure smooth navigation
         setTimeout(() => {
-          navigate(redirectPage, { 
-            state: { 
-              order: currentOrder,
-              billingData,
-              product: {
-                has_whatsapp_support: product.has_whatsapp_support,
-                whatsapp_number: product.whatsapp_number,
-                type: product.type || 'physical'
-              }
-            } 
-          });
+          // Update this to check if redirectPage is '/payment-failed' and navigate to '/failed' instead with state
+          if (redirectPage === '/payment-failed') {
+            navigate('/failed', { 
+              state: { 
+                order: currentOrder,
+                autoRetry: true,
+                product: {
+                  has_whatsapp_support: product.has_whatsapp_support,
+                  whatsapp_number: product.whatsapp_number,
+                  type: product.type || 'physical'
+                }
+              } 
+            });
+          } else {
+            navigate(redirectPage, { 
+              state: { 
+                order: currentOrder,
+                billingData,
+                product: {
+                  has_whatsapp_support: product.has_whatsapp_support,
+                  whatsapp_number: product.whatsapp_number,
+                  type: product.type || 'physical'
+                }
+              } 
+            });
+          }
         }, 500);
       }
     } catch (error) {
