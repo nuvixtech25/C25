@@ -34,9 +34,10 @@ const ThankYouCardPage = () => {
           {hasWhatsappSupport && whatsappNumber && (
             <div className="mt-6">
               <WhatsAppButton 
-                number={whatsappNumber} 
+                whatsappNumber={whatsappNumber} 
                 message={`Olá! Acabei de fazer um pagamento para o pedido ${order?.id || 'recente'} e gostaria de confirmar o recebimento.`}
-                fullWidth
+                fullWidth={true}
+                hasWhatsappSupport={hasWhatsappSupport}
               />
             </div>
           )}
