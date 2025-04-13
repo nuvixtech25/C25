@@ -38,7 +38,7 @@ const PaymentPage = () => {
   }, [loading, paymentData, order, error]);
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white via-purple-50/30 to-white">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white via-green-50/30 to-white">
       <PaymentDecorativeElements />
       <PaymentHeader />
       

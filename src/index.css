@@ -118,6 +118,6 @@
   }
   
   .pix-container {
-    @apply bg-asaas-light p-6 rounded-xl border border-asaas-secondary/20;
+    @apply bg-green-50/30 p-6 rounded-xl border border-green-200/20;
   }
 }

@@ -69,15 +69,14 @@ export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage 
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="relative group">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-40 transition-opacity duration-300"></div>
-        <div className="relative p-4 bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300 w-64 h-64 mx-auto flex items-center justify-center overflow-hidden">
+        <div className="relative p-4 bg-white rounded-xl border border-gray-100 w-64 h-64 mx-auto flex items-center justify-center overflow-hidden">
           <div className="absolute top-2 right-2 flex items-center space-x-1">
-            <Sparkles className="h-4 w-4 text-asaas-primary animate-pulse" />
+            <Sparkles className="h-4 w-4 text-green-500 animate-pulse" />
           </div>
           
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
-              <div className="w-8 h-8 border-4 border-asaas-primary border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
           )}
           
@@ -97,7 +96,7 @@ export const PixQRCodeDisplay: React.FC<PixQRCodeDisplayProps> = ({ qrCodeImage 
         <Button 
           size="sm" 
           variant="ghost" 
-          className="mt-2 text-xs text-gray-500 hover:text-asaas-primary mx-auto flex items-center"
+          className="mt-2 text-xs text-gray-500 hover:text-green-600 mx-auto flex items-center"
           onClick={handleDownloadQRCode}
           disabled={imageError || isLoading}
         >

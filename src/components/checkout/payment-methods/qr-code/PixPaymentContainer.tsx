@@ -82,9 +82,9 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
   
   return (
     <Card className="max-w-md mx-auto shadow-xl border-0 rounded-xl overflow-hidden animate-fade-in pix-container bg-white">
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-asaas-primary via-asaas-secondary to-purple-400"></div>
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-green-500 via-green-400 to-emerald-400"></div>
       
-      <CardHeader className="bg-gradient-to-r from-asaas-primary/95 to-asaas-secondary/95 text-white pb-6">
+      <CardHeader className="bg-gradient-to-r from-green-600/95 to-green-500/95 text-white pb-6">
         <div className="flex items-center justify-between">
           <CardTitle className="text-2xl flex items-center font-bold">
             <QrCode className="mr-2 h-6 w-6" />
@@ -110,7 +110,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
       </CardHeader>
       
       <CardContent className="space-y-6 p-6 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-50/50 to-white/0 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-green-50/50 to-white/0 pointer-events-none"></div>
         
         {/* Status de pagamento */}
         <PixPaymentStatus status={status} />
@@ -120,7 +120,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
           <div className="space-y-6 animate-scale-in relative z-10">
             <PixQRCodeDisplay qrCodeImage={qrCodeImage} />
             
-            <div className="p-4 bg-gradient-to-r from-purple-50 to-white rounded-lg border border-purple-100">
+            <div className="p-4 bg-gradient-to-r from-green-50 to-white rounded-lg border border-green-100">
               <PixExpirationTimer timeLeft={timeLeft} isExpired={isExpired} />
             </div>
             

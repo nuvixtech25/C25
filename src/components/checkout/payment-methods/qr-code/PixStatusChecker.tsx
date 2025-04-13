@@ -1,31 +1,35 @@
 
 import React from 'react';
+import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Loader2 } from 'lucide-react';
 
 interface PixStatusCheckerProps {
   isCheckingStatus: boolean;
   onCheckStatus: () => void;
 }
 
-export const PixStatusChecker: React.FC<PixStatusCheckerProps> = ({ 
-  isCheckingStatus, 
-  onCheckStatus 
+export const PixStatusChecker: React.FC<PixStatusCheckerProps> = ({
+  isCheckingStatus,
+  onCheckStatus
 }) => {
   return (
-    <div className="pt-2">
-      <Button 
-        onClick={onCheckStatus} 
+    <div className="flex justify-center">
+      <Button
+        onClick={onCheckStatus}
         disabled={isCheckingStatus}
-        variant="outline"
-        className="w-full"
+        className="w-full bg-green-600 hover:bg-green-700 text-white font-medium"
       >
         {isCheckingStatus ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <>
+            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+            Verificando...
+          </>
         ) : (
-          <RefreshCw className="mr-2 h-4 w-4" />
+          <>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Verificar pagamento
+          </>
         )}
-        Verificar pagamento
       </Button>
     </div>
   );
