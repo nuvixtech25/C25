@@ -79,7 +79,7 @@ const FailedPage = () => {
               productName: data.product_name,
               productPrice: data.product_price,
               status: data.status,
-              paymentMethod: data.payment_method,
+              paymentMethod: data.payment_method as PaymentMethod,
               asaasPaymentId: data.asaas_payment_id,
               createdAt: data.created_at,
               updatedAt: data.updated_at
@@ -95,11 +95,21 @@ const FailedPage = () => {
           }
         } catch (error) {
           console.error('[FailedPage] Error in fetchOrderData:', error);
+          toast({
+            title: "Erro ao carregar pedido",
+            description: "Ocorreu um erro ao buscar os dados do pedido.",
+            variant: "destructive",
+          });
         } finally {
           setLoading(false);
         }
       } else {
         console.log('[FailedPage] No order found in location state and no orderId in URL');
+        toast({
+          title: "Pedido não encontrado",
+          description: "Não foi possível identificar seu pedido.",
+          variant: "destructive",
+        });
       }
     };
     
@@ -112,50 +122,57 @@ const FailedPage = () => {
   }, [order]);
 
   const handleRetry = () => {
-    if (order && order.id) {
-      console.log('[FailedPage] Navigating to retry-payment with order ID:', order.id);
-      
-      // Primeiro verifique se o pedido tem todas as informações necessárias
-      if (!order.customerName || !order.customerEmail || !order.productPrice) {
-        console.error('[FailedPage] Order is missing required data:', order);
-        toast({
-          title: "Erro nos dados do pedido",
-          description: "Dados incompletos do pedido. Entre em contato com o suporte.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      // Garanta que o objeto de pedido esteja completo antes de prosseguir
-      const completeOrder: Order = {
-        ...order,
-        // Garantir que todos os campos obrigatórios estejam presentes
-        customerId: order.customerId || '',
-        customerName: order.customerName,
-        customerEmail: order.customerEmail,
-        customerCpfCnpj: order.customerCpfCnpj || '',
-        customerPhone: order.customerPhone || '',
-        productId: order.productId || '',
-        productName: order.productName || '',
-        productPrice: order.productPrice,
-        status: order.status || 'PENDING',
-        paymentMethod: order.paymentMethod || 'creditCard'
-      };
-      
-      // Navegue com o objeto de pedido completo no estado
-      navigate(`/retry-payment?orderId=${order.id}`, { 
-        state: { 
-          order: completeOrder
-        } 
-      });
-    } else {
+    if (!order) {
       console.error('[FailedPage] No order available for retry');
       toast({
         title: "Erro",
         description: "Não foi possível recuperar os dados do pedido para tentar novamente.",
         variant: "destructive",
       });
+      return;
     }
+
+    console.log('[FailedPage] Navigating to retry-payment with order ID:', order.id);
+    
+    // Primeiro verifique se o pedido tem todas as informações necessárias
+    if (!order.customerName || !order.customerEmail || !order.productPrice) {
+      console.error('[FailedPage] Order is missing required data:', order);
+      toast({
+        title: "Erro nos dados do pedido",
+        description: "Dados incompletos do pedido. Entre em contato com o suporte.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Garanta que o objeto de pedido esteja completo antes de prosseguir
+    const completeOrder: Order = {
+      ...order,
+      // Garantir que todos os campos obrigatórios estejam presentes
+      id: order.id,
+      customerId: order.customerId || '',
+      customerName: order.customerName,
+      customerEmail: order.customerEmail,
+      customerCpfCnpj: order.customerCpfCnpj || '',
+      customerPhone: order.customerPhone || '',
+      productId: order.productId || '',
+      productName: order.productName || '',
+      productPrice: order.productPrice,
+      status: order.status || 'PENDING',
+      paymentMethod: order.paymentMethod || 'creditCard',
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt
+    };
+    
+    // Log do objeto completo para verificação
+    console.log('[FailedPage] Complete order object for retry:', completeOrder);
+    
+    // Navegue com o objeto de pedido completo no estado
+    navigate(`/retry-payment?orderId=${order.id}`, { 
+      state: { 
+        order: completeOrder
+      } 
+    });
   };
 
   return (
@@ -219,6 +236,11 @@ const FailedPage = () => {
           )}
         </CardFooter>
       </Card>
+      
+      {/* Toast para exibir mensagens de erro */}
+      <div>
+        {/* Os toasts serão renderizados pelo componente Toaster */}
+      </div>
     </div>
   );
 };
