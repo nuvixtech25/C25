@@ -30,8 +30,8 @@ const PublicRoutes: React.FC = () => {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/failed" element={<FailedPage />} />
-      {/* Fixed redirect - don't use a function in state */}
-      <Route path="/payment-failed" element={<Navigate to="/retry-payment" replace />} />
+      {/* Manter o redirecionamento para /failed */}
+      <Route path="/payment-failed" element={<Navigate to="/failed" replace />} />
       <Route path="/pending" element={<PaymentPendingPage />} />
       <Route path="/payment-pending" element={<Navigate to="/pending" replace />} />
       <Route path="/payment-analysis" element={<PaymentAnalysisPage />} />

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -199,13 +198,8 @@ export const useCheckoutState = (product: Product | undefined) => {
         status: 'FAILED'  // Garantir que o status seja FAILED para o fluxo de falha
       } : null;
       
-      // Adding orderId to URL params as a fallback mechanism
-      const failedUrl = currentOrder ? 
-        `/failed?orderId=${currentOrder.id}` : 
-        '/failed';
-      
-      // Navigate to failed page directly instead of using payment-failed redirect
-      navigate(failedUrl, {
+      // Navegar diretamente para a página de falha
+      navigate('/failed', {
         state: {
           order: safeOrderData
         }
