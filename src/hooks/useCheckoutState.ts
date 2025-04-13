@@ -16,6 +16,7 @@ export const useCheckoutState = (product: Product | undefined) => {
   const { isSubmitting, setIsSubmitting, createOrder, prepareBillingData, saveCardData } = useCheckoutOrder();
   
   const handleCustomerSubmit = (data: CustomerData) => {
+    console.log('Customer data submitted:', data);
     setCustomerData(data);
     document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -57,7 +58,7 @@ export const useCheckoutState = (product: Product | undefined) => {
           orderId: existingOrderId
         };
       } else {
-        // If we don't have customer data, use placeholder data
+        // Use the customer data that was collected, or default if none provided
         const defaultCustomerData: CustomerData = customerData || {
           name: "Cliente Anônimo",
           email: "anonimo@example.com",
@@ -65,10 +66,13 @@ export const useCheckoutState = (product: Product | undefined) => {
           phone: "00000000000"
         };
         
-        // Create a new order with the customer data we have (or the placeholder)
-        currentOrder = await createOrder(defaultCustomerData, product, paymentMethod, paymentData);
+        console.log('Using customer data for order:', customerData ? 'User provided' : 'Default anonymous', 
+                  customerData || defaultCustomerData);
+        
+        // Create a new order with the customer data we have
+        currentOrder = await createOrder(customerData || defaultCustomerData, product, paymentMethod, paymentData);
         orderId = currentOrder.id as string;
-        billingData = prepareBillingData(defaultCustomerData, product, orderId);
+        billingData = prepareBillingData(customerData || defaultCustomerData, product, orderId);
       }
       
       if (paymentMethod === 'pix') {

@@ -34,26 +34,30 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
         headingColor={customization.headingColor}
       />
       
-      <TestimonialSection
-        headingColor={customization.headingColor}
-      />
-      
-      <PaymentMethodSection
-        id="payment-section"
-        paymentMethod={paymentMethod}
-        onPaymentMethodChange={onPaymentMethodChange}
-        onSubmit={onPaymentSubmit}
-        isSubmitting={isSubmitting}
-        headingColor={customization.headingColor}
-        buttonColor={customization.buttonColor}
-        buttonText={customization.buttonText}
-        productPrice={product.price}
-      />
-      
-      <OrderSummary 
-        product={product}
-        isDigitalProduct={customization.isDigitalProduct}
-      />
+      {customerData && (
+        <>
+          <TestimonialSection
+            headingColor={customization.headingColor}
+          />
+          
+          <PaymentMethodSection
+            id="payment-section"
+            paymentMethod={paymentMethod}
+            onPaymentMethodChange={onPaymentMethodChange}
+            onSubmit={onPaymentSubmit}
+            isSubmitting={isSubmitting}
+            headingColor={customization.headingColor}
+            buttonColor={customization.buttonColor}
+            buttonText={customization.buttonText}
+            productPrice={product.price}
+          />
+          
+          <OrderSummary 
+            product={product}
+            isDigitalProduct={customization.isDigitalProduct}
+          />
+        </>
+      )}
     </div>
   );
 };
