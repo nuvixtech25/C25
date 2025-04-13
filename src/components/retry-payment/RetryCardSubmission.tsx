@@ -1,16 +1,11 @@
 
 import React from 'react';
-import { CreditCard } from 'lucide-react';
 import { CreditCardData, Order } from '@/types/checkout';
-import RetryPaymentForm from '@/components/retry-payment/RetryPaymentForm';
-import { ValidationAlert } from '@/components/retry-payment/ValidationAlert';
-import { OrderSummary } from '@/components/retry-payment/OrderSummary';
-import { RetryLimitMessage } from '@/components/retry-payment/RetryLimitMessage';
+import RetryPaymentForm from './RetryPaymentForm';
+import { RetryLimitMessage } from './RetryLimitMessage';
+import WhatsAppSupportLink from './WhatsAppSupportLink';
 
 interface RetryCardSubmissionProps {
-  onSubmit: (data: CreditCardData) => Promise<void>;
-  isLoading: boolean;
-  cardData?: CreditCardData;
   order: Order | null;
   validationResult: {
     canProceed: boolean;
@@ -18,42 +13,51 @@ interface RetryCardSubmissionProps {
     remainingAttempts?: number;
     waitTime?: number;
   } | null;
-  hasWhatsappSupport: boolean;
-  whatsappNumber: string | undefined;
+  onSubmit: (data: CreditCardData) => Promise<void>;
+  isLoading: boolean;
+  hasWhatsappSupport?: boolean;
+  whatsappNumber?: string;
 }
 
-export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({ 
-  onSubmit, 
-  isLoading, 
-  cardData,
+export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
   order,
   validationResult,
+  onSubmit,
+  isLoading,
   hasWhatsappSupport,
-  whatsappNumber
+  whatsappNumber,
 }) => {
+  // If we're not allowed to proceed, show the retry limit message
+  if (validationResult && !validationResult.canProceed) {
+    return <RetryLimitMessage message={validationResult.message} />;
+  }
+
   return (
-    <>
-      <ValidationAlert validationResult={validationResult} />
-      <OrderSummary order={order} />
-          
-      <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
-        <div className="flex items-start">
-          <CreditCard className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
-          <p className="text-purple-800">Utilizar um cartão diferente aumenta suas chances de aprovação.</p>
-        </div>
-      </div>
-      
-      {validationResult?.canProceed ? (
+    <div className="space-y-6">
+      <div className="space-y-4">
+        {order && (
+          <div className="text-gray-700">
+            <p className="font-medium mb-1">Detalhes do pedido:</p>
+            <p className="text-sm">Produto: {order.productName}</p>
+            <p className="text-sm">Valor: R$ {order.productPrice.toFixed(2)}</p>
+          </div>
+        )}
+        
         <RetryPaymentForm
           order={order}
           validationResult={validationResult}
           onSubmit={onSubmit}
           isLoading={isLoading}
-          cardData={cardData}
         />
-      ) : (
-        <RetryLimitMessage validationResult={validationResult} />
+      </div>
+      
+      {hasWhatsappSupport && whatsappNumber && (
+        <div className="mt-6 pt-4 border-t border-gray-100">
+          <WhatsAppSupportLink whatsappNumber={whatsappNumber} />
+        </div>
       )}
-    </>
+    </div>
   );
 };
+
+export default RetryCardSubmission;

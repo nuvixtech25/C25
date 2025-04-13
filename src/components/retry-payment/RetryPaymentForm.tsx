@@ -2,19 +2,15 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { CreditCardData, Order } from '@/types/checkout';
 import { MoveRight } from 'lucide-react';
-
-const formSchema = z.object({
-  holderName: z.string().min(3, 'Nome deve ter pelo menos 3 caracteres'),
-  number: z.string().min(16, 'Número do cartão inválido').max(19, 'Número do cartão inválido'),
-  expiryDate: z.string().regex(/^\d{2}\/\d{2}$/, 'Data deve estar no formato MM/AA'),
-  cvv: z.string().min(3, 'CVV deve ter pelo menos 3 dígitos'),
-});
+import { cardSchema } from '@/components/checkout/payment-methods/card/cardValidation';
+import { handleCardNumberChange, handleExpiryDateChange } from '@/components/checkout/payment-methods/card/formatters/cardInputFormatters';
+import { formatExpiryDate } from '@/utils/cardValidationUtils';
+import { CardBrandDisplay, requiresFourDigitCvv } from '@/components/checkout/payment-methods/card/CardBrandDetector';
 
 interface RetryPaymentFormProps {
   order: Order | null;
@@ -35,27 +31,33 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
   isLoading,
   cardData
 }) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<any>({
+    resolver: zodResolver(cardSchema),
     defaultValues: {
       holderName: cardData?.holderName || '',
       number: cardData?.number || '',
       expiryDate: cardData?.expiryDate || '',
       cvv: cardData?.cvv || '',
+      installments: 1,
     },
   });
 
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleSubmit = async (values: any) => {
     const cardData: CreditCardData = {
       holderName: values.holderName,
       number: values.number.replace(/\s/g, ''),
       expiryDate: values.expiryDate,
       cvv: values.cvv,
-      brand: 'unknown', // A marca será detectada pelo servidor
+      brand: 'unknown', // The brand will be detected by the server
+      installments: 1,
     };
     
     await onSubmit(cardData);
   };
+
+  // Extract the card number to determine if we need a 4-digit CVV
+  const cardNumber = form.watch('number') || '';
+  const isFourDigitCvv = requiresFourDigitCvv(cardNumber);
 
   return (
     <Form {...form}>
@@ -67,7 +69,12 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
             <FormItem>
               <FormLabel>Nome no cartão</FormLabel>
               <FormControl>
-                <Input placeholder="Nome impresso no cartão" {...field} className="border border-gray-200" />
+                <Input 
+                  placeholder="Nome impresso no cartão" 
+                  {...field} 
+                  className="border border-gray-200" 
+                  autoComplete="cc-name"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -77,17 +84,23 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
         <FormField
           control={form.control}
           name="number"
-          render={({ field }) => (
+          render={({ field: { onChange, value, ...rest } }) => (
             <FormItem>
               <FormLabel>Número do cartão</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="0000 0000 0000 0000" 
-                  {...field} 
-                  className="border border-gray-200" 
-                  maxLength={19}
-                />
-              </FormControl>
+              <div className="relative">
+                <FormControl>
+                  <Input 
+                    placeholder="0000 0000 0000 0000" 
+                    value={value}
+                    {...rest}
+                    onChange={(e) => handleCardNumberChange(e, onChange)}
+                    className="border border-gray-200 pr-12" 
+                    maxLength={19}
+                    autoComplete="cc-number"
+                  />
+                </FormControl>
+                <CardBrandDisplay cardNumber={value || ''} />
+              </div>
               <FormMessage />
             </FormItem>
           )}
@@ -97,15 +110,17 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
           <FormField
             control={form.control}
             name="expiryDate"
-            render={({ field }) => (
+            render={({ field: { onChange, ...rest } }) => (
               <FormItem>
                 <FormLabel>Validade</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="MM/AA" 
-                    {...field} 
-                    className="border border-gray-200" 
+                    {...rest} 
+                    onChange={(e) => handleExpiryDateChange(e, onChange, formatExpiryDate)}
+                    className="border border-gray-200 text-center" 
                     maxLength={5}
+                    autoComplete="cc-exp"
                   />
                 </FormControl>
                 <FormMessage />
@@ -121,10 +136,12 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
                 <FormLabel>CVV</FormLabel>
                 <FormControl>
                   <Input 
-                    placeholder="123" 
+                    placeholder={isFourDigitCvv ? "0000" : "000"} 
                     {...field} 
-                    className="border border-gray-200" 
-                    maxLength={4}
+                    className="border border-gray-200 text-center" 
+                    maxLength={isFourDigitCvv ? 4 : 3}
+                    autoComplete="cc-csc"
+                    type="text"
                   />
                 </FormControl>
                 <FormMessage />
