@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PaymentStatus } from '@/types/checkout';
 import { PixQRCode } from './PixQRCode';
@@ -8,7 +7,7 @@ import { PixPaymentDetails } from './PixPaymentDetails';
 import { PixPaymentStatus } from './PixPaymentStatus';
 import { PixStatusChecker } from './PixStatusChecker';
 import { Card } from '@/components/ui/card';
-import { QrCode, Sparkles, CreditCard } from 'lucide-react';
+import { QrCode, Sparkles, CreditCard, ShieldCheck } from 'lucide-react';
 
 interface PixPaymentContainerProps {
   orderId: string;
