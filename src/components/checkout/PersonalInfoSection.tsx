@@ -1,12 +1,12 @@
+
 import React, { useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { SectionTitle } from './SectionTitle';
 import { CustomerData } from '@/types/checkout';
-import { handleCpfCnpjChange, handlePhoneChange } from '@/utils/formatters';
+import { PersonalInfoFields } from './PersonalInfoFields';
 
 const customerSchema = z.object({
   name: z.string().min(3, { message: 'Nome completo é obrigatório (mínimo 3 caracteres)' }),
@@ -37,16 +37,11 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     mode: 'onChange'
   });
 
-  // Track last submitted values to avoid excessive submissions
   const lastSubmittedRef = useRef<CustomerData | null>(null);
-  // Add a debounce timer reference
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  // Track if this is the first render to prevent submission on mount
   const isFirstRender = useRef(true);
-  // Add a flag to track the last submission timestamp
   const lastSubmissionTime = useRef<number>(0);
 
-  // Function to check if data is different from last submission
   const isDataDifferent = (data: CustomerData): boolean => {
     if (!lastSubmittedRef.current) return true;
     
@@ -59,48 +54,39 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     );
   };
 
-  // Function to check if enough time has passed since last submission
   const canSubmit = (): boolean => {
     const now = Date.now();
     const timeSinceLastSubmission = now - lastSubmissionTime.current;
-    // Only allow submission once every 3 seconds
     return timeSinceLastSubmission > 3000;
   };
 
-  // Automatically submit valid form data when values change with debounce
   useEffect(() => {
-    // Skip the first render to prevent unwanted submission on mount
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
 
     const subscription = form.watch((value, { name, type }) => {
-      // Only attempt to submit when fields change and the form is valid
       if (type === 'change' && form.formState.isValid) {
         const data = form.getValues();
         
-        // Only submit if data is different from last submission and enough time has passed
         if (isDataDifferent(data) && canSubmit()) {
-          // Clear any existing timer
           if (debounceTimerRef.current) {
             clearTimeout(debounceTimerRef.current);
           }
           
-          // Set a new timer with longer debounce time
           debounceTimerRef.current = setTimeout(() => {
             lastSubmissionTime.current = Date.now();
             lastSubmittedRef.current = { ...data };
             onSubmit(data);
             debounceTimerRef.current = null;
-          }, 1000); // 1 second debounce time to reduce frequency
+          }, 1000);
         }
       }
     });
     
     return () => {
       subscription.unsubscribe();
-      // Clear any pending timer when component unmounts
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
@@ -117,91 +103,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
           onSubmit={(e) => e.preventDefault()} 
           className="space-y-4 mt-4"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-700">Nome completo</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Seu nome completo" 
-                      {...field} 
-                      className="border-gray-300 focus:border-primary" 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-700">E-mail</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Seu e-mail" 
-                      type="email" 
-                      {...field} 
-                      className="border-gray-300 focus:border-primary" 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="cpfCnpj"
-              render={({ field: { onChange, value, ...rest } }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-700">CPF/CNPJ</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Digite seu CPF" 
-                      value={value}
-                      {...rest} 
-                      onChange={(e) => handleCpfCnpjChange(e, onChange)}
-                      maxLength={18} 
-                      className="border-gray-300 focus:border-primary" 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field: { onChange, value, ...rest } }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-700">Celular</FormLabel>
-                  <div className="flex">
-                    <span className="inline-flex items-center px-3 text-gray-500 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
-                      +55
-                    </span>
-                    <FormControl>
-                      <Input 
-                        placeholder="(00) 00000-0000" 
-                        value={value}
-                        {...rest} 
-                        onChange={(e) => handlePhoneChange(e, onChange)}
-                        maxLength={15} 
-                        className="border-gray-300 focus:border-primary rounded-l-none" 
-                      />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <PersonalInfoFields control={form.control} />
         </form>
       </Form>
     </div>
