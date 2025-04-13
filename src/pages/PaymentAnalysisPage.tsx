@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -99,9 +100,10 @@ const PaymentAnalysisPage = () => {
               return;
             }
             
-            // If payment status is FAILED or CANCELLED, navigate to failed
+            // If payment status is FAILED, CANCELLED, or DECLINED, navigate to failed
             if (status === 'FAILED' || status === 'CANCELLED' || status === 'DECLINED') {
               clearInterval(pollingInterval);
+              // Redirect to the failed page with autoRetry flag to trigger immediate retry
               navigate('/failed', { 
                 state: { 
                   order: currentOrder,

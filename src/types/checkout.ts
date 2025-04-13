@@ -1,6 +1,6 @@
 
 // Payment related types
-export type PaymentStatus = 'PENDING' | 'CONFIRMED' | 'RECEIVED' | 'OVERDUE' | 'REFUNDED' | 'CANCELLED';
+export type PaymentStatus = 'PENDING' | 'CONFIRMED' | 'RECEIVED' | 'OVERDUE' | 'REFUNDED' | 'CANCELLED' | 'FAILED' | 'DECLINED';
 export type PaymentMethod = 'pix' | 'creditCard';
 
 // Credit card related types
