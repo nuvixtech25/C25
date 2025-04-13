@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { PaymentMethod } from '@/types/checkout';
 import { SectionTitle } from '../SectionTitle';
@@ -38,19 +37,16 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paymentError, setPaymentError] = useState(false);
-
+  
   const handleSubmit = async (data?: any) => {
     setIsProcessing(true);
     setPaymentError(false);
     setPaymentSuccess(false);
     
     try {
-      // Check if form is valid before submission
+      // Trigger the customer form validation and submission
       if (customerFormRef.current) {
-        // Get form data
         const formData = new FormData(customerFormRef.current);
-        
-        // Convert form data to customer data object
         const customerData: CustomerData = {
           name: formData.get('name') as string || '',
           email: formData.get('email') as string || '',
@@ -58,7 +54,7 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
           phone: formData.get('phone') as string || '',
         };
         
-        // Submit the customer data first
+        // Validate and submit customer data
         onCustomerDataSubmit(customerData);
       }
       

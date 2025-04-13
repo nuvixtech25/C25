@@ -62,3 +62,4 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
     </div>
   );
 };
+

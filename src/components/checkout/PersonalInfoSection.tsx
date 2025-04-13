@@ -9,7 +9,6 @@ import { SectionTitle } from './SectionTitle';
 import { CustomerData } from '@/types/checkout';
 import { handleCpfCnpjChange, handlePhoneChange } from '@/utils/formatters';
 
-// Schema validation for customer data
 const customerSchema = z.object({
   name: z.string().min(1, { message: 'Nome é obrigatório' }),
   email: z.string().email({ message: 'Email inválido' }),
@@ -28,7 +27,6 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   headingColor = '#000000',
   formRef
 }) => {
-  // Form definition using react-hook-form with zod validation
   const form = useForm<CustomerData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
@@ -37,15 +35,28 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
       cpfCnpj: '',
       phone: '',
     },
-    mode: 'onChange' // Validate as user types
+    mode: 'onChange'
   });
+
+  // Modified to use form.getValues() instead of explicit submit
+  const prepareCustomerDataSubmission = () => {
+    const isValid = form.formState.isValid;
+    if (isValid) {
+      const data = form.getValues();
+      onSubmit(data);
+    }
+  };
 
   return (
     <div className="mb-6 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
       <SectionTitle number={1} title="Identificação" />
       
       <Form {...form}>
-        <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+        <form 
+          ref={formRef} 
+          onSubmit={(e) => e.preventDefault()} 
+          className="space-y-4 mt-4"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -96,7 +107,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                       value={value}
                       {...rest} 
                       onChange={(e) => handleCpfCnpjChange(e, onChange)}
-                      maxLength={18} // Longest possible CNPJ with formatting
+                      maxLength={18} 
                       className="border-gray-300 focus:border-primary" 
                     />
                   </FormControl>
@@ -121,7 +132,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
                         value={value}
                         {...rest} 
                         onChange={(e) => handlePhoneChange(e, onChange)}
-                        maxLength={15} // (XX) XXXXX-XXXX
+                        maxLength={15} 
                         className="border-gray-300 focus:border-primary rounded-l-none" 
                       />
                     </FormControl>
@@ -136,3 +147,4 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     </div>
   );
 };
+
