@@ -41,21 +41,26 @@ const PaymentPage = () => {
   }, [loading, paymentData, order, error, paymentStatus]);
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-white via-green-50/30 to-white">
-      <PaymentDecorativeElements />
-      <PaymentHeader />
-      
-      <PaymentContent 
-        loading={loading}
-        error={error}
-        paymentData={paymentData}
-        order={order}
-        paymentStatus={paymentStatus}
-        isCheckingStatus={isCheckingStatus}
-        refreshStatus={refreshStatus}
-      />
-      
-      {paymentData && order && <PaymentFooter />}
+    <div className="min-h-screen flex flex-col items-center bg-gradient-to-b from-white via-green-50/20 to-white">
+      <div className="w-full max-w-4xl px-4 py-8">
+        <PaymentHeader />
+        
+        <div className="relative mt-6">
+          <PaymentDecorativeElements />
+          
+          <PaymentContent 
+            loading={loading}
+            error={error}
+            paymentData={paymentData}
+            order={order}
+            paymentStatus={paymentStatus}
+            isCheckingStatus={isCheckingStatus}
+            refreshStatus={refreshStatus}
+          />
+        </div>
+        
+        {paymentData && order && <PaymentFooter />}
+      </div>
     </div>
   );
 };

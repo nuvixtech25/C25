@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Timer, X } from 'lucide-react';
+import { Timer, AlertTriangle } from 'lucide-react';
 
 interface PixExpirationTimerProps {
   timeLeft: string;
@@ -24,23 +24,20 @@ export const PixExpirationTimer: React.FC<PixExpirationTimerProps> = ({
   
   if (isExpired) {
     return (
-      <div className="flex items-center text-red-500 font-medium">
-        <X className="mr-2 h-4 w-4" />
-        <span>Tempo expirado</span>
+      <div className="flex items-center justify-center bg-red-50 text-red-600 rounded-full px-3 py-1.5 text-xs font-medium mt-3 border border-red-100">
+        <AlertTriangle className="mr-1.5 h-3.5 w-3.5" />
+        <span>PIX expirado</span>
       </div>
     );
   }
   
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center text-sm text-gray-600">
-        <Timer className="mr-2 h-4 w-4 text-purple-500" />
-        <span>Expira em:</span>
+    <div className="mt-3 flex flex-col items-center">
+      <div className="flex items-center justify-center bg-purple-50 text-purple-700 rounded-full px-3 py-1.5 text-xs font-medium border border-purple-100">
+        <Timer className="mr-1.5 h-3.5 w-3.5 animate-pulse" />
+        <span>Expira em: {formatTime(timeLeftNumber)}</span>
       </div>
-      
-      <div className="text-sm font-medium bg-purple-100 text-purple-700 px-2 py-1 rounded">
-        {formatTime(timeLeftNumber)}
-      </div>
+      <p className="text-xs text-gray-500 mt-1.5">Após este tempo, você precisará gerar um novo QR Code</p>
     </div>
   );
 };

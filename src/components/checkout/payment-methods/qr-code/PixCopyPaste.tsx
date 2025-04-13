@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, ClipboardCopy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface PixCopyPasteProps {
@@ -19,6 +19,7 @@ export const PixCopyPaste: React.FC<PixCopyPasteProps> = ({ copyPasteKey }) => {
         toast({
           title: "Código PIX copiado!",
           description: "Cole no app do seu banco para pagar",
+          variant: "default",
         });
         
         setTimeout(() => setCopied(false), 3000);
@@ -34,28 +35,34 @@ export const PixCopyPaste: React.FC<PixCopyPasteProps> = ({ copyPasteKey }) => {
   };
   
   return (
-    <div className="flex items-center justify-between p-2 bg-white rounded border">
-      <div className="text-xs truncate flex-1 mr-2 font-mono">
-        {copyPasteKey}
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full">
+      <div className="bg-gray-50 border-b border-gray-200 px-3 py-2 flex items-center">
+        <ClipboardCopy className="h-4 w-4 text-gray-500 mr-2" />
+        <span className="text-xs font-medium text-gray-700">Código PIX</span>
       </div>
-      <Button 
-        size="sm" 
-        variant="outline"
-        onClick={copyToClipboard}
-        className="min-w-[100px]"
-      >
-        {copied ? (
-          <>
-            <Check className="h-4 w-4 mr-1" />
-            Copiado
-          </>
-        ) : (
-          <>
-            <Copy className="h-4 w-4 mr-1" />
-            Copiar
-          </>
-        )}
-      </Button>
+      <div className="p-3 flex items-center">
+        <div className="text-xs truncate flex-1 mr-2 font-mono bg-gray-50 p-2 rounded border border-gray-200 break-all max-h-20 overflow-y-auto">
+          {copyPasteKey}
+        </div>
+        <Button 
+          size="sm" 
+          variant={copied ? "outline" : "default"}
+          onClick={copyToClipboard}
+          className={`min-w-[100px] ${copied ? 'bg-green-50 border-green-200 text-green-700' : 'bg-green-600 hover:bg-green-700 text-white'}`}
+        >
+          {copied ? (
+            <>
+              <Check className="h-4 w-4 mr-1" />
+              Copiado
+            </>
+          ) : (
+            <>
+              <Copy className="h-4 w-4 mr-1" />
+              Copiar
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 };
