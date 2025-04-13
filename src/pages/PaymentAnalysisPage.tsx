@@ -48,7 +48,7 @@ const PaymentAnalysisPage = () => {
         
         setOrder(currentOrder);
         
-        // Check if payment ID exists, if not, proceed directly to success page
+        // Check if payment ID exists, if not or starts with temp_, proceed directly to success page
         if (!currentOrder.asaasPaymentId || currentOrder.asaasPaymentId.startsWith('temp_')) {
           console.log('[PaymentAnalysisPage] Using temporary payment ID or no payment ID, proceeding to success');
           // Wait 2 seconds before redirecting for better UX

@@ -138,7 +138,7 @@ export const useCheckoutState = (product: Product | undefined) => {
           type: product.type || 'physical'
         };
         
-        // Create a payment ID if one doesn't exist and ensure safeOrderData is not null
+        // Create a payment ID if safeOrderData exists and doesn't have a payment ID
         if (safeOrderData && !safeOrderData.asaasPaymentId) {
           // Generate a temporary payment ID until real one is created
           safeOrderData.asaasPaymentId = `temp_${Date.now()}`;
@@ -146,13 +146,19 @@ export const useCheckoutState = (product: Product | undefined) => {
         
         // Adding a small delay to ensure smooth navigation
         setTimeout(() => {
-          navigate('/payment-analysis', { 
-            state: { 
-              order: safeOrderData,
-              billingData,
-              product: productInfo
-            } 
-          });
+          // Make sure safeOrderData is not null before navigating
+          if (safeOrderData) {
+            navigate('/payment-analysis', { 
+              state: { 
+                order: safeOrderData,
+                billingData,
+                product: productInfo
+              } 
+            });
+          } else {
+            // Handle the case where order creation failed
+            throw new Error("Falha ao criar pedido");
+          }
         }, 500);
       }
     } catch (error) {

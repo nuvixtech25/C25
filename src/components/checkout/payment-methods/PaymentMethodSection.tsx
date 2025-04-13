@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+
+import React, { useState } from 'react';
 import { PaymentMethod } from '@/types/checkout';
 import { SectionTitle } from '../SectionTitle';
 import PaymentOptions from './PaymentOptions';
@@ -54,21 +55,33 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
           phone: formData.get('phone') as string || '',
         };
         
-        // Validate and submit customer data
+        // Validate customer data before submitting
+        if (!customerData.name || !customerData.email || !customerData.cpfCnpj || !customerData.phone) {
+          throw new Error("Por favor, preencha seus dados pessoais");
+        }
+        
+        // Submit customer data first
         onCustomerDataSubmit(customerData);
-      }
-      
-      // Then handle the payment
-      onSubmit(data);
-      
-      // Only set success for PIX payments
-      // Credit card payments will redirect to success page
-      if (paymentMethod === 'pix') {
-        setPaymentSuccess(true);
+        
+        // Then handle the payment with a small delay to ensure customer data is saved
+        setTimeout(() => {
+          onSubmit(data);
+        }, 100);
+        
+        // Only set success for PIX payments
+        // Credit card payments will redirect to success page
+        if (paymentMethod === 'pix') {
+          setPaymentSuccess(true);
+        }
+      } else {
+        throw new Error("Formulário não encontrado");
       }
     } catch (error) {
       console.error('Error submitting payment:', error);
       setPaymentError(true);
+      // Show toast error
+      const errorMessage = error instanceof Error ? error.message : "Erro ao processar pagamento";
+      alert(errorMessage);
     } finally {
       setIsProcessing(false);
     }
