@@ -19,7 +19,7 @@ interface RetryCardSubmissionProps {
     waitTime?: number;
   } | null;
   hasWhatsappSupport: boolean;
-  whatsappNumber: string | undefined; // Updated type to match what's being passed
+  whatsappNumber: string | undefined;
 }
 
 export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({ 
