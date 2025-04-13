@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 import { useOrderData } from '@/hooks/useOrderData';
@@ -14,6 +14,7 @@ import { supabaseClientService } from '@/services/supabaseClientService';
 const FailedPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { order, setOrder, loading, setLoading, fetchOrderById, getOrderIdFromUrl } = useOrderData();
   const { trackPurchase } = usePixelEvents();
   const { toast } = useToast();
@@ -21,6 +22,9 @@ const FailedPage = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [shouldShowRetryButton, setShouldShowRetryButton] = useState(true);
 
+  // Log current state for debugging
+  console.log('[FailedPage] Full location state:', state);
+  
   useEffect(() => {
     // Clear any WhatsApp data from localStorage to prevent it from being used
     try {
@@ -29,8 +33,6 @@ const FailedPage = () => {
     } catch (e) {
       logPaymentError('FailedPage', e, 'Failed to clear localStorage');
     }
-    
-    console.log('[FailedPage] Full location state:', state);
     
     const loadOrderData = async () => {
       // Prevent processing if we've already redirected or if this isn't the initial load
@@ -82,13 +84,14 @@ const FailedPage = () => {
       console.log('[FailedPage] No order found in location state');
       
       // Try to get orderId from URL query params if not in state
-      const orderId = getOrderIdFromUrl();
+      const orderId = getOrderIdFromUrl() || searchParams.get('orderId');
       if (orderId) {
         try {
           setLoading(true);
           const fetchedOrder = await fetchOrderById(orderId);
           
           if (fetchedOrder) {
+            console.log('[FailedPage] Successfully fetched order from database:', fetchedOrder);
             setOrder(fetchedOrder);
             
             // Check card attempts to decide if we should show retry button
@@ -139,7 +142,7 @@ const FailedPage = () => {
     };
     
     loadOrderData();
-  }, [state, getOrderIdFromUrl, fetchOrderById, setOrder, toast, trackPurchase, navigate, hasRedirected, isInitialLoad, setLoading]);
+  }, [state, getOrderIdFromUrl, fetchOrderById, setOrder, toast, trackPurchase, navigate, hasRedirected, isInitialLoad, setLoading, searchParams]);
 
   // Debug logs to help troubleshoot the issue
   useEffect(() => {

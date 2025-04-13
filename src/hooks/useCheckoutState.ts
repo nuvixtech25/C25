@@ -130,26 +130,18 @@ export const useCheckoutState = (product: Product | undefined) => {
         defaultMessage: "Ocorreu um erro ao processar o pagamento. Tente novamente."
       });
       
-      // Navigate to failed page, including orderId if available AND pass the order object in state
-      if (orderId) {
-        console.log('[useCheckoutState] Redirecting to failed page with order ID:', orderId);
-        console.log('[useCheckoutState] Order object:', currentOrder);
-        
-        navigate(`/failed`, {
-          state: {
-            order: currentOrder,
-            autoRetry: true
-          }
-        });
-      } else {
-        // Even without orderId, we should pass any available order data
-        navigate('/failed', {
-          state: {
-            order: currentOrder,
-            autoRetry: true
-          }
-        });
-      }
+      // Adding orderId to URL params as a fallback mechanism
+      const failedUrl = currentOrder ? 
+        `/failed?orderId=${currentOrder.id}` : 
+        '/failed';
+      
+      // Navigate to failed page, including orderId in URL and pass the order object in state
+      navigate(failedUrl, {
+        state: {
+          order: currentOrder,
+          autoRetry: true
+        }
+      });
     } finally {
       setIsSubmitting(false);
     }

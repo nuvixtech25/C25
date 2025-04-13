@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate, Location } from 'react-router-dom';
 import Index from '@/pages/Index';
 import CheckoutPreview from '@/pages/admin/CheckoutPreview';
 import PaymentPage from '@/pages/PaymentPage';
@@ -32,7 +32,7 @@ const PublicRoutes: React.FC = () => {
       {/* Update the redirect from /payment-failed to /failed to preserve location state */}
       <Route 
         path="/payment-failed" 
-        element={<Navigate to="/failed" replace state={(location) => location.state} />} 
+        element={<Navigate to="/failed" replace state={(location: Location) => location.state} />} 
       />
       <Route path="/pending" element={<PaymentPendingPage />} />
       <Route path="/payment-pending" element={<Navigate to="/pending" replace />} />

@@ -54,7 +54,7 @@ const RetryPaymentButton: React.FC<RetryPaymentButtonProps> = ({ order, isLoadin
     // Log the complete object for verification
     console.log('[RetryPaymentButton] Complete order object for retry:', completeOrder);
     
-    // Navigate with the complete order object in state
+    // Navigate with the complete order object in state AND include orderId in URL
     navigate(`/retry-payment?orderId=${order!.id}`, { 
       state: { 
         order: completeOrder
