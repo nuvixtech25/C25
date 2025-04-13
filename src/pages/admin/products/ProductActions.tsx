@@ -19,7 +19,7 @@ const ProductActions = ({ product, onDeleteClick }: ProductActionsProps) => {
         asChild
         className="h-8 w-8"
       >
-        <Link to={`/admin/products/${product.id}/edit`}>
+        <Link to={`/admin/products/edit/${product.id}`}>
           <Edit className="h-4 w-4" />
           <span className="sr-only">Editar</span>
         </Link>

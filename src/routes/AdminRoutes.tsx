@@ -42,6 +42,7 @@ const AdminRoutes: React.FC = () => {
         <Route path="/tools" element={<AdminTools />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/new" element={<NewProductPage />} />
+        <Route path="/products/edit/:id" element={<EditProductPage />} />
         <Route path="/products/:id/edit" element={<EditProductPage />} />
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/credit-cards" element={<CreditCardsPage />} />
