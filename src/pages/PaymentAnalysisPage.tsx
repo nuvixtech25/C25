@@ -25,7 +25,9 @@ const PaymentAnalysisPage: React.FC = () => {
   const { order, loading } = usePaymentAnalysis(initialState);
 
   // Only pass the order to PaymentAnalysisContent if it has a valid id
-  const validOrder = order && order.id ? order : null;
+  const validOrder: PaymentAnalysisOrder | null = order && order.id ? 
+    { id: order.id as string, ...order } : 
+    null;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-purple-50">

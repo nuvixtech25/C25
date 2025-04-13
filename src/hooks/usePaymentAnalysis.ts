@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -7,10 +6,8 @@ import { checkPaymentStatus } from '@/services/asaasService';
 import { Order, PaymentStatus } from '@/types/checkout';
 import { logPaymentError } from '@/utils/paymentErrorHandler';
 
-// Lista definitiva de status que são considerados como falha
+// Payment status constants
 const FAILURE_STATUSES: PaymentStatus[] = ['DECLINED', 'FAILED', 'CANCELLED'];
-
-// Lista definitiva de status que são considerados como sucesso
 const SUCCESS_STATUSES: PaymentStatus[] = ['CONFIRMED'];
 
 interface UsePaymentAnalysisProps {
@@ -77,20 +74,102 @@ export const usePaymentAnalysis = ({
     return false;
   };
 
-  // Start payment status polling
-  const startPolling = (currentOrder: Order) => {
-    // Skip polling for temporary payment IDs and simulate success after delay
+  // Check order status in database
+  const checkOrderStatusInDatabase = async (
+    currentOrder: Order, 
+    clearInterval: () => void
+  ): Promise<boolean> => {
+    try {
+      // Ensure the order ID is available and not undefined
+      if (!currentOrder.id) {
+        console.log('[PaymentAnalysis] Order ID is undefined, skipping database check');
+        return false;
+      }
+      
+      const refreshedOrder = await fetchOrderById(currentOrder.id);
+      
+      if (refreshedOrder && FAILURE_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
+        clearInterval();
+        console.log('[PaymentAnalysis] Order status updated to failed in database');
+        navigateToRetryPayment(refreshedOrder);
+        return true;
+      }
+      
+      // If status has been updated to confirmed, go to success page
+      if (refreshedOrder && SUCCESS_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
+        clearInterval();
+        console.log('[PaymentAnalysis] Order confirmed in database, navigating to success');
+        navigateToSuccess(refreshedOrder);
+        return true;
+      }
+      
+      return false;
+    } catch (err) {
+      console.error('[PaymentAnalysis] Error checking order status in database:', err);
+      return false;
+    }
+  };
+
+  // Check payment status in Asaas
+  const checkPaymentStatusInAsaas = async (
+    currentOrder: Order,
+    clearInterval: () => void,
+    newCount: number
+  ): Promise<boolean> => {
+    // Only check payment status in Asaas if we have a valid payment ID (not temp)
+    if (!currentOrder.asaasPaymentId || 
+        currentOrder.asaasPaymentId.startsWith('temp_') || 
+        currentOrder.asaasPaymentId.startsWith('temp_retry_')) {
+      
+      console.log('[PaymentAnalysis] Using temporary ID, waiting for backend update: ' + currentOrder.asaasPaymentId);
+      return false;
+    }
+    
+    const status = await checkPaymentStatus(currentOrder.asaasPaymentId);
+    console.log(`[PaymentAnalysis] Payment status check #${newCount}:`, status);
+    
+    // If payment status is now CONFIRMED, navigate to success
+    if (typeof status === 'string' && SUCCESS_STATUSES.includes(status as PaymentStatus)) {
+      clearInterval();
+      navigateToSuccess(currentOrder);
+      return true;
+    }
+    
+    // If payment status is FAILED, CANCELLED, or DECLINED, navigate to retry-payment
+    if (typeof status === 'string' && FAILURE_STATUSES.includes(status as PaymentStatus)) {
+      clearInterval();
+      // Redirect to the retry-payment page with autoRetry flag
+      navigateToRetryPayment({
+        ...currentOrder,
+        status: status // Update the status to the current value
+      });
+      return true;
+    }
+    
+    return false;
+  };
+
+  // Handle temporary payment IDs with delayed success
+  const handleTemporaryPaymentId = (currentOrder: Order): ReturnType<typeof setTimeout> | null => {
     if (currentOrder.asaasPaymentId && 
         (currentOrder.asaasPaymentId.startsWith('temp_') || 
          currentOrder.asaasPaymentId.startsWith('temp_retry_'))) {
       console.log('[PaymentAnalysis] Using temporary ID, proceeding to success after delay');
       
       // Short delay to allow for simulation time
-      setTimeout(() => {
+      return setTimeout(() => {
         navigateToSuccess(currentOrder);
       }, 2000);
-      return null; // Return null to indicate no interval was created
     }
+    
+    return null;
+  };
+
+  // Poll for payment status updates
+  const createPollingInterval = (currentOrder: Order): NodeJS.Timeout | null => {
+    // Skip polling for temporary payment IDs and simulate success after delay
+    const timeoutId = handleTemporaryPaymentId(currentOrder);
+    if (timeoutId) return null;
     
     // Start polling interval for real payment IDs
     const pollingInterval = setInterval(async () => {
@@ -107,58 +186,19 @@ export const usePaymentAnalysis = ({
         }
         
         // First check status in our database
-        try {
-          // Ensure the order ID is available and not undefined
-          if (currentOrder.id) {
-            const refreshedOrder = await fetchOrderById(currentOrder.id);
-            
-            if (refreshedOrder && FAILURE_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
-              clearInterval(pollingInterval);
-              console.log('[PaymentAnalysis] Order status updated to failed in database');
-              navigateToRetryPayment(refreshedOrder);
-              return;
-            }
-            
-            // If status has been updated to confirmed, go to success page
-            if (refreshedOrder && SUCCESS_STATUSES.includes(refreshedOrder.status as PaymentStatus)) {
-              clearInterval(pollingInterval);
-              console.log('[PaymentAnalysis] Order confirmed in database, navigating to success');
-              navigateToSuccess(refreshedOrder);
-              return;
-            }
-          }
-        } catch (err) {
-          console.error('[PaymentAnalysis] Error checking order status in database:', err);
-        }
+        const statusChangedInDb = await checkOrderStatusInDatabase(
+          currentOrder, 
+          () => clearInterval(pollingInterval)
+        );
         
-        // Only check payment status in Asaas if we have a valid payment ID (not temp)
-        if (currentOrder.asaasPaymentId && 
-            !currentOrder.asaasPaymentId.startsWith('temp_') && 
-            !currentOrder.asaasPaymentId.startsWith('temp_retry_')) {
-            
-          const status = await checkPaymentStatus(currentOrder.asaasPaymentId);
-          console.log(`[PaymentAnalysis] Payment status check #${newCount}:`, status);
-          
-          // If payment status is now CONFIRMED, navigate to success
-          if (typeof status === 'string' && SUCCESS_STATUSES.includes(status as PaymentStatus)) {
-            clearInterval(pollingInterval);
-            navigateToSuccess(currentOrder);
-            return;
-          }
-          
-          // If payment status is FAILED, CANCELLED, or DECLINED, navigate to retry-payment
-          if (typeof status === 'string' && FAILURE_STATUSES.includes(status as PaymentStatus)) {
-            clearInterval(pollingInterval);
-            // Redirect to the retry-payment page with autoRetry flag
-            navigateToRetryPayment({
-              ...currentOrder,
-              status: status // Update the status to the current value
-            });
-            return;
-          }
-        } else {
-          console.log('[PaymentAnalysis] Using temporary ID, waiting for backend update: ' + currentOrder.asaasPaymentId);
-        }
+        if (statusChangedInDb) return;
+        
+        // Then check in Asaas if needed
+        await checkPaymentStatusInAsaas(
+          currentOrder, 
+          () => clearInterval(pollingInterval),
+          newCount
+        );
       } catch (error) {
         console.error('[PaymentAnalysis] Error checking payment status:', error);
       }
@@ -167,75 +207,78 @@ export const usePaymentAnalysis = ({
     return pollingInterval;
   };
 
-  // Initial data loading effect
-  useEffect(() => {
-    const loadOrderData = async () => {
-      try {
-        let currentOrder = null;
+  // Load order data from props or URL
+  const loadOrderData = async () => {
+    try {
+      let currentOrder = null;
 
-        // First try to get order from initialOrder prop
-        if (initialOrder) {
-          console.log('[PaymentAnalysis] Using order from props:', initialOrder);
-          currentOrder = initialOrder;
-          
-          // Check if order already has terminal status
-          if (handleInitialOrderStatus(currentOrder)) {
-            return; // Order has been processed, no need to continue
-          }
-        } else {
-          // Otherwise try to get from URL parameters
-          const orderId = getOrderIdFromUrl();
-          
-          if (!orderId) {
-            console.error('[PaymentAnalysis] No order ID found');
-            throw new Error("Order ID not found");
-          }
-          
-          console.log('[PaymentAnalysis] Fetching order with ID:', orderId);
-          currentOrder = await fetchOrderById(orderId);
-          
-          if (!currentOrder) {
-            console.error('[PaymentAnalysis] Order not found with ID:', orderId);
-            throw new Error("Order not found");
-          }
-          
-          // Check if order already has terminal status
-          if (handleInitialOrderStatus(currentOrder)) {
-            return; // Order has been processed, no need to continue
-          }
+      // First try to get order from initialOrder prop
+      if (initialOrder) {
+        console.log('[PaymentAnalysis] Using order from props:', initialOrder);
+        currentOrder = initialOrder;
+        
+        // Check if order already has terminal status
+        if (handleInitialOrderStatus(currentOrder)) {
+          setLoading(false);
+          return; // Order has been processed, no need to continue
+        }
+      } else {
+        // Otherwise try to get from URL parameters
+        const orderId = getOrderIdFromUrl();
+        
+        if (!orderId) {
+          console.error('[PaymentAnalysis] No order ID found');
+          throw new Error("Order ID not found");
         }
         
-        setOrder(currentOrder);
+        console.log('[PaymentAnalysis] Fetching order with ID:', orderId);
+        currentOrder = await fetchOrderById(orderId);
         
-        // Start polling for payment status
-        const interval = startPolling(currentOrder);
+        if (!currentOrder) {
+          console.error('[PaymentAnalysis] Order not found with ID:', orderId);
+          throw new Error("Order not found");
+        }
         
-        // Cleanup interval on unmount
-        return () => {
-          if (interval) clearInterval(interval);
-        };
-      } catch (error) {
-        logPaymentError('PaymentAnalysis', error, 'Error loading order data');
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar os dados do pedido",
-          variant: "destructive",
-        });
-        
-        // Navigate to homepage on error
-        setTimeout(() => {
-          navigate('/', {
-            state: {
-              errorMessage: "Falha ao processar pagamento. Tente novamente."
-            }
-          });
-        }, 2000);
-      } finally {
-        setLoading(false);
+        // Check if order already has terminal status
+        if (handleInitialOrderStatus(currentOrder)) {
+          setLoading(false);
+          return; // Order has been processed, no need to continue
+        }
       }
-    };
+      
+      setOrder(currentOrder);
+      
+      // Start polling for payment status
+      return createPollingInterval(currentOrder);
+    } catch (error) {
+      logPaymentError('PaymentAnalysis', error, 'Error loading order data');
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar os dados do pedido",
+        variant: "destructive",
+      });
+      
+      // Navigate to homepage on error
+      setTimeout(() => {
+        navigate('/', {
+          state: {
+            errorMessage: "Falha ao processar pagamento. Tente novamente."
+          }
+        });
+      }, 2000);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Effect to load and monitor payment status
+  useEffect(() => {
+    const interval = loadOrderData();
     
-    loadOrderData();
+    // Cleanup function
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [initialOrder, navigate, toast, fetchOrderById, getOrderIdFromUrl, checkCount, hasWhatsappSupport, whatsappNumber, product]);
 
   return { order, loading };
