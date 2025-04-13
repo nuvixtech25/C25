@@ -61,7 +61,7 @@ const RetryPaymentPage = () => {
           state: { 
             order,
             has_whatsapp_support: hasWhatsappSupport,
-            whatsapp_number: whatsappNumber
+            whatsapp_number: whatsappNumber || '' // Provide a default empty string if undefined
           }
         });
       }, 1000);
