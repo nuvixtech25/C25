@@ -2,15 +2,18 @@
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PaymentStatus } from '@/types/checkout';
 
 interface PixStatusCheckerProps {
   isCheckingStatus: boolean;
   onCheckStatus: () => void;
+  status?: PaymentStatus;
 }
 
 export const PixStatusChecker: React.FC<PixStatusCheckerProps> = ({
   isCheckingStatus,
-  onCheckStatus
+  onCheckStatus,
+  status
 }) => {
   return (
     <div className="flex justify-center">
