@@ -42,10 +42,10 @@ const PaymentPage = () => {
   
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-b from-white via-green-50/20 to-white">
-      <div className="w-full max-w-4xl px-4 py-8">
+      <div className="w-full max-w-4xl px-3 sm:px-4 py-4 sm:py-8">
         <PaymentHeader />
         
-        <div className="relative mt-6">
+        <div className="relative mt-4 sm:mt-6">
           <PaymentDecorativeElements />
           
           <PaymentContent 

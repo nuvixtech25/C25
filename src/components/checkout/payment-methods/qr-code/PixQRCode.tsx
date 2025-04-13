@@ -2,12 +2,15 @@
 import React from 'react';
 import { Loader2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PixQRCodeProps {
   qrCodeImage: string;
 }
 
 export const PixQRCode: React.FC<PixQRCodeProps> = ({ qrCodeImage }) => {
+  const isMobile = useIsMobile();
+  
   const handleDownloadQRCode = () => {
     if (!qrCodeImage) return;
     
@@ -24,19 +27,21 @@ export const PixQRCode: React.FC<PixQRCodeProps> = ({ qrCodeImage }) => {
     }
   };
 
+  const qrCodeSize = isMobile ? "w-40 h-40" : "w-48 h-48";
+
   return (
     <div className="flex flex-col items-center">
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-green-200 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-        <div className="relative p-4 bg-white rounded-xl border-2 border-gray-100 shadow-md transition-all duration-300 hover:shadow-lg">
+        <div className="relative p-3 sm:p-4 bg-white rounded-xl border-2 border-gray-100 shadow-md transition-all duration-300 hover:shadow-lg">
           {qrCodeImage ? (
             <img 
               src={qrCodeImage} 
               alt="QR Code PIX" 
-              className="w-48 h-48 object-contain rounded" 
+              className={`${qrCodeSize} object-contain rounded`}
             />
           ) : (
-            <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg">
+            <div className={`${qrCodeSize} flex items-center justify-center bg-gray-100 rounded-lg`}>
               <Loader2 className="h-8 w-8 animate-spin text-green-500" />
             </div>
           )}
@@ -46,7 +51,7 @@ export const PixQRCode: React.FC<PixQRCodeProps> = ({ qrCodeImage }) => {
       <Button 
         size="sm" 
         variant="outline" 
-        className="mt-3 text-xs text-gray-600 hover:text-green-600 border-gray-200"
+        className="mt-2 sm:mt-3 text-xs text-gray-600 hover:text-green-600 border-gray-200"
         onClick={handleDownloadQRCode}
         disabled={!qrCodeImage}
       >
