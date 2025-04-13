@@ -93,17 +93,20 @@ export const useCheckoutState = (product: Product | undefined) => {
           description: "Redirecionando para a página de sucesso.",
         });
         
-        navigate(redirectPage, { 
-          state: { 
-            order,
-            billingData,
-            product: {
-              has_whatsapp_support: product.has_whatsapp_support,
-              whatsapp_number: product.whatsapp_number,
-              type: product.type || 'physical'
-            }
-          } 
-        });
+        // Adding a small delay to ensure the user sees the toast message before redirect
+        setTimeout(() => {
+          navigate(redirectPage, { 
+            state: { 
+              order,
+              billingData,
+              product: {
+                has_whatsapp_support: product.has_whatsapp_support,
+                whatsapp_number: product.whatsapp_number,
+                type: product.type || 'physical'
+              }
+            } 
+          });
+        }, 500);
       }
     } catch (error) {
       handleApiError(error, {

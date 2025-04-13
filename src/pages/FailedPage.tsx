@@ -110,13 +110,17 @@ const FailedPage = () => {
   const handleRetry = () => {
     if (order) {
       console.log('[FailedPage] Navigating to retry-payment with order:', order);
+      
+      // Use the proper route for retry payment and make sure it doesn't 
+      // interfere with the original checkout by using a dedicated route
       navigate(`/retry-payment?orderId=${order.id}`, { 
         state: { 
           order,
           // Explicitly passing empty WhatsApp data
           has_whatsapp_support: false,
           whatsapp_number: ''
-        } 
+        },
+        replace: true // Replace current history entry to prevent back button issues
       });
     } else {
       console.log('[FailedPage] No order available for retry, going to home page');
