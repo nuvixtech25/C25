@@ -1,5 +1,5 @@
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { usePaymentStatusChecker } from '../usePaymentStatusChecker';
 import { Order, PaymentStatus } from '@/types/checkout';

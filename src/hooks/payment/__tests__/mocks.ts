@@ -1,5 +1,6 @@
 
 import { Order, PaymentStatus } from '@/types/checkout';
+import { vi } from 'vitest';
 
 /**
  * Creates a mock order with default values
@@ -24,8 +25,8 @@ export const createMockOrder = (overrides?: Partial<Order>): Order => ({
 /**
  * Creates a mock function that simulates fetchOrderById with different statuses
  */
-export const createMockFetchOrderById = (status: PaymentStatus = 'PENDING'): jest.Mock => {
-  return jest.fn().mockImplementation((orderId: string) => {
+export const createMockFetchOrderById = (status: PaymentStatus = 'PENDING') => {
+  return vi.fn().mockImplementation((orderId: string) => {
     if (!orderId) return null;
     
     return Promise.resolve({
