@@ -27,9 +27,15 @@ export const useRetryPaymentData = () => {
   const [hasError, setHasError] = useState(false);
   // Use uma ref para rastrear se a validação já foi realizada para este orderId
   const validatedOrderIds = useRef<Set<string>>(new Set());
+  // Use a ref to prevent multiple identical API calls in development due to React's StrictMode
+  const initialLoadDone = useRef(false);
 
   // Fetch order data if not provided in location state
   useEffect(() => {
+    // Avoid duplicate fetches in development strict mode
+    if (initialLoadDone.current) return;
+    initialLoadDone.current = true;
+    
     const fetchOrder = async () => {
       setLoading(true);
       try {
@@ -91,7 +97,7 @@ export const useRetryPaymentData = () => {
           setOrder(fetchedOrder);
         }
 
-        // Check retry limit for the order, mas apenas uma vez
+        // Check retry limit for the order, only once
         const currentOrder = state?.order || order;
         if (currentOrder?.id) {
           await checkRetryLimit(currentOrder.id);
@@ -110,14 +116,14 @@ export const useRetryPaymentData = () => {
     };
 
     fetchOrder();
-  }, [navigate, state, toast, getOrderIdFromUrl, fetchOrderById, setOrder]);
+  }, []);  // Empty dependency array to run only once
 
   // Check if we can retry payment
   const checkRetryLimit = async (orderId: string) => {
     try {
       if (!orderId) return;
       
-      // Evita verificações repetidas para o mesmo orderId
+      // Avoid repeated validations for the same orderId
       if (validatedOrderIds.current.has(orderId)) {
         console.log('[RetryPaymentPage] Skipping validation for already validated order:', orderId);
         return;
@@ -128,13 +134,13 @@ export const useRetryPaymentData = () => {
       const result = await validateRetryAttempt(orderId, {
         maxAttempts: 3,
         minMinutes: 5,
-        enforceDelay: false // Por enquanto, não bloqueamos por tempo
+        enforceDelay: false // For now, we don't block by time
       });
       
       console.log('[RetryPaymentPage] Validation result:', result);
       
       setValidationResult(result);
-      // Marca este orderId como já validado
+      // Mark this orderId as already validated
       validatedOrderIds.current.add(orderId);
       
       if (!result.canProceed) {

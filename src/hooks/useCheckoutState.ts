@@ -94,32 +94,45 @@ export const useCheckoutState = (product: Product | undefined) => {
           whatsapp_number: product.whatsapp_number
         });
         
+        // Extract only serializable data for navigation
+        const safeOrderData = currentOrder ? {
+          id: currentOrder.id,
+          customerId: currentOrder.customerId || '',
+          customerName: currentOrder.customerName || 'Cliente Anônimo',
+          customerEmail: currentOrder.customerEmail || 'anonimo@example.com',
+          customerCpfCnpj: currentOrder.customerCpfCnpj || '',
+          customerPhone: currentOrder.customerPhone || '',
+          productId: currentOrder.productId || '',
+          productName: currentOrder.productName || '',
+          productPrice: currentOrder.productPrice || 0,
+          status: currentOrder.status || 'PENDING',
+          paymentMethod: currentOrder.paymentMethod || 'creditCard',
+          createdAt: currentOrder.createdAt,
+          updatedAt: currentOrder.updatedAt
+        } : null;
+        
+        const productInfo = {
+          has_whatsapp_support: !!product.has_whatsapp_support,
+          whatsapp_number: typeof product.whatsapp_number === 'string' ? product.whatsapp_number : '',
+          type: product.type || 'physical'
+        };
+        
         // Adding a small delay to ensure smooth navigation
         setTimeout(() => {
           // Update this to check if redirectPage is '/payment-failed' and navigate to '/failed' instead with state
           if (redirectPage === '/payment-failed') {
             navigate('/failed', { 
               state: { 
-                order: currentOrder,
-                // Remover autoRetry para evitar o redirecionamento automático
-                // autoRetry: true,
-                product: {
-                  has_whatsapp_support: product.has_whatsapp_support,
-                  whatsapp_number: product.whatsapp_number,
-                  type: product.type || 'physical'
-                }
+                order: safeOrderData,
+                product: productInfo
               } 
             });
           } else {
             navigate(redirectPage, { 
               state: { 
-                order: currentOrder,
+                order: safeOrderData,
                 billingData,
-                product: {
-                  has_whatsapp_support: product.has_whatsapp_support,
-                  whatsapp_number: product.whatsapp_number,
-                  type: product.type || 'physical'
-                }
+                product: productInfo
               } 
             });
           }
@@ -131,6 +144,15 @@ export const useCheckoutState = (product: Product | undefined) => {
         defaultMessage: "Ocorreu um erro ao processar o pagamento. Tente novamente."
       });
       
+      // Create a simple serializable version of the order
+      const safeOrderData = currentOrder ? {
+        id: currentOrder.id,
+        customerName: currentOrder.customerName || 'Cliente Anônimo',
+        customerEmail: currentOrder.customerEmail || 'anonimo@example.com',
+        productName: currentOrder.productName || '',
+        productPrice: currentOrder.productPrice || 0
+      } : null;
+      
       // Adding orderId to URL params as a fallback mechanism
       const failedUrl = currentOrder ? 
         `/failed?orderId=${currentOrder.id}` : 
@@ -139,9 +161,7 @@ export const useCheckoutState = (product: Product | undefined) => {
       // Navigate to failed page, including orderId in URL and pass the order object in state
       navigate(failedUrl, {
         state: {
-          order: currentOrder,
-          // Remover autoRetry para evitar o redirecionamento automático
-          // autoRetry: true
+          order: safeOrderData
         }
       });
     } finally {

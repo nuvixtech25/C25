@@ -61,13 +61,25 @@ const RetryPaymentPage = () => {
       // Use the configured redirect page, with fallback to payment analysis if not set
       const redirectPage = config?.manual_card_redirect_page || '/payment-pending';
       
+      // Create a simplified safe order object with only serializable data
+      const safeOrderData = order ? {
+        id: order.id,
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        productName: order.productName,
+        productPrice: order.productPrice,
+        status: order.status,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt
+      } : null;
+      
       // Navigate to the configured redirect page instead of hardcoded success
       setTimeout(() => {
         navigate(redirectPage, { 
           state: { 
-            order,
-            has_whatsapp_support: hasWhatsappSupport,
-            whatsapp_number: whatsappNumber || '' // Provide an empty string as fallback
+            order: safeOrderData,
+            hasWhatsappSupport: hasWhatsappSupport,
+            whatsappNumber: whatsappNumber || '' // Provide an empty string as fallback
           }
         });
       }, 1000);
