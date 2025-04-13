@@ -3,9 +3,6 @@ import { useEffect } from 'react';
 import { usePixelEvents } from '@/hooks/usePixelEvents';
 import { Order, PixPaymentData, PaymentStatus } from '@/types/checkout';
 
-/**
- * Hook for tracking payment events for analytics pixels
- */
 export const usePaymentPixelTracker = (
   order: Order | null,
   paymentData: PixPaymentData | null,
@@ -15,10 +12,8 @@ export const usePaymentPixelTracker = (
 
   // Track payment initiated
   useEffect(() => {
-    if (order && paymentData) {
+    if (order?.id && paymentData) {
       console.log('[PixelTracker] Tracking payment initiated');
-      // Since trackPaymentInitiated doesn't exist, we'll use trackPurchase
-      // with a custom event parameter to differentiate it
       trackPurchase(
         order.id,
         paymentData.value || order.productPrice
@@ -28,7 +23,7 @@ export const usePaymentPixelTracker = (
 
   // Track payment completed
   useEffect(() => {
-    if (order && paymentStatus === 'CONFIRMED') {
+    if (order?.id && paymentStatus === 'CONFIRMED') {
       console.log('[PixelTracker] Tracking payment completed');
       trackPurchase(
         order.id,
@@ -37,8 +32,8 @@ export const usePaymentPixelTracker = (
     }
   }, [order, paymentStatus, trackPurchase]);
 
-  // Expose methods that might be needed
   return {
     trackPurchase
   };
 };
+

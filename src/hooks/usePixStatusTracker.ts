@@ -5,9 +5,6 @@ import { checkPaymentStatus } from '@/services/asaasService';
 import { handleApiError } from '@/utils/errorHandling';
 import { useToast } from '@/hooks/use-toast';
 
-/**
- * Hook for tracking PIX payment status
- */
 export const usePixStatusTracker = (
   paymentData: PixPaymentData | null,
   order: Order | null
@@ -85,3 +82,4 @@ export const usePixStatusTracker = (
     refreshStatus
   };
 };
+
