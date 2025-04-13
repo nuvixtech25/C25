@@ -6,11 +6,16 @@ import { RefreshCw, Loader2 } from 'lucide-react';
 interface PixStatusCheckProps {
   checking: boolean;
   onCheck: () => void;
+  hidden?: boolean;  // New prop to control visibility
 }
 
-export const PixStatusCheck: React.FC<PixStatusCheckProps> = ({ checking, onCheck }) => {
+export const PixStatusCheck: React.FC<PixStatusCheckProps> = ({ 
+  checking, 
+  onCheck, 
+  hidden = false  // Default to false to maintain existing behavior
+}) => {
   return (
-    <div className="pt-2">
+    <div className={`pt-2 ${hidden ? 'hidden' : ''}`}>
       <Button 
         onClick={onCheck} 
         disabled={checking}
