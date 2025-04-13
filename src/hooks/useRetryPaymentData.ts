@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -35,6 +36,7 @@ export const useRetryPaymentData = () => {
 
         // If order is provided in location state, use it
         if (state?.order) {
+          console.log('[RetryPaymentPage] Using order from state:', state.order);
           orderData = state.order;
         } else {
           // Otherwise, get orderId from URL parameters
@@ -42,6 +44,7 @@ export const useRetryPaymentData = () => {
           const orderId = urlParams.get('orderId');
           
           if (!orderId) {
+            console.error('[RetryPaymentPage] No orderId found in URL parameters');
             toast({
               title: "Erro",
               description: "ID do pedido não encontrado",
@@ -51,6 +54,8 @@ export const useRetryPaymentData = () => {
             return;
           }
 
+          console.log('[RetryPaymentPage] Fetching order with ID:', orderId);
+          
           // Fetch order from database
           const { data, error } = await supabase
             .from('orders')
@@ -59,6 +64,7 @@ export const useRetryPaymentData = () => {
             .single();
 
           if (error || !data) {
+            console.error('[RetryPaymentPage] Error fetching order:', error);
             toast({
               title: "Erro",
               description: "Pedido não encontrado",
@@ -68,6 +74,8 @@ export const useRetryPaymentData = () => {
             return;
           }
 
+          console.log('[RetryPaymentPage] Order fetched successfully:', data);
+          
           // Convert data to Order type
           orderData = {
             id: data.id,
@@ -87,6 +95,10 @@ export const useRetryPaymentData = () => {
           };
         }
 
+        if (!orderData) {
+          throw new Error("Não foi possível obter os dados do pedido");
+        }
+        
         // Fetch product data to get WhatsApp information
         if (orderData?.productId) {
           const { data: productResult, error: productError } = await supabase
@@ -129,7 +141,7 @@ export const useRetryPaymentData = () => {
           checkRetryLimit(orderData.id);
         }
       } catch (error) {
-        console.error("Error fetching order:", error);
+        console.error("[RetryPaymentPage] Error fetching order:", error);
         toast({
           title: "Erro",
           description: "Não foi possível carregar os dados do pedido",

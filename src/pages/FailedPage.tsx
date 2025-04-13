@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -113,13 +114,14 @@ const FailedPage = () => {
   const handleRetry = () => {
     if (order && order.id) {
       console.log('[FailedPage] Navigating to retry-payment with order ID:', order.id);
-      
-      // Use the correct path to retry-payment page with orderId
-      navigate(`/retry-payment?orderId=${order.id}`);
+      navigate(`/retry-payment?orderId=${order.id}`, { state: { order } });
     } else {
-      console.log('[FailedPage] No order available for retry, going to retry-payment without orderId');
-      // Even without an order, still try to navigate to retry-payment
-      navigate('/retry-payment');
+      console.error('[FailedPage] No order available for retry');
+      toast({
+        title: "Erro",
+        description: "Não foi possível recuperar os dados do pedido para tentar novamente.",
+        variant: "destructive",
+      });
     }
   };
 
