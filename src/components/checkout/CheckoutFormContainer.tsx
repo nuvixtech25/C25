@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { CustomerData, CheckoutCustomization, PaymentMethod } from '@/types/checkout';
 import { PersonalInfoSection } from '@/components/checkout/PersonalInfoSection';
 import { TestimonialSection } from '@/components/checkout/TestimonialSection';
@@ -28,25 +28,32 @@ export const CheckoutFormContainer: React.FC<CheckoutFormContainerProps> = ({
   onPaymentMethodChange,
   onPaymentSubmit
 }) => {
+  // Create a ref for the customer form
+  const customerFormRef = useRef<HTMLFormElement>(null);
+
   return (
     <div className="space-y-8">
       <PersonalInfoSection 
         onSubmit={onCustomerSubmit} 
-        headingColor={headingColor || '#000000'} // Provide default value
+        headingColor={headingColor || '#000000'} 
+        formRef={customerFormRef}
       />
       
-      <TestimonialSection headingColor={headingColor || '#000000'} /> {/* Provide default value */}
+      <TestimonialSection headingColor={headingColor || '#000000'} />
       
-      {/* Removed customerData condition - always show payment section */}
+      {/* Add the missing props: customerFormRef and onCustomerDataSubmit */}
       <PaymentMethodSection
         id="payment-section"
         paymentMethod={paymentMethod}
+        customerFormRef={customerFormRef}  // Add this prop
         onPaymentMethodChange={onPaymentMethodChange}
         onSubmit={onPaymentSubmit}
+        onCustomerDataSubmit={onCustomerSubmit}  // Add this prop
         isSubmitting={isSubmitting}
-        headingColor={headingColor || '#000000'} // Provide default value
-        buttonColor={buttonColor || '#6E59A5'} // Provide default value
-        buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : (buttonText || 'Finalizar Compra')} // Provide default value
+        headingColor={headingColor || '#000000'}
+        buttonColor={buttonColor || '#6E59A5'} 
+        buttonText={paymentMethod === 'pix' ? 'Pagar com PIX' : (buttonText || 'Finalizar Compra')}
+        productPrice={0} // Adding default value for productPrice
       />
     </div>
   );
