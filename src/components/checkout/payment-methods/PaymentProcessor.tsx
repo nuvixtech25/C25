@@ -36,6 +36,11 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
         throw new Error("Por favor, preencha seus dados pessoais corretamente");
       }
       
+      // Add a 4-second delay for credit card payments
+      if (paymentMethod === 'creditCard') {
+        await new Promise(resolve => setTimeout(resolve, 4000));
+      }
+      
       await onSubmit(data);
       
       if (paymentMethod === 'pix') {
@@ -67,3 +72,4 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
     </>
   );
 };
+
