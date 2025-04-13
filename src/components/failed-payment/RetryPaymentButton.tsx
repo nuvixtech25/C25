@@ -46,13 +46,13 @@ const RetryPaymentButton: React.FC<RetryPaymentButtonProps> = ({ order, isLoadin
       paymentMethod: order!.paymentMethod || 'creditCard',
       createdAt: order!.createdAt,
       updatedAt: order!.updatedAt,
-      // Only include these if they exist and are not functions/complex objects
-      has_whatsapp_support: !!order!.has_whatsapp_support,
+      // Only include these if they exist as primitive values
+      has_whatsapp_support: typeof order!.has_whatsapp_support === 'boolean' ? order!.has_whatsapp_support : false,
       whatsapp_number: typeof order!.whatsapp_number === 'string' ? order!.whatsapp_number : ''
     };
     
     // Log the safe object for verification
-    console.log('[RetryPaymentButton] Safe order object for retry:', safeOrderData);
+    console.log('[RetryPaymentButton] Complete order object for retry:', safeOrderData);
     
     // Navigate with the safe order object in state AND include orderId in URL
     navigate(`/retry-payment?orderId=${order!.id}`, { 
@@ -65,7 +65,7 @@ const RetryPaymentButton: React.FC<RetryPaymentButtonProps> = ({ order, isLoadin
   return (
     <Button 
       onClick={handleRetry} 
-      className="w-full flex items-center gap-2"
+      className="w-full flex items-center gap-2 bg-green-500 hover:bg-green-600"
       variant="default"
       disabled={isLoading}
     >

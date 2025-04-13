@@ -56,11 +56,6 @@ const RetryPaymentPage = () => {
         description: "Seu pagamento está sendo processado. Por favor, aguarde.",
       });
       
-      // Get admin configuration for card redirect
-      const config = await getAsaasConfig();
-      // Use the configured redirect page, with fallback to payment analysis if not set
-      const redirectPage = config?.manual_card_redirect_page || '/payment-pending';
-      
       // Create a simplified safe order object with only serializable data
       const safeOrderData = order ? {
         id: order.id,
@@ -73,13 +68,13 @@ const RetryPaymentPage = () => {
         updatedAt: order.updatedAt
       } : null;
       
-      // Navigate to the configured redirect page instead of hardcoded success
+      // Sempre redirecionar para a página de análise de pagamento
       setTimeout(() => {
-        navigate(redirectPage, { 
+        navigate('/payment-analysis', { 
           state: { 
             order: safeOrderData,
-            hasWhatsappSupport: hasWhatsappSupport,
-            whatsappNumber: whatsappNumber || '' // Provide an empty string as fallback
+            hasWhatsappSupport: !!hasWhatsappSupport,
+            whatsappNumber: typeof whatsappNumber === 'string' ? whatsappNumber : ''
           }
         });
       }, 1000);
@@ -100,9 +95,9 @@ const RetryPaymentPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-purple-50">
-      <Card className="max-w-md w-full shadow-xl border border-purple-100 rounded-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-600 to-purple-800 h-2 w-full" />
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-green-50">
+      <Card className="max-w-md w-full shadow-xl border border-green-100 rounded-xl overflow-hidden">
+        <div className="bg-gradient-to-r from-green-500 to-green-600 h-2 w-full" />
         <CardHeader className="text-center">
           <RetryPaymentHeader />
         </CardHeader>

@@ -84,16 +84,9 @@ export const useCheckoutState = (product: Product | undefined) => {
           } 
         });
       } else {
-        // Handle credit card payment with admin configuration
-        const config = await getAsaasConfig();
-        const redirectPage = config?.manual_card_redirect_page || '/payment-pending';
-        
-        console.log('[useCheckoutState] Navigating to configured page:', redirectPage);
-        console.log('[useCheckoutState] With WhatsApp data:', {
-          has_whatsapp_support: product.has_whatsapp_support,
-          whatsapp_number: product.whatsapp_number
-        });
-        
+        // Para cartão de crédito, sempre redirecionar para análise de pagamento
+        console.log('[useCheckoutState] Navigating to payment analysis page');
+                
         // Extract only serializable data for navigation
         const safeOrderData = currentOrder ? {
           id: currentOrder.id,
@@ -119,23 +112,13 @@ export const useCheckoutState = (product: Product | undefined) => {
         
         // Adding a small delay to ensure smooth navigation
         setTimeout(() => {
-          // Update this to check if redirectPage is '/payment-failed' and navigate to '/failed' instead with state
-          if (redirectPage === '/payment-failed') {
-            navigate('/failed', { 
-              state: { 
-                order: safeOrderData,
-                product: productInfo
-              } 
-            });
-          } else {
-            navigate(redirectPage, { 
-              state: { 
-                order: safeOrderData,
-                billingData,
-                product: productInfo
-              } 
-            });
-          }
+          navigate('/payment-analysis', { 
+            state: { 
+              order: safeOrderData,
+              billingData,
+              product: productInfo
+            } 
+          });
         }, 500);
       }
     } catch (error) {
