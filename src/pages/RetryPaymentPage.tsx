@@ -22,7 +22,8 @@ const RetryPaymentPage = () => {
     whatsappNumber,
     isSubmitting,
     setIsSubmitting,
-    checkRetryLimit
+    checkRetryLimit,
+    hasError
   } = useRetryPaymentData();
 
   const { saveCardData } = useCheckoutOrder();
@@ -64,14 +65,14 @@ const RetryPaymentPage = () => {
         customerPhone: order.customerPhone || '',
         productName: order.productName,
         productPrice: order.productPrice,
-        status: order.status,
+        status: 'PENDING', // Reset to pending for new attempt
         paymentMethod: 'creditCard',
         createdAt: order.createdAt,
         updatedAt: order.updatedAt,
-        asaasPaymentId: `temp_retry_${Date.now()}`  // Adicionar ID temporário para garantir redirecionamento correto
+        asaasPaymentId: `temp_retry_${Date.now()}`  // Add temporary ID for redirection
       } : null;
       
-      // Sempre redirecionar para a página de análise de pagamento
+      // Always redirect to the payment analysis page
       setTimeout(() => {
         navigate('/payment-analysis', { 
           state: { 

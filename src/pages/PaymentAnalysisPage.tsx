@@ -48,6 +48,20 @@ const PaymentAnalysisPage = () => {
         
         setOrder(currentOrder);
         
+        // Check if the order status is declined or failed directly from the order object
+        if (currentOrder.status === 'DECLINED' || currentOrder.status === 'FAILED' || 
+            currentOrder.status === 'CANCELLED') {
+          console.log('[PaymentAnalysisPage] Order already marked as failed/declined/cancelled, redirecting to failed page');
+          
+          navigate('/failed', { 
+            state: { 
+              order: currentOrder,
+              autoRetry: true
+            }
+          });
+          return;
+        }
+        
         // Check if payment ID exists, if not or starts with temp_, proceed directly to success page
         if (!currentOrder.asaasPaymentId || 
             currentOrder.asaasPaymentId.startsWith('temp_') || 
@@ -86,7 +100,28 @@ const PaymentAnalysisPage = () => {
               return;
             }
             
-            // Check payment status
+            // First check status in our database
+            try {
+              const refreshedOrder = await fetchOrderById(currentOrder.id);
+              if (refreshedOrder && 
+                  (refreshedOrder.status === 'DECLINED' || 
+                   refreshedOrder.status === 'FAILED' || 
+                   refreshedOrder.status === 'CANCELLED')) {
+                clearInterval(pollingInterval);
+                console.log('[PaymentAnalysisPage] Order status updated to failed/declined/cancelled in database');
+                navigate('/failed', { 
+                  state: { 
+                    order: refreshedOrder,
+                    autoRetry: true
+                  }
+                });
+                return;
+              }
+            } catch (err) {
+              console.error('[PaymentAnalysisPage] Error checking order status in database:', err);
+            }
+            
+            // Check payment status in Asaas
             const status = await checkPaymentStatus(currentOrder.asaasPaymentId);
             console.log(`[PaymentAnalysisPage] Payment status check #${newCount}:`, status);
             

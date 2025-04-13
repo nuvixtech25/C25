@@ -38,13 +38,28 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     mode: 'onChange'
   });
 
+  // Track last submitted values to avoid excessive submissions
+  const lastSubmittedRef = React.useRef<CustomerData | null>(null);
+
   // Automatically submit valid form data when values change
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
       // Only attempt to submit when fields change and the form is valid
       if (type === 'change' && form.formState.isValid) {
         const data = form.getValues();
-        onSubmit(data);
+        
+        // Compare with last submitted data to prevent duplicate submissions
+        const lastSubmitted = lastSubmittedRef.current;
+        const isDifferent = !lastSubmitted || 
+          lastSubmitted.name !== data.name || 
+          lastSubmitted.email !== data.email || 
+          lastSubmitted.cpfCnpj !== data.cpfCnpj || 
+          lastSubmitted.phone !== data.phone;
+        
+        if (isDifferent) {
+          lastSubmittedRef.current = { ...data };
+          onSubmit(data);
+        }
       }
     });
     
