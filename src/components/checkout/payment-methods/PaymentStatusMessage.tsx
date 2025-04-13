@@ -13,7 +13,9 @@ export const PaymentStatusMessage: React.FC<PaymentStatusMessageProps> = ({
   error,
   paymentMethod
 }) => {
-  if (success && paymentMethod === 'creditCard') {
+  // Only show success message for PIX payments 
+  // For credit card, we'll handle success on redirect instead
+  if (success && paymentMethod === 'pix') {
     return (
       <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-800">
         Pagamento realizado com sucesso! Verifique seu e-mail.

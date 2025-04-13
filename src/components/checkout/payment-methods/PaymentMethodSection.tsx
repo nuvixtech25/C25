@@ -43,7 +43,9 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
       // Actually call the real submission handler
       onSubmit(data);
       
-      if (paymentMethod === 'creditCard') {
+      // Only set success for PIX payments
+      // Credit card payments will redirect to success page
+      if (paymentMethod === 'pix') {
         setPaymentSuccess(true);
       }
     } catch (error) {
