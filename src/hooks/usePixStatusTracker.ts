@@ -20,19 +20,25 @@ export const usePixStatusTracker = (
     const checkStatus = async () => {
       setIsCheckingStatus(true);
       try {
-        const status = await checkPaymentStatus(paymentData.paymentId);
+        const result = await checkPaymentStatus(paymentData.paymentId);
         
-        if (typeof status === 'string') {
-          setPaymentStatus(status as PaymentStatus);
-        } else if (status && 'status' in status) {
-          setPaymentStatus(status.status as PaymentStatus);
+        // Type guard to handle different possible return types
+        if (typeof result === 'string') {
+          setPaymentStatus(result as PaymentStatus);
+        } else if (result && typeof result === 'object') {
+          // If result is an object with a status property
+          const status = 'status' in result ? (result as { status: PaymentStatus }).status : null;
+          if (status) {
+            setPaymentStatus(status);
+          }
         }
 
         // If payment is confirmed, show success toast
-        if (
-          (typeof status === 'string' && status === 'CONFIRMED') ||
-          (status && 'status' in status && status.status === 'CONFIRMED')
-        ) {
+        const isConfirmed = 
+          result === 'CONFIRMED' || 
+          (typeof result === 'object' && result && 'status' in result && result.status === 'CONFIRMED');
+
+        if (isConfirmed) {
           toast({
             title: "Pagamento confirmado!",
             description: "Seu pagamento foi recebido com sucesso.",
@@ -62,12 +68,17 @@ export const usePixStatusTracker = (
     
     setIsCheckingStatus(true);
     try {
-      const status = await checkPaymentStatus(paymentData.paymentId);
+      const result = await checkPaymentStatus(paymentData.paymentId);
       
-      if (typeof status === 'string') {
-        setPaymentStatus(status as PaymentStatus);
-      } else if (status && 'status' in status) {
-        setPaymentStatus(status.status as PaymentStatus);
+      // Type guard to handle different possible return types
+      if (typeof result === 'string') {
+        setPaymentStatus(result as PaymentStatus);
+      } else if (result && typeof result === 'object') {
+        // If result is an object with a status property
+        const status = 'status' in result ? (result as { status: PaymentStatus }).status : null;
+        if (status) {
+          setPaymentStatus(status);
+        }
       }
     } catch (error) {
       console.error("Error refreshing payment status:", error);
