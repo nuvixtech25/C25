@@ -101,7 +101,7 @@ const PaymentAnalysisPage = () => {
             }
             
             // If payment status is FAILED, CANCELLED, or DECLINED, navigate to failed
-            if (status === 'FAILED' || status === 'CANCELLED' || status === 'DECLINED') {
+            if (['FAILED', 'CANCELLED', 'DECLINED'].includes(status)) {
               clearInterval(pollingInterval);
               // Redirect to the failed page with autoRetry flag to trigger immediate retry
               navigate('/failed', { 
