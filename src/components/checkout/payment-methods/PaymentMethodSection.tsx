@@ -1,17 +1,20 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { PaymentMethod } from '@/types/checkout';
 import { SectionTitle } from '../SectionTitle';
 import PaymentOptions from './PaymentOptions';
 import { PaymentMethodForms } from './PaymentMethodForms';
 import { PaymentStatusMessage } from './PaymentStatusMessage';
 import { CreditCard } from 'lucide-react';
+import { CustomerData } from '@/types/checkout';
 
 interface PaymentMethodSectionProps {
   id: string;
   paymentMethod: PaymentMethod;
+  customerFormRef: React.RefObject<HTMLFormElement>;
   onPaymentMethodChange: (method: PaymentMethod) => void;
   onSubmit: (data?: any) => void;
+  onCustomerDataSubmit: (data: CustomerData) => void;
   isSubmitting: boolean;
   headingColor: string;
   buttonColor: string;
@@ -22,8 +25,10 @@ interface PaymentMethodSectionProps {
 export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
   id,
   paymentMethod,
+  customerFormRef,
   onPaymentMethodChange,
   onSubmit,
+  onCustomerDataSubmit,
   isSubmitting,
   headingColor,
   buttonColor,
@@ -40,7 +45,12 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
     setPaymentSuccess(false);
     
     try {
-      // Actually call the real submission handler
+      // Trigger the customer form submission first
+      if (customerFormRef.current) {
+        const isValid = await customerFormRef.current.requestSubmit();
+      }
+      
+      // Then handle the payment
       onSubmit(data);
       
       // Only set success for PIX payments

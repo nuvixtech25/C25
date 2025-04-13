@@ -1,10 +1,9 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { SectionTitle } from './SectionTitle';
 import { CustomerData } from '@/types/checkout';
@@ -21,14 +20,14 @@ const customerSchema = z.object({
 interface PersonalInfoSectionProps {
   onSubmit: (data: CustomerData) => void;
   headingColor?: string;
+  formRef?: React.RefObject<HTMLFormElement>;
 }
 
 export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ 
   onSubmit, 
-  headingColor = '#000000' 
+  headingColor = '#000000',
+  formRef
 }) => {
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  
   // Form definition using react-hook-form with zod validation
   const form = useForm<CustomerData>({
     resolver: zodResolver(customerSchema),
@@ -41,19 +40,12 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     mode: 'onChange' // Validate as user types
   });
 
-  // Manual submit handler
-  const handleSubmit = (data: CustomerData) => {
-    console.log("Form submitted with data:", data);
-    setFormSubmitted(true);
-    onSubmit(data);
-  };
-
   return (
     <div className="mb-6 bg-white rounded-lg p-4 md:p-6 border shadow-sm">
       <SectionTitle number={1} title="Identificação" />
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 mt-4">
+        <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -139,14 +131,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
               )}
             />
           </div>
-          
-          <Button 
-            type="submit" 
-            className="w-full bg-green-500 hover:bg-green-600 mt-4"
-            disabled={formSubmitted}
-          >
-            {formSubmitted ? 'Informações Salvas ✓' : 'Continuar para Pagamento'}
-          </Button>
+          {/* The button is removed from here */}
         </form>
       </Form>
     </div>

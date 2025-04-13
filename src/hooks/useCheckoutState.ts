@@ -18,12 +18,18 @@ export const useCheckoutState = (product: Product | undefined) => {
   const handleCustomerSubmit = (data: CustomerData) => {
     console.log('Customer data submitted:', data);
     setCustomerData(data);
-    document.getElementById('payment-section')?.scrollIntoView({ behavior: 'smooth' });
   };
   
   const handlePaymentSubmit = async (paymentData?: CreditCardData, existingOrderId?: string) => {
-    // Continue even without customer data
-    if (!product) return;
+    if (!product || !customerData) {
+      console.error('Missing product or customer data');
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos corretamente",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsSubmitting(true);
     
@@ -58,21 +64,13 @@ export const useCheckoutState = (product: Product | undefined) => {
           orderId: existingOrderId
         };
       } else {
-        // Use the customer data that was collected, or default if none provided
-        const defaultCustomerData: CustomerData = customerData || {
-          name: "Cliente Anônimo",
-          email: "anonimo@example.com",
-          cpfCnpj: "00000000000",
-          phone: "00000000000"
-        };
-        
-        console.log('Using customer data for order:', customerData ? 'User provided' : 'Default anonymous', 
-                  customerData || defaultCustomerData);
+        // Use the customer data that was collected
+        console.log('Using customer data for order:', customerData);
         
         // Create a new order with the customer data we have
-        currentOrder = await createOrder(customerData || defaultCustomerData, product, paymentMethod, paymentData);
+        currentOrder = await createOrder(customerData, product, paymentMethod, paymentData);
         orderId = currentOrder.id as string;
-        billingData = prepareBillingData(customerData || defaultCustomerData, product, orderId);
+        billingData = prepareBillingData(customerData, product, orderId);
       }
       
       if (paymentMethod === 'pix') {
@@ -95,10 +93,10 @@ export const useCheckoutState = (product: Product | undefined) => {
         const safeOrderData = currentOrder ? {
           id: currentOrder.id,
           customerId: currentOrder.customerId || '',
-          customerName: currentOrder.customerName || 'Cliente Anônimo',
-          customerEmail: currentOrder.customerEmail || 'anonimo@example.com',
-          customerCpfCnpj: currentOrder.customerCpfCnpj || '',
-          customerPhone: currentOrder.customerPhone || '',
+          customerName: currentOrder.customerName || customerData.name,
+          customerEmail: currentOrder.customerEmail || customerData.email,
+          customerCpfCnpj: currentOrder.customerCpfCnpj || customerData.cpfCnpj,
+          customerPhone: currentOrder.customerPhone || customerData.phone,
           productId: currentOrder.productId || '',
           productName: currentOrder.productName || '',
           productPrice: currentOrder.productPrice || 0,
@@ -134,8 +132,8 @@ export const useCheckoutState = (product: Product | undefined) => {
       // Create a simple serializable version of the order
       const safeOrderData = currentOrder ? {
         id: currentOrder.id,
-        customerName: currentOrder.customerName || 'Cliente Anônimo',
-        customerEmail: currentOrder.customerEmail || 'anonimo@example.com',
+        customerName: currentOrder.customerName || (customerData ? customerData.name : 'Cliente Anônimo'),
+        customerEmail: currentOrder.customerEmail || (customerData ? customerData.email : 'anonimo@example.com'),
         productName: currentOrder.productName || '',
         productPrice: currentOrder.productPrice || 0
       } : null;
