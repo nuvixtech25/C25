@@ -2,12 +2,35 @@
 import React from 'react';
 import { PaymentStatus } from '@/types/checkout';
 import { Check, AlertCircle, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface PixPaymentStatusProps {
   status: PaymentStatus;
+  orderId?: string;
+  onContinue?: () => void;
 }
 
-export const PixPaymentStatus: React.FC<PixPaymentStatusProps> = ({ status }) => {
+export const PixPaymentStatus: React.FC<PixPaymentStatusProps> = ({ 
+  status, 
+  orderId,
+  onContinue 
+}) => {
+  const navigate = useNavigate();
+  
+  const handleContinue = () => {
+    if (onContinue) {
+      onContinue();
+    } else if (orderId) {
+      // Navigate to success page if no custom handler is provided
+      navigate('/success', { 
+        state: { 
+          order: { id: orderId }
+        } 
+      });
+    }
+  };
+  
   if (status === "CONFIRMED") {
     return (
       <div className="text-center p-8 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200 shadow-md animate-fade-in">
@@ -18,7 +41,15 @@ export const PixPaymentStatus: React.FC<PixPaymentStatusProps> = ({ status }) =>
           </div>
         </div>
         <h3 className="text-xl font-semibold text-green-700 mb-2">Pagamento Confirmado!</h3>
-        <p className="text-green-600">Seu pagamento foi processado com sucesso.</p>
+        <p className="text-green-600 mb-4">Seu pagamento foi processado com sucesso.</p>
+        
+        <Button
+          onClick={handleContinue}
+          className="mt-2 bg-green-600 hover:bg-green-700 text-white"
+        >
+          Continuar
+        </Button>
+        
         <div className="mt-4 flex items-center justify-center text-green-500 text-sm">
           <ShieldCheck className="w-4 h-4 mr-1" />
           <span>Transação segura</span>

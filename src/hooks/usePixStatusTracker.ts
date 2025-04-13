@@ -4,6 +4,7 @@ import { PixPaymentData, Order, PaymentStatus } from '@/types/checkout';
 import { checkPaymentStatus } from '@/services/asaasService';
 import { handleApiError } from '@/utils/errorHandling';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 export const usePixStatusTracker = (
   paymentData: PixPaymentData | null,
@@ -12,6 +13,7 @@ export const usePixStatusTracker = (
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Extract the status normalization logic to a separate function
   const normalizePaymentStatus = (result: any): PaymentStatus | null => {
@@ -44,8 +46,33 @@ export const usePixStatusTracker = (
     });
   };
 
+  // Handle redirection to success page when payment is confirmed
+  const handlePaymentConfirmed = useCallback(() => {
+    // Only proceed with navigation if we have a valid order
+    if (order) {
+      console.log('Payment confirmed! Redirecting to success page...');
+      
+      // Prepare product info to pass to success page
+      const productInfo = {
+        has_whatsapp_support: order.has_whatsapp_support || false,
+        whatsapp_number: order.whatsapp_number || '',
+        type: order.productType || 'physical'
+      };
+      
+      // Navigate to success page with order and product info
+      navigate('/success', { 
+        state: { 
+          order,
+          product: productInfo
+        } 
+      });
+    } else {
+      console.error('Cannot navigate to success: missing order data');
+    }
+  }, [order, navigate]);
+
   // Process the payment status result
-  const processPaymentStatusResult = (result: any) => {
+  const processPaymentStatusResult = useCallback((result: any) => {
     const status = normalizePaymentStatus(result);
     if (status) {
       setPaymentStatus(status);
@@ -54,11 +81,12 @@ export const usePixStatusTracker = (
       console.log(`Payment status updated to: ${status}`);
     }
 
-    // Check if payment is confirmed to show toast
+    // Check if payment is confirmed to show toast and navigate
     if (isPaymentConfirmed(result)) {
       showConfirmationToast();
+      handlePaymentConfirmed();
     }
-  };
+  }, [handlePaymentConfirmed]);
 
   // Check payment status, memoize this function so it can be safely used in useEffect and as a callback
   const performStatusCheck = useCallback(async (paymentId: string) => {
@@ -76,7 +104,7 @@ export const usePixStatusTracker = (
     } finally {
       setIsCheckingStatus(false);
     }
-  }, [toast]);
+  }, [toast, processPaymentStatusResult]);
 
   // Auto-polling mechanism for status checks
   useEffect(() => {
