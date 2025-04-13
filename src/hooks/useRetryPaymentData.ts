@@ -38,6 +38,12 @@ export const useRetryPaymentData = () => {
         if (state?.order) {
           console.log('[RetryPaymentPage] Using order from state:', state.order);
           orderData = state.order;
+          
+          // Verifique se o objeto do pedido tem todos os campos necessários
+          if (!orderData.id || !orderData.productPrice) {
+            console.error('[RetryPaymentPage] Order from state is missing required fields:', orderData);
+            throw new Error("Dados do pedido incompletos");
+          }
         } else {
           // Otherwise, get orderId from URL parameters
           const urlParams = new URLSearchParams(window.location.search);
@@ -93,6 +99,12 @@ export const useRetryPaymentData = () => {
             createdAt: data.created_at,
             updatedAt: data.updated_at
           };
+          
+          // Verifique se todos os campos obrigatórios estão presentes
+          if (!orderData.id || !orderData.productPrice) {
+            console.error('[RetryPaymentPage] Fetched order is missing required fields:', orderData);
+            throw new Error("Dados do pedido incompletos");
+          }
         }
 
         if (!orderData) {
@@ -161,11 +173,15 @@ export const useRetryPaymentData = () => {
     try {
       if (!orderId) return;
       
+      console.log('[RetryPaymentPage] Checking retry limit for order:', orderId);
+      
       const result = await validateRetryAttempt(orderId, {
         maxAttempts: 3,
         minMinutes: 5,
         enforceDelay: false // Por enquanto, não bloqueamos por tempo
       });
+      
+      console.log('[RetryPaymentPage] Validation result:', result);
       
       setValidationResult(result);
       

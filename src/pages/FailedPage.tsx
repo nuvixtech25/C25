@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -113,7 +114,40 @@ const FailedPage = () => {
   const handleRetry = () => {
     if (order && order.id) {
       console.log('[FailedPage] Navigating to retry-payment with order ID:', order.id);
-      navigate(`/retry-payment?orderId=${order.id}`, { state: { order } });
+      
+      // Primeiro verifique se o pedido tem todas as informações necessárias
+      if (!order.customerName || !order.customerEmail || !order.productPrice) {
+        console.error('[FailedPage] Order is missing required data:', order);
+        toast({
+          title: "Erro nos dados do pedido",
+          description: "Dados incompletos do pedido. Entre em contato com o suporte.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Garanta que o objeto de pedido esteja completo antes de prosseguir
+      const completeOrder: Order = {
+        ...order,
+        // Garantir que todos os campos obrigatórios estejam presentes
+        customerId: order.customerId || '',
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        customerCpfCnpj: order.customerCpfCnpj || '',
+        customerPhone: order.customerPhone || '',
+        productId: order.productId || '',
+        productName: order.productName || '',
+        productPrice: order.productPrice,
+        status: order.status || 'PENDING',
+        paymentMethod: order.paymentMethod || 'creditCard'
+      };
+      
+      // Navegue com o objeto de pedido completo no estado
+      navigate(`/retry-payment?orderId=${order.id}`, { 
+        state: { 
+          order: completeOrder
+        } 
+      });
     } else {
       console.error('[FailedPage] No order available for retry');
       toast({
