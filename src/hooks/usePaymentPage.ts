@@ -6,6 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { handleApiError } from '@/utils/errorHandling';
 import { BillingData, PixPaymentData, Order } from '@/types/checkout';
 import { generatePixPayment } from '@/services/asaasService';
+import { usePixStatusTracker } from '@/hooks/usePixStatusTracker';
+import { usePaymentPixelTracker } from '@/hooks/usePaymentPixelTracker';
 
 export const usePaymentPage = () => {
   const location = useLocation();
@@ -15,6 +17,10 @@ export const usePaymentPage = () => {
   const [paymentData, setPaymentData] = useState<PixPaymentData | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // Use the extracted hooks
+  const { paymentStatus, isCheckingStatus, refreshStatus } = usePixStatusTracker(paymentData, order);
+  usePaymentPixelTracker(order, paymentData, paymentStatus);
   
   useEffect(() => {
     console.group('PaymentPage Hook Debug');
@@ -160,8 +166,17 @@ export const usePaymentPage = () => {
     hasOrder: !!order, 
     error,
     paymentValue: paymentData?.value,
-    paymentValueType: paymentData ? typeof paymentData.value : 'undefined'
+    paymentValueType: paymentData ? typeof paymentData.value : 'undefined',
+    paymentStatus
   });
   
-  return { loading, paymentData, order, error };
+  return { 
+    loading, 
+    paymentData, 
+    order, 
+    error,
+    paymentStatus,
+    isCheckingStatus,
+    refreshStatus
+  };
 };

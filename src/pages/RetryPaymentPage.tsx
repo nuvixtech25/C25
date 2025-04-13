@@ -3,15 +3,15 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { RefreshCcw, CreditCard } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 import { ValidationAlert } from '@/components/retry-payment/ValidationAlert';
 import { OrderSummary } from '@/components/retry-payment/OrderSummary';
 import { RetryLimitMessage } from '@/components/retry-payment/RetryLimitMessage';
-import { RetryCardSubmission } from '@/components/retry-payment/RetryCardSubmission';
 import { useRetryPaymentData } from '@/hooks/useRetryPaymentData';
 import { CreditCardData } from '@/types/checkout';
 import { useCheckoutOrder } from '@/hooks/useCheckoutOrder';
 import { useToast } from '@/hooks/use-toast';
+import RetryPaymentForm from '@/components/retry-payment/RetryPaymentForm';
 
 const RetryPaymentPage = () => {
   const navigate = useNavigate();
@@ -108,17 +108,15 @@ const RetryPaymentPage = () => {
           
           <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
             <div className="flex items-start">
-              <RefreshCcw className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
+              <CreditCard className="h-5 w-5 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
               <p className="text-purple-800">Utilizar um cartão diferente aumenta suas chances de aprovação.</p>
             </div>
           </div>
           
           {validationResult?.canProceed ? (
-            <RetryCardSubmission 
-              order={order} 
+            <RetryPaymentForm
+              order={order}
               validationResult={validationResult}
-              hasWhatsappSupport={hasWhatsappSupport}
-              whatsappNumber={whatsappNumber}
               onSubmit={handleCardSubmit}
               isLoading={isSubmitting}
             />
