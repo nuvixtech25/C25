@@ -23,7 +23,9 @@ vi.mock('@/hooks/use-toast', () => ({
 describe('useRetryValidator hook', () => {
   beforeEach(() => {
     vi.mocked(useToast).mockReturnValue({
-      toast: vi.fn()
+      toast: vi.fn(),
+      dismiss: vi.fn(), // Added dismiss function
+      toasts: []        // Added empty toasts array
     });
   });
 
@@ -274,3 +276,4 @@ describe('useRetryValidator hook', () => {
     expect(isValidatingValue).toBe(false);
   });
 });
+
