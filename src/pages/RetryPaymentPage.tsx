@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useRetryPaymentData } from '@/hooks/useRetryPaymentData';
@@ -23,10 +23,19 @@ const RetryPaymentPage = () => {
     isSubmitting,
     setIsSubmitting,
     checkRetryLimit,
-    hasError
+    hasError,
+    autoRetry
   } = useRetryPaymentData();
 
   const { saveCardData } = useCheckoutOrder();
+
+  // Auto-focus on retry page if redirected from failed payment
+  useEffect(() => {
+    if (autoRetry && order?.id) {
+      console.log('[RetryPaymentPage] Auto-retry mode detected for order:', order.id);
+      // You could add additional logic here if needed for auto-retry
+    }
+  }, [autoRetry, order]);
 
   // Process the card payment with proper error handling
   const handleCardSubmit = async (cardData: CreditCardData) => {

@@ -25,6 +25,7 @@ export const useRetryPaymentData = () => {
   const { validateRetryAttempt, isValidating } = useRetryValidation();
   const { hasWhatsappSupport, whatsappNumber } = useWhatsAppSupport(order?.productId);
   const [hasError, setHasError] = useState(false);
+  const [autoRetry, setAutoRetry] = useState(false);
   // Use uma ref para rastrear se a validação já foi realizada para este orderId
   const validatedOrderIds = useRef<Set<string>>(new Set());
   // Use a ref to prevent multiple identical API calls in development due to React's StrictMode
@@ -39,6 +40,12 @@ export const useRetryPaymentData = () => {
     const fetchOrder = async () => {
       setLoading(true);
       try {
+        // Check if this is an auto-retry from a failed payment
+        if (state?.autoRetry) {
+          console.log('[RetryPaymentPage] Auto-retry flag detected');
+          setAutoRetry(true);
+        }
+        
         // If order is provided in location state, use it
         if (state?.order) {
           console.log('[RetryPaymentPage] Using order from state:', state.order);
@@ -166,6 +173,7 @@ export const useRetryPaymentData = () => {
     whatsappNumber,
     validateRetryAttempt,
     checkRetryLimit,
-    hasError
+    hasError,
+    autoRetry
   };
 };

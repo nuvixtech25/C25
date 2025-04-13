@@ -29,12 +29,12 @@ const PaymentAnalysisPage = () => {
           console.log('[PaymentAnalysisPage] Using order from state:', state.order);
           currentOrder = state.order;
           
-          // Immediately check if the order is already marked as failed/declined/cancelled in state
+          // Immediately redirect to failed/retry page if the order is already marked as failed/declined/cancelled in state
           if (currentOrder.status === 'DECLINED' || currentOrder.status === 'FAILED' || 
               currentOrder.status === 'CANCELLED') {
             console.log('[PaymentAnalysisPage] Order already marked as failed/declined/cancelled in state, redirecting to failed page');
             
-            navigate('/failed', { 
+            navigate('/retry-payment', { 
               state: { 
                 order: currentOrder,
                 autoRetry: true
@@ -59,12 +59,12 @@ const PaymentAnalysisPage = () => {
             throw new Error("Order not found");
           }
           
-          // Immediately check if the order is already marked as failed/declined/cancelled in database
+          // Immediately redirect to failed/retry page if the order is already marked as failed/declined/cancelled in database
           if (currentOrder.status === 'DECLINED' || currentOrder.status === 'FAILED' || 
               currentOrder.status === 'CANCELLED') {
-            console.log('[PaymentAnalysisPage] Order status is failed/declined/cancelled in database, redirecting to failed page');
+            console.log('[PaymentAnalysisPage] Order status is failed/declined/cancelled in database, redirecting to retry-payment page');
             
-            navigate('/failed', { 
+            navigate('/retry-payment', { 
               state: { 
                 order: currentOrder,
                 autoRetry: true
@@ -125,7 +125,7 @@ const PaymentAnalysisPage = () => {
                    refreshedOrder.status === 'CANCELLED')) {
                 clearInterval(pollingInterval);
                 console.log('[PaymentAnalysisPage] Order status updated to failed/declined/cancelled in database');
-                navigate('/failed', { 
+                navigate('/retry-payment', { 
                   state: { 
                     order: refreshedOrder,
                     autoRetry: true
@@ -172,11 +172,11 @@ const PaymentAnalysisPage = () => {
                 return;
               }
               
-              // If payment status is FAILED, CANCELLED, or DECLINED, navigate to failed
+              // If payment status is FAILED, CANCELLED, or DECLINED, navigate to retry-payment
               if (status === 'FAILED' || status === 'CANCELLED' || status === 'DECLINED') {
                 clearInterval(pollingInterval);
-                // Redirect to the failed page with autoRetry flag to trigger immediate retry
-                navigate('/failed', { 
+                // Redirect to the retry-payment page with autoRetry flag
+                navigate('/retry-payment', { 
                   state: { 
                     order: currentOrder,
                     autoRetry: true
