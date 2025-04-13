@@ -26,7 +26,7 @@ const PaymentAnalysisPage: React.FC = () => {
 
   // Only pass the order to PaymentAnalysisContent if it has a valid id
   const validOrder: PaymentAnalysisOrder | null = order && order.id ? 
-    { id: order.id as string, ...order } : 
+    { id: order.id, ...order } : 
     null;
 
   return (

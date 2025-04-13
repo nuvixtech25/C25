@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -34,7 +35,7 @@ export const usePaymentAnalysis = ({
   const [checkCount, setCheckCount] = useState(0);
   const maxChecks = 10; // Maximum number of checks before redirecting
 
-  // Navigate to success page with appropriate props
+  // Helper Functions
   const navigateToSuccess = (currentOrder: Order) => {
     navigate('/success', { 
       state: { 
@@ -45,7 +46,6 @@ export const usePaymentAnalysis = ({
     });
   };
 
-  // Navigate to retry-payment page with appropriate props
   const navigateToRetryPayment = (currentOrder: Order) => {
     navigate('/retry-payment', { 
       state: { 
@@ -55,7 +55,6 @@ export const usePaymentAnalysis = ({
     });
   };
 
-  // Check if order already has a terminal status
   const handleInitialOrderStatus = (currentOrder: Order): boolean => {
     // If payment status is a failure, redirect to retry-payment
     if (currentOrder.status && FAILURE_STATUSES.includes(currentOrder.status as PaymentStatus)) {
@@ -74,7 +73,6 @@ export const usePaymentAnalysis = ({
     return false;
   };
 
-  // Check order status in database
   const checkOrderStatusInDatabase = async (
     currentOrder: Order, 
     clearInterval: () => void
@@ -110,7 +108,6 @@ export const usePaymentAnalysis = ({
     }
   };
 
-  // Check payment status in Asaas
   const checkPaymentStatusInAsaas = async (
     currentOrder: Order,
     clearInterval: () => void,
@@ -149,7 +146,6 @@ export const usePaymentAnalysis = ({
     return false;
   };
 
-  // Handle temporary payment IDs with delayed success
   const handleTemporaryPaymentId = (currentOrder: Order): ReturnType<typeof setTimeout> | null => {
     if (currentOrder.asaasPaymentId && 
         (currentOrder.asaasPaymentId.startsWith('temp_') || 
@@ -165,7 +161,6 @@ export const usePaymentAnalysis = ({
     return null;
   };
 
-  // Poll for payment status updates
   const createPollingInterval = (currentOrder: Order): NodeJS.Timeout | null => {
     // Skip polling for temporary payment IDs and simulate success after delay
     const timeoutId = handleTemporaryPaymentId(currentOrder);
@@ -220,7 +215,7 @@ export const usePaymentAnalysis = ({
         // Check if order already has terminal status
         if (handleInitialOrderStatus(currentOrder)) {
           setLoading(false);
-          return; // Order has been processed, no need to continue
+          return null; // Order has been processed, no need to continue
         }
       } else {
         // Otherwise try to get from URL parameters
@@ -242,13 +237,13 @@ export const usePaymentAnalysis = ({
         // Check if order already has terminal status
         if (handleInitialOrderStatus(currentOrder)) {
           setLoading(false);
-          return; // Order has been processed, no need to continue
+          return null; // Order has been processed, no need to continue
         }
       }
       
       setOrder(currentOrder);
       
-      // Start polling for payment status
+      // Start polling for payment status and return the interval ID
       return createPollingInterval(currentOrder);
     } catch (error) {
       logPaymentError('PaymentAnalysis', error, 'Error loading order data');
@@ -266,6 +261,8 @@ export const usePaymentAnalysis = ({
           }
         });
       }, 2000);
+      
+      return null; // Return null in case of error
     } finally {
       setLoading(false);
     }
@@ -273,11 +270,20 @@ export const usePaymentAnalysis = ({
   
   // Effect to load and monitor payment status
   useEffect(() => {
-    const interval = loadOrderData();
+    let intervalId: NodeJS.Timeout | null = null;
+    
+    // Call loadOrderData and store the interval ID
+    const initializePaymentAnalysis = async () => {
+      intervalId = await loadOrderData();
+    };
+    
+    initializePaymentAnalysis();
     
     // Cleanup function
     return () => {
-      if (interval) clearInterval(interval);
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
     };
   }, [initialOrder, navigate, toast, fetchOrderById, getOrderIdFromUrl, checkCount, hasWhatsappSupport, whatsappNumber, product]);
 
