@@ -94,13 +94,33 @@ export const usePaymentNavigation = () => {
       customerEmail: currentOrder.customerEmail || (customerData ? customerData.email : 'anonimo@example.com'),
       productName: currentOrder.productName || '',
       productPrice: currentOrder.productPrice || 0,
-      status: 'FAILED'  // Garantir que o status seja FAILED para o fluxo de falha
+      status: 'FAILED',  // Garantir que o status seja FAILED para o fluxo de falha
+      paymentMethod: currentOrder.paymentMethod || 'creditCard'
     } : null;
     
-    // Navigate directly to the failed page
+    // Create a fallback order object if none was created yet
+    // This ensures the failed page always has order data
+    const fallbackOrderData = !safeOrderData && customerData ? {
+      id: `temp_failed_${Date.now()}`,
+      customerName: customerData.name || 'Cliente Anônimo',
+      customerEmail: customerData.email || 'anonimo@example.com',
+      customerCpfCnpj: customerData.cpfCnpj || '',
+      customerPhone: customerData.phone || '',
+      productName: 'Produto não identificado',
+      productPrice: 0,
+      status: 'FAILED',
+      paymentMethod: 'creditCard'
+    } : null;
+    
+    const orderDataToUse = safeOrderData || fallbackOrderData;
+    
+    console.log('[usePaymentNavigation] Navigating to failed page with order data:', orderDataToUse);
+    
+    // Always navigate directly to /failed regardless of redirectPage setting
     navigate('/failed', {
       state: {
-        order: safeOrderData
+        order: orderDataToUse,
+        errorMessage: error?.message || "Falha no processamento do pagamento"
       }
     });
   };

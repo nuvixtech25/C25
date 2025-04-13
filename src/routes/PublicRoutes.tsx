@@ -30,7 +30,7 @@ const PublicRoutes: React.FC = () => {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/failed" element={<FailedPage />} />
-      {/* Importante: payment-failed deve redirecionar para /failed, não para /retry-payment */}
+      {/* Important: Redirect payment-failed to the failed page */}
       <Route path="/payment-failed" element={<Navigate to="/failed" replace />} />
       <Route path="/pending" element={<PaymentPendingPage />} />
       <Route path="/payment-pending" element={<Navigate to="/pending" replace />} />
@@ -41,10 +41,10 @@ const PublicRoutes: React.FC = () => {
       <Route path="/register" element={<BusinessRegistration />} />
       <Route path="/login" element={<Login />} />
       
-      {/* Nova rota para página de agradecimento do cartão */}
+      {/* Page for card thank you */}
       <Route path="/thank-you-card" element={<ThankYouCardPage />} />
       
-      {/* Rota de fallback para páginas não encontradas */}
+      {/* Fallback route for pages not found */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

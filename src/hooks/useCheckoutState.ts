@@ -16,7 +16,8 @@ export const useCheckoutState = (product: Product | undefined) => {
   const { handleOrderCreation, isSubmitting, setIsSubmitting } = useOrderHandler();
   
   const handleCustomerSubmit = (data: CustomerData) => {
-    console.log('Customer data submitted:', data);
+    // Only log once when debugging
+    console.log('Customer data received');
     
     // Validate customer data
     if (!data.name || !data.email || !data.cpfCnpj || !data.phone) {
@@ -50,7 +51,7 @@ export const useCheckoutState = (product: Product | undefined) => {
       return;
     }
     
-    console.log("Processing payment with customer data:", customerData);
+    console.log("Processing payment with customer data", { name: customerData.name, email: customerData.email });
     setIsSubmitting(true);
     
     // Define order variable outside the try block so it's accessible in catch

@@ -21,6 +21,7 @@ const FailedPage = () => {
   const [hasRedirected, setHasRedirected] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [shouldShowRetryButton, setShouldShowRetryButton] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Log current state for debugging
   console.log('[FailedPage] Full location state:', state);
@@ -42,25 +43,15 @@ const FailedPage = () => {
       
       setIsInitialLoad(false);
       
+      // Save error message if available
+      if (state?.errorMessage) {
+        setErrorMessage(state.errorMessage);
+      }
+      
       // If we have order in state, use it
       if (state?.order) {
         console.log('[FailedPage] Order found in location state:', state.order);
         setOrder(state.order);
-        
-        // Desativando o redirecionamento automático para retry page
-        // Ao invés disso, mostramos a página de erro e o botão de retry para o usuário
-        // if (state.autoRetry && state.order.id) {
-        //   console.log('[FailedPage] Auto-redirecting to retry page due to failed payment');
-        //   setHasRedirected(true);
-        //   
-        //   // Short delay to allow state to be set properly
-        //   setTimeout(() => {
-        //     navigate(`/retry-payment?orderId=${state.order.id}`, { 
-        //       state: { order: state.order } 
-        //     });
-        //   }, 300);
-        //   return;
-        // }
         
         // Track failed purchase
         if (state.order.id && state.order.productPrice) {
@@ -68,7 +59,7 @@ const FailedPage = () => {
         }
         
         // Check card attempts to decide if we should show retry button
-        if (state.order.id) {
+        if (state.order.id && !state.order.id.startsWith('temp_')) {
           try {
             const attemptsCount = await supabaseClientService.getCardAttemptsCount(state.order.id);
             console.log('[FailedPage] Card attempts count:', attemptsCount);
@@ -166,6 +157,12 @@ const FailedPage = () => {
         <FailedPageHeader />
         
         <CardContent className="text-center space-y-4 px-6 py-6">
+          {errorMessage && (
+            <div className="p-4 bg-red-50 border border-red-100 rounded-lg mb-4">
+              <p className="text-red-700 font-medium">{errorMessage}</p>
+            </div>
+          )}
+          
           <FailureReasons />
           
           {loading && (

@@ -44,6 +44,8 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   // Track if this is the first render to prevent submission on mount
   const isFirstRender = useRef(true);
+  // Add a flag to track the last submission timestamp
+  const lastSubmissionTime = useRef<number>(0);
 
   // Function to check if data is different from last submission
   const isDataDifferent = (data: CustomerData): boolean => {
@@ -56,6 +58,14 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
       last.cpfCnpj !== data.cpfCnpj ||
       last.phone !== data.phone
     );
+  };
+
+  // Function to check if enough time has passed since last submission
+  const canSubmit = (): boolean => {
+    const now = Date.now();
+    const timeSinceLastSubmission = now - lastSubmissionTime.current;
+    // Only allow submission once every 3 seconds
+    return timeSinceLastSubmission > 3000;
   };
 
   // Automatically submit valid form data when values change with debounce
@@ -71,8 +81,8 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
       if (type === 'change' && form.formState.isValid) {
         const data = form.getValues();
         
-        // Only submit if data is different from last submission
-        if (isDataDifferent(data)) {
+        // Only submit if data is different from last submission and enough time has passed
+        if (isDataDifferent(data) && canSubmit()) {
           // Clear any existing timer
           if (debounceTimerRef.current) {
             clearTimeout(debounceTimerRef.current);
@@ -80,7 +90,7 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
           
           // Set a new timer with longer debounce time
           debounceTimerRef.current = setTimeout(() => {
-            console.log('[PersonalInfoSection] Submitting customer data after debounce:', data);
+            lastSubmissionTime.current = Date.now();
             lastSubmittedRef.current = { ...data };
             onSubmit(data);
             debounceTimerRef.current = null;
