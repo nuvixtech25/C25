@@ -24,6 +24,8 @@ const CardStatusBadge: React.FC<CardStatusBadgeProps> = ({ status, className }) 
       case 'CANCELLED':
       case 'REFUNDED':
       case 'OVERDUE':
+      case 'FAILED':
+      case 'DECLINED':
         return {
           label: 'Recusado',
           icon: XCircle,

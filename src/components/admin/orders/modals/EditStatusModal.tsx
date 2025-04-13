@@ -86,6 +86,20 @@ const EditStatusModal: React.FC<EditStatusModalProps> = ({
             <Button 
               variant="outline" 
               onClick={() => {
+                onChangeStatus("FAILED");
+                onClose();
+              }}
+              className="justify-start h-auto py-3"
+            >
+              <div className="flex flex-col items-start">
+                <span className="font-medium text-red-600">Falhou</span>
+                <span className="text-sm text-gray-500">Marca o pagamento como falho.</span>
+              </div>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => {
                 onChangeStatus("CANCELLED");
                 onClose();
               }}

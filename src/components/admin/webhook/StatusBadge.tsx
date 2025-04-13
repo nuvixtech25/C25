@@ -16,6 +16,10 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
         return { color: 'bg-blue-100 text-blue-800', label: 'Recebido' };
       case 'CANCELLED':
         return { color: 'bg-red-100 text-red-800', label: 'Cancelado' };
+      case 'FAILED':
+        return { color: 'bg-red-100 text-red-800', label: 'Falhou' };
+      case 'DECLINED':
+        return { color: 'bg-red-100 text-red-800', label: 'Recusado' };
       default:
         return { color: 'bg-gray-100 text-gray-800', label: status };
     }

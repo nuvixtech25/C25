@@ -50,6 +50,18 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, showEmoji = false }) 
       label: "Cancelado",
       emoji: "❌"
     },
+    FAILED: {
+      bg: "bg-red-100 text-red-800 border-red-200",
+      text: "text-red-800",
+      label: "Falhou",
+      emoji: "❌"
+    },
+    DECLINED: {
+      bg: "bg-red-100 text-red-800 border-red-200",
+      text: "text-red-800",
+      label: "Recusado",
+      emoji: "❌"
+    }
   };
 
   const config = statusConfig[status];
