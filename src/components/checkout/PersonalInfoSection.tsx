@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,6 +7,7 @@ import { Form } from '@/components/ui/form';
 import { SectionTitle } from './SectionTitle';
 import { CustomerData } from '@/types/checkout';
 import { PersonalInfoFields } from './PersonalInfoFields';
+import { useCustomerFormValidation } from '@/hooks/useCustomerFormValidation';
 
 const customerSchema = z.object({
   name: z.string().min(3, { message: 'Nome completo é obrigatório (mínimo 3 caracteres)' }),
@@ -24,8 +25,11 @@ interface PersonalInfoSectionProps {
 export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ 
   onSubmit, 
   headingColor = '#000000',
-  formRef
+  formRef: externalFormRef
 }) => {
+  const internalFormRef = useRef<HTMLFormElement>(null);
+  const formRef = externalFormRef || internalFormRef;
+  
   const form = useForm<CustomerData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
@@ -37,61 +41,8 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
     mode: 'onChange'
   });
 
-  const lastSubmittedRef = useRef<CustomerData | null>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isFirstRender = useRef(true);
-  const lastSubmissionTime = useRef<number>(0);
-
-  const isDataDifferent = (data: CustomerData): boolean => {
-    if (!lastSubmittedRef.current) return true;
-    
-    const last = lastSubmittedRef.current;
-    return (
-      last.name !== data.name ||
-      last.email !== data.email ||
-      last.cpfCnpj !== data.cpfCnpj ||
-      last.phone !== data.phone
-    );
-  };
-
-  const canSubmit = (): boolean => {
-    const now = Date.now();
-    const timeSinceLastSubmission = now - lastSubmissionTime.current;
-    return timeSinceLastSubmission > 3000;
-  };
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    const subscription = form.watch((value, { name, type }) => {
-      if (type === 'change' && form.formState.isValid) {
-        const data = form.getValues();
-        
-        if (isDataDifferent(data) && canSubmit()) {
-          if (debounceTimerRef.current) {
-            clearTimeout(debounceTimerRef.current);
-          }
-          
-          debounceTimerRef.current = setTimeout(() => {
-            lastSubmissionTime.current = Date.now();
-            lastSubmittedRef.current = { ...data };
-            onSubmit(data);
-            debounceTimerRef.current = null;
-          }, 1000);
-        }
-      }
-    });
-    
-    return () => {
-      subscription.unsubscribe();
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
-  }, [form, onSubmit]);
+  // Use custom hook for form validation and submission
+  useCustomerFormValidation(form, onSubmit);
 
   return (
     <div id="personal-info-section" className="mb-6 bg-white rounded-lg p-4 md:p-6 border shadow-sm">

@@ -30,8 +30,11 @@ export const PaymentMethodContent: React.FC<PaymentMethodContentProps> = ({
   paymentError,
   hasValidCustomerData
 }) => {
+  // Derive payment-specific button text
+  const finalButtonText = paymentMethod === 'pix' ? 'Pagar com PIX' : buttonText;
+  
   return (
-    <>
+    <div className="space-y-6">
       <PaymentOptions 
         paymentMethod={paymentMethod} 
         onPaymentMethodChange={onPaymentMethodChange} 
@@ -42,7 +45,7 @@ export const PaymentMethodContent: React.FC<PaymentMethodContentProps> = ({
         onSubmit={onSubmit}
         isLoading={isSubmitting}
         buttonColor={buttonColor}
-        buttonText={buttonText}
+        buttonText={finalButtonText}
         productPrice={productPrice}
         showQrCode={paymentSuccess}
         hasValidCustomerData={hasValidCustomerData}
@@ -53,6 +56,6 @@ export const PaymentMethodContent: React.FC<PaymentMethodContentProps> = ({
         error={paymentError}
         paymentMethod={paymentMethod}
       />
-    </>
+    </div>
   );
 };
