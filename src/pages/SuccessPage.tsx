@@ -1,83 +1,70 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabaseClientService } from '@/services/supabaseClientService';
 import { CheckCircle } from 'lucide-react';
-import { usePixelEvents } from '@/hooks/usePixelEvents';
-import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
 import { EmailConfirmationSection } from './SuccessPage/EmailConfirmationSection';
 import { DigitalProductSection, DigitalProductButton } from './SuccessPage/DigitalProductSection';
-import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
-import { supabaseClientService } from '@/services/supabaseClientService';
-
+import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 const SuccessPage = () => {
   const location = useLocation();
-  const { trackPurchase } = usePixelEvents();
+  const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   const [isDigitalProduct, setIsDigitalProduct] = useState(false);
-  const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false); 
-  const [whatsappNumber, setWhatsappNumber] = useState(''); 
-  
-  useEffect(() => {
-    const fetchWhatsAppInfo = async () => {
-      console.log('[SuccessPage] Full location state:', JSON.stringify(location.state, null, 2));
+
+  const fetchWhatsAppInfo = useCallback(async () => {
+    if (!location.state?.order) return;
+
+    const { order } = location.state;
+    
+    try {
+      const productInfo = await supabaseClientService.getProductWhatsAppInfo(order.productId);
       
-      if (location.state?.order) {
-        const { order, product } = location.state;
-        
-        try {
-          const productInfo = await supabaseClientService.getProductWhatsAppInfo(order.productId);
-          
-          console.log('[SuccessPage] Product WhatsApp Info:', {
-            productHasWhatsappSupport: productInfo.hasWhatsappSupport,
-            productWhatsappNumber: productInfo.whatsappNumber,
-            orderWhatsappNumber: order.whatsapp_number,
-            locationWhatsappNumber: location.state.whatsapp_number
-          });
+      const finalWhatsappSupport = 
+        productInfo.hasWhatsappSupport || 
+        location.state.has_whatsapp_support || 
+        order.has_whatsapp_support || 
+        false;
 
-          const finalWhatsappSupport = 
-            productInfo.hasWhatsappSupport || 
-            location.state.has_whatsapp_support || 
-            order.has_whatsapp_support || 
-            false;
+      const finalWhatsappNumber = 
+        productInfo.whatsappNumber || 
+        location.state.whatsapp_number || 
+        order.whatsapp_number || 
+        '';
 
-          const finalWhatsappNumber = 
-            productInfo.whatsappNumber || 
-            location.state.whatsapp_number || 
-            order.whatsapp_number || 
-            '';
+      console.log('[SuccessPage] Final WhatsApp Details:', {
+        hasWhatsappSupport: finalWhatsappSupport,
+        whatsappNumber: finalWhatsappNumber
+      });
 
-          console.log('[SuccessPage] Final WhatsApp Details:', {
-            hasWhatsappSupport: finalWhatsappSupport,
-            whatsappNumber: finalWhatsappNumber
-          });
+      setHasWhatsappSupport(finalWhatsappSupport);
+      setWhatsappNumber(finalWhatsappNumber);
 
-          setHasWhatsappSupport(finalWhatsappSupport);
-          setWhatsappNumber(finalWhatsappNumber);
-
-          if (finalWhatsappSupport || finalWhatsappNumber) {
-            localStorage.setItem('whatsapp_support', finalWhatsappSupport.toString());
-            if (finalWhatsappNumber) {
-              localStorage.setItem('whatsapp_number', finalWhatsappNumber);
-            }
-          }
-        } catch (error) {
-          console.error('[SuccessPage] Error fetching WhatsApp info:', error);
-        }
+      // Persist to localStorage for potential page reloads
+      if (finalWhatsappSupport || finalWhatsappNumber) {
+        localStorage.setItem('whatsapp_support', finalWhatsappSupport.toString());
+        localStorage.setItem('whatsapp_number', finalWhatsappNumber);
       }
-    };
-
-    fetchWhatsAppInfo();
+    } catch (error) {
+      console.error('[SuccessPage] Error fetching WhatsApp info:', error);
+    }
   }, [location.state]);
 
-  // Log WhatsApp button props before rendering
   useEffect(() => {
-    console.log('[SuccessPage] WhatsApp Button Props:', { 
-      hasWhatsappSupport, 
-      whatsappNumber,
-      hasWhatsappSupportType: typeof hasWhatsappSupport,
-      whatsappNumberType: typeof whatsappNumber
-    });
-  }, [hasWhatsappSupport, whatsappNumber]);
+    fetchWhatsAppInfo();
+  }, [fetchWhatsAppInfo]);
+
+  // Fallback to localStorage if state is lost
+  useEffect(() => {
+    const storedWhatsappSupport = localStorage.getItem('whatsapp_support');
+    const storedWhatsappNumber = localStorage.getItem('whatsapp_number');
+
+    if (storedWhatsappSupport && storedWhatsappNumber) {
+      setHasWhatsappSupport(storedWhatsappSupport === 'true');
+      setWhatsappNumber(storedWhatsappNumber);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-gray-50 to-gray-100">
@@ -121,4 +108,3 @@ const SuccessPage = () => {
 };
 
 export default SuccessPage;
-
