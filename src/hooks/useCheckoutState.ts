@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -28,6 +29,7 @@ export const useCheckoutState = (product: Product | undefined) => {
       return;
     }
     
+    // Store customer data in state for later use
     setCustomerData(data);
   };
   
@@ -42,7 +44,7 @@ export const useCheckoutState = (product: Product | undefined) => {
       return;
     }
     
-    // Ensure we have customer data before proceeding
+    // Check if we have customer data in state before proceeding
     if (!customerData) {
       console.error('Missing customer data');
       toast({
@@ -125,6 +127,7 @@ export const useCheckoutState = (product: Product | undefined) => {
           productPrice: currentOrder.productPrice || 0,
           status: currentOrder.status || 'PENDING',
           paymentMethod: currentOrder.paymentMethod || 'creditCard',
+          asaasPaymentId: currentOrder.asaasPaymentId || '',
           createdAt: currentOrder.createdAt,
           updatedAt: currentOrder.updatedAt
         } : null;
@@ -134,6 +137,12 @@ export const useCheckoutState = (product: Product | undefined) => {
           whatsapp_number: typeof product.whatsapp_number === 'string' ? product.whatsapp_number : '',
           type: product.type || 'physical'
         };
+        
+        // Create a payment ID if one doesn't exist
+        if (!safeOrderData.asaasPaymentId) {
+          // Generate a temporary payment ID until real one is created
+          safeOrderData.asaasPaymentId = `temp_${Date.now()}`;
+        }
         
         // Adding a small delay to ensure smooth navigation
         setTimeout(() => {

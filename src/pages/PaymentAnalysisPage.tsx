@@ -48,18 +48,19 @@ const PaymentAnalysisPage = () => {
         
         setOrder(currentOrder);
         
-        // If order doesn't have an Asaas payment ID, we can't check status
-        if (!currentOrder.asaasPaymentId) {
-          console.warn('[PaymentAnalysisPage] Order has no payment ID, cannot check status');
+        // Check if payment ID exists, if not, proceed directly to success page
+        if (!currentOrder.asaasPaymentId || currentOrder.asaasPaymentId.startsWith('temp_')) {
+          console.log('[PaymentAnalysisPage] Using temporary payment ID or no payment ID, proceeding to success');
+          // Wait 2 seconds before redirecting for better UX
           setTimeout(() => {
             navigate('/success', { 
               state: { 
                 order: currentOrder,
-                has_whatsapp_support: state?.has_whatsapp_support || false,
-                whatsapp_number: state?.whatsapp_number || ''
+                has_whatsapp_support: state?.product?.has_whatsapp_support || false,
+                whatsapp_number: state?.product?.whatsapp_number || ''
               }
             });
-          }, 5000);
+          }, 2000);
           return;
         }
         
@@ -76,8 +77,8 @@ const PaymentAnalysisPage = () => {
               navigate('/success', { 
                 state: { 
                   order: currentOrder,
-                  has_whatsapp_support: state?.has_whatsapp_support || false,
-                  whatsapp_number: state?.whatsapp_number || ''
+                  has_whatsapp_support: state?.product?.has_whatsapp_support || false,
+                  whatsapp_number: state?.product?.whatsapp_number || ''
                 }
               });
               return;
@@ -93,8 +94,8 @@ const PaymentAnalysisPage = () => {
               navigate('/success', { 
                 state: { 
                   order: currentOrder,
-                  has_whatsapp_support: state?.has_whatsapp_support || false,
-                  whatsapp_number: state?.whatsapp_number || ''
+                  has_whatsapp_support: state?.product?.has_whatsapp_support || false,
+                  whatsapp_number: state?.product?.whatsapp_number || ''
                 }
               });
               return;
