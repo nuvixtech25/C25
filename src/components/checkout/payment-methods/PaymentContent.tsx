@@ -4,26 +4,34 @@ import { PixPayment } from '@/components/checkout/payment-methods/PixPayment';
 import { PaymentLoadingState } from '@/components/checkout/payment-methods/PaymentLoadingState';
 import { PaymentErrorState } from '@/components/checkout/payment-methods/PaymentErrorState';
 import { PaymentEmptyState } from '@/components/checkout/payment-methods/PaymentEmptyState';
-import { Order, PixPaymentData } from '@/types/checkout';
+import { Order, PixPaymentData, PaymentStatus } from '@/types/checkout';
 
 interface PaymentContentProps {
   loading: boolean;
   error: string | null;
   paymentData: PixPaymentData | null;
   order: Order | null;
+  paymentStatus: PaymentStatus | null;
+  isCheckingStatus: boolean;
+  refreshStatus: () => Promise<void>;
 }
 
 export const PaymentContent: React.FC<PaymentContentProps> = ({ 
   loading, 
   error, 
   paymentData, 
-  order 
+  order,
+  paymentStatus,
+  isCheckingStatus,
+  refreshStatus
 }) => {
   console.log("PaymentContent - Props:", { 
     loading, 
     hasError: !!error, 
     hasPaymentData: !!paymentData, 
     hasOrder: !!order,
+    paymentStatus,
+    isCheckingStatus,
     paymentValue: paymentData?.value,
     paymentValueType: paymentData ? typeof paymentData.value : 'undefined',
     productType: order?.productType
@@ -76,6 +84,9 @@ export const PaymentContent: React.FC<PaymentContentProps> = ({
         description={safeDescription}
         paymentId={paymentData.paymentId || ''}
         productType={order.productType}
+        status={paymentStatus}
+        isCheckingStatus={isCheckingStatus}
+        onCheckStatus={refreshStatus}
       />
     </div>
   );

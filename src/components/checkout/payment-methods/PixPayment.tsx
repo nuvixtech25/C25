@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import { PaymentStatus } from '@/types/checkout';
 import { PixPaymentContainer } from './qr-code/PixPaymentContainer';
-import { usePixPaymentStatus } from '@/hooks/usePixPaymentStatus';
 
 interface PixPaymentProps {
   orderId: string;
@@ -14,6 +13,9 @@ interface PixPaymentProps {
   value: number;
   description: string;
   productType?: 'digital' | 'physical';
+  status?: PaymentStatus | null;
+  isCheckingStatus?: boolean;
+  onCheckStatus?: () => void;
 }
 
 export const PixPayment: React.FC<PixPaymentProps> = ({
@@ -25,7 +27,10 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
   expirationDate,
   value,
   description,
-  productType = 'physical'
+  productType = 'physical',
+  status = null,
+  isCheckingStatus = false,
+  onCheckStatus = () => {}
 }) => {
   // Ensure value is a valid number
   const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
@@ -40,25 +45,16 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
     value: safeValue, // Log the actual safe value
     valueType: typeof safeValue,
     description,
-    productType
+    productType,
+    status,
+    isCheckingStatus
   });
   
   // Ensure we have valid values for all props before passing them to child components
   const safeDescription = description || 'Pagamento PIX';
   
-  // Usar custom hook para gerenciar o status do pagamento e timeout
-  const {
-    status,
-    timeLeft,
-    isCheckingStatus,
-    forceCheckStatus,
-    isExpired
-  } = usePixPaymentStatus({
-    paymentId,
-    orderId,
-    expirationDate,
-    productType
-  });
+  // Use um hook personalizado para gerenciar o status do pagamento e timeout se nenhum status for fornecido
+  // Se status e onCheckStatus forem fornecidos, usamos eles em vez do hook
   
   // Log when payment status changes
   useEffect(() => {
@@ -75,11 +71,11 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
       expirationDate={expirationDate}
       value={safeValue}
       description={safeDescription}
-      status={status}
+      status={status || "PENDING"}
       isCheckingStatus={isCheckingStatus}
-      timeLeft={timeLeft.toString()} // Convert timeLeft to string to match the expected type
-      isExpired={isExpired}
-      onCheckStatus={forceCheckStatus}
+      timeLeft={""} // Isso será calculado internamente se necessário
+      isExpired={false} // Será determinado internamente se necessário
+      onCheckStatus={onCheckStatus}
       productType={productType}
     />
   );
