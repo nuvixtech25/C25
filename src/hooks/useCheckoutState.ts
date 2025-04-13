@@ -138,8 +138,8 @@ export const useCheckoutState = (product: Product | undefined) => {
           type: product.type || 'physical'
         };
         
-        // Create a payment ID if one doesn't exist
-        if (!safeOrderData.asaasPaymentId) {
+        // Create a payment ID if one doesn't exist and ensure safeOrderData is not null
+        if (safeOrderData && !safeOrderData.asaasPaymentId) {
           // Generate a temporary payment ID until real one is created
           safeOrderData.asaasPaymentId = `temp_${Date.now()}`;
         }
