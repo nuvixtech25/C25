@@ -204,7 +204,7 @@ export const useCheckoutState = (product: Product | undefined) => {
         `/failed?orderId=${currentOrder.id}` : 
         '/failed';
       
-      // Navigate to failed page, including orderId in URL and pass the order object in state
+      // Navigate to failed page directly instead of using payment-failed redirect
       navigate(failedUrl, {
         state: {
           order: safeOrderData

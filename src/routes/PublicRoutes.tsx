@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Route, Routes, Navigate, Location } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import Index from '@/pages/Index';
 import CheckoutPreview from '@/pages/admin/CheckoutPreview';
 import PaymentPage from '@/pages/PaymentPage';
@@ -16,8 +16,6 @@ import AccessProductPage from '@/pages/AccessProductPage';
 import BusinessRegistration from '@/pages/BusinessRegistration';
 import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
-
-// Importe a página ThankYouCardPage
 import ThankYouCardPage from '@/pages/ThankYouCardPage';
 
 const PublicRoutes: React.FC = () => {
@@ -32,11 +30,8 @@ const PublicRoutes: React.FC = () => {
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/failed" element={<FailedPage />} />
-      {/* Update the redirect from /payment-failed to redirect to retry-payment with state preservation */}
-      <Route 
-        path="/payment-failed" 
-        element={<Navigate to="/retry-payment" replace state={(location: Location) => location.state} />} 
-      />
+      {/* Fixed redirect - don't use a function in state */}
+      <Route path="/payment-failed" element={<Navigate to="/retry-payment" replace />} />
       <Route path="/pending" element={<PaymentPendingPage />} />
       <Route path="/payment-pending" element={<Navigate to="/pending" replace />} />
       <Route path="/payment-analysis" element={<PaymentAnalysisPage />} />
