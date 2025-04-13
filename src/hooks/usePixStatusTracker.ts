@@ -60,12 +60,14 @@ export const usePixStatusTracker = (
       };
       
       // Navigate to success page with order and product info
-      navigate('/success', { 
-        state: { 
-          order,
-          product: productInfo
-        } 
-      });
+      setTimeout(() => {
+        navigate('/success', { 
+          state: { 
+            order,
+            product: productInfo
+          } 
+        });
+      }, 1000); // Add slight delay to ensure toast is visible
     } else {
       console.error('Cannot navigate to success: missing order data');
     }
@@ -104,7 +106,7 @@ export const usePixStatusTracker = (
     } finally {
       setIsCheckingStatus(false);
     }
-  }, [toast, processPaymentStatusResult]);
+  }, [processPaymentStatusResult]);
 
   // Auto-polling mechanism for status checks
   useEffect(() => {
@@ -119,7 +121,7 @@ export const usePixStatusTracker = (
     
     // Set up polling interval (check every 10 seconds)
     const pollingInterval = setInterval(() => {
-      if (paymentStatus !== 'CONFIRMED') {
+      if (paymentStatus !== 'CONFIRMED' && paymentStatus !== 'RECEIVED') {
         console.log("Auto-polling: checking payment status");
         performStatusCheck(paymentData.paymentId);
       } else {

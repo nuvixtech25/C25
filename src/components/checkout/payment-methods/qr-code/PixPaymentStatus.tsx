@@ -31,7 +31,7 @@ export const PixPaymentStatus: React.FC<PixPaymentStatusProps> = ({
     }
   };
   
-  if (status === "CONFIRMED") {
+  if (status === "CONFIRMED" || status === "RECEIVED") {
     return (
       <div className="text-center p-8 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200 shadow-md animate-fade-in">
         <div className="relative">
