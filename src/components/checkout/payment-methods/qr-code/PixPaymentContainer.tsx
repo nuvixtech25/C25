@@ -49,7 +49,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
   const isMobile = useIsMobile();
   
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div className="w-full max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
       {/* Payment status display - show at the top when confirmed, cancelled, or refunded */}
       {(status === 'CONFIRMED' || status === 'CANCELLED' || status === 'REFUNDED') && (
         <div className="p-4 sm:p-6">
@@ -71,7 +71,7 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
           </div>
           
           <div className="p-4 sm:p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {/* Left column - QR Code */}
               <Card className="p-4 sm:p-6 border border-gray-200 shadow-sm bg-white rounded-xl">
                 <div className="flex flex-col items-center">
@@ -103,8 +103,8 @@ export const PixPaymentContainer: React.FC<PixPaymentContainerProps> = ({
               </div>
             </div>
             
-            {/* Status checker */}
-            <div className="mt-4 sm:mt-6">
+            {/* Status checker - Now hidden by default */}
+            <div className="mt-4 sm:mt-6 hidden">
               <PixStatusChecker 
                 status={status} 
                 isCheckingStatus={isCheckingStatus} 

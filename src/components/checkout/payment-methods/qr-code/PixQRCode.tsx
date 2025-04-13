@@ -27,7 +27,7 @@ export const PixQRCode: React.FC<PixQRCodeProps> = ({ qrCodeImage }) => {
     }
   };
 
-  const qrCodeSize = isMobile ? "w-40 h-40" : "w-48 h-48";
+  const qrCodeSize = isMobile ? "w-40 h-40" : "w-52 h-52";
 
   return (
     <div className="flex flex-col items-center">

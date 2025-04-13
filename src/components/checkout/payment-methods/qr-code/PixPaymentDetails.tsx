@@ -1,52 +1,78 @@
 
 import React from 'react';
-import { CardFooter } from '@/components/ui/card';
-import { Calendar, CreditCard, FileText } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { formatCurrency } from '@/utils/formatters';
+import { CalendarClock, Receipt, Clock } from 'lucide-react';
 
 interface PixPaymentDetailsProps {
-  description: string;
   value: number;
-  expirationDate?: string;
+  description: string;
+  expirationDate: string;
 }
 
 export const PixPaymentDetails: React.FC<PixPaymentDetailsProps> = ({
-  description,
   value,
+  description,
   expirationDate
 }) => {
-  // Add stronger safety check to handle undefined or null values
-  const safeValue = typeof value === 'number' && !isNaN(value) ? value : 0;
-  
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(date);
+    } catch (e) {
+      return 'Data inválida';
+    }
+  };
+
   return (
-    <CardFooter className="flex flex-col gap-2 sm:gap-3 bg-white rounded-lg p-3 sm:p-4 border border-gray-200 shadow-sm">
-      <div className="flex justify-between w-full items-center">
-        <div className="flex items-center">
-          <div className="mr-2 sm:mr-3 bg-green-50 p-1.5 sm:p-2 rounded-full">
-            <CreditCard className="h-4 sm:h-5 w-4 sm:w-5 text-green-600" />
+    <Card className="p-4 sm:p-6 border border-gray-200 shadow-sm bg-white rounded-xl">
+      <div className="flex items-center mb-3 sm:mb-4 text-gray-700">
+        <Receipt className="mr-2 h-4 sm:h-5 w-4 sm:w-5 text-green-600" />
+        <h3 className="text-base sm:text-lg font-medium">Detalhes do pagamento</h3>
+      </div>
+      
+      <div className="space-y-3">
+        <div>
+          <div className="text-xs text-gray-500 mb-1">Total a pagar:</div>
+          <div className="flex items-baseline">
+            <span className="text-xs text-gray-500 mr-1">R$</span>
+            <span className="text-lg sm:text-xl font-bold text-gray-800">{formatCurrency(value).replace('R$ ', '')}</span>
           </div>
+        </div>
+
+        {description && (
           <div>
-            <p className="text-xs sm:text-sm font-medium text-gray-700">Total a pagar</p>
-            <p className="text-xs text-gray-500">{description || 'Pagamento'}</p>
+            <div className="text-xs text-gray-500 mb-1">Descrição:</div>
+            <div className="text-sm text-gray-700">{description}</div>
+          </div>
+        )}
+
+        <div>
+          <div className="flex items-center text-xs text-gray-500 mb-1">
+            <CalendarClock className="h-3 w-3 mr-1 text-gray-400" />
+            <span>Validade:</span>
+          </div>
+          <div className="text-sm text-gray-700">{formatDate(expirationDate)}</div>
+        </div>
+        
+        <div className="pt-2 mt-2 border-t border-gray-100">
+          <div className="bg-yellow-50 border border-yellow-100 rounded-md p-2.5">
+            <div className="flex text-yellow-700">
+              <Clock className="h-4 w-4 mr-1.5 text-yellow-500 flex-shrink-0 mt-0.5" />
+              <p className="text-xs">
+                O pagamento será confirmado automaticamente assim que realizado.
+              </p>
+            </div>
           </div>
         </div>
-        <p className="font-bold text-base sm:text-lg text-gray-900">{safeValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
       </div>
-      
-      {expirationDate && (
-        <div className="flex items-center mt-1 pt-2 sm:pt-3 border-t border-gray-100">
-          <Calendar className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-gray-400 mr-1.5 sm:mr-2" />
-          <p className="text-xs text-gray-500">
-            <span className="font-medium">Validade:</span> {new Date(expirationDate).toLocaleString('pt-BR')}
-          </p>
-        </div>
-      )}
-      
-      <div className="flex items-center mt-1 bg-yellow-50 p-1.5 sm:p-2 rounded-md text-center sm:text-left">
-        <FileText className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-yellow-600 mr-1.5 sm:mr-2 flex-shrink-0" />
-        <p className="text-xs text-yellow-700">
-          O pagamento será confirmado em instantes após o PIX ser realizado
-        </p>
-      </div>
-    </CardFooter>
+    </Card>
   );
 };
