@@ -15,7 +15,7 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   hasWhatsappSupport, 
   whatsappNumber,
   number,
-  message = "Olá! Acabei de tentar fazer uma compra e tive um problema. Gostaria de obter ajuda.",
+  message = "Olá! Acabei de fazer um pagamento via Pix e gostaria de confirmar o recebimento.",
   fullWidth = false
 }) => {
   useEffect(() => {
