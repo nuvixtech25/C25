@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,11 +16,6 @@ const Index: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center">
-              <Link to="/checkout">
-                <Button variant="outline" className="mr-2">
-                  Checkout
-                </Button>
-              </Link>
               <Link to="/admin/dashboard">
                 <Button>
                   Dashboard
