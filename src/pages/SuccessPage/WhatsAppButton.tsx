@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { MessageCircleIcon } from 'lucide-react';
+import { WhatsappIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface WhatsAppButtonProps {
@@ -68,9 +68,8 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
         className="flex items-center justify-center"
       >
         Falar no WhatsApp
-        <MessageCircleIcon className="ml-2 h-5 w-5" />
+        <WhatsappIcon className="ml-2 h-5 w-5" />
       </a>
     </Button>
   );
 };
-

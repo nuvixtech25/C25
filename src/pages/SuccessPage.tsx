@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -101,6 +102,7 @@ const SuccessPage = () => {
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
           
+          {/* Log WhatsApp Button props here instead of inline rendering */}
           {console.log('[SuccessPage] Rendering WhatsApp Button with:', { 
             hasWhatsappSupport, 
             whatsappNumber,
