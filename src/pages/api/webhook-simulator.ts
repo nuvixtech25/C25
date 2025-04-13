@@ -106,6 +106,14 @@ export async function handler(req: Request) {
           payload: payload
         });
 
+      // Add CORS headers for browser compatibility
+      const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      };
+
       return new Response(
         JSON.stringify({ 
           message: 'Webhook processed successfully',
@@ -116,7 +124,7 @@ export async function handler(req: Request) {
         }),
         {
           status: 200,
-          headers: { 'Content-Type': 'application/json' },
+          headers: headers,
         }
       );
     } else {
