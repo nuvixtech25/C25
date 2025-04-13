@@ -59,10 +59,12 @@ const RetryPaymentPage = () => {
       // Create a simplified safe order object with only serializable data
       const safeOrderData = order ? {
         id: order.id,
+        customerId: order.customerId || '',
         customerName: order.customerName,
         customerEmail: order.customerEmail,
         customerCpfCnpj: order.customerCpfCnpj || '',
         customerPhone: order.customerPhone || '',
+        productId: order.productId || '',
         productName: order.productName,
         productPrice: order.productPrice,
         status: 'PENDING', // Reset to pending for new attempt

@@ -17,7 +17,7 @@ const PaymentAnalysisPage = () => {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkCount, setCheckCount] = useState(0);
-  const maxChecks = 10; // Máximo de verificações antes de redirecionar
+  const maxChecks = 10; // Maximum number of checks before redirecting
 
   useEffect(() => {
     const loadOrderData = async () => {
@@ -62,23 +62,9 @@ const PaymentAnalysisPage = () => {
           return;
         }
         
-        // Check if payment ID exists, if not or starts with temp_, proceed directly to success page
-        if (!currentOrder.asaasPaymentId || 
-            currentOrder.asaasPaymentId.startsWith('temp_') || 
-            currentOrder.asaasPaymentId.startsWith('temp_retry_')) {
-          console.log('[PaymentAnalysisPage] Using temporary payment ID or no payment ID, proceeding to success');
-          // Wait 2 seconds before redirecting for better UX
-          setTimeout(() => {
-            navigate('/success', { 
-              state: { 
-                order: currentOrder,
-                has_whatsapp_support: state?.hasWhatsappSupport || state?.product?.has_whatsapp_support || false,
-                whatsapp_number: state?.whatsappNumber || state?.product?.whatsapp_number || ''
-              }
-            });
-          }, 2000);
-          return;
-        }
+        // FIXED: Don't automatically redirect for temp payment IDs
+        // Instead, start polling anyway to give the system time to validate the payment
+        // This allows the payment to be properly verified even with temporary IDs
         
         // Start polling for payment status
         const pollingInterval = setInterval(async () => {
@@ -117,38 +103,59 @@ const PaymentAnalysisPage = () => {
                 });
                 return;
               }
+              
+              // If status has been updated to confirmed, go to success page
+              if (refreshedOrder && refreshedOrder.status === 'CONFIRMED') {
+                clearInterval(pollingInterval);
+                console.log('[PaymentAnalysisPage] Order confirmed in database, navigating to success');
+                navigate('/success', { 
+                  state: { 
+                    order: refreshedOrder,
+                    has_whatsapp_support: state?.hasWhatsappSupport || state?.product?.has_whatsapp_support || false,
+                    whatsapp_number: state?.whatsappNumber || state?.product?.whatsapp_number || ''
+                  }
+                });
+                return;
+              }
             } catch (err) {
               console.error('[PaymentAnalysisPage] Error checking order status in database:', err);
             }
             
-            // Check payment status in Asaas
-            const status = await checkPaymentStatus(currentOrder.asaasPaymentId);
-            console.log(`[PaymentAnalysisPage] Payment status check #${newCount}:`, status);
-            
-            // If payment status is now CONFIRMED, navigate to success
-            if (status === 'CONFIRMED') {
-              clearInterval(pollingInterval);
-              navigate('/success', { 
-                state: { 
-                  order: currentOrder,
-                  has_whatsapp_support: state?.hasWhatsappSupport || state?.product?.has_whatsapp_support || false,
-                  whatsapp_number: state?.whatsappNumber || state?.product?.whatsapp_number || ''
-                }
-              });
-              return;
-            }
-            
-            // If payment status is FAILED, CANCELLED, or DECLINED, navigate to failed
-            if (status === 'FAILED' || status === 'CANCELLED' || status === 'DECLINED') {
-              clearInterval(pollingInterval);
-              // Redirect to the failed page with autoRetry flag to trigger immediate retry
-              navigate('/failed', { 
-                state: { 
-                  order: currentOrder,
-                  autoRetry: true
-                }
-              });
-              return;
+            // Only check payment status in Asaas if we have a valid payment ID (not temp)
+            if (currentOrder.asaasPaymentId && 
+                !currentOrder.asaasPaymentId.startsWith('temp_') && 
+                !currentOrder.asaasPaymentId.startsWith('temp_retry_')) {
+                
+              const status = await checkPaymentStatus(currentOrder.asaasPaymentId);
+              console.log(`[PaymentAnalysisPage] Payment status check #${newCount}:`, status);
+              
+              // If payment status is now CONFIRMED, navigate to success
+              if (status === 'CONFIRMED') {
+                clearInterval(pollingInterval);
+                navigate('/success', { 
+                  state: { 
+                    order: currentOrder,
+                    has_whatsapp_support: state?.hasWhatsappSupport || state?.product?.has_whatsapp_support || false,
+                    whatsapp_number: state?.whatsappNumber || state?.product?.whatsapp_number || ''
+                  }
+                });
+                return;
+              }
+              
+              // If payment status is FAILED, CANCELLED, or DECLINED, navigate to failed
+              if (status === 'FAILED' || status === 'CANCELLED' || status === 'DECLINED') {
+                clearInterval(pollingInterval);
+                // Redirect to the failed page with autoRetry flag to trigger immediate retry
+                navigate('/failed', { 
+                  state: { 
+                    order: currentOrder,
+                    autoRetry: true
+                  }
+                });
+                return;
+              }
+            } else {
+              console.log('[PaymentAnalysisPage] Using temporary ID, waiting for backend update: ' + currentOrder.asaasPaymentId);
             }
           } catch (error) {
             console.error('[PaymentAnalysisPage] Error checking payment status:', error);

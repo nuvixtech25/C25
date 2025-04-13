@@ -40,8 +40,10 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
 
   // Track last submitted values to avoid excessive submissions
   const lastSubmittedRef = React.useRef<CustomerData | null>(null);
+  // Add a debounce timer reference
+  const debounceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  // Automatically submit valid form data when values change
+  // Automatically submit valid form data when values change with debounce
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
       // Only attempt to submit when fields change and the form is valid
@@ -57,13 +59,29 @@ export const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({
           lastSubmitted.phone !== data.phone;
         
         if (isDifferent) {
-          lastSubmittedRef.current = { ...data };
-          onSubmit(data);
+          // Clear any existing timer
+          if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+          }
+          
+          // Set a new timer to delay the submission
+          debounceTimerRef.current = setTimeout(() => {
+            console.log('Submitting customer data after debounce:', data);
+            lastSubmittedRef.current = { ...data };
+            onSubmit(data);
+            debounceTimerRef.current = null;
+          }, 500); // 500ms debounce time
         }
       }
     });
     
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      // Clear any pending timer when component unmounts
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
   }, [form, onSubmit]);
 
   return (
