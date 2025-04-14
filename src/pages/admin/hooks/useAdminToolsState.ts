@@ -24,7 +24,12 @@ export const useAdminToolsState = () => {
     productPrice: 97.0,
     productImageUrl: "",
     showTestimonials: true,
+    // Add the missing properties from the interface
+    topMessage: "Oferta exclusiva!",
+    countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Default to 24 hours from now
+    isDigitalProduct: true,
   });
+  
   const { toast } = useToast();
 
   useEffect(() => {
@@ -63,6 +68,10 @@ export const useAdminToolsState = () => {
             productPrice: data.product_price || 97.0,
             productImageUrl: data.product_image_url || "",
             showTestimonials: data.show_testimonials || true,
+            // Add the missing properties
+            topMessage: data.top_message || "Oferta exclusiva!",
+            countdownEndTime: data.countdown_end_time || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            isDigitalProduct: data.is_digital_product || true,
           });
         }
       } catch (err) {
@@ -118,6 +127,10 @@ export const useAdminToolsState = () => {
           product_price: settings.productPrice,
           product_image_url: settings.productImageUrl,
           show_testimonials: settings.showTestimonials,
+          // Add the missing properties for database update
+          top_message: settings.topMessage,
+          countdown_end_time: settings.countdownEndTime,
+          is_digital_product: settings.isDigitalProduct,
         })
         .eq("id", 1);
 
