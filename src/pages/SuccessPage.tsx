@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabaseClientService } from '@/services/supabaseClientService';
@@ -19,21 +20,43 @@ const SuccessPage = () => {
     const { order } = location.state;
     
     try {
-      const productInfo = await supabaseClientService.getProductWhatsAppInfo(order.productId);
+      console.log('[SuccessPage] Iniciando fetchWhatsAppInfo com orderId:', order.id);
+      console.log('[SuccessPage] Estado inicial da location:', location.state);
       
+      // Verificar whatsapp state recebido diretamente
+      if (location.state.has_whatsapp_support || location.state.whatsapp_number) {
+        console.log('[SuccessPage] Usando dados diretos do state:', {
+          has_whatsapp_support: location.state.has_whatsapp_support,
+          whatsapp_number: location.state.whatsapp_number
+        });
+      }
+      
+      // Verificar suporte no próprio objeto do pedido
+      if (order.has_whatsapp_support || order.whatsapp_number) {
+        console.log('[SuccessPage] Dados de WhatsApp do pedido:', {
+          has_whatsapp_support: order.has_whatsapp_support,
+          whatsapp_number: order.whatsapp_number
+        });
+      }
+      
+      // Buscar informações do produto
+      const productInfo = await supabaseClientService.getProductWhatsAppInfo(order.productId);
+      console.log('[SuccessPage] Dados recuperados do produto:', productInfo);
+      
+      // Determinar valores finais, priorizando dados do state, depois do pedido, e depois do produto
       const finalWhatsappSupport = 
-        productInfo.hasWhatsappSupport || 
         location.state.has_whatsapp_support || 
         order.has_whatsapp_support || 
+        productInfo.hasWhatsappSupport || 
         false;
 
       const finalWhatsappNumber = 
-        productInfo.whatsappNumber || 
         location.state.whatsapp_number || 
         order.whatsapp_number || 
+        productInfo.whatsappNumber || 
         '';
 
-      console.log('[SuccessPage] Final WhatsApp Details:', {
+      console.log('[SuccessPage] Valores finais de WhatsApp:', {
         hasWhatsappSupport: finalWhatsappSupport,
         whatsappNumber: finalWhatsappNumber
       });
@@ -41,13 +64,13 @@ const SuccessPage = () => {
       setHasWhatsappSupport(finalWhatsappSupport);
       setWhatsappNumber(finalWhatsappNumber);
 
-      // Persist to localStorage for potential page reloads
+      // Persistir para localStorage para possíveis recarregamentos da página
       if (finalWhatsappSupport || finalWhatsappNumber) {
         localStorage.setItem('whatsapp_support', finalWhatsappSupport.toString());
         localStorage.setItem('whatsapp_number', finalWhatsappNumber);
       }
     } catch (error) {
-      console.error('[SuccessPage] Error fetching WhatsApp info:', error);
+      console.error('[SuccessPage] Erro ao buscar informações do WhatsApp:', error);
     }
   }, [location.state]);
 
@@ -55,7 +78,7 @@ const SuccessPage = () => {
     fetchWhatsAppInfo();
   }, [fetchWhatsAppInfo]);
 
-  // Fallback to localStorage if state is lost
+  // Fallback para localStorage se o state for perdido
   useEffect(() => {
     const storedWhatsappSupport = localStorage.getItem('whatsapp_support');
     const storedWhatsappNumber = localStorage.getItem('whatsapp_number');
@@ -96,11 +119,19 @@ const SuccessPage = () => {
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
           
-          <WhatsAppButton 
-            hasWhatsappSupport={hasWhatsappSupport} 
-            whatsappNumber={whatsappNumber}
-            message={`Olá! Acabei de fazer um pagamento para o pedido ${location.state?.order?.id || 'recente'} e gostaria de confirmar o recebimento.`}
-          />
+          {/* Modificando para sempre mostrar o botão quando tiver WhatsApp number */}
+          {whatsappNumber && (
+            <div className="w-full">
+              <p className="text-sm text-gray-500 mb-2 text-center">
+                Precisa de ajuda? Entre em contato conosco:
+              </p>
+              <WhatsAppButton 
+                whatsappNumber={whatsappNumber} 
+                message={`Olá! Acabei de fazer um pagamento para o pedido ${location.state?.order?.id || 'recente'} e gostaria de confirmar o recebimento.`}
+                fullWidth={true}
+              />
+            </div>
+          )}
         </CardFooter>
       </Card>
     </div>

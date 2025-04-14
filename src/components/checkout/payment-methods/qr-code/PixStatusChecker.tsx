@@ -14,7 +14,7 @@ export const PixStatusChecker: React.FC<PixStatusCheckerProps> = ({
   isCheckingStatus, 
   onCheckStatus 
 }) => {
-  // Always hide the status checker button
+  // Sempre ocultar o botão de verificação de status
   const hidden = true;
   
   return (

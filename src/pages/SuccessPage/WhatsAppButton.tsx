@@ -20,21 +20,25 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
 }) => {
   const phoneNumber = number || whatsappNumber;
   
-  const shouldShowButton = Boolean(phoneNumber) && 
-    (hasWhatsappSupport !== false && hasWhatsappSupport !== undefined);
+  // Logs para depuração
+  console.log('[WhatsAppButton] Props recebidas:', {
+    hasWhatsappSupport,
+    whatsappNumber,
+    number,
+    phoneNumber
+  });
+  
+  // Modificada a lógica para mostrar o botão sempre que houver um número de telefone
+  const shouldShowButton = Boolean(phoneNumber);
   
   if (!shouldShowButton) {
-    console.log('[WhatsAppButton] Not rendering - button conditions failed:', {
-      hasWhatsappSupport,
-      whatsappNumber,
-      number
-    });
+    console.log('[WhatsAppButton] Botão não será renderizado - número de telefone não encontrado');
     return null;
   }
 
   const formatWhatsAppUrl = () => {
     const cleanNumber = phoneNumber?.replace(/\D/g, '') || '';
-    console.log('[WhatsAppButton] Creating WhatsApp URL with number:', cleanNumber);
+    console.log('[WhatsAppButton] Criando URL do WhatsApp com número:', cleanNumber);
     return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
   };
 
@@ -56,4 +60,3 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     </Button>
   );
 };
-
