@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
@@ -8,8 +8,13 @@ import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
 const ThankYouCardPage = () => {
   const { state } = useLocation();
   const order = state?.order;
-  const hasWhatsappSupport = state?.has_whatsapp_support || state?.product?.has_whatsapp_support;
   const whatsappNumber = state?.whatsapp_number || state?.product?.whatsapp_number;
+
+  // Log para depuração
+  useEffect(() => {
+    console.log('[ThankYouCardPage] State recebido:', state);
+    console.log('[ThankYouCardPage] Número WhatsApp:', whatsappNumber);
+  }, [state, whatsappNumber]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-blue-50">
@@ -31,14 +36,19 @@ const ThankYouCardPage = () => {
             <p>Fique atento ao seu e-mail!</p>
           </div>
           
-          {hasWhatsappSupport && whatsappNumber && (
+          {whatsappNumber && (
             <div className="mt-6">
+              <p className="text-sm text-gray-500 mb-2 text-center">
+                Precisa de ajuda? Entre em contato conosco:
+              </p>
               <WhatsAppButton 
                 whatsappNumber={whatsappNumber} 
                 message={`Olá! Acabei de fazer um pagamento para o pedido ${order?.id || 'recente'} e gostaria de confirmar o recebimento.`}
                 fullWidth={true}
-                hasWhatsappSupport={hasWhatsappSupport}
               />
+              <p className="text-xs text-gray-400 mt-2 text-center">
+                WhatsApp configurado: {whatsappNumber}
+              </p>
             </div>
           )}
           

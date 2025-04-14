@@ -12,6 +12,11 @@ export const usePaymentNavigation = () => {
    * Navigate to success page with appropriate props
    */
   const navigateToSuccess = (order: Order, hasWhatsappSupport?: boolean, whatsappNumber?: string) => {
+    console.log('[usePaymentNavigation] Navegando para success com WhatsApp:', {
+      hasWhatsappSupport,
+      whatsappNumber: whatsappNumber || order.whatsapp_number
+    });
+    
     navigate('/success', { 
       state: { 
         order,
@@ -25,10 +30,15 @@ export const usePaymentNavigation = () => {
    * Navigate to retry-payment page with appropriate props
    */
   const navigateToRetryPayment = (order: Order) => {
+    console.log('[usePaymentNavigation] Navegando para retry-payment com WhatsApp:', {
+      whatsapp_number: order.whatsapp_number
+    });
+    
     navigate('/retry-payment', { 
       state: { 
         order,
-        autoRetry: true
+        autoRetry: true,
+        whatsapp_number: order.whatsapp_number || ''
       }
     });
   };

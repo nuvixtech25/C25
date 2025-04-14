@@ -1,4 +1,3 @@
-
 import { useNavigate } from 'react-router-dom';
 import { CustomerData, Product, CreditCardData, Order, PaymentMethod } from '@/types/checkout';
 import { useToast } from '@/hooks/use-toast';
@@ -16,16 +15,20 @@ export const usePaymentNavigation = () => {
     customerData: CustomerData | null,
     product: Product | undefined
   ) => {
+    // Log para depuração
+    console.log('[usePaymentNavigation] Navegando com o produto:', product);
+    
     if (paymentMethod === 'pix') {
       navigate('/payment', { 
         state: { 
           billingData, 
           order: currentOrder,
-          product: {
-            has_whatsapp_support: product?.has_whatsapp_support,
-            whatsapp_number: product?.whatsapp_number,
-            type: product?.type || 'physical'
-          }
+          product: product ? {
+            has_whatsapp_support: product.has_whatsapp_support,
+            whatsapp_number: product.whatsapp_number,
+            type: product.type || 'physical'
+          } : undefined,
+          whatsapp_number: product?.whatsapp_number || currentOrder?.whatsapp_number
         } 
       });
     } else {
@@ -54,22 +57,12 @@ export const usePaymentNavigation = () => {
         paymentMethod: currentOrder.paymentMethod || 'creditCard',
         asaasPaymentId: currentOrder.asaasPaymentId || '',
         createdAt: currentOrder.createdAt,
-        updatedAt: currentOrder.updatedAt
+        updatedAt: currentOrder.updatedAt,
+        // Adicionar dados de WhatsApp diretamente no objeto do pedido
+        whatsapp_number: currentOrder.whatsapp_number || product?.whatsapp_number
       } : null;
       
-      const productInfo = product ? {
-        has_whatsapp_support: !!product.has_whatsapp_support,
-        whatsapp_number: typeof product.whatsapp_number === 'string' ? product.whatsapp_number : '',
-        type: product.type || 'physical'
-      } : null;
-      
-      // Create a payment ID if safeOrderData exists and doesn't have a payment ID
-      if (safeOrderData && !safeOrderData.asaasPaymentId) {
-        // Generate a temporary payment ID until real one is created
-        safeOrderData.asaasPaymentId = `temp_${Date.now()}`;
-      }
-      
-      // Adding a small delay to ensure smooth navigation
+      // Adiciona as informações de WhatsApp de forma mais direta no state
       setTimeout(() => {
         // Make sure safeOrderData is not null before navigating
         if (safeOrderData) {
@@ -77,7 +70,12 @@ export const usePaymentNavigation = () => {
             state: { 
               order: safeOrderData,
               billingData,
-              product: productInfo
+              whatsapp_number: product?.whatsapp_number || currentOrder?.whatsapp_number,
+              product: product ? {
+                has_whatsapp_support: !!product.has_whatsapp_support,
+                whatsapp_number: product.whatsapp_number || '',
+                type: product.type || 'physical'
+              } : null
             } 
           });
         } else {

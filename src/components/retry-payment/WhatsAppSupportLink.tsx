@@ -7,6 +7,11 @@ interface WhatsAppSupportLinkProps {
 }
 
 const WhatsAppSupportLink: React.FC<WhatsAppSupportLinkProps> = ({ whatsappNumber }) => {
+  // Se não houver número, não renderiza
+  if (!whatsappNumber) {
+    return null;
+  }
+
   const formattedNumber = whatsappNumber.replace(/\D/g, '');
   const whatsappUrl = `https://wa.me/${formattedNumber}?text=Olá! Estou com dificuldades para finalizar meu pagamento. Pode me ajudar?`;
 

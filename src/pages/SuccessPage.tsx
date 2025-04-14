@@ -8,6 +8,7 @@ import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
 import { EmailConfirmationSection } from './SuccessPage/EmailConfirmationSection';
 import { DigitalProductSection, DigitalProductButton } from './SuccessPage/DigitalProductSection';
 import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
+
 const SuccessPage = () => {
   const location = useLocation();
   const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false);
@@ -40,34 +41,27 @@ const SuccessPage = () => {
       }
       
       // Buscar informações do produto
-      const productInfo = await supabaseClientService.getProductWhatsAppInfo(order.productId);
-      console.log('[SuccessPage] Dados recuperados do produto:', productInfo);
+      if (order.productId) {
+        const productInfo = await supabaseClientService.getProductWhatsAppInfo(order.productId);
+        console.log('[SuccessPage] Dados recuperados do produto:', productInfo);
       
-      // Determinar valores finais, priorizando dados do state, depois do pedido, e depois do produto
-      const finalWhatsappSupport = 
-        location.state.has_whatsapp_support || 
-        order.has_whatsapp_support || 
-        productInfo.hasWhatsappSupport || 
-        false;
+        // Determinar valores finais
+        const finalWhatsappNumber = 
+          location.state.whatsapp_number || 
+          order.whatsapp_number || 
+          productInfo.whatsappNumber || 
+          '';
 
-      const finalWhatsappNumber = 
-        location.state.whatsapp_number || 
-        order.whatsapp_number || 
-        productInfo.whatsappNumber || 
-        '';
+        console.log('[SuccessPage] Número WhatsApp final:', finalWhatsappNumber);
 
-      console.log('[SuccessPage] Valores finais de WhatsApp:', {
-        hasWhatsappSupport: finalWhatsappSupport,
-        whatsappNumber: finalWhatsappNumber
-      });
+        setWhatsappNumber(finalWhatsappNumber);
 
-      setHasWhatsappSupport(finalWhatsappSupport);
-      setWhatsappNumber(finalWhatsappNumber);
-
-      // Persistir para localStorage para possíveis recarregamentos da página
-      if (finalWhatsappSupport || finalWhatsappNumber) {
-        localStorage.setItem('whatsapp_support', finalWhatsappSupport.toString());
-        localStorage.setItem('whatsapp_number', finalWhatsappNumber);
+        // Persistir para localStorage para possíveis recarregamentos da página
+        if (finalWhatsappNumber) {
+          localStorage.setItem('whatsapp_number', finalWhatsappNumber);
+        }
+      } else {
+        console.log('[SuccessPage] Pedido não tem productId:', order);
       }
     } catch (error) {
       console.error('[SuccessPage] Erro ao buscar informações do WhatsApp:', error);
@@ -80,11 +74,10 @@ const SuccessPage = () => {
 
   // Fallback para localStorage se o state for perdido
   useEffect(() => {
-    const storedWhatsappSupport = localStorage.getItem('whatsapp_support');
     const storedWhatsappNumber = localStorage.getItem('whatsapp_number');
 
-    if (storedWhatsappSupport && storedWhatsappNumber) {
-      setHasWhatsappSupport(storedWhatsappSupport === 'true');
+    if (storedWhatsappNumber) {
+      console.log('[SuccessPage] Recuperando número do WhatsApp do localStorage:', storedWhatsappNumber);
       setWhatsappNumber(storedWhatsappNumber);
     }
   }, []);
@@ -119,7 +112,7 @@ const SuccessPage = () => {
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
           
-          {/* Modificando para sempre mostrar o botão quando tiver WhatsApp number */}
+          {/* Exibir o botão de WhatsApp quando houver um número, independentemente do hasWhatsappSupport */}
           {whatsappNumber && (
             <div className="w-full">
               <p className="text-sm text-gray-500 mb-2 text-center">
@@ -130,6 +123,9 @@ const SuccessPage = () => {
                 message={`Olá! Acabei de fazer um pagamento para o pedido ${location.state?.order?.id || 'recente'} e gostaria de confirmar o recebimento.`}
                 fullWidth={true}
               />
+              <p className="text-xs text-gray-400 mt-2 text-center">
+                WhatsApp configurado: {whatsappNumber}
+              </p>
             </div>
           )}
         </CardFooter>

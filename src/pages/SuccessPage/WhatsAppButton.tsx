@@ -28,10 +28,8 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     phoneNumber
   });
   
-  // Modificada a lógica para mostrar o botão sempre que houver um número de telefone
-  const shouldShowButton = Boolean(phoneNumber);
-  
-  if (!shouldShowButton) {
+  // Simplificamos a lógica - se tiver número de telefone, mostra o botão
+  if (!phoneNumber) {
     console.log('[WhatsAppButton] Botão não será renderizado - número de telefone não encontrado');
     return null;
   }

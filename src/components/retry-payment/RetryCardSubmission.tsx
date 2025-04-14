@@ -27,9 +27,25 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
   hasWhatsappSupport,
   whatsappNumber,
 }) => {
+  // Se temos um número de WhatsApp, vamos logar para debug
+  React.useEffect(() => {
+    if (whatsappNumber) {
+      console.log('[RetryCardSubmission] WhatsApp number disponível:', whatsappNumber);
+    }
+  }, [whatsappNumber]);
+
   // If we're not allowed to proceed, show the retry limit message
   if (validationResult && !validationResult.canProceed) {
-    return <RetryLimitMessage message={validationResult.message} />;
+    return (
+      <>
+        <RetryLimitMessage message={validationResult.message} />
+        {whatsappNumber && (
+          <div className="mt-6 pt-4 border-t border-gray-100">
+            <WhatsAppSupportLink whatsappNumber={whatsappNumber} />
+          </div>
+        )}
+      </>
+    );
   }
 
   return (
@@ -51,7 +67,8 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
         />
       </div>
       
-      {hasWhatsappSupport && whatsappNumber && (
+      {/* Simplificamos a lógica para mostrar o suporte de WhatsApp sempre que o número estiver disponível */}
+      {whatsappNumber && (
         <div className="mt-6 pt-4 border-t border-gray-100">
           <WhatsAppSupportLink whatsappNumber={whatsappNumber} />
         </div>
