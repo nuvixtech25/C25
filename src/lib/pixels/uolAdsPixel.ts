@@ -23,8 +23,8 @@ export const initUolAdsPixel = (uolAdsId: string): void => {
   const noscript = document.createElement('noscript');
   const iframe = document.createElement('iframe');
   iframe.src = `https://www.googletagmanager.com/ns.html?id=${uolAdsId}`;
-  iframe.height = 0;
-  iframe.width = 0;
+  iframe.height = "0";  // Fix: convert number to string
+  iframe.width = "0";   // Fix: convert number to string
   iframe.style.display = 'none';
   iframe.style.visibility = 'hidden';
   
@@ -51,4 +51,3 @@ export const trackPurchase = (value: number, transactionId: string): void => {
     }
   });
 };
-

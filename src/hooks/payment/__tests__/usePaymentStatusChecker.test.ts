@@ -1,14 +1,16 @@
+
 import { usePaymentStatusChecker } from '../usePaymentStatusChecker';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { Order, PaymentStatus } from '@/types/checkout';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock the fetchOrderById function
-const mockFetchOrderById = jest.fn();
+const mockFetchOrderById = vi.fn();
 
 // Mock the checkPaymentStatus function
-const mockCheckPaymentStatus = jest.fn();
+const mockCheckPaymentStatus = vi.fn();
 
-jest.mock('@/services/asaasService', () => ({
+vi.mock('@/services/asaasService', () => ({
   checkPaymentStatus: (paymentId: string) => mockCheckPaymentStatus(paymentId),
 }));
 
