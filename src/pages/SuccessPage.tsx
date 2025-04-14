@@ -8,6 +8,7 @@ import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
 import { EmailConfirmationSection } from './SuccessPage/EmailConfirmationSection';
 import { DigitalProductSection, DigitalProductButton } from './SuccessPage/DigitalProductSection';
 import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
+import { PhysicalProductTestimonials } from '@/components/success-page/PhysicalProductTestimonials';
 
 const SuccessPage = () => {
   const location = useLocation();
@@ -85,10 +86,15 @@ const SuccessPage = () => {
           
           <DigitalProductSection isDigital={isDigitalProduct} />
           
-          <div className="mt-8 bg-gray-50 p-5 rounded-xl border border-gray-100">
-            <h3 className="font-medium text-gray-800 mb-4 text-lg">O que nossos clientes estão dizendo:</h3>
-            <TestimonialsCarousel />
-          </div>
+          {/* Show different testimonials based on product type */}
+          {isDigitalProduct ? (
+            <div className="mt-8 bg-gray-50 p-5 rounded-xl border border-gray-100">
+              <h3 className="font-medium text-gray-800 mb-4 text-lg">O que nossos clientes estão dizendo:</h3>
+              <TestimonialsCarousel />
+            </div>
+          ) : (
+            <PhysicalProductTestimonials />
+          )}
         </CardContent>
         
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">

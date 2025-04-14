@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
 import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
+import { PhysicalProductTestimonials } from '@/components/success-page/PhysicalProductTestimonials';
 
 const ThankYouCardPage = () => {
   const { state } = useLocation();
@@ -13,16 +14,22 @@ const ThankYouCardPage = () => {
   const whatsappNumber = state?.whatsapp_number || 
                           state?.product?.whatsapp_number || 
                           order?.whatsapp_number;
+                          
+  // Determine if product is physical
+  const isDigitalProduct = state?.product?.type === 'digital' || 
+                           state?.isDigitalProduct ||
+                           order?.productType === 'digital';
 
   // Log para depuração
   useEffect(() => {
     console.log('[ThankYouCardPage] State recebido:', state);
     console.log('[ThankYouCardPage] Número WhatsApp:', whatsappNumber);
     console.log('[ThankYouCardPage] Order:', order);
+    console.log('[ThankYouCardPage] É produto digital:', isDigitalProduct);
     if (state?.product) {
       console.log('[ThankYouCardPage] Product data:', state.product);
     }
-  }, [state, whatsappNumber, order]);
+  }, [state, whatsappNumber, order, isDigitalProduct]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-blue-50">
@@ -43,6 +50,9 @@ const ThankYouCardPage = () => {
             <p>Assim que confirmarmos o pagamento, você receberá acesso ao seu produto.</p>
             <p>Fique atento ao seu e-mail!</p>
           </div>
+          
+          {/* Show testimonials for physical products */}
+          {!isDigitalProduct && <PhysicalProductTestimonials />}
           
           {whatsappNumber && (
             <div className="mt-6">
