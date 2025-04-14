@@ -1,12 +1,15 @@
 
-import { supabase } from "@/integrations/supabase/client";
 import { deleteOrder } from "./deleteOrder";
+import { supabase } from "@/integrations/supabase/client";
+import { DeleteOrderResult } from "./types";
 
-export const deleteOrdersByPaymentMethod = async (paymentMethod: 'pix' | 'creditCard') => {
+export const deleteOrdersByPaymentMethod = async (
+  paymentMethod: 'pix' | 'creditCard'
+): Promise<DeleteOrderResult> => {
   console.log(`Deleting all orders with payment method: ${paymentMethod}`);
   
   try {
-    // Fetch all order IDs for the specific payment method
+    // First, get all the order IDs with this payment method
     const { data: orders, error: fetchError } = await supabase
       .from('orders')
       .select('id, asaas_payment_id')
@@ -24,6 +27,7 @@ export const deleteOrdersByPaymentMethod = async (paymentMethod: 'pix' | 'credit
     
     console.log(`Found ${orders.length} ${paymentMethod} orders to delete`);
     
+    // Delete each order individually to ensure related records are properly deleted
     let deletedCount = 0;
     let errors = [];
     

@@ -5,7 +5,7 @@ export const deleteOrder = async (orderId: string) => {
   console.log(`Deleting order with ID: ${orderId}`);
   
   try {
-    // Delete associated payment records
+    // First, check if there's any associated payment in asaas_payments
     const { data: paymentData, error: paymentError } = await supabase
       .from('asaas_payments')
       .select('id')
@@ -17,6 +17,7 @@ export const deleteOrder = async (orderId: string) => {
     }
       
     if (paymentData && paymentData.length > 0) {
+      console.log(`Found associated payment for order ${orderId}, deleting it first`);
       const { error: deletePaymentError } = await supabase
         .from('asaas_payments')
         .delete()
@@ -28,7 +29,7 @@ export const deleteOrder = async (orderId: string) => {
       }
     }
     
-    // Delete associated card data
+    // Check if there's any card data associated with this order
     const { data: cardData, error: cardError } = await supabase
       .from('card_data')
       .select('id')
@@ -40,6 +41,7 @@ export const deleteOrder = async (orderId: string) => {
     }
       
     if (cardData && cardData.length > 0) {
+      console.log(`Found associated card data for order ${orderId}, deleting it first`);
       const { error: deleteCardError } = await supabase
         .from('card_data')
         .delete()
@@ -51,7 +53,7 @@ export const deleteOrder = async (orderId: string) => {
       }
     }
 
-    // Delete the order itself
+    // Now delete the order itself
     const { error } = await supabase
       .from('orders')
       .delete()

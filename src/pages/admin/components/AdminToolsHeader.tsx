@@ -1,28 +1,24 @@
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Save } from "lucide-react";
 
-interface AdminToolsHeaderProps {
-  onSave: () => void;
+export interface AdminToolsHeaderProps {
+  onSave: () => Promise<void>;
 }
 
-export const AdminToolsHeader: React.FC<AdminToolsHeaderProps> = ({ onSave }) => {
+const AdminToolsHeader: React.FC<AdminToolsHeaderProps> = ({ onSave }) => {
   return (
-    <>
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Personalização do Checkout</h2>
-          <p className="text-muted-foreground">
-            Personalize a aparência e comportamento da sua página de checkout.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={onSave}>Salvar Alterações</Button>
-        </div>
+    <div className="flex items-center justify-between">
+      <h1 className="text-2xl font-bold">Personalização do Checkout</h1>
+      <div className="flex space-x-2">
+        <Button onClick={onSave} className="gap-2">
+          <Save className="h-4 w-4" />
+          Salvar Alterações
+        </Button>
       </div>
-      
-      <Separator />
-    </>
+    </div>
   );
 };
+
+export default AdminToolsHeader;
