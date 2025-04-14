@@ -21,6 +21,57 @@ interface AsaasWebhookPayload {
   };
 }
 
+// Email para notificações administrativas
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@example.com';
+
+// Função para enviar email de notificação
+async function sendAdminNotification(payload: AsaasWebhookPayload, orderDetails: any) {
+  try {
+    // Verificar se o status é CONFIRMED e se temos um email de administrador
+    if (payload.payment.status !== 'CONFIRMED' || !ADMIN_EMAIL) {
+      return;
+    }
+
+    const formattedValue = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(payload.payment.value);
+
+    const customerName = orderDetails?.customer_name || 'Cliente';
+    const productName = orderDetails?.product_name || 'Produto';
+    const paymentMethod = orderDetails?.payment_method || 'Desconhecido';
+
+    // Enviar email via Netlify Function
+    const emailResponse = await fetch('/.netlify/functions/send-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        to: ADMIN_EMAIL,
+        subject: `🎉 Pagamento Confirmado: ${formattedValue}`,
+        message: `
+          <h2>Novo pagamento confirmado!</h2>
+          <p><strong>Cliente:</strong> ${customerName}</p>
+          <p><strong>Produto:</strong> ${productName}</p>
+          <p><strong>Valor:</strong> ${formattedValue}</p>
+          <p><strong>Método:</strong> ${paymentMethod}</p>
+          <p><strong>ID Asaas:</strong> ${payload.payment.id}</p>
+          <p><strong>Data:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+        `
+      })
+    });
+
+    if (!emailResponse.ok) {
+      console.error('Erro ao enviar notificação por email:', await emailResponse.text());
+    } else {
+      console.log('Notificação de pagamento enviada com sucesso para', ADMIN_EMAIL);
+    }
+  } catch (error) {
+    console.error('Erro ao enviar notificação:', error);
+  }
+}
+
 export const handler: Handler = async (event) => {
   // Garantir que apenas solicitações POST sejam processadas
   if (event.httpMethod !== 'POST') {
@@ -38,6 +89,17 @@ export const handler: Handler = async (event) => {
 
     // Verificar se o evento é relacionado a pagamento
     if (payload.event && payload.payment) {
+      // Buscar detalhes do pedido para a notificação
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('asaas_payment_id', payload.payment.id)
+        .single();
+
+      if (orderError) {
+        console.error('Erro ao buscar detalhes do pedido:', orderError);
+      }
+
       // Atualizar o status do pedido no Supabase
       const { error } = await supabase
         .from('orders')
@@ -64,6 +126,11 @@ export const handler: Handler = async (event) => {
           status: payload.payment.status,
           payload: payload
         });
+
+      // Enviar notificação para o administrador se o status for CONFIRMED
+      if (payload.payment.status === 'CONFIRMED') {
+        await sendAdminNotification(payload, orderData);
+      }
     }
 
     return {

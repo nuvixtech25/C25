@@ -18,6 +18,62 @@ interface WebhookPayload {
   [key: string]: any; // Allow other properties
 }
 
+// Email para notificações administrativas
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@example.com';
+
+// Função para enviar email de notificação
+async function sendAdminNotification(payment: any, orderData: any) {
+  try {
+    // Verificar se o status é CONFIRMED e se temos um email de administrador
+    if (payment.status !== 'CONFIRMED' || !ADMIN_EMAIL) {
+      return;
+    }
+
+    const formattedValue = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(orderData?.product_price || 0);
+
+    const customerName = orderData?.customer_name || 'Cliente';
+    const productName = orderData?.product_name || 'Produto';
+    const paymentMethod = orderData?.payment_method || 'Desconhecido';
+
+    // Enviar email via Netlify Function
+    try {
+      const emailResponse = await fetch('/.netlify/functions/send-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: ADMIN_EMAIL,
+          subject: `🎉 [SIMULADO] Pagamento Confirmado: ${formattedValue}`,
+          message: `
+            <h2>Novo pagamento confirmado (simulado)!</h2>
+            <p><strong>Cliente:</strong> ${customerName}</p>
+            <p><strong>Produto:</strong> ${productName}</p>
+            <p><strong>Valor:</strong> ${formattedValue}</p>
+            <p><strong>Método:</strong> ${paymentMethod}</p>
+            <p><strong>ID Pagamento:</strong> ${payment.id}</p>
+            <p><strong>Data:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+            <p><em>Este é um pagamento simulado através do painel de administração.</em></p>
+          `
+        })
+      });
+
+      if (!emailResponse.ok) {
+        console.error('Erro ao enviar notificação por email (simulação):', await emailResponse.text());
+      } else {
+        console.log('Notificação de pagamento simulado enviada com sucesso para', ADMIN_EMAIL);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar notificação de simulação:', error);
+    }
+  } catch (error) {
+    console.error('Erro ao enviar notificação:', error);
+  }
+}
+
 export const handler: Handler = async (event) => {
   // Set CORS headers
   const headers = {
@@ -137,6 +193,11 @@ export const handler: Handler = async (event) => {
           status: newStatus,
           payload: payload
         });
+
+      // 4. Enviar notificação para o administrador se o status for CONFIRMED
+      if (newStatus === 'CONFIRMED' && orderData && orderData.length > 0) {
+        await sendAdminNotification(payload.payment, orderData[0]);
+      }
 
       return {
         statusCode: 200,

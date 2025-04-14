@@ -10,6 +10,7 @@ import {
   DeleteConfirmModal,
 } from "@/components/admin/orders/OrderModals";
 import { useFilteredOrders } from "@/hooks/admin/useFilteredOrders";
+import { usePaymentNotifications } from "@/hooks/admin/usePaymentNotifications";
 
 const OrdersPage: React.FC = () => {
   const {
@@ -51,6 +52,9 @@ const OrdersPage: React.FC = () => {
     setShowDeleteConfirm,
     setShowDeleteAllConfirm,
   } = useFilteredOrders();
+
+  // Ativar as notificações de pagamento no painel admin
+  usePaymentNotifications();
 
   useEffect(() => {
     console.log("OrdersPage mounted or updated. Orders:", orders);
