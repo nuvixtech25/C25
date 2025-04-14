@@ -1,12 +1,12 @@
 
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import AppearanceTab from "./components/customization/AppearanceTab";
-import ContentTab from "./components/customization/ContentTab";
-import TimerTab from "./components/customization/TimerTab";
-import ProductTab from "./components/customization/ProductTab";
+import { AppearanceTab } from "./components/customization/AppearanceTab";
+import { ContentTab } from "./components/customization/ContentTab";
+import { TimerTab } from "./components/customization/TimerTab";
+import { ProductTab } from "./components/customization/ProductTab";
 import AdminToolsHeader from "./components/AdminToolsHeader";
-import AdminToolsTabs from "./components/AdminToolsTabs";
+import { AdminToolsTabs } from "./components/AdminToolsTabs";
 import { useAdminToolsState } from "./hooks/useAdminToolsState";
 
 const AdminTools: React.FC = () => {
@@ -21,7 +21,12 @@ const AdminTools: React.FC = () => {
   return (
     <div className="space-y-6">
       <AdminToolsHeader onSave={handleSave} />
-      <AdminToolsTabs />
+      <AdminToolsTabs 
+        settings={settings}
+        handleChange={handleChange}
+        handleColorChange={handleColorChange}
+        handleSwitchChange={handleSwitchChange}
+      />
 
       <Tabs defaultValue="appearance" className="w-full">
         <TabsList className="mb-4">
@@ -34,28 +39,26 @@ const AdminTools: React.FC = () => {
         <TabsContent value="appearance">
           <AppearanceTab
             settings={settings}
-            onColorChange={handleColorChange}
-            onSwitchChange={handleSwitchChange}
+            handleChange={handleChange}
+            handleColorChange={handleColorChange}
           />
         </TabsContent>
 
         <TabsContent value="content">
-          <ContentTab settings={settings} onChange={handleChange} />
+          <ContentTab settings={settings} handleChange={handleChange} />
         </TabsContent>
 
         <TabsContent value="timer">
           <TimerTab
             settings={settings}
-            onChange={handleChange}
-            onSwitchChange={handleSwitchChange}
+            handleChange={handleChange}
           />
         </TabsContent>
 
         <TabsContent value="product">
           <ProductTab
             settings={settings}
-            onChange={handleChange}
-            onSwitchChange={handleSwitchChange}
+            handleSwitchChange={handleSwitchChange}
           />
         </TabsContent>
       </Tabs>

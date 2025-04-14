@@ -1,13 +1,35 @@
 
 // Custom types for checkout customization
 export interface CheckoutCustomizationSettings {
+  // Appearance
   buttonColor: string;
-  buttonText: string;
+  buttonTextColor?: string;
   headingColor: string;
-  bannerImageUrl: string | null;
-  topMessage: string;
-  countdownEndTime: string;
-  isDigitalProduct: boolean;
   bannerColor: string;
-  showRandomVisitors?: boolean; // New property for controlling random visitors display
+  bannerImageUrl: string | null;
+  
+  // Content
+  buttonText: string;
+  headerMessage?: string;
+  topMessage: string;
+  
+  // Timer
+  showTimer?: boolean;
+  timerEndDate?: string;
+  timerMessage?: string;
+  timerExpiredMessage?: string;
+  countdownEndTime: string;
+  
+  // Product
+  isDigitalProduct: boolean;
+  showProduct?: boolean;
+  productName?: string;
+  productDescription?: string;
+  productPrice?: number;
+  productImageUrl?: string;
+  
+  // Additional settings
+  showBanner?: boolean;
+  showTestimonials?: boolean;
+  showRandomVisitors?: boolean;
 }
