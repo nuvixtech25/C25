@@ -8,13 +8,21 @@ import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
 const ThankYouCardPage = () => {
   const { state } = useLocation();
   const order = state?.order;
-  const whatsappNumber = state?.whatsapp_number || state?.product?.whatsapp_number;
+  
+  // Obter número de WhatsApp de várias fontes possíveis
+  const whatsappNumber = state?.whatsapp_number || 
+                          state?.product?.whatsapp_number || 
+                          order?.whatsapp_number;
 
   // Log para depuração
   useEffect(() => {
     console.log('[ThankYouCardPage] State recebido:', state);
     console.log('[ThankYouCardPage] Número WhatsApp:', whatsappNumber);
-  }, [state, whatsappNumber]);
+    console.log('[ThankYouCardPage] Order:', order);
+    if (state?.product) {
+      console.log('[ThankYouCardPage] Product data:', state.product);
+    }
+  }, [state, whatsappNumber, order]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-blue-50">
@@ -46,9 +54,6 @@ const ThankYouCardPage = () => {
                 message={`Olá! Acabei de fazer um pagamento para o pedido ${order?.id || 'recente'} e gostaria de confirmar o recebimento.`}
                 fullWidth={true}
               />
-              <p className="text-xs text-gray-400 mt-2 text-center">
-                WhatsApp configurado: {whatsappNumber}
-              </p>
             </div>
           )}
           

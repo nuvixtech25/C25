@@ -1,3 +1,4 @@
+
 import { useNavigate } from 'react-router-dom';
 import { CustomerData, Product, CreditCardData, Order, PaymentMethod } from '@/types/checkout';
 import { useToast } from '@/hooks/use-toast';
@@ -16,7 +17,9 @@ export const usePaymentNavigation = () => {
     product: Product | undefined
   ) => {
     // Log para depuração
-    console.log('[usePaymentNavigation] Navegando com o produto:', product);
+    console.log('[usePaymentNavigation] Navegando com produto:', product);
+    console.log('[usePaymentNavigation] WhatsApp do produto:', product?.whatsapp_number);
+    console.log('[usePaymentNavigation] Dados do pedido:', currentOrder);
     
     if (paymentMethod === 'pix') {
       navigate('/payment', { 
@@ -58,11 +61,17 @@ export const usePaymentNavigation = () => {
         asaasPaymentId: currentOrder.asaasPaymentId || '',
         createdAt: currentOrder.createdAt,
         updatedAt: currentOrder.updatedAt,
-        // Adicionar dados de WhatsApp diretamente no objeto do pedido
+        // Adicionar whatsapp_number diretamente ao objeto do pedido
         whatsapp_number: currentOrder.whatsapp_number || product?.whatsapp_number
       } : null;
       
-      // Adiciona as informações de WhatsApp de forma mais direta no state
+      console.log('[usePaymentNavigation] Enviando state com WhatsApp:', {
+        orderWhatsApp: safeOrderData?.whatsapp_number,
+        productWhatsApp: product?.whatsapp_number,
+        directWhatsApp: currentOrder?.whatsapp_number
+      });
+      
+      // Garantir que o timeout seja curto apenas para navegação
       setTimeout(() => {
         // Make sure safeOrderData is not null before navigating
         if (safeOrderData) {
@@ -70,6 +79,7 @@ export const usePaymentNavigation = () => {
             state: { 
               order: safeOrderData,
               billingData,
+              // Adicionar dados de WhatsApp de várias maneiras para garantir que pelo menos um chegue
               whatsapp_number: product?.whatsapp_number || currentOrder?.whatsapp_number,
               product: product ? {
                 has_whatsapp_support: !!product.has_whatsapp_support,
@@ -82,7 +92,7 @@ export const usePaymentNavigation = () => {
           // Handle the case where order creation failed
           throw new Error("Falha ao criar pedido");
         }
-      }, 500);
+      }, 100); // Reduzindo para 100ms para navegação mais rápida
     }
   };
   

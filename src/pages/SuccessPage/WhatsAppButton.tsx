@@ -18,17 +18,10 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   message = "Olá! Acabei de fazer um pagamento via Pix e gostaria de confirmar o recebimento.",
   fullWidth = false
 }) => {
+  // Priorizar o número explicitamente passado ou o número de WhatsApp
   const phoneNumber = number || whatsappNumber;
   
-  // Logs para depuração
-  console.log('[WhatsAppButton] Props recebidas:', {
-    hasWhatsappSupport,
-    whatsappNumber,
-    number,
-    phoneNumber
-  });
-  
-  // Simplificamos a lógica - se tiver número de telefone, mostra o botão
+  // Se não houver número, não renderiza o botão
   if (!phoneNumber) {
     console.log('[WhatsAppButton] Botão não será renderizado - número de telefone não encontrado');
     return null;
