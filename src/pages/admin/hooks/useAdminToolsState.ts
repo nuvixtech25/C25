@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { CheckoutCustomizationSettings } from '@/types/customization';
-import { createPreviewUrl } from '@/utils/previewUtils';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useAdminToolsState = (initialCustomization: CheckoutCustomizationSettings) => {
@@ -92,25 +91,11 @@ export const useAdminToolsState = (initialCustomization: CheckoutCustomizationSe
     }
   };
 
-  const handlePreview = (openInSide = false) => {
-    const previewUrl = createPreviewUrl(settings);
-    const width = openInSide ? window.innerWidth / 2 : 1024;
-    const height = openInSide ? window.innerHeight : 768;
-    const left = openInSide ? window.innerWidth / 2 : undefined;
-    
-    window.open(
-      previewUrl, 
-      'checkout_preview', 
-      `width=${width},height=${height}${left ? `,left=${left},top=0` : ''},location=yes,resizable=yes,scrollbars=yes,status=yes`
-    );
-  };
-
   return {
     settings,
     handleChange,
     handleSwitchChange,
     handleColorChange,
-    handleSave,
-    handlePreview
+    handleSave
   };
 };
