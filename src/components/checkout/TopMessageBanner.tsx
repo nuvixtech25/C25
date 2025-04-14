@@ -1,46 +1,64 @@
 
-import React from 'react';
-import { TimerBanner } from './TimerBanner';
-import { useIsMobile } from '@/hooks/use-mobile';
+import React, { useState, useEffect } from 'react';
 
 interface TopMessageBannerProps {
   message: string;
-  initialMinutes?: number;
-  initialSeconds?: number;
+  initialMinutes: number;
+  initialSeconds: number;
   bannerImageUrl?: string | null;
   containerClassName?: string;
+  bannerColor?: string; // Add bannerColor prop
 }
 
 export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   message,
-  initialMinutes = 5,
-  initialSeconds = 0,
-  bannerImageUrl = null,
-  containerClassName = ''
+  initialMinutes,
+  initialSeconds,
+  bannerImageUrl,
+  containerClassName = "",
+  bannerColor = "#000000" // Default color is black
 }) => {
-  const isMobile = useIsMobile();
-  
-  return (
-    <div className={`flex flex-col items-center ${containerClassName}`}>
-      <TimerBanner 
-        initialMinutes={initialMinutes} 
-        initialSeconds={initialSeconds}
-        message={message}
-      />
+  const [minutes, setMinutes] = useState(initialMinutes);
+  const [seconds, setSeconds] = useState(initialSeconds);
 
-      {bannerImageUrl && (
-        <div 
-          className="w-full flex items-center justify-center my-4" // Changed from mt-4 to my-4 to add vertical margin
-          style={{ 
-            backgroundImage: `url(${bannerImageUrl})`,
-            backgroundSize: 'contain',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-            height: isMobile ? '180px' : '250px',
-            maxWidth: '100%'
-          }}
-        />
-      )}
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (seconds > 0) {
+        setSeconds(seconds - 1);
+      } else if (minutes > 0) {
+        setMinutes(minutes - 1);
+        setSeconds(59);
+      } else {
+        clearInterval(timer);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [minutes, seconds]);
+
+  // Set timer styles based on whether a banner image is provided
+  const bannerStyle = bannerImageUrl
+    ? {
+        backgroundImage: `url(${bannerImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundColor: 'transparent'
+      }
+    : {
+        backgroundColor: bannerColor || 'var(--banner-color, #000000)'
+      };
+
+  return (
+    <div 
+      className={`${containerClassName} rounded-md overflow-hidden mb-6`}
+      style={bannerStyle}
+    >
+      <div className="bg-black bg-opacity-60 text-white p-3 text-center">
+        <div className="text-sm md:text-base font-medium">{message}</div>
+        <div className="text-xs md:text-sm mt-1">
+          Termina em: <span className="font-bold">{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}</span>
+        </div>
+      </div>
     </div>
   );
 };

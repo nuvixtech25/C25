@@ -4,13 +4,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { TopMessageBanner } from './TopMessageBanner';
 import { CheckoutFooter } from './CheckoutFooter';
+import { CheckoutCustomization } from '@/types/checkout';
 
 interface CheckoutContainerProps {
   children: React.ReactNode;
   productBannerUrl?: string; // Add prop for product-specific banner
+  customization?: CheckoutCustomization; // Add prop for custom colors
 }
 
-interface CheckoutCustomization {
+interface CheckoutCustomizationDB {
   button_color?: string;
   button_text_color?: string;
   button_text?: string;
@@ -23,10 +25,11 @@ interface CheckoutCustomization {
 
 const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ 
   children,
-  productBannerUrl // Get product-specific banner URL
+  productBannerUrl, // Get product-specific banner URL
+  customization // Get custom colors
 }) => {
   const { toast } = useToast();
-  const [customization, setCustomization] = useState<CheckoutCustomization>({
+  const [dbCustomization, setDbCustomization] = useState<CheckoutCustomizationDB>({
     button_color: '#28A745',
     button_text_color: '#ffffff',
     button_text: 'Finalizar Pagamento',
@@ -61,7 +64,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
 
         if (data) {
           console.log('Checkout customization loaded:', data);
-          setCustomization(data as CheckoutCustomization);
+          setDbCustomization(data as CheckoutCustomizationDB);
         }
       } catch (err) {
         console.error('Failed to fetch checkout customization', err);
@@ -79,20 +82,34 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
   }, [toast]);
 
   // Add CSS variables for checkout button styling
+  // Use custom colors if provided, otherwise use global colors from DB
   const customStyles = {
-    '--button-color': customization.button_color || '#28A745',
-    '--button-text-color': customization.button_text_color || '#ffffff',
-    '--button-text': `'${customization.button_text || 'Finalizar Pagamento'}'`,
-    '--heading-color': customization.heading_color || '#000000',
+    '--button-color': customization?.buttonColor || dbCustomization.button_color || '#28A745',
+    '--button-text-color': dbCustomization.button_text_color || '#ffffff',
+    '--button-text': `'${dbCustomization.button_text || 'Finalizar Pagamento'}'`,
+    '--heading-color': customization?.headingColor || dbCustomization.heading_color || '#000000',
+    '--banner-color': customization?.bannerColor || dbCustomization.banner_color || '#000000',
   } as React.CSSProperties;
 
   // Use product-specific banner URL if available, otherwise fall back to global setting
-  const bannerImageUrl = productBannerUrl || customization.banner_image_url;
+  const bannerImageUrl = productBannerUrl || dbCustomization.banner_image_url;
   
   console.log('Banner image being used:', { 
     productBanner: productBannerUrl, 
-    globalBanner: customization.banner_image_url,
+    globalBanner: dbCustomization.banner_image_url,
     finalBanner: bannerImageUrl 
+  });
+
+  console.log('Colors being used:', { 
+    customButtonColor: customization?.buttonColor,
+    dbButtonColor: dbCustomization.button_color,
+    finalButtonColor: customStyles['--button-color'],
+    customHeadingColor: customization?.headingColor,
+    dbHeadingColor: dbCustomization.heading_color,
+    finalHeadingColor: customStyles['--heading-color'],
+    customBannerColor: customization?.bannerColor,
+    dbBannerColor: dbCustomization.banner_color,
+    finalBannerColor: customStyles['--banner-color'],
   });
 
   // Show a simple loading state while customization is loading
@@ -109,13 +126,14 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
       <div className="w-full flex justify-center">
         <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white py-4"> {/* Added py-4 for vertical padding */}
           <div>
-            {customization.show_banner && (
+            {dbCustomization.show_banner && (
               <TopMessageBanner 
-                message={customization.header_message || 'Oferta por tempo limitado!'} 
+                message={dbCustomization.header_message || 'Oferta por tempo limitado!'} 
                 initialMinutes={5} 
                 initialSeconds={0} 
                 bannerImageUrl={bannerImageUrl}
                 containerClassName="w-full"
+                bannerColor={customStyles['--banner-color'] as string}
               />
             )}
             

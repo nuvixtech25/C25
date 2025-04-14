@@ -39,7 +39,12 @@ const Checkout: React.FC = () => {
           
           if (foundProduct) {
             console.log(`Found product:`, foundProduct);
-            console.log(`Product banner URL:`, foundProduct.bannerImageUrl); // Log the banner URL specifically
+            console.log(`Product custom colors:`, {
+              useGlobalColors: foundProduct.useGlobalColors,
+              buttonColor: foundProduct.buttonColor,
+              headingColor: foundProduct.headingColor,
+              bannerColor: foundProduct.bannerColor
+            });
             setProduct(foundProduct);
             return;
           } else {
@@ -152,7 +157,9 @@ const Checkout: React.FC = () => {
   });
 
   return (
-    <CheckoutContainer productBannerUrl={product.bannerImageUrl}>
+    <CheckoutContainer 
+      productBannerUrl={product.bannerImageUrl}
+      customization={customization}>
       <CheckoutContent 
         product={product}
         customerData={customerData}

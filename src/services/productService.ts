@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/checkout';
 
 /**
- * Fetches a product by its slug with enhanced WhatsApp support details
+ * Fetches a product by its slug with enhanced WhatsApp support details and custom colors
  */
 export const fetchProductBySlug = async (slug: string): Promise<Product | null> => {
   try {
@@ -26,9 +26,14 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
     }
 
     console.log("[productService] Raw product data from database:", data);
-    console.log("[productService] Banner image URL:", data.banner_image_url);
+    console.log("[productService] Custom colors:", {
+      use_global_colors: data.use_global_colors,
+      button_color: data.button_color,
+      heading_color: data.heading_color,
+      banner_color: data.banner_color
+    });
 
-    // Map the database product to our Product type with WhatsApp support
+    // Map the database product to our Product type with all custom fields
     const product = {
       id: data.id,
       name: data.name,

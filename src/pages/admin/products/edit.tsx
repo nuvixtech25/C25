@@ -23,6 +23,10 @@ type ProductData = {
   slug: string;
   has_whatsapp_support?: boolean;
   whatsapp_number?: string | null;
+  use_global_colors?: boolean;
+  button_color?: string | null;
+  heading_color?: string | null;
+  banner_color?: string | null;
 }
 
 const EditProductPage = () => {
@@ -41,6 +45,10 @@ const EditProductPage = () => {
       status: true,
       has_whatsapp_support: false,
       whatsapp_number: '',
+      use_global_colors: true,
+      button_color: '#28A745',
+      heading_color: '#000000',
+      banner_color: '#000000',
     },
   });
 
@@ -69,7 +77,12 @@ const EditProductPage = () => {
       const productData = data as ProductData;
       
       console.log('[EditProductPage] Product data from DB:', productData);
-      console.log('[EditProductPage] Banner image URL:', productData.banner_image_url);
+      console.log('[EditProductPage] Custom colors:', {
+        use_global_colors: productData.use_global_colors,
+        button_color: productData.button_color,
+        heading_color: productData.heading_color,
+        banner_color: productData.banner_color
+      });
 
       // Set form values
       form.reset({
@@ -83,6 +96,10 @@ const EditProductPage = () => {
         slug: productData.slug,
         has_whatsapp_support: productData.has_whatsapp_support || false,
         whatsapp_number: productData.whatsapp_number || '',
+        use_global_colors: productData.use_global_colors !== false, // Default to true if not explicitly false
+        button_color: productData.button_color || '#28A745',
+        heading_color: productData.heading_color || '#000000',
+        banner_color: productData.banner_color || '#000000',
       });
 
       return productData;
@@ -102,7 +119,10 @@ const EditProductPage = () => {
         slug,
         has_whatsapp_support: data.has_whatsapp_support,
         whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
-        banner_image_url: data.banner_image_url
+        use_global_colors: data.use_global_colors,
+        button_color: data.use_global_colors ? null : data.button_color,
+        heading_color: data.use_global_colors ? null : data.heading_color,
+        banner_color: data.use_global_colors ? null : data.banner_color
       });
       
       const { data: updatedData, error } = await supabase
@@ -118,6 +138,10 @@ const EditProductPage = () => {
           slug: slug,
           has_whatsapp_support: data.has_whatsapp_support,
           whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
+          use_global_colors: data.use_global_colors,
+          button_color: data.use_global_colors ? null : data.button_color,
+          heading_color: data.use_global_colors ? null : data.heading_color,
+          banner_color: data.use_global_colors ? null : data.banner_color
         })
         .eq('id', id)
         .select();
