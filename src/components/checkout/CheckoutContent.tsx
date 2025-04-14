@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import { CheckoutCustomization, CustomerData, PaymentMethod, Product, AddressData } from '@/types/checkout';
 import { PersonalInfoSection } from './PersonalInfoSection';
@@ -6,7 +5,6 @@ import { TestimonialSection } from './TestimonialSection';
 import { PaymentMethodSection } from './payment-methods/PaymentMethodSection';
 import { OrderSummary } from './OrderSummary';
 import { AddressForm } from './address/AddressForm';
-import { PhysicalProductTestimonials } from './PhysicalProductTestimonials';
 
 interface CheckoutContentProps {
   product: Product;
@@ -52,12 +50,8 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
         formRef={customerFormRef}
       />
       
-      {/* Show different testimonials based on product type */}
-      {isPhysicalProduct ? (
-        <PhysicalProductTestimonials 
-          headingColor={customization.headingColor}
-        />
-      ) : (
+      {/* Show testimonials only for digital products */}
+      {!isPhysicalProduct && (
         <TestimonialSection
           headingColor={customization.headingColor}
         />
