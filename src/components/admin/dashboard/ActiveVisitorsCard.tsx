@@ -14,7 +14,7 @@ const ActiveVisitorsCard = () => {
       value={visitorCount}
       description={`Em tempo real`}
       icon={Users}
-      color="bg-amber-100 text-amber-700"
+      color="text-amber-700"
     />
   );
 };
