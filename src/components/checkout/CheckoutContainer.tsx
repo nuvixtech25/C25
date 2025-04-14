@@ -81,8 +81,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
     fetchCustomization();
   }, [toast]);
 
-  // Add CSS variables for checkout button styling
-  // Use custom colors if provided, otherwise use global colors from DB
+  // Fixed: Use string literals to define CSS variables in the style object
   const customStyles = {
     '--button-color': customization?.buttonColor || dbCustomization.button_color || '#28A745',
     '--button-text-color': dbCustomization.button_text_color || '#ffffff',
