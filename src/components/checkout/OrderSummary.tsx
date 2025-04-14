@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Product } from '@/types/checkout';
-import { Shield, Truck } from 'lucide-react';
+import { Shield, Truck, Package } from 'lucide-react';
 import { SectionTitle } from './SectionTitle';
 
 interface OrderSummaryProps {
@@ -53,14 +53,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}</span>
           </div>
           
-          {/* Display free shipping message if it's a physical product and shipping is available */}
+          {/* More elegant free shipping message for physical products */}
           {!isDigitalProduct && showFreeShipping && (
-            <div className="flex justify-between text-sm text-green-600 font-medium">
+            <div className="flex justify-between items-center text-sm text-green-700 font-medium bg-green-50 px-2 py-1.5 rounded">
               <span className="flex items-center">
-                <Truck className="h-4 w-4 mr-1" />
-                Frete:
+                <Package className="h-5 w-5 mr-2 text-green-600" />
+                Entrega Grátis para este Endereço
               </span>
-              <span>Grátis</span>
+              <span className="text-green-600">✔</span>
             </div>
           )}
           
