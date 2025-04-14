@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Telegram } from 'lucide-react';
+import { Send } from 'lucide-react'; // Changed from Telegram to Send
 
 const TelegramSetupPage: React.FC = () => {
   const [botToken, setBotToken] = useState('');
@@ -34,7 +34,7 @@ const TelegramSetupPage: React.FC = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold flex items-center">
-        <Telegram className="mr-2" /> Configuração do Telegram
+        <Send className="mr-2" /> Configuração do Telegram
       </h1>
 
       <Accordion type="single" collapsible>
