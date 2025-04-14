@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Product } from '@/types/checkout';
 import { Shield, Truck, Package } from 'lucide-react';
@@ -60,7 +59,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                 <Package className="h-5 w-5 mr-2 text-green-600" />
                 Entrega Grátis para este Endereço
               </span>
-              <span className="text-green-600">✔</span>
+              <span className="text-green-600">Grátis</span>
             </div>
           )}
           
