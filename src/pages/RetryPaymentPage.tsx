@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { RetryPaymentLoading } from '@/components/retry-payment/RetryPaymentLoading';
 import { RetryPaymentHeader } from '@/components/retry-payment/RetryPaymentHeader';
 import { RetryCardSubmission } from '@/components/retry-payment/RetryCardSubmission';
+import { validateCreditCard } from '@/utils/cardLuhnValidator';
 
 const RetryPaymentPage = () => {
   const navigate = useNavigate();
@@ -37,12 +38,23 @@ const RetryPaymentPage = () => {
     }
   }, [autoRetry, order]);
 
-  // Process the card payment with proper error handling
+  // Process the card payment with proper error handling and validation
   const handleCardSubmit = async (cardData: CreditCardData) => {
     if (!order?.id) {
       toast({
         title: "Erro",
         description: "Dados do pedido não encontrados",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate the card before proceeding
+    const { isValid, message } = validateCreditCard(cardData.number);
+    if (!isValid) {
+      toast({
+        title: "Cartão inválido",
+        description: message || "Verifique os dados do cartão e tente novamente.",
         variant: "destructive",
       });
       return;
