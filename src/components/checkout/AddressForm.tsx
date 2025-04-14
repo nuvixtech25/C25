@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -31,6 +31,7 @@ interface AddressFormProps {
 export const AddressForm: React.FC<AddressFormProps> = ({ onAddressSubmit, headingColor }) => {
   const { toast } = useToast();
   const [isSearchingCep, setIsSearchingCep] = useState(false);
+  const [showShippingMessage, setShowShippingMessage] = useState(false);
   
   const form = useForm<AddressData>({
     resolver: zodResolver(addressSchema),
@@ -44,6 +45,28 @@ export const AddressForm: React.FC<AddressFormProps> = ({ onAddressSubmit, headi
       state: ''
     }
   });
+
+  // Watch the CEP and house number fields to trigger shipping message
+  const cep = form.watch('cep');
+  const houseNumber = form.watch('number');
+
+  // Effect to check when both CEP and house number are filled
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    if (cep && cep.length >= 8 && houseNumber && houseNumber.length > 0) {
+      // Start a 2-second timer before showing the shipping message
+      timer = setTimeout(() => {
+        setShowShippingMessage(true);
+      }, 2000);
+    } else {
+      setShowShippingMessage(false);
+    }
+    
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [cep, houseNumber]);
 
   // Handle CEP search
   const handleCepSearch = async (cep: string) => {
@@ -110,9 +133,11 @@ export const AddressForm: React.FC<AddressFormProps> = ({ onAddressSubmit, headi
         headingColor={headingColor}
       />
       
-      <div className="py-3 px-4 mb-4 mt-4 bg-green-50 text-green-800 rounded-md border border-green-200 flex items-center">
-        <span className="font-medium">✅ Frete grátis | Entrega em até 7 dias</span>
-      </div>
+      {showShippingMessage && (
+        <div className="py-3 px-4 mb-4 mt-4 bg-green-50 text-green-800 rounded-md border border-green-200 flex items-center animate-fadeIn">
+          <span className="font-medium">✅ Frete grátis | Entrega em até 7 dias</span>
+        </div>
+      )}
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
