@@ -11,11 +11,7 @@ interface AddressFormFieldsProps {
 
 export const AddressFormFields: React.FC<AddressFormFieldsProps> = ({ form }) => {
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <CepSearch form={form} isSearching={false} onSearch={() => Promise.resolve()} />
-      
-      <div className="hidden sm:block sm:col-span-1"></div>
-      
+    <>
       <FormField
         control={form.control}
         name="street"
@@ -99,9 +95,6 @@ export const AddressFormFields: React.FC<AddressFormFieldsProps> = ({ form }) =>
           </FormItem>
         )}
       />
-    </div>
+    </>
   );
 };
-
-// Fix for circular dependency
-import { CepSearch } from './CepSearch';

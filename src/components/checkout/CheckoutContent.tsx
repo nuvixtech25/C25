@@ -1,11 +1,10 @@
-
 import React, { useRef, useState } from 'react';
 import { CheckoutCustomization, CustomerData, PaymentMethod, Product, AddressData } from '@/types/checkout';
 import { PersonalInfoSection } from './PersonalInfoSection';
 import { TestimonialSection } from './TestimonialSection';
 import { PaymentMethodSection } from './payment-methods/PaymentMethodSection';
 import { OrderSummary } from './OrderSummary';
-import { AddressForm } from './AddressForm';
+import { AddressForm } from './address/AddressForm';
 
 interface CheckoutContentProps {
   product: Product;
