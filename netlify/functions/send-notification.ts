@@ -3,15 +3,28 @@ import { Handler } from '@netlify/functions';
 import nodemailer from 'nodemailer';
 
 // Configurar transporte de email usando variáveis de ambiente
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.example.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_SECURE === 'true',
-  auth: {
-    user: process.env.SMTP_USER || '',
-    pass: process.env.SMTP_PASS || '',
-  },
-});
+const createTransporter = () => {
+  const host = process.env.SMTP_HOST;
+  const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 587;
+  const secure = process.env.SMTP_SECURE === 'true';
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  
+  if (!host || !user || !pass) {
+    console.warn('Configuração de SMTP incompleta. Host, usuário ou senha ausentes.');
+    return null;
+  }
+  
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: {
+      user,
+      pass,
+    },
+  });
+};
 
 interface NotificationRequest {
   to: string;
@@ -29,13 +42,16 @@ export const handler: Handler = async (event) => {
   }
 
   try {
+    // Criar transporter apenas quando necessário
+    const transporter = createTransporter();
+    
     // Verificar se as credenciais de email estão configuradas
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.warn('Credenciais de SMTP não configuradas. Notificação não enviada.');
+    if (!transporter) {
+      console.warn('Transporter não criado. Notificação não enviada.');
       return {
         statusCode: 500,
         body: JSON.stringify({ 
-          message: 'Credenciais de SMTP não configuradas',
+          message: 'Configuração de SMTP incompleta',
           smtp_configured: false
         }),
       };
@@ -60,10 +76,14 @@ export const handler: Handler = async (event) => {
     };
 
     await transporter.sendMail(mailOptions);
+    console.log(`Email enviado com sucesso para: ${to}`);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Notificação enviada com sucesso' }),
+      body: JSON.stringify({ 
+        message: 'Notificação enviada com sucesso',
+        success: true 
+      }),
     };
   } catch (error) {
     console.error('Erro ao enviar notificação:', error);
@@ -71,7 +91,8 @@ export const handler: Handler = async (event) => {
       statusCode: 500,
       body: JSON.stringify({ 
         message: 'Erro ao enviar notificação',
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        success: false
       }),
     };
   }
