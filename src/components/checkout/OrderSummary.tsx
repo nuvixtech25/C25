@@ -1,6 +1,6 @@
 import React from 'react';
 import { Product } from '@/types/checkout';
-import { Shield, Truck, Package } from 'lucide-react';
+import { Shield, Truck, Package, ShoppingBag } from 'lucide-react';
 import { SectionTitle } from './SectionTitle';
 
 interface OrderSummaryProps {
@@ -19,7 +19,10 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       <SectionTitle number={4} title="Resumo do pedido" />
       
       <div className="border border-[#E0E0E0] rounded-lg p-4 bg-white">
-        <h3 className="font-bold text-sm mb-4">Sua Compra</h3>
+        <div className="flex items-center mb-4">
+          <ShoppingBag className="mr-2 text-gray-600" size={20} />
+          <h3 className="font-bold text-sm">Sua Compra</h3>
+        </div>
         
         <div className="flex items-center py-3 border-b border-[#E0E0E0]">
           <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded p-2 mr-3 flex items-center justify-center">
