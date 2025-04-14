@@ -12,6 +12,7 @@ import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
 const SuccessPage = () => {
   const location = useLocation();
   const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [isDigitalProduct, setIsDigitalProduct] = useState(false);
 
   const fetchWhatsAppInfo = useCallback(async () => {
     if (!location.state?.order) return;
@@ -37,6 +38,11 @@ const SuccessPage = () => {
         // Persistir para localStorage para possíveis recarregamentos da página
         if (finalWhatsappNumber) {
           localStorage.setItem('whatsapp_number', finalWhatsappNumber);
+        }
+        
+        // Check if the product is digital
+        if (order.productType === 'digital' || location.state.isDigitalProduct) {
+          setIsDigitalProduct(true);
         }
       }
     } catch (error) {
@@ -77,7 +83,7 @@ const SuccessPage = () => {
           
           <EmailConfirmationSection />
           
-          <DigitalProductSection />
+          <DigitalProductSection isDigital={isDigitalProduct} />
           
           <div className="mt-8 bg-gray-50 p-5 rounded-xl border border-gray-100">
             <h3 className="font-medium text-gray-800 mb-4 text-lg">O que nossos clientes estão dizendo:</h3>
@@ -86,7 +92,7 @@ const SuccessPage = () => {
         </CardContent>
         
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
-          <DigitalProductButton />
+          <DigitalProductButton isDigital={isDigitalProduct} />
           
           {/* Exibir o botão de WhatsApp quando houver um número */}
           {whatsappNumber && (

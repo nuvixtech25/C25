@@ -5,10 +5,10 @@ import { Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface DigitalProductSectionProps {
-  isDigital: boolean;
+  isDigital?: boolean;
 }
 
-export const DigitalProductSection: React.FC<DigitalProductSectionProps> = ({ isDigital }) => {
+export const DigitalProductSection: React.FC<DigitalProductSectionProps> = ({ isDigital = false }) => {
   if (!isDigital) return null;
 
   return (
@@ -24,7 +24,7 @@ export const DigitalProductSection: React.FC<DigitalProductSectionProps> = ({ is
   );
 };
 
-export const DigitalProductButton: React.FC<DigitalProductSectionProps> = ({ isDigital }) => {
+export const DigitalProductButton: React.FC<DigitalProductSectionProps> = ({ isDigital = false }) => {
   if (!isDigital) return null;
 
   return (
