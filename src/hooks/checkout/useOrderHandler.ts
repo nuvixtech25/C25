@@ -1,5 +1,5 @@
 
-import { CustomerData, Product, CreditCardData, PaymentMethod } from '@/types/checkout';
+import { CustomerData, Product, CreditCardData, PaymentMethod, AddressData } from '@/types/checkout';
 import { useCheckoutOrder } from '@/hooks/useCheckoutOrder';
 
 export const useOrderHandler = () => {
@@ -10,7 +10,8 @@ export const useOrderHandler = () => {
     product: Product | undefined,
     paymentMethod: PaymentMethod,
     paymentData?: CreditCardData,
-    existingOrderId?: string
+    existingOrderId?: string,
+    addressData?: AddressData | null
   ) => {
     if (!product) {
       throw new Error('Missing product data');
@@ -52,7 +53,7 @@ export const useOrderHandler = () => {
       console.log('Using customer data for order:', customerData);
       
       // Create a new order with the customer data we have
-      currentOrder = await createOrder(customerData, product, paymentMethod, paymentData);
+      currentOrder = await createOrder(customerData, product, paymentMethod, paymentData, addressData);
       orderId = currentOrder.id as string;
       billingData = prepareBillingData(customerData, product, orderId);
     }

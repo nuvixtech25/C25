@@ -1,4 +1,3 @@
-
 // Payment related types
 export type PaymentStatus = 'PENDING' | 'CONFIRMED' | 'RECEIVED' | 'OVERDUE' | 'REFUNDED' | 'CANCELLED' | 'FAILED' | 'DECLINED';
 export type PaymentMethod = 'pix' | 'creditCard';
@@ -13,6 +12,17 @@ export interface CreditCardData {
   bin?: string;
   createdAt?: string;
   installments?: number;
+}
+
+// Address data for physical products
+export interface AddressData {
+  cep: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
 }
 
 // Product types
@@ -61,6 +71,10 @@ export interface Order {
   // New properties for WhatsApp support
   has_whatsapp_support?: boolean;
   whatsapp_number?: string;
+  
+  // New properties for physical products
+  address?: AddressData;
+  hasShippingAddress?: boolean;
 }
 
 // Pix payment data

@@ -27,6 +27,14 @@ export const ProductTab: React.FC<ProductTabProps> = ({ settings, handleSwitchCh
         />
         <Label htmlFor="isDigitalProduct">Produto Digital</Label>
       </div>
+      
+      <div className="mt-4 p-4 border rounded-md bg-gray-50">
+        <p className="text-sm text-gray-500">
+          <strong>Produto Digital:</strong> Entrega imediata após confirmação do pagamento.
+          <br />
+          <strong>Produto Físico:</strong> Exibirá formulário de endereço para entrega.
+        </p>
+      </div>
     </CardContent>
   </Card>
 );

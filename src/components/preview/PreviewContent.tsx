@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
-import { CheckoutCustomization, Product } from '@/types/checkout';
+import { CheckoutCustomization, Product, AddressData } from '@/types/checkout';
 import { PaymentMethod } from '@/types/checkout';
 import { CustomerData } from '@/types/checkout';
 
@@ -12,6 +12,7 @@ interface PreviewContentProps {
   isSubmitting: boolean;
   customization: CheckoutCustomization;
   onCustomerSubmit: (customerData: CustomerData) => void;
+  onAddressSubmit?: (addressData: AddressData) => void;
   onPaymentMethodChange: (method: PaymentMethod) => void;
   onPaymentSubmit: () => void;
 }
@@ -23,6 +24,7 @@ export const PreviewContent: React.FC<PreviewContentProps> = ({
   isSubmitting,
   customization,
   onCustomerSubmit,
+  onAddressSubmit,
   onPaymentMethodChange,
   onPaymentSubmit
 }) => {
@@ -34,6 +36,7 @@ export const PreviewContent: React.FC<PreviewContentProps> = ({
       isSubmitting={isSubmitting}
       customization={customization}
       onCustomerSubmit={onCustomerSubmit}
+      onAddressSubmit={onAddressSubmit}
       onPaymentMethodChange={onPaymentMethodChange}
       onPaymentSubmit={onPaymentSubmit}
     />

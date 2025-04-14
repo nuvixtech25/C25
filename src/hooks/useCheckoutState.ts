@@ -1,7 +1,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { CustomerData, PaymentMethod, Product, CreditCardData } from '@/types/checkout';
+import { CustomerData, PaymentMethod, Product, CreditCardData, AddressData } from '@/types/checkout';
 import { useRedirectConfig } from './checkout/useRedirectConfig';
 import { usePaymentNavigation } from './checkout/usePaymentNavigation';
 import { useOrderHandler } from './checkout/useOrderHandler';
@@ -9,6 +9,7 @@ import { useOrderHandler } from './checkout/useOrderHandler';
 export const useCheckoutState = (product: Product | undefined) => {
   const { toast } = useToast();
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
+  const [addressData, setAddressData] = useState<AddressData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('creditCard');
   const lastSubmitTimeRef = useRef<number>(0);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -45,6 +46,11 @@ export const useCheckoutState = (product: Product | undefined) => {
     }, 500);
   }, []);
   
+  const handleAddressSubmit = useCallback((data: AddressData) => {
+    console.log('Address data received:', data);
+    setAddressData(data);
+  }, []);
+  
   const handlePaymentSubmit = async (paymentData?: CreditCardData, existingOrderId?: string) => {
     if (!product) {
       console.error('Missing product data');
@@ -67,6 +73,17 @@ export const useCheckoutState = (product: Product | undefined) => {
       return;
     }
     
+    // Check if address is required (physical product) and validate it
+    if (product.type === 'physical' && !addressData) {
+      console.error('Missing address data for physical product');
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha o endereço de entrega",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     console.log("Processing payment with customer data", { name: customerData.name, email: customerData.email });
     setIsSubmitting(true);
     
@@ -80,7 +97,8 @@ export const useCheckoutState = (product: Product | undefined) => {
         product, 
         paymentMethod, 
         paymentData, 
-        existingOrderId
+        existingOrderId,
+        addressData
       );
       
       currentOrder = result.currentOrder;
@@ -103,9 +121,11 @@ export const useCheckoutState = (product: Product | undefined) => {
   
   return {
     customerData,
+    addressData,
     paymentMethod,
     isSubmitting,
     handleCustomerSubmit,
+    handleAddressSubmit,
     setPaymentMethod,
     handlePaymentSubmit
   };

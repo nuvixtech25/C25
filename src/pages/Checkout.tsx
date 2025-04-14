@@ -19,9 +19,11 @@ const Checkout: React.FC = () => {
 
   const {
     customerData,
+    addressData,
     paymentMethod,
     isSubmitting,
     handleCustomerSubmit,
+    handleAddressSubmit,
     setPaymentMethod,
     handlePaymentSubmit
   } = useCheckoutState(product || undefined);
@@ -135,6 +137,7 @@ const Checkout: React.FC = () => {
         isSubmitting={isSubmitting}
         customization={customization}
         onCustomerSubmit={handleCustomerSubmit}
+        onAddressSubmit={handleAddressSubmit}
         onPaymentMethodChange={setPaymentMethod}
         onPaymentSubmit={handlePaymentSubmit}
       />
