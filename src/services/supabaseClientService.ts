@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Order, PaymentMethod, PaymentStatus, CreditCardData } from '@/types/checkout';
 import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';

