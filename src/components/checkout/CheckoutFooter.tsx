@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Lock, CreditCard, ShieldCheck } from 'lucide-react';
+import { Lock, CreditCard, ShieldCheck, Package } from 'lucide-react';
 
 export const CheckoutFooter: React.FC = () => {
   return (
@@ -20,6 +20,11 @@ export const CheckoutFooter: React.FC = () => {
           <div className="flex items-center space-x-2">
             <CreditCard className="text-[#28A745] h-5 w-5" />
             <span className="text-sm text-gray-600">Pagamento processado pela Stripe</span>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Package className="text-[#28A745] h-5 w-5" />
+            <span className="text-sm text-gray-600">Todos pedidos possuem código de rastreio</span>
           </div>
         </div>
         
