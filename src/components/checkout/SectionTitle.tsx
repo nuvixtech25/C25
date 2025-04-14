@@ -8,7 +8,7 @@ interface SectionTitleProps {
   icon?: React.ReactNode;
   showNumberBadge?: boolean;
   headingColor?: string;
-  numberBadgeColor?: string;
+  numberBadgeColor?: string; // New prop for custom number badge color
 }
 
 export const SectionTitle: React.FC<SectionTitleProps> = ({ 
@@ -17,7 +17,7 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
   icon, 
   showNumberBadge = true,
   headingColor,
-  numberBadgeColor = '#00FF00' // Updated to bright green as per color context
+  numberBadgeColor = '#28A745' // Default green color, but can be overridden
 }) => {
   return (
     <div className="flex items-center mb-4">
