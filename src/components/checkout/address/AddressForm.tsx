@@ -6,7 +6,6 @@ import * as z from 'zod';
 import { Truck } from 'lucide-react';
 import { Form } from '@/components/ui/form';
 import { SectionTitle } from '../SectionTitle';
-import { Button } from '@/components/ui/button';
 import { AddressFormFields } from './AddressFormFields';
 import { CepSearch } from './CepSearch';
 import { ShippingMessage } from './ShippingMessage';
@@ -34,6 +33,7 @@ interface AddressFormProps {
 export const AddressForm: React.FC<AddressFormProps> = ({ onAddressSubmit, headingColor }) => {
   const form = useForm<AddressData>({
     resolver: zodResolver(addressSchema),
+    mode: 'onChange', // Trigger validation on change
     defaultValues: {
       cep: '',
       street: '',
@@ -53,10 +53,19 @@ export const AddressForm: React.FC<AddressFormProps> = ({ onAddressSubmit, headi
   const houseNumber = form.watch('number');
   const showShippingMessage = useShippingMessage(cep, houseNumber);
 
-  const onSubmit = (data: AddressData) => {
-    console.log('Address form submitted:', data);
-    onAddressSubmit(data);
-  };
+  // Watch form changes and automatically submit when valid
+  React.useEffect(() => {
+    const subscription = form.watch((formValues) => {
+      if (form.formState.isValid) {
+        const { cep, street, number, complement, neighborhood, city, state } = formValues;
+        if (cep && street && number && neighborhood && city && state) {
+          onAddressSubmit(formValues as AddressData);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form.watch, form.formState.isValid, onAddressSubmit]);
 
   return (
     <section id="address-section" className="mb-4 bg-white rounded-lg border border-[#E0E0E0] p-6">
@@ -70,7 +79,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({ onAddressSubmit, headi
       <ShippingMessage show={showShippingMessage} />
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <CepSearch 
               form={form} 
@@ -82,13 +91,6 @@ export const AddressForm: React.FC<AddressFormProps> = ({ onAddressSubmit, headi
             
             <AddressFormFields form={form} />
           </div>
-          
-          <Button 
-            type="submit" 
-            className="w-full mt-4 bg-green-600 hover:bg-green-700"
-          >
-            Confirmar Endereço
-          </Button>
         </form>
       </Form>
     </section>
