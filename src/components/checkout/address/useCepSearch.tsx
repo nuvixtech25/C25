@@ -47,7 +47,6 @@ export const useCepSearch = (form: UseFormReturn<AddressData>) => {
       }, 100);
       
     } catch (error) {
-      console.error('Error fetching CEP:', error);
       toast({
         title: "Erro ao buscar CEP",
         description: "Não foi possível buscar o endereço. Preencha manualmente.",
