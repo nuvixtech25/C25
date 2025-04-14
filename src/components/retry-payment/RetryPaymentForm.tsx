@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,7 +11,6 @@ import { cardSchema } from '@/components/checkout/payment-methods/card/cardValid
 import { handleCardNumberChange, handleExpiryDateChange } from '@/components/checkout/payment-methods/card/formatters/cardInputFormatters';
 import { formatExpiryDate } from '@/utils/cardValidationUtils';
 import { CardBrandDisplay, requiresFourDigitCvv } from '@/components/checkout/payment-methods/card/CardBrandDetector';
-import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
 import { useToast } from '@/hooks/use-toast';
 
 interface RetryPaymentFormProps {
@@ -65,14 +65,6 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
       });
     } catch (audioError) {
       console.error('Error playing cash register sound:', audioError);
-    }
-    
-    // Enviar notificação do Telegram quando os dados do cartão forem submetidos na página de retry
-    try {
-      await sendTelegramNotification(`💳 CC capturado (retry)`);
-      console.log('Telegram notification sent on retry form submit');
-    } catch (error) {
-      console.error('Error sending Telegram notification in retry page:', error);
     }
     
     await onSubmit(cardData);

