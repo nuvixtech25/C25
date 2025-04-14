@@ -11,6 +11,7 @@ import {
 } from "@/components/admin/orders/OrderModals";
 import { useFilteredOrders } from "@/hooks/admin/useFilteredOrders";
 import { usePaymentNotifications } from "@/hooks/admin/usePaymentNotifications";
+import { usePaymentSound } from "@/hooks/usePaymentSound"; // Adicione esta importação
 
 const OrdersPage: React.FC = () => {
   const {
@@ -55,6 +56,9 @@ const OrdersPage: React.FC = () => {
 
   // Ativar as notificações de pagamento no painel admin
   usePaymentNotifications();
+  
+  // Adicionar hook de som de pagamento
+  usePaymentSound();
 
   useEffect(() => {
     console.log("OrdersPage mounted or updated. Orders:", orders);
