@@ -29,16 +29,16 @@ export const getOrders = async ({
     // Aplicar filtro de data se ambas as datas forem fornecidas
     if (startDate && endDate) {
       // Converter datas para strings ISO de forma segura
-      const startDateStr = startDate instanceof Date 
-        ? startDate.toISOString() 
-        : typeof startDate === 'string' 
-          ? startDate 
+      const startDateStr = typeof startDate === 'string' 
+        ? startDate 
+        : startDate instanceof Date 
+          ? startDate.toISOString() 
           : new Date().toISOString();
           
-      const endDateStr = endDate instanceof Date 
-        ? endDate.toISOString() 
-        : typeof endDate === 'string' 
-          ? endDate 
+      const endDateStr = typeof endDate === 'string' 
+        ? endDate 
+        : endDate instanceof Date 
+          ? endDate.toISOString() 
           : new Date().toISOString();
       
       console.log("Aplicando filtros de data:", { startDateStr, endDateStr });
