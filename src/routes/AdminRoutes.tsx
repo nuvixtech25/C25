@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -52,6 +53,7 @@ const AdminRoutes: React.FC = () => {
         <Route path="/webhook-simulator" element={<WebhookSimulator />} />
         <Route path="/api-information" element={<ApiInformation />} />
         <Route path="/analytics/payment-retry" element={<PaymentRetryAnalytics />} />
+        <Route path="/telegram-setup" element={<TelegramSetupPage />} />
         <Route path="/telegram-settings" element={<TelegramSetupPage />} />
       </Route>
       

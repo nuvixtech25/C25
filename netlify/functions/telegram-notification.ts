@@ -22,8 +22,8 @@ export async function sendTelegramNotification(message: string) {
       return;
     }
 
-    if (!tokenData || !chatIdData || !tokenData.value || !chatIdData.value) {
-      console.warn('Telegram settings are incomplete or not configured');
+    if (!tokenData?.value || !chatIdData?.value) {
+      console.warn('Telegram settings are incomplete');
       return;
     }
 
@@ -36,18 +36,18 @@ export async function sendTelegramNotification(message: string) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         chat_id, 
-        text: message,
-        parse_mode: 'HTML' // Enable HTML formatting
+        text: message 
       }),
     });
 
     if (!response.ok) {
       const errorBody = await response.text();
       console.error('Failed to send Telegram notification', errorBody);
-    } else {
-      console.log('Telegram notification sent successfully');
     }
+    
+    return response.ok;
   } catch (error) {
     console.error('Error sending Telegram notification', error);
+    return false;
   }
 }
