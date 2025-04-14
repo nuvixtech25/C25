@@ -20,6 +20,10 @@ export const useProductCreate = () => {
       image_url: '',
       banner_image_url: '',
       type: 'physical',
+      use_global_colors: true,
+      button_color: '#28A745',
+      heading_color: '#000000',
+      banner_color: '#000000',
       status: true,
       has_whatsapp_support: false,
       whatsapp_number: '',
@@ -38,6 +42,10 @@ export const useProductCreate = () => {
         slug,
         has_whatsapp_support: data.has_whatsapp_support,
         whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
+        use_global_colors: data.use_global_colors,
+        button_color: data.use_global_colors ? null : data.button_color,
+        heading_color: data.use_global_colors ? null : data.heading_color,
+        banner_color: data.use_global_colors ? null : data.banner_color,
         banner_image_url: data.banner_image_url
       });
       
@@ -53,6 +61,10 @@ export const useProductCreate = () => {
         slug: slug,
         has_whatsapp_support: data.has_whatsapp_support,
         whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
+        use_global_colors: data.use_global_colors,
+        button_color: data.use_global_colors ? null : data.button_color,
+        heading_color: data.use_global_colors ? null : data.heading_color,
+        banner_color: data.use_global_colors ? null : data.banner_color,
       }).select();
 
       if (error) {

@@ -1,67 +1,24 @@
+// Define payment statuses
+export type PaymentStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "FAILED"
+  | "REFUNDED"
+  | "PARTIALLY_REFUNDED"
+  | "AWAITING_RISK_ANALYSIS"
+  | "AUTHORIZED";
 
-// Payment related types
-export type PaymentStatus = 'PENDING' | 'CONFIRMED' | 'RECEIVED' | 'OVERDUE' | 'REFUNDED' | 'CANCELLED' | 'FAILED' | 'DECLINED';
-export type PaymentMethod = 'pix' | 'creditCard';
+// Define payment methods
+export type PaymentMethod = "pix" | "creditCard";
 
-// Credit card related types
-export interface CreditCardData {
-  holderName: string;
-  number: string;
-  expiryDate: string;
-  cvv: string;
-  brand?: string;
-  bin?: string;
-  createdAt?: string;
-  installments?: number;
-}
-
-// Address data for physical products
-export interface AddressData {
-  cep: string;
-  street: string;
-  number: string;
-  complement?: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-}
-
-// Product types
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  type?: 'digital' | 'physical';
-  isDigital?: boolean;
-  imageUrl?: string;
-  has_whatsapp_support?: boolean;
-  whatsapp_number?: string;
-  slug?: string;
-  status?: boolean;
-  bannerImageUrl?: string; // Product-specific banner
-  buttonColor?: string;    // Product-specific button color
-  headingColor?: string;   // Product-specific heading color
-  bannerColor?: string;    // Product-specific banner color
-  useGlobalColors?: boolean; // Flag to use global colors instead of product-specific ones
-}
-
-// Customer data
-export interface CustomerData {
-  name: string;
-  email: string;
-  cpfCnpj: string;
-  phone: string;
-}
-
-// Order and payment related interfaces
+// Define order type
 export interface Order {
-  id?: string;
+  id: string;
   customerId: string;
   customerName: string;
   customerEmail: string;
-  customerCpfCnpj: string;
   customerPhone: string;
+  customerCpfCnpj: string;
   productId: string;
   productName: string;
   productPrice: number;
@@ -69,64 +26,76 @@ export interface Order {
   paymentMethod: PaymentMethod;
   asaasPaymentId?: string;
   createdAt: string;
-  updatedAt: string;
-  cardData?: CreditCardData;
-  allCardData?: CreditCardData[]; // Added for multiple card attempts
-  productType?: 'digital' | 'physical'; // Added to determine product type for success page
-  
-  // New properties for WhatsApp support
-  has_whatsapp_support?: boolean;
-  whatsapp_number?: string;
-  
-  // New properties for physical products
-  address?: AddressData;
-  hasShippingAddress?: boolean;
+  updatedAt?: string;
+  cardData?: any;
+  isManualCard?: boolean;
 }
 
-// Pix payment data
-export interface PixPaymentData {
-  paymentId: string;
-  qrCode: string;
-  qrCodeImage: string;
-  copyPasteKey: string;
-  expirationDate: string;
-  value: number;
+export interface OrderTransformed {
+  id: string;
+  customer_id: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  customer_cpf_cnpj: string;
+  product_id: string;
+  product_name: string;
+  product_price: number;
+  status: PaymentStatus;
+  payment_method: PaymentMethod;
+  asaas_payment_id?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
   description: string;
+  image_url: string;
+  banner_image_url: string;
+  price: number;
+  isDigital: boolean;
+  use_global_colors?: boolean;
+  button_color?: string;
+  heading_color?: string;
+  banner_color?: string;
+  type: string;
 }
 
-// Billing data
-export interface BillingData {
-  customer: CustomerData;
-  value: number;
-  description: string;
-  orderId: string;
-}
-
-// UI Customization
+// Custom types for checkout customization
 export interface CheckoutCustomization {
+  // Appearance
   buttonColor: string;
-  buttonText: string;
+  buttonTextColor?: string;
   headingColor: string;
+  bannerColor: string;
   bannerImageUrl: string | null;
+  useGlobalColors?: boolean;
+  
+  // Content
+  buttonText: string;
+  headerMessage?: string;
   topMessage: string;
+  
+  // Timer
+  showTimer?: boolean;
+  timerEndDate?: string;
+  timerMessage?: string;
+  timerExpiredMessage?: string;
   countdownEndTime: string;
+  
+  // Product
   isDigitalProduct: boolean;
-  bannerColor: string; // Added the bannerColor property
-}
-
-// Testimonial
-export interface Testimonial {
-  id: string;
-  name: string;
-  photo: string;
-  rating: number;
-  comment: string;
-  timeAgo?: string; // Added the timeAgo property
-}
-
-// Payment method data (used in checkout form)
-export interface PaymentMethodData {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
+  showProduct?: boolean;
+  productName?: string;
+  productDescription?: string;
+  productPrice?: number;
+  productImageUrl?: string;
+  
+  // Additional settings
+  showBanner?: boolean;
+  showTestimonials?: boolean;
+  showRandomVisitors?: boolean;
 }

@@ -90,13 +90,22 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
     fetchCustomization();
   }, [toast]);
 
+  // Use product-specific colors if provided and use_global_colors is false
+  const useProductCustomColors = customization && customization.useGlobalColors === false;
+  
   // Use properly typed CSS variables with our custom interface
   const customStyles: CustomCSSProperties = {
-    '--button-color': customization?.buttonColor || dbCustomization.button_color || '#28A745',
+    '--button-color': useProductCustomColors && customization?.buttonColor 
+      ? customization.buttonColor 
+      : dbCustomization.button_color || '#28A745',
     '--button-text-color': dbCustomization.button_text_color || '#ffffff',
     '--button-text': `'${dbCustomization.button_text || 'Finalizar Pagamento'}'`,
-    '--heading-color': customization?.headingColor || dbCustomization.heading_color || '#000000',
-    '--banner-color': customization?.bannerColor || dbCustomization.banner_color || '#000000',
+    '--heading-color': useProductCustomColors && customization?.headingColor 
+      ? customization.headingColor 
+      : dbCustomization.heading_color || '#000000',
+    '--banner-color': useProductCustomColors && customization?.bannerColor 
+      ? customization.bannerColor 
+      : dbCustomization.banner_color || '#000000',
   };
 
   // Use product-specific banner URL if available, otherwise fall back to global setting
@@ -109,6 +118,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
   });
 
   console.log('Colors being used:', { 
+    useProductCustomColors,
     customButtonColor: customization?.buttonColor,
     dbButtonColor: dbCustomization.button_color,
     finalButtonColor: customStyles['--button-color'],

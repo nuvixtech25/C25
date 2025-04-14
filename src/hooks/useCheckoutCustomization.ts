@@ -1,17 +1,19 @@
 
 import { useState, useEffect } from 'react';
 import { CheckoutCustomization, Product } from '@/types/checkout';
+import { supabase } from '@/integrations/supabase/client';
 
 // Default customization values
 const defaultCustomization: CheckoutCustomization = {
   buttonColor: '#22c55e', // Verde mais forte
   buttonText: 'Finalizar Compra',
   headingColor: '#ffffff',
+  bannerColor: '#000000', // Cor padrão do banner
   bannerImageUrl: null,
   topMessage: 'Oferta por tempo limitado!',
   countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
   isDigitalProduct: true,
-  bannerColor: '#000000' // Cor padrão do banner
+  useGlobalColors: true
 };
 
 export const useCheckoutCustomization = (product?: Product) => {
@@ -19,14 +21,28 @@ export const useCheckoutCustomization = (product?: Product) => {
   
   useEffect(() => {
     if (product) {
+      // Verificar se o produto tem cores personalizadas
+      const hasCustomColors = product.use_global_colors === false && 
+        (product.button_color || product.heading_color || product.banner_color);
+      
       // Update customization based on product
       setCustomization({
         ...defaultCustomization,
-        isDigitalProduct: product.isDigital ?? true
+        isDigitalProduct: product.type === 'digital' || product.isDigital || false,
+        bannerImageUrl: product.banner_image_url || null,
+        useGlobalColors: product.use_global_colors !== false, // Se não estiver definido, assume true
+        buttonColor: product.button_color || defaultCustomization.buttonColor,
+        headingColor: product.heading_color || defaultCustomization.headingColor,
+        bannerColor: product.banner_color || defaultCustomization.bannerColor
       });
       
-      // In a real app, you would fetch the customization from your API/database
-      // based on the product or merchant settings
+      console.log('Customization set from product:', {
+        hasCustomColors,
+        useGlobalColors: product.use_global_colors,
+        buttonColor: product.button_color,
+        headingColor: product.heading_color,
+        bannerColor: product.banner_color
+      });
     }
   }, [product]);
   

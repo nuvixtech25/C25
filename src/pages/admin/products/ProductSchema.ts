@@ -1,36 +1,35 @@
 
 import { z } from 'zod';
 
-// Product form validation schema
 export const productSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
+  name: z.string().min(3, {
+    message: 'O nome do produto deve ter pelo menos 3 caracteres',
+  }),
+  slug: z.string().optional(),
   description: z.string().optional(),
-  price: z.number().min(0, 'Preço deve ser maior ou igual a zero'),
+  price: z.coerce.number().min(0, {
+    message: 'O preço deve ser maior ou igual a zero',
+  }),
   image_url: z.string().optional(),
   banner_image_url: z.string().optional(),
-  type: z.enum(['digital', 'physical']),
+  type: z.enum(['physical', 'digital']),
   status: z.boolean(),
-  slug: z.string().optional(),
-  has_whatsapp_support: z.boolean().default(false),
+  has_whatsapp_support: z.boolean(),
   whatsapp_number: z.string().optional(),
+  // Campos de customização de aparência
   use_global_colors: z.boolean().default(true),
   button_color: z.string().optional(),
   heading_color: z.string().optional(),
   banner_color: z.string().optional(),
 });
 
-// Form values type
 export type ProductFormValues = z.infer<typeof productSchema>;
 
-// Helper function to generate a slug from a product name
-export const generateSlug = (name: string): string => {
+export function generateSlug(name: string): string {
   return name
-    .toString()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '') // Remove caracteres especiais exceto hífens e underscores
-    .replace(/\s+/g, '-') // Substitui espaços por hífens
-    .replace(/--+/g, '-') // Substitui múltiplos hífens por um único
-    .trim();
-};
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+}

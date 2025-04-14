@@ -25,6 +25,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
   const previousFilterRef = useRef<string>('');
   const fetchingRef = useRef<boolean>(false);
   const requestIdRef = useRef<number>(0);
+  const lastRequestIdProcessedRef = useRef<number>(0);
 
   // Calcular filtros de data baseados na seleção
   const dateFilters = calculateDateFilters(filters.dateRange, filters.customDateRange);
@@ -79,11 +80,22 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
         endDate: dateFilters.endDate,
       });
       
-      // Ignorar resultado se outro pedido mais recente foi feito ou o componente foi desmontado
-      if (!isMounted.current || currentRequestId !== requestIdRef.current) {
-        console.log("Ignorando resultado de busca obsoleta ou componente desmontado");
+      // Só atualize os dados se este for o request mais recente e o componente estiver montado
+      if (!isMounted.current) {
+        console.log("Componente desmontado, ignorando resultado da busca");
+        fetchingRef.current = false;
         return;
       }
+      
+      // Verificar se este request é mais recente do que o último processado
+      if (currentRequestId < lastRequestIdProcessedRef.current) {
+        console.log("Ignorando resultado de busca mais antigo");
+        fetchingRef.current = false;
+        return;
+      }
+      
+      // Marcar este request como o último processado
+      lastRequestIdProcessedRef.current = currentRequestId;
       
       console.log("Pedidos obtidos:", data);
       
@@ -146,6 +158,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
 
   // Buscar pedidos quando os filtros mudarem
   useEffect(() => {
+    isMounted.current = true;
     fetchOrders();
     
     // Função de limpeza para evitar atualizações de estado após desmontagem
@@ -158,14 +171,6 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
     filters.dateRange,
     JSON.stringify(filters.customDateRange)
   ]);
-  
-  // Resetar isMounted ref ao montar
-  useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
 
   return {
     orders,

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { ProductFormValues } from '../../ProductSchema';
 import { Paintbrush } from 'lucide-react';
@@ -27,9 +27,30 @@ interface AppearanceSectionProps {
 
 const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
   const useGlobalColors = form.watch('use_global_colors');
+  
+  // Garantir que os campos de cor sejam limpos quando usar cores globais
+  useEffect(() => {
+    if (useGlobalColors) {
+      // Limpar os valores de cor quando usar cores globais for ativado
+      form.setValue('button_color', undefined);
+      form.setValue('heading_color', undefined);
+      form.setValue('banner_color', undefined);
+    } else {
+      // Definir valores padrão quando usar cores globais for desativado
+      if (!form.getValues('button_color')) {
+        form.setValue('button_color', '#28A745');
+      }
+      if (!form.getValues('heading_color')) {
+        form.setValue('heading_color', '#000000');
+      }
+      if (!form.getValues('banner_color')) {
+        form.setValue('banner_color', '#000000');
+      }
+    }
+  }, [useGlobalColors, form]);
 
   return (
-    <Accordion type="single" collapsible className="w-full">
+    <Accordion type="single" collapsible className="w-full" defaultValue="appearance">
       <AccordionItem value="appearance">
         <AccordionTrigger className="font-semibold">
           <div className="flex items-center">
@@ -55,7 +76,11 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                   <FormControl>
                     <Switch
                       checked={field.value}
-                      onCheckedChange={field.onChange}
+                      onCheckedChange={(value) => {
+                        field.onChange(value);
+                        // Forçar o estado no formulário
+                        form.setValue('use_global_colors', value, { shouldDirty: true });
+                      }}
                     />
                   </FormControl>
                 </FormItem>
@@ -73,11 +98,18 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                       <div className="flex gap-2">
                         <ColorPicker 
                           color={field.value || '#28A745'} 
-                          onChange={(color) => field.onChange(color)} 
+                          onChange={(color) => {
+                            field.onChange(color);
+                            form.setValue('button_color', color, { shouldDirty: true });
+                          }} 
                         />
                         <Input
                           {...field}
                           value={field.value || '#28A745'}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            form.setValue('button_color', e.target.value, { shouldDirty: true });
+                          }}
                         />
                       </div>
                       <FormDescription>
@@ -97,11 +129,18 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                       <div className="flex gap-2">
                         <ColorPicker 
                           color={field.value || '#000000'} 
-                          onChange={(color) => field.onChange(color)} 
+                          onChange={(color) => {
+                            field.onChange(color);
+                            form.setValue('heading_color', color, { shouldDirty: true });
+                          }} 
                         />
                         <Input
                           {...field}
                           value={field.value || '#000000'}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            form.setValue('heading_color', e.target.value, { shouldDirty: true });
+                          }}
                         />
                       </div>
                       <FormDescription>
@@ -121,11 +160,18 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                       <div className="flex gap-2">
                         <ColorPicker 
                           color={field.value || '#000000'} 
-                          onChange={(color) => field.onChange(color)} 
+                          onChange={(color) => {
+                            field.onChange(color);
+                            form.setValue('banner_color', color, { shouldDirty: true });
+                          }} 
                         />
                         <Input
                           {...field}
                           value={field.value || '#000000'}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            form.setValue('banner_color', e.target.value, { shouldDirty: true });
+                          }}
                         />
                       </div>
                       <FormDescription>
