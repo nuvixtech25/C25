@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Order, PaymentStatus } from "@/types/checkout";
 import { orderAdminService } from "@/services/orders";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +20,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
     }
   });
   const { toast } = useToast();
+  const isMounted = useRef(true);
 
   // Calculate date range filters based on selection
   const dateFilters = calculateDateFilters(filters.dateRange, filters.customDateRange);
@@ -46,6 +47,8 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
       
       console.log("Orders fetched:", data);
       
+      if (!isMounted.current) return;
+      
       // Convert the OrderTransformed[] to Order[]
       const transformedOrders: Order[] = data.map(order => ({
         id: order.id,
@@ -67,15 +70,19 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
       setOrders(transformedOrders);
     } catch (error) {
       console.error("Error fetching orders:", error);
-      toast({
-        variant: "destructive",
-        title: "Erro ao carregar pedidos",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
-      });
-      // Definindo orders como array vazio em caso de erro
-      setOrders([]);
+      if (isMounted.current) {
+        toast({
+          variant: "destructive",
+          title: "Erro ao carregar pedidos",
+          description: error instanceof Error ? error.message : "Erro desconhecido",
+        });
+        // Definindo orders como array vazio em caso de erro
+        setOrders([]);
+      }
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -103,12 +110,25 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
   useEffect(() => {
     console.log("Filters changed, fetching orders...");
     fetchOrders();
+    
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isMounted.current = false;
+    };
   }, [
     filters.paymentMethod, 
     filters.statusFilter, 
     dateFilters.startDate, 
     dateFilters.endDate
   ]);
+  
+  // Reset isMounted ref on mount
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   return {
     orders,
