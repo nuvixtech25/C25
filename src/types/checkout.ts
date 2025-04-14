@@ -7,7 +7,11 @@ export type PaymentStatus =
   | "REFUNDED"
   | "PARTIALLY_REFUNDED"
   | "AWAITING_RISK_ANALYSIS"
-  | "AUTHORIZED";
+  | "AUTHORIZED"
+  | "RECEIVED" // Added for API compatibility
+  | "CANCELLED" // Added for API compatibility 
+  | "DECLINED" // Added for API compatibility
+  | "OVERDUE"; // Added for API compatibility
 
 // Define payment methods
 export type PaymentMethod = "pix" | "creditCard";
@@ -30,6 +34,9 @@ export interface Order {
   updatedAt?: string;
   cardData?: any;
   isManualCard?: boolean;
+  has_whatsapp_support?: boolean;
+  whatsapp_number?: string;
+  productType?: 'digital' | 'physical';
 }
 
 export interface OrderTransformed {
@@ -102,4 +109,59 @@ export interface CheckoutCustomization {
   showBanner?: boolean;
   showTestimonials?: boolean;
   showRandomVisitors?: boolean;
+}
+
+// Add missing type definitions
+export interface CustomerData {
+  name: string;
+  email: string;
+  cpfCnpj: string;
+  phone: string;
+}
+
+export interface AddressData {
+  cep: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+}
+
+export interface CreditCardData {
+  number: string;
+  holderName: string;
+  expiryDate: string;
+  cvv: string;
+  brand?: string;
+  bin?: string;
+  createdAt?: string;
+}
+
+export interface BillingData {
+  customer?: CustomerData;
+  value: number;
+  description: string;
+  orderId: string;
+}
+
+export interface PixPaymentData {
+  qrCode: string;
+  qrCodeImage: string;
+  copyPasteKey: string;
+  expirationDate: string;
+  paymentId: string;
+  value: number;
+  description: string;
+  status: string;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  photo: string;
+  rating: number;
+  comment: string;
+  timeAgo?: string;
 }

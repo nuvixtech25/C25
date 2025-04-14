@@ -61,6 +61,24 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, showEmoji = false }) 
       text: "text-red-800",
       label: "Recusado",
       emoji: "❌"
+    },
+    PARTIALLY_REFUNDED: {
+      bg: "bg-blue-100 text-blue-800 border-blue-200",
+      text: "text-blue-800",
+      label: "Reembolso Parcial",
+      emoji: "↩️"
+    },
+    AWAITING_RISK_ANALYSIS: {
+      bg: "bg-purple-100 text-purple-800 border-purple-200",
+      text: "text-purple-800",
+      label: "Análise de Risco",
+      emoji: "🔍"
+    },
+    AUTHORIZED: {
+      bg: "bg-green-100 text-green-800 border-green-200",
+      text: "text-green-800",
+      label: "Autorizado",
+      emoji: "✅"
     }
   };
 

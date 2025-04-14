@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { CheckoutCustomization, Product } from '@/types/checkout';
+import { mapProductToCustomization } from '@/utils/propertyMappers';
 
 // Default customization values
 const defaultCustomization: CheckoutCustomization = {
@@ -20,9 +21,8 @@ export const useCheckoutCustomization = (product?: Product) => {
   
   useEffect(() => {
     if (product) {
-      // Check if product has custom colors
-      const hasCustomColors = product.use_global_colors === false && 
-        (product.button_color || product.heading_color || product.banner_color);
+      // Use the mapper utility to convert properties
+      const productCustomization = mapProductToCustomization(product);
       
       // Update customization based on product
       setCustomization({
@@ -36,7 +36,7 @@ export const useCheckoutCustomization = (product?: Product) => {
       });
       
       console.log('Customization set from product:', {
-        hasCustomColors,
+        hasCustomColors: product.use_global_colors === false,
         useGlobalColors: product.use_global_colors,
         buttonColor: product.button_color,
         headingColor: product.heading_color,

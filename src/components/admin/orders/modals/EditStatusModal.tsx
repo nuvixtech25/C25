@@ -72,7 +72,7 @@ const EditStatusModal: React.FC<EditStatusModalProps> = ({
             <Button 
               variant="outline" 
               onClick={() => {
-                onChangeStatus("RECEIVED");
+                onChangeStatus("RECEIVED" as PaymentStatus);
                 onClose();
               }}
               className="justify-start h-auto py-3"
@@ -100,7 +100,7 @@ const EditStatusModal: React.FC<EditStatusModalProps> = ({
             <Button 
               variant="outline" 
               onClick={() => {
-                onChangeStatus("CANCELLED");
+                onChangeStatus("CANCELLED" as PaymentStatus);
                 onClose();
               }}
               className="justify-start h-auto py-3"

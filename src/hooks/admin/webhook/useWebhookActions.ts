@@ -29,10 +29,10 @@ export const useWebhookActions = (
       case 'PAYMENT_CONFIRMED':
         return 'CONFIRMED';
       case 'PAYMENT_OVERDUE':
-        return 'OVERDUE';
+        return 'OVERDUE' as PaymentStatus;
       case 'PAYMENT_CANCELED':
       case 'PAYMENT_REFUSED':
-        return 'CANCELLED';
+        return 'CANCELLED' as PaymentStatus;
       default:
         return 'PENDING';
     }
@@ -116,9 +116,10 @@ export const useWebhookActions = (
       await refetch();
     } catch (error) {
       console.error('Erro ao simular webhook:', error);
+      
       toast({
-        title: 'Erro ao simular webhook',
-        description: error instanceof Error ? error.message : 'Ocorreu um erro desconhecido',
+        title: 'Erro',
+        description: 'Não foi possível simular o webhook.',
         variant: 'destructive'
       });
     } finally {
@@ -126,65 +127,7 @@ export const useWebhookActions = (
     }
   };
 
-  // Function to delete all webhook logs
-  const deleteAllWebhookLogs = async () => {
-    try {
-      console.log('Attempting to delete all webhook logs');
-      
-      // First, check if there are any records
-      const { data: records, error: checkError } = await supabase
-        .from('asaas_webhook_logs')
-        .select('id', { count: 'exact' });
-      
-      if (checkError) {
-        console.error('Error checking webhook logs:', checkError);
-        throw checkError;
-      }
-      
-      const recordCount = records?.length || 0;
-      console.log(`Found ${recordCount} webhook logs to delete`);
-      
-      if (recordCount === 0) {
-        toast({
-          title: 'Nenhum registro encontrado',
-          description: 'Não há registros de webhook para excluir.',
-        });
-        return;
-      }
-      
-      // Use a different approach to delete all records
-      const { error: deleteError } = await supabase
-        .from('asaas_webhook_logs')
-        .delete()
-        .neq('id', '00000000-0000-0000-0000-000000000000'); // Will match all valid UUIDs
-      
-      if (deleteError) {
-        console.error('Error deleting records:', deleteError);
-        throw deleteError;
-      }
-      
-      console.log(`Successfully deleted ${recordCount} webhook logs`);
-      
-      toast({
-        title: 'Registros excluídos',
-        description: `${recordCount} registros de webhook foram excluídos com sucesso.`,
-      });
-      
-      // Refresh the orders list
-      await refetch();
-    } catch (error) {
-      console.error('Erro ao excluir registros:', error);
-      toast({
-        title: 'Erro ao excluir registros',
-        description: error instanceof Error ? error.message : 'Ocorreu um erro desconhecido',
-        variant: 'destructive'
-      });
-    }
-  };
-
   return {
-    simulatePaymentWebhook,
-    deleteAllWebhookLogs,
-    getEventDisplayName
+    simulatePaymentWebhook
   };
 };

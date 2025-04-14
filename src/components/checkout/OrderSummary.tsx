@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Product } from '@/types/checkout';
 import { Shield, Truck, Package, ShoppingBag } from 'lucide-react';
@@ -26,9 +27,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         
         <div className="flex items-center py-3 border-b border-[#E0E0E0]">
           <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded p-2 mr-3 flex items-center justify-center">
-            {product.imageUrl ? (
+            {product.image_url ? (
               <img 
-                src={product.imageUrl} 
+                src={product.image_url} 
                 alt={product.name} 
                 className="max-w-full max-h-full object-contain"
               />

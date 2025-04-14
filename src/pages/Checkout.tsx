@@ -1,22 +1,24 @@
 
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
-import { Product, CheckoutCustomization } from '@/types/checkout';
-import { CheckoutContent } from '@/components/checkout/CheckoutContent';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
-import CheckoutContainer from '@/components/checkout/CheckoutContainer';
+import { CheckoutBanner } from '@/components/checkout/CheckoutBanner';
+import { CheckoutContent } from '@/components/checkout/CheckoutContent';
+import { CheckoutNav } from '@/components/checkout/CheckoutNav';
+import { useCheckoutCustomization } from '@/hooks/useCheckoutCustomization';
+import { LoadingState } from '@/components/shared/LoadingState';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { fetchProductBySlug } from '@/services/productService';
-import { CheckoutError } from '@/components/checkout/CheckoutError';
+import { Product } from '@/types/checkout';
+import { mapProductToCustomization } from '@/utils/propertyMappers';
 
-const Checkout: React.FC = () => {
+const Checkout = () => {
+  const { slug } = useParams<{ slug: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const { productSlug } = useParams<{ productSlug?: string }>();
-
+  
+  const customization = useCheckoutCustomization(product);
   const {
     customerData,
     addressData,
@@ -26,152 +28,162 @@ const Checkout: React.FC = () => {
     handleAddressSubmit,
     setPaymentMethod,
     handlePaymentSubmit
-  } = useCheckoutState(product || undefined);
-
+  } = useCheckoutState(product);
+  
+  // Fetch product by slug
   useEffect(() => {
     const fetchProduct = async () => {
-      setLoading(true);
+      if (!slug) {
+        console.error("Slug não informado");
+        toast({
+          title: "Erro",
+          description: "Produto não encontrado",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+      
       try {
-        // If product slug is provided in the URL, fetch that specific product
-        if (productSlug) {
-          console.log(`Fetching product with slug: ${productSlug}`);
-          const foundProduct = await fetchProductBySlug(productSlug);
-          
-          if (foundProduct) {
-            console.log(`Found product:`, foundProduct);
-            console.log(`Product custom colors:`, {
-              useGlobalColors: foundProduct.useGlobalColors,
-              buttonColor: foundProduct.buttonColor,
-              headingColor: foundProduct.headingColor,
-              bannerColor: foundProduct.bannerColor
-            });
-            setProduct(foundProduct);
-            return;
-          } else {
-            console.error(`Product with slug "${productSlug}" not found`);
-            toast({
-              title: "Produto não encontrado",
-              description: `O produto "${productSlug}" não foi encontrado.`,
-              variant: "destructive",
-            });
-          }
-        }
-        
-        // If no slug or product not found, fetch default product
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .eq('is_default', true)
-          .limit(1)
+          .eq('slug', slug)
+          .eq('status', true)
           .single();
-
+          
         if (error) {
-          console.error('Error fetching default product:', error);
-          toast({
-            title: "Erro ao carregar produto",
-            description: "Não foi possível carregar o produto padrão.",
-            variant: "destructive",
-          });
-
-          // Fallback to a demo product if no default product is found
-          setProduct({
-            id: 'demo-product',
-            name: 'Produto Demonstração',
-            description: 'Este é um produto de demonstração para testes de checkout.',
-            price: 49.90,
-            imageUrl: '/placeholder.svg',
-            has_whatsapp_support: true,
-            whatsapp_number: '5511999999999',
-            type: 'digital'
-          });
-        } else if (data) {
-          setProduct({
-            id: data.id,
-            name: data.name,
-            description: data.description,
-            price: data.price,
-            imageUrl: data.image_url,
-            has_whatsapp_support: data.has_whatsapp_support,
-            whatsapp_number: data.whatsapp_number,
-            type: data.type || 'digital',
-            bannerImageUrl: data.banner_image_url, // Banner image URL
-            useGlobalColors: data.use_global_colors !== false, // Default to true if not specified
-            buttonColor: data.button_color,
-            headingColor: data.heading_color,
-            bannerColor: data.banner_color
-          });
+          throw error;
         }
-      } catch (err) {
-        console.error('Failed to fetch product', err);
+        
+        if (!data) {
+          throw new Error("Produto não encontrado");
+        }
+        
+        // Format product data
+        const productData: Product = {
+          id: data.id,
+          name: data.name,
+          slug: data.slug,
+          description: data.description || '',
+          image_url: data.image_url || '',
+          banner_image_url: data.banner_image_url || '',
+          price: data.price || 0,
+          type: data.type || 'digital',
+          isDigital: data.type === 'digital',
+          use_global_colors: data.use_global_colors,
+          button_color: data.button_color,
+          heading_color: data.heading_color,
+          banner_color: data.banner_color,
+          has_whatsapp_support: data.has_whatsapp_support,
+          whatsapp_number: data.whatsapp_number,
+          status: data.status
+        };
+        
+        setProduct(productData);
+        console.log('Product data loaded:', productData);
+        
+      } catch (error: any) {
+        console.error("Erro ao carregar produto:", error);
         toast({
-          title: "Erro ao carregar",
-          description: "Ocorreu um erro ao carregar o produto.",
+          title: "Erro",
+          description: "Não foi possível carregar o produto. Por favor, tente novamente.",
           variant: "destructive",
         });
       } finally {
         setLoading(false);
       }
     };
-
+    
     fetchProduct();
-  }, [productSlug, toast]);
-
+  }, [slug, toast]);
+  
+  // If loading or no product found
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-pulse text-black">Carregando...</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingState message="Carregando informações do produto..." />
       </div>
     );
   }
-
+  
   if (!product) {
-    return <CheckoutError message={`Produto "${productSlug || ''}" não encontrado.`} />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Produto não encontrado</h2>
+          <p className="text-gray-600">O produto que você está procurando não está disponível ou não existe.</p>
+        </div>
+      </div>
+    );
   }
-
-  // Create a customization object for the checkout, using product-specific colors if available
-  const customization: CheckoutCustomization = {
-    // If product has specific colors and doesn't use global colors, use them
-    headingColor: (!product.useGlobalColors && product.headingColor) || '#000000',
-    buttonColor: (!product.useGlobalColors && product.buttonColor) || '#28A745',
-    buttonText: 'Finalizar Compra',
-    bannerImageUrl: product.bannerImageUrl || '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png',
-    topMessage: 'Oferta por tempo limitado!',
-    countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    isDigitalProduct: product.type === 'digital',
-    bannerColor: (!product.useGlobalColors && product.bannerColor) || '#000000'
-  };
-
-  // Log the resolved customization with colors
-  console.log('Checkout customization:', {
-    useGlobalColors: product.useGlobalColors,
-    productColors: {
-      headingColor: product.headingColor,
-      buttonColor: product.buttonColor,
-      bannerColor: product.bannerColor
-    },
-    finalColors: {
-      headingColor: customization.headingColor,
-      buttonColor: customization.buttonColor,
-      bannerColor: customization.bannerColor
+  
+  // Extract customization settings from product
+  const productCustomization = mapProductToCustomization(product);
+  
+  // Create banner style
+  const getBannerStyle = () => {
+    const styles: React.CSSProperties = {};
+    
+    // Apply banner background color based on settings
+    if (product.use_global_colors === false && product.banner_color) {
+      styles.backgroundColor = product.banner_color;
+    } else {
+      styles.backgroundColor = customization.bannerColor;
     }
-  });
-
+    
+    // Apply banner image if available
+    if (product.banner_image_url) {
+      styles.backgroundImage = `url(${product.banner_image_url})`;
+      styles.backgroundSize = 'cover';
+      styles.backgroundPosition = 'center';
+    }
+    
+    return styles;
+  };
+  
   return (
-    <CheckoutContainer 
-      productBannerUrl={product.bannerImageUrl}
-      customization={customization}>
-      <CheckoutContent 
-        product={product}
-        customerData={customerData}
-        paymentMethod={paymentMethod}
-        isSubmitting={isSubmitting}
-        customization={customization}
-        onCustomerSubmit={handleCustomerSubmit}
-        onAddressSubmit={handleAddressSubmit}
-        onPaymentMethodChange={setPaymentMethod}
-        onPaymentSubmit={handlePaymentSubmit}
-      />
-    </CheckoutContainer>
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <CheckoutNav />
+      
+      <div 
+        className="w-full py-8 px-4 bg-cover bg-center"
+        style={getBannerStyle()}
+      >
+        <CheckoutBanner 
+          productName={product.name} 
+          headingColor={product.use_global_colors === false ? product.heading_color : customization.headingColor}
+        />
+      </div>
+      
+      <div className="flex-grow container mx-auto px-4 py-6">
+        <div className="max-w-2xl mx-auto">
+          <CheckoutContent 
+            product={product}
+            customerData={customerData}
+            paymentMethod={paymentMethod}
+            isSubmitting={isSubmitting}
+            customization={{
+              ...customization,
+              useGlobalColors: product.use_global_colors,
+              buttonColor: !product.use_global_colors ? product.button_color || customization.buttonColor : customization.buttonColor,
+              headingColor: !product.use_global_colors ? product.heading_color || customization.headingColor : customization.headingColor,
+              bannerColor: !product.use_global_colors ? product.banner_color || customization.bannerColor : customization.bannerColor,
+            }}
+            onCustomerSubmit={handleCustomerSubmit}
+            onAddressSubmit={handleAddressSubmit}
+            onPaymentMethodChange={setPaymentMethod}
+            onPaymentSubmit={handlePaymentSubmit}
+          />
+        </div>
+      </div>
+      
+      <footer className="py-4 bg-gray-100 mt-8">
+        <div className="container mx-auto text-center text-gray-500 text-sm">
+          © {new Date().getFullYear()} Todos os direitos reservados
+        </div>
+      </footer>
+    </div>
   );
 };
 
