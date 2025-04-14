@@ -8,6 +8,7 @@ import PaymentMethodsChart from '@/components/admin/dashboard/PaymentMethodsChar
 import RevenueChart from '@/components/admin/dashboard/RevenueChart';
 import OrderStatusChart from '@/components/admin/dashboard/OrderStatusChart';
 import ActiveVisitorsCard from '@/components/admin/dashboard/ActiveVisitorsCard';
+import PaymentMethodCountCard from '@/components/admin/dashboard/PaymentMethodCountCard';
 
 const DashboardPage = () => {
   const {
@@ -19,6 +20,10 @@ const DashboardPage = () => {
     paymentDistribution,
     statusDistribution
   } = useDashboardData();
+
+  // Extrair contagens específicas de método de pagamento
+  const pixOrdersCount = paymentDistribution.find(p => p.name === 'pix')?.value || 0;
+  const cardOrdersCount = paymentDistribution.find(p => p.name === 'creditCard')?.value || 0;
   
   return (
     <div className="flex-1 space-y-4 p-4 pt-6">
@@ -33,8 +38,20 @@ const DashboardPage = () => {
         period={period}
       />
       
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <ActiveVisitorsCard />
+        <PaymentMethodCountCard 
+          title="Pedidos PIX" 
+          count={pixOrdersCount}
+          type="pix"
+          description="Total no período selecionado" 
+        />
+        <PaymentMethodCountCard 
+          title="Pedidos Cartão" 
+          count={cardOrdersCount}
+          type="creditCard"
+          description="Total no período selecionado" 
+        />
       </div>
       
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
