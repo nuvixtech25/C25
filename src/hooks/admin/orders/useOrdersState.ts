@@ -48,34 +48,34 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
 
   // Buscar pedidos com filtros atuais
   const fetchOrders = async () => {
-    // Preparar dados para comparação
-    const filterForComparison = {
-      paymentMethod: filters.paymentMethod,
-      statusFilter: filters.statusFilter,
-      startDate: dateFilters.startDate,
-      endDate: dateFilters.endDate
-    };
-    
-    // Criar uma string para comparação de filtros
-    const currentFilterString = JSON.stringify(simplifyDates(filterForComparison));
-
-    // Se os filtros não mudaram, não refazer a busca
-    if (currentFilterString === previousFilterRef.current && !isFirstRender.current) {
-      console.log("Filtros não mudaram, ignorando busca duplicada");
-      return;
-    }
-
-    console.log("Buscando pedidos com filtros:", { 
-      paymentMethod: filters.paymentMethod, 
-      statusFilter: filters.statusFilter, 
-      dateFilters: simplifyDates(dateFilters)
-    });
-    
-    setLoading(true);
-    previousFilterRef.current = currentFilterString;
-    isFirstRender.current = false;
-
     try {
+      // Preparar dados para comparação
+      const filterForComparison = {
+        paymentMethod: filters.paymentMethod,
+        statusFilter: filters.statusFilter,
+        startDate: dateFilters.startDate,
+        endDate: dateFilters.endDate
+      };
+      
+      // Criar uma string para comparação de filtros
+      const currentFilterString = JSON.stringify(simplifyDates(filterForComparison));
+
+      // Se os filtros não mudaram, não refazer a busca
+      if (currentFilterString === previousFilterRef.current && !isFirstRender.current) {
+        console.log("Filtros não mudaram, ignorando busca duplicada");
+        return;
+      }
+
+      console.log("Buscando pedidos com filtros:", { 
+        paymentMethod: filters.paymentMethod, 
+        statusFilter: filters.statusFilter, 
+        dateFilters: simplifyDates(dateFilters)
+      });
+      
+      setLoading(true);
+      previousFilterRef.current = currentFilterString;
+      isFirstRender.current = false;
+
       const data = await orderAdminService.getOrders({
         paymentMethod: filters.paymentMethod,
         status: filters.statusFilter,
@@ -106,6 +106,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
       }));
       
       setOrders(transformedOrders);
+      setLoading(false);
     } catch (error) {
       console.error("Erro ao buscar pedidos:", error);
       if (isMounted.current) {
@@ -116,9 +117,6 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
         });
         // Definindo orders como array vazio em caso de erro
         setOrders([]);
-      }
-    } finally {
-      if (isMounted.current) {
         setLoading(false);
       }
     }
