@@ -9,7 +9,7 @@ export interface GetOrdersParams {
 }
 
 export interface OrderTransformed {
-  id?: string;
+  id: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -19,6 +19,13 @@ export interface OrderTransformed {
   productPrice: number;
   paymentMethod: string;
   createdAt: string;
-  status: PaymentStatus;
-  asaasPaymentId?: string;
+  status: string;
+  asaasPaymentId: string | null;
+  [key: string]: any;
+}
+
+export interface DeleteOrderResult {
+  success: boolean;
+  count?: number;
+  errors?: Array<{ orderId: string; error: string }>;
 }

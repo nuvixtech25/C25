@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useMemo } from "react";
-import { orderAdminService } from "@/services/orderAdminService";
+import { orderAdminService } from "@/services/orders";
 import { Order, PaymentStatus } from "@/types/checkout";
 import { useToast } from "@/hooks/use-toast";
 import { addDays, startOfDay, endOfDay } from "date-fns";
