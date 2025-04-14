@@ -9,7 +9,7 @@ export const mapProductToCustomization = (product: Product): Partial<CheckoutCus
     buttonColor: product.button_color || '#22c55e',
     headingColor: product.heading_color || '#ffffff',
     bannerColor: product.banner_color || '#000000',
-    bannerImageUrl: product.banner_image_url || null,
+    bannerImageUrl: product.banner_image_url || undefined,
     useGlobalColors: product.use_global_colors !== false, // Default to true if not defined
     isDigitalProduct: product.type === 'digital' || product.isDigital || false
   };
@@ -23,7 +23,7 @@ export const mapCustomizationToProduct = (customization: Partial<CheckoutCustomi
     button_color: customization.buttonColor,
     heading_color: customization.headingColor,
     banner_color: customization.bannerColor,
-    banner_image_url: customization.bannerImageUrl || null,
+    banner_image_url: customization.bannerImageUrl || undefined,
     use_global_colors: customization.useGlobalColors
   };
 };

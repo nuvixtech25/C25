@@ -18,7 +18,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  const customization = useCheckoutCustomization(product);
+  const customization = useCheckoutCustomization(product || undefined);
   const {
     customerData,
     addressData,
@@ -28,7 +28,7 @@ const Checkout = () => {
     handleAddressSubmit,
     setPaymentMethod,
     handlePaymentSubmit
-  } = useCheckoutState(product);
+  } = useCheckoutState(product || undefined);
   
   // Fetch product by slug
   useEffect(() => {

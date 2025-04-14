@@ -1,121 +1,159 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/checkout';
-import { toast } from '@/hooks/use-toast';
 
-/**
- * Fetches all products from the database
- */
-export const fetchProducts = async (): Promise<Product[]> => {
-  const { data, error } = await supabase
-    .from('products')
-    .select('id, name, price, status, type, slug, description')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error("Error fetching products:", error);
-    throw new Error(error.message);
-  }
-  
-  // Map database products to our Product type
-  return data.map(item => ({
-    id: item.id,
-    name: item.name,
-    description: item.description || '',
-    price: Number(item.price),
-    isDigital: item.type === 'digital',
-    type: (item.type === 'digital' || item.type === 'physical') 
-      ? item.type as 'digital' | 'physical'
-      : 'physical',
-    status: item.status,
-    slug: item.slug
-  }));
-};
-
-/**
- * Deletes a product from the database
- */
-export const deleteProduct = async (productId: string): Promise<void> => {
+export const createProduct = async (productData: any): Promise<any> => {
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('products')
-      .delete()
-      .eq('id', productId);
+      .insert([
+        {
+          name: productData.name,
+          description: productData.description,
+          price: parseFloat(productData.price) || 0,
+          type: productData.type || 'digital',
+          status: productData.status !== false,
+          slug: productData.slug,
+          image_url: productData.image_url || '',
+          banner_image_url: productData.banner_image_url || '',
+          has_whatsapp_support: productData.has_whatsapp_support,
+          whatsapp_number: productData.whatsapp_number,
+          use_global_colors: productData.use_global_colors,
+          button_color: productData.button_color,
+          heading_color: productData.heading_color,
+          banner_color: productData.banner_color
+        }
+      ])
+      .select()
+      .single();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
+    return data;
   } catch (error) {
-    console.error("Error deleting product:", error);
+    console.error("Error creating product:", error);
     throw error;
   }
 };
 
-/**
- * Handle the product deletion with toast notifications
- */
-export const handleDeleteProduct = async (
-  product: Product, 
-  onSuccess: () => void
-): Promise<void> => {
+export const updateProduct = async (id: string, productData: any): Promise<any> => {
   try {
-    await deleteProduct(product.id);
+    const { data, error } = await supabase
+      .from('products')
+      .update({
+        name: productData.name,
+        description: productData.description,
+        price: parseFloat(productData.price) || 0,
+        type: productData.type || 'digital',
+        status: productData.status !== false,
+        slug: productData.slug,
+        image_url: productData.image_url || '',
+        banner_image_url: productData.banner_image_url || '',
+        has_whatsapp_support: productData.has_whatsapp_support,
+        whatsapp_number: productData.whatsapp_number,
+        use_global_colors: productData.use_global_colors,
+        button_color: productData.button_color,
+        heading_color: productData.heading_color,
+        banner_color: productData.banner_color
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
-    toast({
-      title: "Produto excluído",
-      description: `${product.name} foi removido com sucesso.`,
-    });
-    
-    // Call the success callback (usually to refetch products)
-    onSuccess();
+    if (error) throw error;
+    return data;
   } catch (error) {
-    console.error("Erro ao excluir produto:", error);
-    toast({
-      title: "Erro ao excluir produto",
-      description: "Ocorreu um erro ao tentar excluir o produto. Tente novamente.",
-      variant: "destructive",
-    });
+    console.error("Error updating product:", error);
+    throw error;
   }
 };
 
-/**
- * Make a user an admin (for initial setup)
- */
-export const makeUserAdmin = async (email: string): Promise<void> => {
+export const deleteProduct = async (id: string): Promise<boolean> => {
   try {
-    // First find the user by email
-    const { data: profiles, error: fetchError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('email', email);
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
 
-    if (fetchError) {
-      throw fetchError;
+    if (error) {
+      console.error('Error deleting product:', error);
+      return false;
     }
 
-    if (!profiles || profiles.length === 0) {
-      throw new Error(`User with email ${email} not found`);
-    }
-
-    // Update the profile to make the user an admin
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ is_admin: true })
-      .eq('id', profiles[0].id);
-
-    if (updateError) {
-      throw updateError;
-    }
-
-    toast({
-      title: "Usuário promovido",
-      description: `${email} agora tem privilégios de administrador.`,
-    });
+    return true;
   } catch (error) {
-    console.error("Error making user admin:", error);
-    toast({
-      title: "Erro ao promover usuário",
-      description: "Ocorreu um erro ao tentar dar privilégios de administrador.",
-      variant: "destructive",
-    });
+    console.error('Error deleting product:', error);
+    return false;
+  }
+};
+
+export const getAllProducts = async (): Promise<any[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching products:', error);
+      return [];
+    }
+
+    return data.map((product: any) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: Number(product.price),
+      isDigital: product.type === 'digital',
+      type: product.type,
+      status: product.status,
+      slug: product.slug,
+      image_url: product.image_url || '',
+      banner_image_url: product.banner_image_url || ''
+    }));
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+};
+
+export const getProductById = async (id: string): Promise<Product | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      console.error('Error fetching product by ID:', error);
+      return null;
+    }
+
+    if (!data) {
+      return null;
+    }
+
+    const product: Product = {
+      id: data.id,
+      name: data.name,
+      slug: data.slug,
+      description: data.description || '',
+      image_url: data.image_url || '',
+      banner_image_url: data.banner_image_url || '',
+      price: data.price || 0,
+      type: data.type || 'digital',
+      isDigital: data.type === 'digital',
+      use_global_colors: data.use_global_colors,
+      button_color: data.button_color,
+      heading_color: data.heading_color,
+      banner_color: data.banner_color,
+      has_whatsapp_support: data.has_whatsapp_support,
+      whatsapp_number: data.whatsapp_number,
+      status: data.status
+    };
+
+    return product;
+  } catch (error) {
+    console.error('Error fetching product by ID:', error);
+    return null;
   }
 };

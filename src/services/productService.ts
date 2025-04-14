@@ -1,71 +1,120 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { Product } from '@/types/checkout';
 
-/**
- * Fetches a product by its slug with enhanced WhatsApp support details and custom colors
- */
-export const fetchProductBySlug = async (slug: string): Promise<Product | null> => {
+export const getProducts = async () => {
   try {
-    console.log(`[productService] Fetching product with slug: ${slug}`);
-    
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('status', true);
+
+    if (error) {
+      console.error('Error fetching products:', error);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+};
+
+export const getProductBySlug = async (slug: string) => {
+  try {
     const { data, error } = await supabase
       .from('products')
       .select('*')
       .eq('slug', slug)
-      .maybeSingle();
+      .single();
 
     if (error) {
-      console.error("[productService] Error fetching product by slug:", error);
-      throw new Error(error.message);
-    }
-
-    if (!data) {
-      console.log("[productService] No product found with slug:", slug);
+      console.error('Error fetching product by slug:', error);
       return null;
     }
 
-    console.log("[productService] Raw product data from database:", data);
-    
-    // For now, we'll use default values for custom colors since the database columns don't exist yet
-    console.log("[productService] Using default custom colors");
-
-    // Map the database product to our Product type with all custom fields
-    const product = {
-      id: data.id,
-      name: data.name,
-      description: data.description || '',
-      price: Number(data.price),
-      isDigital: data.type === 'digital',
-      type: (data.type === 'digital' || data.type === 'physical') 
-        ? data.type as 'digital' | 'physical' 
-        : 'physical',
-      imageUrl: data.image_url || undefined,
-      status: data.status,
-      slug: data.slug,
-      has_whatsapp_support: data.has_whatsapp_support || false,
-      whatsapp_number: data.whatsapp_number || undefined,
-      bannerImageUrl: data.banner_image_url || undefined, // Banner image URL
-      
-      // Default colors, since the database columns don't exist yet
-      useGlobalColors: true, 
-      buttonColor: undefined,
-      headingColor: undefined,
-      bannerColor: undefined
-    };
-
-    console.log("[productService] Product mapped with default colors:", {
-      id: product.id,
-      name: product.name,
-      useGlobalColors: product.useGlobalColors,
-      buttonColor: product.buttonColor,
-      headingColor: product.headingColor,
-      bannerColor: product.bannerColor
-    });
-
-    return product;
+    return data;
   } catch (error) {
-    console.error("[productService] Error in fetchProductBySlug:", error);
+    console.error('Error fetching product by slug:', error);
     return null;
+  }
+};
+
+export const createProduct = async (productData: any): Promise<any> => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .insert([
+        {
+          name: productData.name,
+          description: productData.description,
+          price: parseFloat(productData.price) || 0,
+          type: productData.type || 'digital',
+          status: productData.status !== false,
+          slug: productData.slug,
+          image_url: productData.image_url || '', 
+          banner_image_url: productData.banner_image_url || '',
+          has_whatsapp_support: productData.has_whatsapp_support,
+          whatsapp_number: productData.whatsapp_number,
+          use_global_colors: productData.use_global_colors,
+          button_color: productData.button_color,
+          heading_color: productData.heading_color,
+          banner_color: productData.banner_color
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error creating product:", error);
+    throw error;
+  }
+};
+
+export const updateProduct = async (id: string, productData: any): Promise<any> => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .update({
+        name: productData.name,
+        description: productData.description,
+        price: parseFloat(productData.price) || 0,
+        type: productData.type || 'digital',
+        status: productData.status !== false,
+        slug: productData.slug,
+        image_url: productData.image_url || '',
+        banner_image_url: productData.banner_image_url || '',
+        has_whatsapp_support: productData.has_whatsapp_support,
+        whatsapp_number: productData.whatsapp_number,
+        use_global_colors: productData.use_global_colors,
+        button_color: productData.button_color,
+        heading_color: productData.heading_color,
+        banner_color: productData.banner_color
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error updating product:", error);
+    throw error;
+  }
+};
+
+export const deleteProduct = async (id: string): Promise<boolean> => {
+  try {
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    return false;
   }
 };

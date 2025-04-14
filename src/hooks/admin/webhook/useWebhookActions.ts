@@ -29,10 +29,10 @@ export const useWebhookActions = (
       case 'PAYMENT_CONFIRMED':
         return 'CONFIRMED';
       case 'PAYMENT_OVERDUE':
-        return 'OVERDUE' as PaymentStatus;
+        return 'OVERDUE';
       case 'PAYMENT_CANCELED':
       case 'PAYMENT_REFUSED':
-        return 'CANCELLED' as PaymentStatus;
+        return 'CANCELLED';
       default:
         return 'PENDING';
     }
@@ -127,7 +127,40 @@ export const useWebhookActions = (
     }
   };
 
+  // Function to delete all webhook logs
+  const deleteAllWebhookLogs = async () => {
+    try {
+      const { error } = await supabase
+        .from('webhook_logs')
+        .delete()
+        .gte('id', 0);
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: 'Logs apagados',
+        description: 'Todos os logs de webhook foram apagados com sucesso.',
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting webhook logs:', error);
+      
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível apagar os logs de webhook.',
+        variant: 'destructive'
+      });
+      
+      return false;
+    }
+  };
+
   return {
-    simulatePaymentWebhook
+    simulatePaymentWebhook,
+    deleteAllWebhookLogs,
+    getEventDisplayName
   };
 };

@@ -1,26 +1,39 @@
 
-import { CheckoutCustomizationSettings } from '@/types/customization';
 import { Product } from '@/types/checkout';
 
-// Function to create the URL of checkout preview
-export const createPreviewUrl = (settings: CheckoutCustomizationSettings): string => {
-  let url = `/checkout/preview?buttonColor=${encodeURIComponent(settings.buttonColor)}&buttonText=${encodeURIComponent(settings.buttonText)}&headingColor=${encodeURIComponent(settings.headingColor)}&topMessage=${encodeURIComponent(settings.topMessage)}&countdownEndTime=${encodeURIComponent(settings.countdownEndTime)}&isDigitalProduct=${settings.isDigitalProduct}&bannerColor=${encodeURIComponent(settings.bannerColor)}`;
-  
-  if (settings.bannerImageUrl) {
-    url += `&bannerImageUrl=${encodeURIComponent(settings.bannerImageUrl)}`;
-  }
-  
-  return url;
+/**
+ * Mock product data for previews
+ */
+export const createMockProduct = (): Product => {
+  return {
+    id: 'mock-product-id',
+    name: 'Produto de Demonstração',
+    slug: 'produto-demo',
+    description: 'Este é um produto de demonstração para visualização do checkout.',
+    image_url: 'https://via.placeholder.com/150',
+    banner_image_url: '',
+    price: 97,
+    type: 'digital',
+    isDigital: true,
+    use_global_colors: true,
+    button_color: '#22c55e',
+    heading_color: '#ffffff',
+    banner_color: '#000000',
+    status: true,
+    has_whatsapp_support: false
+  };
 };
 
-// Function to get demo product for preview
-export const getDemoProduct = (): Product => {
+/**
+ * Creates a modified product for testing different appearance settings
+ */
+export const createCustomizedProduct = (customization: any): Product => {
   return {
-    id: 'demo-product',
-    name: 'Produto de Demonstração',
-    description: 'Este é um produto para visualização do checkout',
-    price: 99.90,
-    imageUrl: 'https://via.placeholder.com/300x200',
-    isDigital: true
+    ...createMockProduct(),
+    use_global_colors: false,
+    button_color: customization.buttonColor || '#ff6b6b',
+    heading_color: customization.headingColor || '#333333',
+    banner_color: customization.bannerColor || '#f9fafb',
+    banner_image_url: customization.bannerImageUrl || ''
   };
 };

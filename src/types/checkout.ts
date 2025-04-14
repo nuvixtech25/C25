@@ -8,10 +8,10 @@ export type PaymentStatus =
   | "PARTIALLY_REFUNDED"
   | "AWAITING_RISK_ANALYSIS"
   | "AUTHORIZED"
-  | "RECEIVED" // Added for API compatibility
-  | "CANCELLED" // Added for API compatibility 
-  | "DECLINED" // Added for API compatibility
-  | "OVERDUE"; // Added for API compatibility
+  | "RECEIVED" 
+  | "CANCELLED" 
+  | "DECLINED" 
+  | "OVERDUE";
 
 // Define payment methods
 export type PaymentMethod = "pix" | "creditCard";
@@ -137,6 +137,7 @@ export interface CreditCardData {
   brand?: string;
   bin?: string;
   createdAt?: string;
+  installments?: number; // Added installments field
 }
 
 export interface BillingData {
