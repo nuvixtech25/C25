@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/checkout';
 
@@ -82,6 +83,64 @@ export const deleteProduct = async (id: string): Promise<boolean> => {
   } catch (error) {
     console.error('Error deleting product:', error);
     return false;
+  }
+};
+
+// Add the missing getAllProducts export as fetchProducts
+export const fetchProducts = async (): Promise<Product[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching products:', error);
+      return [];
+    }
+
+    return data.map((product: any) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: Number(product.price),
+      isDigital: product.type === 'digital',
+      type: product.type,
+      status: product.status,
+      slug: product.slug,
+      image_url: product.image_url || '',
+      banner_image_url: product.banner_image_url || '',
+      has_whatsapp_support: product.has_whatsapp_support,
+      whatsapp_number: product.whatsapp_number,
+      use_global_colors: product.use_global_colors,
+      button_color: product.button_color,
+      heading_color: product.heading_color,
+      banner_color: product.banner_color
+    }));
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+};
+
+// Adding the missing handleDeleteProduct function
+export const handleDeleteProduct = async (
+  product: Product, 
+  onSuccess?: () => void
+): Promise<void> => {
+  try {
+    if (!product || !product.id) {
+      console.error('Invalid product data');
+      return;
+    }
+
+    const deleted = await deleteProduct(product.id);
+    
+    if (deleted && onSuccess) {
+      onSuccess();
+    }
+  } catch (error) {
+    console.error('Error handling product deletion:', error);
   }
 };
 

@@ -10,13 +10,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Product } from '@/types/checkout';
 import ProductList from './ProductList';
 import { fetchProducts, handleDeleteProduct } from '@/services/productAdminService';
+import { LoadingState } from '@/components/shared/LoadingState';
 
 const ProductsPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [productTypeTab, setProductTypeTab] = useState<'all' | 'digital' | 'physical'>('all');
 
-  const { data: products, isLoading, error, refetch } = useQuery({
+  const { data: products = [], isLoading, error, refetch } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
   });
@@ -38,13 +39,13 @@ const ProductsPage = () => {
 
   // Filtrar produtos com base na aba selecionada
   const filteredProducts = React.useMemo(() => {
-    if (!products) return [];
+    if (!products || products.length === 0) return [];
     
     switch (productTypeTab) {
       case 'digital':
-        return products.filter(product => product.type === 'digital');
+        return products.filter((product: Product) => product.type === 'digital');
       case 'physical':
-        return products.filter(product => product.type === 'physical');
+        return products.filter((product: Product) => product.type === 'physical');
       default:
         return products;
     }
