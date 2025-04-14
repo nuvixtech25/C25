@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
@@ -13,7 +12,8 @@ import {
   Palette, 
   BarChart, 
   LineChart,
-  Database
+  Database,
+  Send
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -168,6 +168,19 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 >
                   <Database className="h-4 w-4" />
                   <span>Informações de API</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin/telegram-settings"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/telegram-settings') 
+                      ? 'bg-primary/10 font-medium' 
+                      : ''
+                  }`}
+                >
+                  <Send className="h-4 w-4" />
+                  <span>Telegram</span>
                 </Link>
               </li>
             </ul>

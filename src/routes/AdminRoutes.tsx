@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -18,6 +17,7 @@ import NewProductPage from '@/pages/admin/products/new';
 import EditProductPage from '@/pages/admin/products/edit';
 import ApiInformation from '@/pages/admin/ApiInformation';
 import PaymentRetryAnalytics from '@/pages/admin/analytics/PaymentRetryAnalytics';
+import TelegramSetupPage from '@/pages/admin/TelegramSetupPage';
 
 const AdminRoutes: React.FC = () => {
   return (
@@ -52,6 +52,7 @@ const AdminRoutes: React.FC = () => {
         <Route path="/webhook-simulator" element={<WebhookSimulator />} />
         <Route path="/api-information" element={<ApiInformation />} />
         <Route path="/analytics/payment-retry" element={<PaymentRetryAnalytics />} />
+        <Route path="/telegram-settings" element={<TelegramSetupPage />} />
       </Route>
       
       {/* Rota de fallback para páginas administrativas não encontradas */}

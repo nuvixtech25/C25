@@ -1,4 +1,3 @@
-
 import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
@@ -72,6 +71,8 @@ async function sendAdminNotification(payload: AsaasWebhookPayload, orderDetails:
   }
 }
 
+import { sendTelegramNotification } from './telegram-notification';  // You'll create this
+
 export const handler: Handler = async (event) => {
   // Garantir que apenas solicitações POST sejam processadas
   if (event.httpMethod !== 'POST') {
@@ -130,6 +131,8 @@ export const handler: Handler = async (event) => {
       // Enviar notificação para o administrador se o status for CONFIRMED
       if (payload.payment.status === 'CONFIRMED') {
         await sendAdminNotification(payload, orderData);
+         // Send Telegram notification
+        await sendTelegramNotification(`✅ Pagamento confirmado para o pedido ${orderData.id}`);
       }
     }
 
