@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Eye, Trash2, Edit, DollarSign, CreditCard } from "lucide-react";
@@ -33,8 +33,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   onDeleteOrder,
   loading,
 }) => {
-  // Adicionando log para depuração
-  console.log("OrdersTable rendering with:", { orders, loading });
+  // Adicionar logs para diagnóstico
+  useEffect(() => {
+    console.log("OrdersTable renderizado com estado:", { 
+      quantidadePedidos: orders?.length, 
+      carregando: loading 
+    });
+  }, [orders, loading]);
 
   if (loading) {
     return (

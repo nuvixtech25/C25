@@ -9,16 +9,24 @@ export const getOrders = async ({
   endDate,
 }: GetOrdersParams): Promise<OrderTransformed[]> => {
   try {
+    console.log("Iniciando busca de pedidos com parâmetros:", { paymentMethod, status, startDate, endDate });
+    
     let query = supabase
       .from("orders")
       .select("*")
-      .eq("payment_method", paymentMethod)
       .order("created_at", { ascending: false });
+    
+    // Aplicar filtro de método de pagamento se fornecido
+    if (paymentMethod) {
+      query = query.eq("payment_method", paymentMethod);
+    }
 
+    // Aplicar filtro de status se não for "ALL"
     if (status !== "ALL") {
       query = query.eq("status", status);
     }
 
+    // Aplicar filtro de data se ambas as datas forem fornecidas
     if (startDate && endDate) {
       query = query.gte("created_at", startDate.toISOString());
       query = query.lte("created_at", endDate.toISOString());
@@ -27,18 +35,20 @@ export const getOrders = async ({
     const { data, error } = await query;
 
     if (error) {
-      console.error("Error fetching orders:", error);
-      throw new Error(`Failed to fetch orders: ${error.message}`);
+      console.error("Erro ao buscar pedidos:", error);
+      throw new Error(`Falha ao buscar pedidos: ${error.message}`);
     }
 
-    // Validate and transform the data
+    console.log("Pedidos encontrados:", data?.length || 0);
+    
+    // Validar e transformar os dados
     return (data || []).map(order => ({
       ...order,
-      // Ensure productPrice is a valid number
+      // Garantir que productPrice seja um número válido
       productPrice: typeof order.product_price === 'number' || !isNaN(Number(order.product_price)) 
         ? Number(order.product_price) 
         : 0,
-      // Map database columns to frontend properties
+      // Mapear colunas do banco de dados para propriedades do frontend
       customerName: order.customer_name,
       customerEmail: order.customer_email,
       customerPhone: order.customer_phone,
@@ -51,7 +61,8 @@ export const getOrders = async ({
       asaasPaymentId: order.asaas_payment_id
     }));
   } catch (err) {
-    console.error("Unexpected error in getOrders:", err);
+    console.error("Erro inesperado em getOrders:", err);
+    // Retornar array vazio em caso de erro, mas logar o erro
     return [];
   }
 }

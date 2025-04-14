@@ -21,22 +21,41 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
   });
   const { toast } = useToast();
   const isMounted = useRef(true);
+  const isFirstRender = useRef(true);
+  const previousFilterRef = useRef<string>('');
 
-  // Calculate date range filters based on selection
+  // Calcular filtros de data baseados na seleção
   const dateFilters = calculateDateFilters(filters.dateRange, filters.customDateRange);
 
-  // Summary calculations
+  // Cálculos de resumo
   const ordersSummary = calculateOrdersSummary(orders);
 
-  // Fetch orders with current filters
+  // Buscar pedidos com filtros atuais
   const fetchOrders = async () => {
-    console.log("Fetching orders with filters:", { 
+    // Criar uma string para comparação de filtros
+    const currentFilterString = JSON.stringify({
+      paymentMethod: filters.paymentMethod,
+      statusFilter: filters.statusFilter,
+      startDate: dateFilters.startDate,
+      endDate: dateFilters.endDate
+    });
+
+    // Se os filtros não mudaram, não refazer a busca
+    if (currentFilterString === previousFilterRef.current && !isFirstRender.current) {
+      console.log("Filtros não mudaram, ignorando busca duplicada");
+      return;
+    }
+
+    console.log("Buscando pedidos com filtros:", { 
       paymentMethod: filters.paymentMethod, 
       statusFilter: filters.statusFilter, 
       dateFilters 
     });
     
     setLoading(true);
+    previousFilterRef.current = currentFilterString;
+    isFirstRender.current = false;
+
     try {
       const data = await orderAdminService.getOrders({
         paymentMethod: filters.paymentMethod,
@@ -45,11 +64,11 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
         endDate: dateFilters.endDate,
       });
       
-      console.log("Orders fetched:", data);
+      console.log("Pedidos obtidos:", data);
       
       if (!isMounted.current) return;
       
-      // Convert the OrderTransformed[] to Order[]
+      // Converter OrderTransformed[] para Order[]
       const transformedOrders: Order[] = data.map(order => ({
         id: order.id,
         customerId: order.customerId,
@@ -69,7 +88,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
       
       setOrders(transformedOrders);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      console.error("Erro ao buscar pedidos:", error);
       if (isMounted.current) {
         toast({
           variant: "destructive",
@@ -86,7 +105,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
     }
   };
 
-  // Update filters
+  // Atualizar filtros
   const setStatusFilter = (status: PaymentStatus | "ALL") => {
     setFilters(prev => ({ ...prev, statusFilter: status }));
   };
@@ -106,23 +125,22 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
     setFilters(prev => ({ ...prev, paymentMethod: method }));
   };
 
-  // Fetch orders when filters change
+  // Buscar pedidos quando os filtros mudarem
   useEffect(() => {
-    console.log("Filters changed, fetching orders...");
     fetchOrders();
     
-    // Cleanup function to prevent state updates after unmount
+    // Função de limpeza para evitar atualizações de estado após desmontagem
     return () => {
       isMounted.current = false;
     };
   }, [
     filters.paymentMethod, 
     filters.statusFilter, 
-    dateFilters.startDate, 
-    dateFilters.endDate
+    filters.dateRange,
+    JSON.stringify(filters.customDateRange)
   ]);
   
-  // Reset isMounted ref on mount
+  // Resetar isMounted ref ao montar
   useEffect(() => {
     isMounted.current = true;
     return () => {
@@ -142,9 +160,9 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
     setDateRange,
     setCustomDateRange,
     changePaymentMethod,
-    updateOrderStatus: async () => {}, // Will be implemented in useOrdersActions
-    deleteOrder: async () => {}, // Will be implemented in useOrdersActions
-    deleteAllOrders: async () => {}, // Will be implemented in useOrdersActions
+    updateOrderStatus: async () => {}, // Será implementado em useOrdersActions
+    deleteOrder: async () => {}, // Será implementado em useOrdersActions
+    deleteAllOrders: async () => {}, // Será implementado em useOrdersActions
     fetchOrders,
   };
 }
