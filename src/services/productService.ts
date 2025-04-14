@@ -26,12 +26,7 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
     }
 
     console.log("[productService] Raw product data from database:", data);
-    console.log("[productService] WhatsApp support details:", {
-      has_whatsapp_support: data.has_whatsapp_support,
-      whatsapp_number: data.whatsapp_number,
-      supportType: typeof data.has_whatsapp_support,
-      numberType: typeof data.whatsapp_number
-    });
+    console.log("[productService] Banner image URL:", data.banner_image_url);
 
     // Map the database product to our Product type with WhatsApp support
     const product = {
@@ -48,14 +43,12 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
       slug: data.slug,
       has_whatsapp_support: data.has_whatsapp_support || false,
       whatsapp_number: data.whatsapp_number || undefined,
-      bannerImageUrl: data.banner_image_url || undefined // Added for product-specific banner
+      bannerImageUrl: data.banner_image_url || undefined // Ensure banner image URL is extracted
     };
 
-    console.log("[productService] Mapped product with details:", {
+    console.log("[productService] Product with banner details:", {
       id: product.id,
       name: product.name,
-      has_whatsapp_support: product.has_whatsapp_support,
-      whatsapp_number: product.whatsapp_number,
       bannerImageUrl: product.bannerImageUrl
     });
 

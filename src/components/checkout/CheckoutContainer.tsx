@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -6,6 +7,7 @@ import { CheckoutFooter } from './CheckoutFooter';
 
 interface CheckoutContainerProps {
   children: React.ReactNode;
+  productBannerUrl?: string; // Add prop for product-specific banner
 }
 
 interface CheckoutCustomization {
@@ -19,7 +21,10 @@ interface CheckoutCustomization {
   banner_color?: string;
 }
 
-const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
+const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ 
+  children,
+  productBannerUrl // Get product-specific banner URL
+}) => {
   const { toast } = useToast();
   const [customization, setCustomization] = useState<CheckoutCustomization>({
     button_color: '#28A745',
@@ -81,6 +86,15 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
     '--heading-color': customization.heading_color || '#000000',
   } as React.CSSProperties;
 
+  // Use product-specific banner URL if available, otherwise fall back to global setting
+  const bannerImageUrl = productBannerUrl || customization.banner_image_url;
+  
+  console.log('Banner image being used:', { 
+    productBanner: productBannerUrl, 
+    globalBanner: customization.banner_image_url,
+    finalBanner: bannerImageUrl 
+  });
+
   // Show a simple loading state while customization is loading
   if (!isCustomizationLoaded) {
     return (
@@ -100,7 +114,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ children }) => {
                 message={customization.header_message || 'Oferta por tempo limitado!'} 
                 initialMinutes={5} 
                 initialSeconds={0} 
-                bannerImageUrl={customization.banner_image_url}
+                bannerImageUrl={bannerImageUrl}
                 containerClassName="w-full"
               />
             )}

@@ -39,6 +39,7 @@ const Checkout: React.FC = () => {
           
           if (foundProduct) {
             console.log(`Found product:`, foundProduct);
+            console.log(`Product banner URL:`, foundProduct.bannerImageUrl); // Log the banner URL specifically
             setProduct(foundProduct);
             return;
           } else {
@@ -130,7 +131,7 @@ const Checkout: React.FC = () => {
   };
 
   return (
-    <CheckoutContainer>
+    <CheckoutContainer productBannerUrl={product.bannerImageUrl}>
       <CheckoutContent 
         product={product}
         customerData={customerData}
