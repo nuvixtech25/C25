@@ -23,6 +23,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
   const isMounted = useRef(true);
   const isFirstRender = useRef(true);
   const previousFilterRef = useRef<string>('');
+  const fetchingRef = useRef<boolean>(false);
 
   // Calcular filtros de data baseados na seleção
   const dateFilters = calculateDateFilters(filters.dateRange, filters.customDateRange);
@@ -30,25 +31,15 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
   // Cálculos de resumo
   const ordersSummary = calculateOrdersSummary(orders);
 
-  // Função para simplificar estruturas de data complexas para exibição em logs
-  const simplifyDates = (obj: any) => {
-    const result = {...obj};
-    if (result.startDate) {
-      result.startDate = result.startDate instanceof Date 
-        ? result.startDate.toISOString() 
-        : String(result.startDate);
-    }
-    if (result.endDate) {
-      result.endDate = result.endDate instanceof Date 
-        ? result.endDate.toISOString() 
-        : String(result.endDate);
-    }
-    return result;
-  };
-
   // Buscar pedidos com filtros atuais
   const fetchOrders = async () => {
     try {
+      // Evitar chamadas simultâneas
+      if (fetchingRef.current) {
+        console.log("Já existe uma busca em andamento, ignorando solicitação");
+        return;
+      }
+
       // Preparar dados para comparação
       const filterForComparison = {
         paymentMethod: filters.paymentMethod,
@@ -58,7 +49,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
       };
       
       // Criar uma string para comparação de filtros
-      const currentFilterString = JSON.stringify(simplifyDates(filterForComparison));
+      const currentFilterString = JSON.stringify(filterForComparison);
 
       // Se os filtros não mudaram, não refazer a busca
       if (currentFilterString === previousFilterRef.current && !isFirstRender.current) {
@@ -69,10 +60,11 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
       console.log("Buscando pedidos com filtros:", { 
         paymentMethod: filters.paymentMethod, 
         statusFilter: filters.statusFilter, 
-        dateFilters: simplifyDates(dateFilters)
+        dateFilters
       });
       
       setLoading(true);
+      fetchingRef.current = true;
       previousFilterRef.current = currentFilterString;
       isFirstRender.current = false;
 
@@ -107,6 +99,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
       
       setOrders(transformedOrders);
       setLoading(false);
+      fetchingRef.current = false;
     } catch (error) {
       console.error("Erro ao buscar pedidos:", error);
       if (isMounted.current) {
@@ -118,6 +111,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
         // Definindo orders como array vazio em caso de erro
         setOrders([]);
         setLoading(false);
+        fetchingRef.current = false;
       }
     }
   };

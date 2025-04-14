@@ -7,9 +7,22 @@ import { mockApiPlugin } from "./src/mocks/mockPlugin";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: "./", // Add explicit base path for assets
   server: {
     host: "::",
     port: 8080,
+  },
+  build: {
+    // Ensure proper output directory
+    outDir: "dist",
+    // Generate manifest for better asset tracking
+    manifest: true,
+    // Ensure chunks are properly named
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
   plugins: [
     react(),

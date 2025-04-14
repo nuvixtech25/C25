@@ -28,7 +28,7 @@ export const getOrders = async ({
 
     // Aplicar filtro de data se ambas as datas forem fornecidas
     if (startDate && endDate) {
-      // Converter datas para strings ISO de forma segura
+      // Converter datas para strings ISO de forma segura e simples
       const startDateStr = typeof startDate === 'string' 
         ? startDate 
         : startDate instanceof Date 
