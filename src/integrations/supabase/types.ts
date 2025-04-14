@@ -396,6 +396,7 @@ export type Database = {
       }
       products: {
         Row: {
+          banner_image_url: string | null
           created_at: string
           description: string | null
           has_whatsapp_support: boolean | null
@@ -410,6 +411,7 @@ export type Database = {
           whatsapp_number: string | null
         }
         Insert: {
+          banner_image_url?: string | null
           created_at?: string
           description?: string | null
           has_whatsapp_support?: boolean | null
@@ -424,6 +426,7 @@ export type Database = {
           whatsapp_number?: string | null
         }
         Update: {
+          banner_image_url?: string | null
           created_at?: string
           description?: string | null
           has_whatsapp_support?: boolean | null
