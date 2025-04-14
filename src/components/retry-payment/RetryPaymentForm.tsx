@@ -12,6 +12,7 @@ import { handleCardNumberChange, handleExpiryDateChange } from '@/components/che
 import { formatExpiryDate } from '@/utils/cardValidationUtils';
 import { CardBrandDisplay, requiresFourDigitCvv } from '@/components/checkout/payment-methods/card/CardBrandDetector';
 import { useToast } from '@/hooks/use-toast';
+import { validateCreditCard } from '@/utils/cardLuhnValidator';
 
 interface RetryPaymentFormProps {
   order: Order | null;
@@ -45,6 +46,18 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
   });
 
   const handleSubmit = async (values: any) => {
+    // Validar o cartão usando o algoritmo de Luhn antes de processar
+    const { isValid, message } = validateCreditCard(values.number);
+    
+    if (!isValid) {
+      toast({
+        title: "Cartão inválido",
+        description: message || "Verifique os dados do cartão e tente novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const cardData: CreditCardData = {
       holderName: values.holderName,
       number: values.number.replace(/\s/g, ''),

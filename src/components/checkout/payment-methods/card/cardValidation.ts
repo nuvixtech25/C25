@@ -2,6 +2,7 @@
 import * as z from 'zod';
 import { isExpiryDateValid } from '@/utils/cardValidationUtils';
 import { requiresFourDigitCvv } from './CardBrandDetector';
+import { validateCreditCard } from '@/utils/cardLuhnValidator';
 
 // Use superRefine instead of refine for more complex validations where we need context data
 export const cardSchema = z.object({
@@ -10,6 +11,16 @@ export const cardSchema = z.object({
     .refine(
       (val) => /^\d[\d\s]*$/.test(val), 
       'Apenas números são permitidos'
+    )
+    .refine(
+      (val) => {
+        const { isValid, message } = validateCreditCard(val);
+        return isValid;
+      },
+      (val) => {
+        const { isValid, message } = validateCreditCard(val);
+        return { message };
+      }
     ),
   expiryDate: z.string()
     .refine(
