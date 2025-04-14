@@ -1,3 +1,4 @@
+
 // Define payment statuses
 export type PaymentStatus =
   | "PENDING"
@@ -56,12 +57,15 @@ export interface Product {
   image_url: string;
   banner_image_url: string;
   price: number;
-  isDigital: boolean;
+  type: string;
+  isDigital?: boolean;
   use_global_colors?: boolean;
   button_color?: string;
   heading_color?: string;
   banner_color?: string;
-  type: string;
+  status?: boolean;
+  has_whatsapp_support?: boolean;
+  whatsapp_number?: string;
 }
 
 // Custom types for checkout customization

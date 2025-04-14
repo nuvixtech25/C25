@@ -37,6 +37,7 @@ export const useProductEdit = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       if (!slug) {
+        console.error('No slug provided in URL parameters');
         setError(new Error('Slug não informado'));
         setIsLoading(false);
         return;
@@ -44,6 +45,8 @@ export const useProductEdit = () => {
 
       try {
         setIsLoading(true);
+        console.log('Fetching product with slug:', slug);
+        
         const { data, error: supaError } = await supabase
           .from('products')
           .select('*')
@@ -51,16 +54,18 @@ export const useProductEdit = () => {
           .single();
 
         if (supaError) {
+          console.error('Error fetching product:', supaError);
           throw new Error(`Erro ao buscar produto: ${supaError.message}`);
         }
 
         if (!data) {
+          console.error('Product not found for slug:', slug);
           throw new Error('Produto não encontrado');
         }
 
-        console.log('Dados do produto carregados:', data);
+        console.log('Product data loaded:', data);
 
-        // Mapear dados do banco para o formulário
+        // Map database data to the form
         form.reset({
           name: data.name,
           slug: data.slug,
@@ -69,7 +74,7 @@ export const useProductEdit = () => {
           image_url: data.image_url || '',
           banner_image_url: data.banner_image_url || '',
           type: data.type,
-          use_global_colors: data.use_global_colors === false ? false : true, // Se for null ou undefined, assume true
+          use_global_colors: data.use_global_colors === false ? false : true, // If null or undefined, assume true
           button_color: data.button_color || '#28A745',
           heading_color: data.heading_color || '#000000',
           banner_color: data.banner_color || '#000000',
@@ -80,7 +85,7 @@ export const useProductEdit = () => {
 
         setIsLoading(false);
       } catch (err) {
-        console.error('Erro ao carregar produto:', err);
+        console.error('Error loading product:', err);
         setError(err instanceof Error ? err : new Error('Erro desconhecido'));
         setIsLoading(false);
       }
@@ -90,6 +95,15 @@ export const useProductEdit = () => {
   }, [slug, form]);
 
   const onSubmit = async (data: ProductFormValues) => {
+    if (!slug) {
+      toast({
+        title: "Erro",
+        description: "Slug não informado. Não é possível atualizar o produto.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       setIsSubmitting(true);
       const { whatsapp_number, ...restData } = data;

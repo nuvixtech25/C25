@@ -28,24 +28,32 @@ interface AppearanceSectionProps {
 const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
   const useGlobalColors = form.watch('use_global_colors');
   
-  // Garantir que os campos de cor sejam limpos quando usar cores globais
+  // Ensure color fields are properly managed based on global colors setting
   useEffect(() => {
     if (useGlobalColors) {
-      // Limpar os valores de cor quando usar cores globais for ativado
-      form.setValue('button_color', undefined);
-      form.setValue('heading_color', undefined);
-      form.setValue('banner_color', undefined);
+      // Clear color values when using global colors
+      form.setValue('button_color', undefined, { shouldDirty: true });
+      form.setValue('heading_color', undefined, { shouldDirty: true });
+      form.setValue('banner_color', undefined, { shouldDirty: true });
+      
+      console.log('Set to use global colors, clearing custom color values');
     } else {
-      // Definir valores padrão quando usar cores globais for desativado
+      // Set default values when not using global colors
       if (!form.getValues('button_color')) {
-        form.setValue('button_color', '#28A745');
+        form.setValue('button_color', '#28A745', { shouldDirty: true });
       }
       if (!form.getValues('heading_color')) {
-        form.setValue('heading_color', '#000000');
+        form.setValue('heading_color', '#000000', { shouldDirty: true });
       }
       if (!form.getValues('banner_color')) {
-        form.setValue('banner_color', '#000000');
+        form.setValue('banner_color', '#000000', { shouldDirty: true });
       }
+      
+      console.log('Set to use custom colors with values:', {
+        button: form.getValues('button_color'),
+        heading: form.getValues('heading_color'),
+        banner: form.getValues('banner_color')
+      });
     }
   }, [useGlobalColors, form]);
 
@@ -78,8 +86,9 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                       checked={field.value}
                       onCheckedChange={(value) => {
                         field.onChange(value);
-                        // Forçar o estado no formulário
+                        // Force form state update
                         form.setValue('use_global_colors', value, { shouldDirty: true });
+                        console.log(`Switch changed to: ${value}`);
                       }}
                     />
                   </FormControl>

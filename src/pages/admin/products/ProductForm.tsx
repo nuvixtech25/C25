@@ -32,15 +32,32 @@ export function ProductForm({
   useEffect(() => {
     if (name && !isEditing && !form.getValues('slug')) {
       const generatedSlug = generateSlug(name);
-      form.setValue('slug', generatedSlug);
+      form.setValue('slug', generatedSlug, { shouldDirty: true });
+      console.log(`Generated slug: ${generatedSlug} from name: ${name}`);
     }
   }, [name, form, isEditing]);
+
+  // Log form values for debugging
+  useEffect(() => {
+    console.log('Current form values:', {
+      ...form.getValues(),
+      useGlobalColors: form.getValues('use_global_colors'),
+      buttonColor: form.getValues('button_color'),
+      headingColor: form.getValues('heading_color'),
+      bannerColor: form.getValues('banner_color')
+    });
+  }, [form.watch()]);
+
+  const handleSubmit = (values: ProductFormValues) => {
+    console.log('Form submitted with values:', values);
+    onSubmit(values);
+  };
 
   return (
     <Card>
       <CardContent className="pt-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <BasicInfoSection form={form} />
             <ImageSection form={form} />
             <TypeSection form={form} />

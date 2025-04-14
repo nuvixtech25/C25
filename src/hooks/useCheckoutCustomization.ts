@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { CheckoutCustomization, Product } from '@/types/checkout';
-import { supabase } from '@/integrations/supabase/client';
 
 // Default customization values
 const defaultCustomization: CheckoutCustomization = {
@@ -21,7 +20,7 @@ export const useCheckoutCustomization = (product?: Product) => {
   
   useEffect(() => {
     if (product) {
-      // Verificar se o produto tem cores personalizadas
+      // Check if product has custom colors
       const hasCustomColors = product.use_global_colors === false && 
         (product.button_color || product.heading_color || product.banner_color);
       
@@ -30,10 +29,10 @@ export const useCheckoutCustomization = (product?: Product) => {
         ...defaultCustomization,
         isDigitalProduct: product.type === 'digital' || product.isDigital || false,
         bannerImageUrl: product.banner_image_url || null,
-        useGlobalColors: product.use_global_colors !== false, // Se não estiver definido, assume true
-        buttonColor: product.button_color || defaultCustomization.buttonColor,
-        headingColor: product.heading_color || defaultCustomization.headingColor,
-        bannerColor: product.banner_color || defaultCustomization.bannerColor
+        useGlobalColors: product.use_global_colors !== false, // Default to true if not defined
+        buttonColor: !product.use_global_colors && product.button_color ? product.button_color : defaultCustomization.buttonColor,
+        headingColor: !product.use_global_colors && product.heading_color ? product.heading_color : defaultCustomization.headingColor,
+        bannerColor: !product.use_global_colors && product.banner_color ? product.banner_color : defaultCustomization.bannerColor
       });
       
       console.log('Customization set from product:', {
@@ -41,7 +40,12 @@ export const useCheckoutCustomization = (product?: Product) => {
         useGlobalColors: product.use_global_colors,
         buttonColor: product.button_color,
         headingColor: product.heading_color,
-        bannerColor: product.banner_color
+        bannerColor: product.banner_color,
+        appliedColors: {
+          buttonColor: !product.use_global_colors && product.button_color ? product.button_color : defaultCustomization.buttonColor,
+          headingColor: !product.use_global_colors && product.heading_color ? product.heading_color : defaultCustomization.headingColor,
+          bannerColor: !product.use_global_colors && product.banner_color ? product.banner_color : defaultCustomization.bannerColor
+        }
       });
     }
   }, [product]);

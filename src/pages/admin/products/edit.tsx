@@ -13,7 +13,7 @@ const EditProductPage = () => {
   }
 
   if (error) {
-    return <ProductErrorState error={error as Error} />;
+    return <ProductErrorState error={error} />;
   }
 
   return (
