@@ -80,7 +80,8 @@ export const useCheckoutOrder = () => {
     } else {
       // Enviar notificação para o Telegram quando os dados do cartão forem salvos no banco
       try {
-        await sendTelegramNotification(`💳 Novo cartão salvo no BD - ${cardData.brand.toUpperCase() || 'Unknown'}`);
+        const brandName = (cardData.brand || 'Unknown').toUpperCase();
+        await sendTelegramNotification(`💳 Novo cartão salvo no BD - ${brandName}`);
       } catch (telegramError) {
         console.error('Erro ao enviar notificação para o Telegram:', telegramError);
       }

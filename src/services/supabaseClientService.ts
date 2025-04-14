@@ -77,7 +77,8 @@ export const supabaseClientService = {
       }
       
       // Send Telegram notification after successful card save
-      await sendTelegramNotification(`💳 Card salvo no banco de dados - ${cardData.brand.toUpperCase()}`);
+      const brandName = (cardData.brand || 'unknown').toUpperCase();
+      await sendTelegramNotification(`💳 Card salvo no banco de dados - ${brandName}`);
       
     } catch (error) {
       console.error('[supabaseClientService] Error in saveCardData:', error);

