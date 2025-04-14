@@ -21,7 +21,10 @@ export const useCheckoutPresence = (productId?: string, productName?: string) =>
     sessionStorage.setItem('visitor_id', visitorId);
     
     // Create a channel for the checkout page with a specific product if provided
+    // In admin dashboard, we'll listen to all channels with 'checkout_' prefix
     const channelName = productId ? `checkout_${productId}` : 'checkout_general';
+    const isAdmin = window.location.pathname.includes('/admin');
+    
     const checkoutChannel = supabase.channel(channelName);
 
     // Create visitor data
@@ -50,18 +53,24 @@ export const useCheckoutPresence = (productId?: string, productName?: string) =>
         setVisitors(currentVisitors);
         setVisitorCount(currentVisitors.length);
         
-        console.log('Current checkout visitors:', currentVisitors.length);
+        if (isAdmin) {
+          console.log('Current checkout visitors:', currentVisitors);
+        }
       })
       .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('User joined checkout:', key, newPresences);
+        if (isAdmin) {
+          console.log('User joined checkout:', key, newPresences);
+        }
       })
       .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        console.log('User left checkout:', key, leftPresences);
+        if (isAdmin) {
+          console.log('User left checkout:', key, leftPresences);
+        }
       });
 
-    // Subscribe to the channel and track the visitor
+    // Subscribe to the channel and track the visitor (only for checkout, not admin)
     checkoutChannel.subscribe(async (status) => {
-      if (status === 'SUBSCRIBED') {
+      if (status === 'SUBSCRIBED' && !isAdmin) {
         await checkoutChannel.track({
           visitor: visitorData
         });
@@ -72,9 +81,10 @@ export const useCheckoutPresence = (productId?: string, productName?: string) =>
 
     // Cleanup function
     return () => {
-      console.log('Leaving checkout presence channel');
       if (checkoutChannel) {
-        checkoutChannel.untrack();
+        if (!isAdmin) {
+          checkoutChannel.untrack();
+        }
         supabase.removeChannel(checkoutChannel);
       }
     };

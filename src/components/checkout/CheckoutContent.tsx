@@ -7,8 +7,6 @@ import { PaymentMethodSection } from './payment-methods/PaymentMethodSection';
 import { OrderSummary } from './OrderSummary';
 import { AddressForm } from './address/AddressForm';
 import { useShippingMessage } from './address/useShippingMessage';
-import { CheckoutActiveVisitors } from './CheckoutActiveVisitors';
-import { useCheckoutPresence } from '@/hooks/useCheckoutPresence';
 
 interface CheckoutContentProps {
   product: Product;
@@ -37,9 +35,6 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
   const [addressData, setAddressData] = useState<AddressData | null>(null);
   const [showFreeShipping, setShowFreeShipping] = useState(false);
   
-  // Track real-time visitors on the checkout page
-  const { visitorCount } = useCheckoutPresence(product.id, product.name);
-  
   // Determine if product is physical based on the product type
   const isPhysicalProduct = product.type === 'physical';
   
@@ -55,9 +50,6 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Display real-time active visitors counter */}
-      <CheckoutActiveVisitors count={visitorCount} />
-      
       <PersonalInfoSection 
         onSubmit={onCustomerSubmit}
         headingColor={customization.headingColor}

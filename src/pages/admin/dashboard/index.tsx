@@ -7,6 +7,7 @@ import OrdersTimeChart from '@/components/admin/dashboard/OrdersTimeChart';
 import PaymentMethodsChart from '@/components/admin/dashboard/PaymentMethodsChart';
 import RevenueChart from '@/components/admin/dashboard/RevenueChart';
 import OrderStatusChart from '@/components/admin/dashboard/OrderStatusChart';
+import ActiveVisitorsCard from '@/components/admin/dashboard/ActiveVisitorsCard';
 
 const DashboardPage = () => {
   const {
@@ -31,6 +32,10 @@ const DashboardPage = () => {
         loading={statsLoading}
         period={period}
       />
+      
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <ActiveVisitorsCard />
+      </div>
       
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
         <OrdersTimeChart data={ordersOverTime} />
