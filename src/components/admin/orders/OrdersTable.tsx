@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Eye, Trash2, Edit, DollarSign, CreditCard } from "lucide-react";
+import { Eye, Trash2, Edit, DollarSign, CreditCard, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Order } from "@/types/checkout";
 import StatusBadge from "./StatusBadge";
@@ -37,8 +37,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   useEffect(() => {
     console.log("OrdersTable renderizado com estado:", { 
       quantidadePedidos: orders?.length, 
-      carregando: loading 
+      carregando: loading,
+      tipoDosPedidos: orders && orders.length > 0 ? typeof orders[0] : 'sem pedidos'
     });
+    
+    if (orders && orders.length > 0) {
+      console.log("Exemplo do primeiro pedido:", orders[0]);
+    }
   }, [orders, loading]);
 
   if (loading) {
@@ -53,7 +58,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   if (!orders || orders.length === 0) {
     return (
       <div className="bg-white p-8 text-center rounded-md shadow-sm">
-        <p className="text-gray-500">Nenhum pedido encontrado.</p>
+        <AlertTriangle className="mx-auto h-12 w-12 text-amber-500 mb-4" />
+        <p className="text-gray-700 font-medium">Nenhum pedido encontrado.</p>
+        <p className="text-gray-500 mt-2">
+          Verifique os filtros aplicados ou se existem pedidos no sistema.
+        </p>
       </div>
     );
   }

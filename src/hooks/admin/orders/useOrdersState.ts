@@ -30,15 +30,34 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
   // Cálculos de resumo
   const ordersSummary = calculateOrdersSummary(orders);
 
+  // Função para simplificar estruturas de data complexas para exibição em logs
+  const simplifyDates = (obj: any) => {
+    const result = {...obj};
+    if (result.startDate) {
+      result.startDate = result.startDate instanceof Date 
+        ? result.startDate.toISOString() 
+        : String(result.startDate);
+    }
+    if (result.endDate) {
+      result.endDate = result.endDate instanceof Date 
+        ? result.endDate.toISOString() 
+        : String(result.endDate);
+    }
+    return result;
+  };
+
   // Buscar pedidos com filtros atuais
   const fetchOrders = async () => {
-    // Criar uma string para comparação de filtros
-    const currentFilterString = JSON.stringify({
+    // Preparar dados para comparação
+    const filterForComparison = {
       paymentMethod: filters.paymentMethod,
       statusFilter: filters.statusFilter,
       startDate: dateFilters.startDate,
       endDate: dateFilters.endDate
-    });
+    };
+    
+    // Criar uma string para comparação de filtros
+    const currentFilterString = JSON.stringify(simplifyDates(filterForComparison));
 
     // Se os filtros não mudaram, não refazer a busca
     if (currentFilterString === previousFilterRef.current && !isFirstRender.current) {
@@ -49,7 +68,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
     console.log("Buscando pedidos com filtros:", { 
       paymentMethod: filters.paymentMethod, 
       statusFilter: filters.statusFilter, 
-      dateFilters 
+      dateFilters: simplifyDates(dateFilters)
     });
     
     setLoading(true);

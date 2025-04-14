@@ -22,14 +22,29 @@ export const getOrders = async ({
     }
 
     // Aplicar filtro de status se não for "ALL"
-    if (status !== "ALL") {
+    if (status && status !== "ALL") {
       query = query.eq("status", status);
     }
 
     // Aplicar filtro de data se ambas as datas forem fornecidas
     if (startDate && endDate) {
-      query = query.gte("created_at", startDate.toISOString());
-      query = query.lte("created_at", endDate.toISOString());
+      // Verificar se as datas são objetos Date e convertê-los para string ISO
+      const startDateStr = startDate instanceof Date 
+        ? startDate.toISOString() 
+        : typeof startDate === 'object' && startDate._type === 'Date'
+          ? new Date(startDate.value.value).toISOString()
+          : startDate;
+          
+      const endDateStr = endDate instanceof Date 
+        ? endDate.toISOString() 
+        : typeof endDate === 'object' && endDate._type === 'Date'
+          ? new Date(endDate.value.value).toISOString()
+          : endDate;
+      
+      console.log("Aplicando filtros de data:", { startDateStr, endDateStr });
+      
+      query = query.gte("created_at", startDateStr);
+      query = query.lte("created_at", endDateStr);
     }
 
     const { data, error } = await query;
@@ -40,6 +55,9 @@ export const getOrders = async ({
     }
 
     console.log("Pedidos encontrados:", data?.length || 0);
+    if (data && data.length > 0) {
+      console.log("Exemplo do primeiro pedido:", data[0]);
+    }
     
     // Validar e transformar os dados
     return (data || []).map(order => ({
