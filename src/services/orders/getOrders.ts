@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { GetOrdersParams, OrderTransformed } from "./types";
+import { PaymentStatus } from "@/types/checkout";
 
 export const getOrders = async ({
   paymentMethod,
@@ -30,21 +31,23 @@ export const getOrders = async ({
     throw new Error(`Failed to fetch orders: ${error.message}`);
   }
 
-  // Validate and transform the data
+  // Transform the data to match the OrderTransformed interface
   return (data || []).map(order => ({
-    ...order,
-    productPrice: typeof order.product_price === 'number' || !isNaN(Number(order.product_price)) 
-      ? Number(order.product_price) 
-      : 0,
+    id: order.id,
+    customerId: order.customer_id,
     customerName: order.customer_name,
     customerEmail: order.customer_email,
     customerPhone: order.customer_phone,
     customerCpfCnpj: order.customer_cpf_cnpj,
-    customerId: order.customer_id,
+    productId: order.product_id || '', // Ensure productId is always provided
     productName: order.product_name,
+    productPrice: typeof order.product_price === 'number' || !isNaN(Number(order.product_price)) 
+      ? Number(order.product_price) 
+      : 0,
     paymentMethod: order.payment_method,
     createdAt: order.created_at,
-    status: order.status,
+    updatedAt: order.updated_at, // Ensure updatedAt is included
+    status: order.status as PaymentStatus,
     asaasPaymentId: order.asaas_payment_id
   }));
 };

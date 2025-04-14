@@ -10,16 +10,18 @@ export interface GetOrdersParams {
 
 export interface OrderTransformed {
   id: string;
+  customerId: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
   customerCpfCnpj: string;
-  customerId: string;
+  productId: string;
   productName: string;
   productPrice: number;
   paymentMethod: string;
   createdAt: string;
-  status: string;
+  updatedAt: string;
+  status: PaymentStatus;
   asaasPaymentId: string | null;
   [key: string]: any;
 }

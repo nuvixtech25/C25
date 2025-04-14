@@ -77,7 +77,26 @@ export function useOrders(initialPaymentMethod: "pix" | "creditCard" = "pix") {
       });
       
       console.log("Orders fetched:", data);
-      setOrders(data);
+      
+      // Convert the OrderTransformed[] to Order[]
+      const transformedOrders: Order[] = data.map(order => ({
+        id: order.id,
+        customerId: order.customerId,
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        customerPhone: order.customerPhone,
+        customerCpfCnpj: order.customerCpfCnpj,
+        productId: order.productId,
+        productName: order.productName,
+        productPrice: order.productPrice,
+        status: order.status as PaymentStatus,
+        paymentMethod: order.paymentMethod as "pix" | "creditCard",
+        asaasPaymentId: order.asaasPaymentId || undefined,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt
+      }));
+      
+      setOrders(transformedOrders);
     } catch (error) {
       console.error("Error fetching orders:", error);
       toast({
