@@ -76,8 +76,6 @@ export const AddressForm: React.FC<AddressFormProps> = ({ onAddressSubmit, headi
         headingColor={headingColor}
       />
       
-      <ShippingMessage show={showShippingMessage} />
-      
       <Form {...form}>
         <form className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -91,6 +89,9 @@ export const AddressForm: React.FC<AddressFormProps> = ({ onAddressSubmit, headi
             
             <AddressFormFields form={form} />
           </div>
+          
+          {/* Shipping message now appears after the form fields */}
+          <ShippingMessage show={showShippingMessage} />
         </form>
       </Form>
     </section>
