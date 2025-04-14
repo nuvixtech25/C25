@@ -7,7 +7,7 @@ import { mockApiPlugin } from "./src/mocks/mockPlugin";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "./", // Add explicit base path for assets
+  base: "/", // Use root-relative paths for assets
   server: {
     host: "::",
     port: 8080,
@@ -17,10 +17,13 @@ export default defineConfig(({ mode }) => ({
     outDir: "dist",
     // Generate manifest for better asset tracking
     manifest: true,
-    // Ensure chunks are properly named
+    // Improve chunk naming for better caching
     rollupOptions: {
       output: {
         manualChunks: undefined,
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
       },
     },
   },

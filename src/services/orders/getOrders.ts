@@ -33,13 +33,13 @@ export const getOrders = async ({
         ? startDate 
         : startDate instanceof Date 
           ? startDate.toISOString() 
-          : new Date().toISOString();
+          : new Date(startDate).toISOString();
           
       const endDateStr = typeof endDate === 'string' 
         ? endDate 
         : endDate instanceof Date 
           ? endDate.toISOString() 
-          : new Date().toISOString();
+          : new Date(endDate).toISOString();
       
       console.log("Aplicando filtros de data:", { startDateStr, endDateStr });
       
