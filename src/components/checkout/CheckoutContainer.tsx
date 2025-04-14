@@ -59,7 +59,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
           .select('button_color, button_text_color, button_text, header_message, banner_image_url, show_banner, heading_color, banner_color')
           .order('id', { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error('Error fetching checkout customization:', error);

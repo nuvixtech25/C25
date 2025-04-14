@@ -96,10 +96,10 @@ const EditProductPage = () => {
         slug: productData.slug,
         has_whatsapp_support: productData.has_whatsapp_support || false,
         whatsapp_number: productData.whatsapp_number || '',
-        use_global_colors: productData.use_global_colors !== false, // Default to true if not explicitly false
-        button_color: productData.button_color || '#28A745',
-        heading_color: productData.heading_color || '#000000',
-        banner_color: productData.banner_color || '#000000',
+        use_global_colors: true, // Default to true since these columns might not exist yet
+        button_color: '#28A745',
+        heading_color: '#000000',
+        banner_color: '#000000',
       });
 
       return productData;
@@ -118,13 +118,10 @@ const EditProductPage = () => {
         ...data, 
         slug,
         has_whatsapp_support: data.has_whatsapp_support,
-        whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
-        use_global_colors: data.use_global_colors,
-        button_color: data.use_global_colors ? null : data.button_color,
-        heading_color: data.use_global_colors ? null : data.heading_color,
-        banner_color: data.use_global_colors ? null : data.banner_color
+        whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null
       });
       
+      // We're removing custom color fields for now until the database schema is updated
       const { data: updatedData, error } = await supabase
         .from('products')
         .update({
@@ -137,11 +134,8 @@ const EditProductPage = () => {
           status: data.status,
           slug: slug,
           has_whatsapp_support: data.has_whatsapp_support,
-          whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
-          use_global_colors: data.use_global_colors,
-          button_color: data.use_global_colors ? null : data.button_color,
-          heading_color: data.use_global_colors ? null : data.heading_color,
-          banner_color: data.use_global_colors ? null : data.banner_color
+          whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null
+          // Removed color fields until database schema is updated
         })
         .eq('id', id)
         .select();

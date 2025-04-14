@@ -26,12 +26,9 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
     }
 
     console.log("[productService] Raw product data from database:", data);
-    console.log("[productService] Custom colors:", {
-      use_global_colors: data.use_global_colors,
-      button_color: data.button_color,
-      heading_color: data.heading_color,
-      banner_color: data.banner_color
-    });
+    
+    // For now, we'll use default values for custom colors since the database columns don't exist yet
+    console.log("[productService] Using default custom colors");
 
     // Map the database product to our Product type with all custom fields
     const product = {
@@ -50,14 +47,14 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
       whatsapp_number: data.whatsapp_number || undefined,
       bannerImageUrl: data.banner_image_url || undefined, // Banner image URL
       
-      // Product-specific colors
-      useGlobalColors: data.use_global_colors !== false, // Default to true if not specified
-      buttonColor: data.button_color || undefined,
-      headingColor: data.heading_color || undefined,
-      bannerColor: data.banner_color || undefined
+      // Default colors, since the database columns don't exist yet
+      useGlobalColors: true, 
+      buttonColor: undefined,
+      headingColor: undefined,
+      bannerColor: undefined
     };
 
-    console.log("[productService] Product with custom colors:", {
+    console.log("[productService] Product mapped with default colors:", {
       id: product.id,
       name: product.name,
       useGlobalColors: product.useGlobalColors,
