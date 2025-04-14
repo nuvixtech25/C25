@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { UseFormReturn } from 'react-hook-form';
-import { Save, ArrowLeft } from 'lucide-react';
+import { Save, ArrowLeft, Paintbrush } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,8 +23,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Switch } from '@/components/ui/switch';
 import { ProductFormValues, generateSlug } from './ProductSchema';
+import { ColorPicker } from '../components/ColorPicker';
 
 interface ProductFormProps {
   form: UseFormReturn<ProductFormValues>;
@@ -44,6 +51,9 @@ export function ProductForm({
   
   // Watch has_whatsapp_support to conditionally show whatsapp_number field
   const hasWhatsappSupport = form.watch('has_whatsapp_support');
+
+  // Watch use_global_colors to conditionally show color fields
+  const useGlobalColors = form.watch('use_global_colors');
 
   // Generate slug when name changes
   useEffect(() => {
@@ -204,6 +214,119 @@ export function ProductForm({
                 )}
               />
             </div>
+
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="appearance">
+                <AccordionTrigger className="font-semibold">
+                  <div className="flex items-center">
+                    <Paintbrush className="h-4 w-4 mr-2" />
+                    Aparência Personalizada
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 pt-2">
+                    <FormField
+                      control={form.control}
+                      name="use_global_colors"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">
+                              Usar cores globais
+                            </FormLabel>
+                            <FormDescription>
+                              Ative para usar as cores padrão definidas nas configurações de checkout
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    {!useGlobalColors && (
+                      <div className="space-y-4 pt-2">
+                        <FormField
+                          control={form.control}
+                          name="button_color"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Cor do Botão</FormLabel>
+                              <div className="flex gap-2">
+                                <ColorPicker 
+                                  color={field.value || '#28A745'} 
+                                  onChange={(color) => field.onChange(color)} 
+                                />
+                                <Input
+                                  {...field}
+                                  value={field.value || '#28A745'}
+                                />
+                              </div>
+                              <FormDescription>
+                                Cor do botão de finalizar compra
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="heading_color"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Cor dos Títulos</FormLabel>
+                              <div className="flex gap-2">
+                                <ColorPicker 
+                                  color={field.value || '#000000'} 
+                                  onChange={(color) => field.onChange(color)} 
+                                />
+                                <Input
+                                  {...field}
+                                  value={field.value || '#000000'}
+                                />
+                              </div>
+                              <FormDescription>
+                                Cor dos títulos e textos principais
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="banner_color"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Cor do Banner</FormLabel>
+                              <div className="flex gap-2">
+                                <ColorPicker 
+                                  color={field.value || '#000000'} 
+                                  onChange={(color) => field.onChange(color)} 
+                                />
+                                <Input
+                                  {...field}
+                                  value={field.value || '#000000'}
+                                />
+                              </div>
+                              <FormDescription>
+                                Cor de fundo do banner de contagem regressiva
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
 
             <FormField
               control={form.control}

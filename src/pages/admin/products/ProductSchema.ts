@@ -21,7 +21,11 @@ export const productSchema = z.object({
       return /^\d+$/.test(val);
     }, {
       message: 'O número deve conter apenas dígitos',
-    })
+    }),
+  use_global_colors: z.boolean().default(true),
+  button_color: z.string().optional(),
+  heading_color: z.string().optional(),
+  banner_color: z.string().optional()
 });
 
 export type ProductFormValues = z.infer<typeof productSchema>;

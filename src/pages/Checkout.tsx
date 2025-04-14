@@ -89,7 +89,11 @@ const Checkout: React.FC = () => {
             has_whatsapp_support: data.has_whatsapp_support,
             whatsapp_number: data.whatsapp_number,
             type: data.type || 'digital',
-            bannerImageUrl: data.banner_image_url // Added product-specific banner
+            bannerImageUrl: data.banner_image_url, // Banner image URL
+            useGlobalColors: data.use_global_colors !== false, // Default to true if not specified
+            buttonColor: data.button_color,
+            headingColor: data.heading_color,
+            bannerColor: data.banner_color
           });
         }
       } catch (err) {
@@ -119,16 +123,33 @@ const Checkout: React.FC = () => {
     return <CheckoutError message={`Produto "${productSlug || ''}" não encontrado.`} />;
   }
 
+  // Create a customization object for the checkout, using product-specific colors if available
   const customization: CheckoutCustomization = {
-    headingColor: '#000000',
-    buttonColor: '#28A745',
+    // If product has specific colors and doesn't use global colors, use them
+    headingColor: (!product.useGlobalColors && product.headingColor) || '#000000',
+    buttonColor: (!product.useGlobalColors && product.buttonColor) || '#28A745',
     buttonText: 'Finalizar Compra',
-    bannerImageUrl: product.bannerImageUrl || '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png', // Use product-specific banner if available
+    bannerImageUrl: product.bannerImageUrl || '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png',
     topMessage: 'Oferta por tempo limitado!',
     countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     isDigitalProduct: product.type === 'digital',
-    bannerColor: '#000000'
+    bannerColor: (!product.useGlobalColors && product.bannerColor) || '#000000'
   };
+
+  // Log the resolved customization with colors
+  console.log('Checkout customization:', {
+    useGlobalColors: product.useGlobalColors,
+    productColors: {
+      headingColor: product.headingColor,
+      buttonColor: product.buttonColor,
+      bannerColor: product.bannerColor
+    },
+    finalColors: {
+      headingColor: customization.headingColor,
+      buttonColor: customization.buttonColor,
+      bannerColor: customization.bannerColor
+    }
+  });
 
   return (
     <CheckoutContainer productBannerUrl={product.bannerImageUrl}>

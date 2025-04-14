@@ -43,13 +43,22 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
       slug: data.slug,
       has_whatsapp_support: data.has_whatsapp_support || false,
       whatsapp_number: data.whatsapp_number || undefined,
-      bannerImageUrl: data.banner_image_url || undefined // Ensure banner image URL is extracted
+      bannerImageUrl: data.banner_image_url || undefined, // Banner image URL
+      
+      // Product-specific colors
+      useGlobalColors: data.use_global_colors !== false, // Default to true if not specified
+      buttonColor: data.button_color || undefined,
+      headingColor: data.heading_color || undefined,
+      bannerColor: data.banner_color || undefined
     };
 
-    console.log("[productService] Product with banner details:", {
+    console.log("[productService] Product with custom colors:", {
       id: product.id,
       name: product.name,
-      bannerImageUrl: product.bannerImageUrl
+      useGlobalColors: product.useGlobalColors,
+      buttonColor: product.buttonColor,
+      headingColor: product.headingColor,
+      bannerColor: product.bannerColor
     });
 
     return product;
