@@ -78,7 +78,12 @@ export const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({ control 
           <FormItem>
             <FormLabel className="text-gray-700">Celular</FormLabel>
             <div className="flex">
-              <span className="inline-flex items-center px-3 text-gray-500 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md">
+              <span className="inline-flex items-center px-3 text-gray-500 bg-gray-100 border border-r-0 border-gray-300 rounded-l-md space-x-1">
+                <img 
+                  src="/public/lovable-uploads/66aecaa5-6bce-452c-8c96-8a755e163461.png" 
+                  alt="Brazil flag" 
+                  className="w-5 h-4 mr-1"
+                />
                 +55
               </span>
               <FormControl>
