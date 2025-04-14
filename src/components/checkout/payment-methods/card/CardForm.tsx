@@ -39,12 +39,13 @@ export const CardForm: React.FC<CardFormProps> = ({
   });
 
   const handleSubmit = async (values: z.infer<typeof cardSchema>) => {
+    const cardBrand = detectCardBrand(values.number);
     const cardData: CreditCardData = {
       holderName: values.holderName,
       number: values.number.replace(/\s/g, ''),
       expiryDate: values.expiryDate,
       cvv: values.cvv,
-      brand: detectCardBrand(values.number).brand,
+      brand: cardBrand.brand || 'unknown',
       installments: values.installments
     };
     

