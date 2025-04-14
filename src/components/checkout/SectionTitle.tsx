@@ -7,13 +7,15 @@ interface SectionTitleProps {
   title: string;
   icon?: React.ReactNode;
   showNumberBadge?: boolean;
+  headingColor?: string; // Added headingColor prop
 }
 
 export const SectionTitle: React.FC<SectionTitleProps> = ({ 
   number, 
   title, 
   icon, 
-  showNumberBadge = true 
+  showNumberBadge = true,
+  headingColor
 }) => {
   return (
     <div className="flex items-center mb-4">
@@ -24,7 +26,12 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
       ) : icon ? (
         <div className="mr-2">{icon}</div>
       ) : null}
-      <h2 className="text-base font-semibold text-black">{title}</h2>
+      <h2 
+        className="text-base font-semibold"
+        style={{ color: headingColor || 'black' }}
+      >
+        {title}
+      </h2>
     </div>
   );
 };
