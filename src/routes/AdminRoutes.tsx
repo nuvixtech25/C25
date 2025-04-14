@@ -1,64 +1,49 @@
 
 import React from 'react';
-import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
-import ProtectedRoute from '@/components/ProtectedRoute';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import RequireAuth from '@/contexts/auth/RequireAuth';
+
+// Admin
 import AdminLayout from '@/layouts/AdminLayout';
+import Dashboard from '@/pages/admin/dashboard';
 import AdminTools from '@/pages/admin/AdminTools';
-import DashboardPage from '@/pages/admin/dashboard';
+import ApiInformation from '@/pages/admin/ApiInformation';
+import AsaasSettings from '@/pages/admin/AsaasSettings';
 import PixSettings from '@/pages/admin/PixSettings';
 import PixelSettings from '@/pages/admin/PixelSettings';
-import AsaasSettings from '@/pages/admin/AsaasSettings';
-import WebhookSimulator from '@/pages/admin/WebhookSimulator';
-import Login from '@/pages/admin/Login';
-import NotFound from '@/pages/NotFound';
-import OrdersPage from '@/pages/admin/orders';
-import CreditCardsPage from '@/pages/admin/credit-cards';
+import LoginPage from '@/pages/admin/Login';
+import Orders from '@/pages/admin/orders';
 import ProductsPage from '@/pages/admin/products';
 import NewProductPage from '@/pages/admin/products/new';
 import EditProductPage from '@/pages/admin/products/edit';
-import ApiInformation from '@/pages/admin/ApiInformation';
-import PaymentRetryAnalytics from '@/pages/admin/analytics/PaymentRetryAnalytics';
+import CheckoutPreview from '@/pages/admin/CheckoutPreview';
+import WebhookSimulator from '@/pages/admin/WebhookSimulator';
 import TelegramSetupPage from '@/pages/admin/TelegramSetupPage';
+import PaymentRetryAnalytics from '@/pages/admin/analytics/PaymentRetryAnalytics';
+import CreditCardsPage from '@/pages/admin/credit-cards';
 
 const AdminRoutes: React.FC = () => {
   return (
     <Routes>
-      {/* Rota de login (não protegida) */}
-      <Route path="/login" element={<Login />} />
-      
-      {/* Rota raiz - redireciona para dashboard */}
-      <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
-      
-      {/* Rotas protegidas com AdminLayout */}
-      <Route 
-        element={
-          <ProtectedRoute>
-            <AdminLayout>
-              <Outlet />
-            </AdminLayout>
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/tools" element={<AdminTools />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/new" element={<NewProductPage />} />
-        <Route path="/products/edit/:id" element={<EditProductPage />} />
-        <Route path="/products/:id/edit" element={<EditProductPage />} />
-        <Route path="/orders" element={<OrdersPage />} />
-        <Route path="/credit-cards" element={<CreditCardsPage />} />
-        <Route path="/pix-settings" element={<PixSettings />} />
-        <Route path="/pixel-settings" element={<PixelSettings />} />
-        <Route path="/asaas-settings" element={<AsaasSettings />} />
-        <Route path="/webhook-simulator" element={<WebhookSimulator />} />
-        <Route path="/api-information" element={<ApiInformation />} />
-        <Route path="/analytics/payment-retry" element={<PaymentRetryAnalytics />} />
-        <Route path="/telegram-setup" element={<TelegramSetupPage />} />
-        <Route path="/telegram-settings" element={<TelegramSetupPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route element={<RequireAuth><AdminLayout /></RequireAuth>}>
+        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="products" element={<ProductsPage />} />
+        <Route path="products/new" element={<NewProductPage />} />
+        <Route path="products/edit/:slug" element={<EditProductPage />} />
+        <Route path="admin-tools" element={<AdminTools />} />
+        <Route path="api-information" element={<ApiInformation />} />
+        <Route path="asaas-settings" element={<AsaasSettings />} />
+        <Route path="pix-settings" element={<PixSettings />} />
+        <Route path="pixel-settings" element={<PixelSettings />} />
+        <Route path="telegram-settings" element={<TelegramSetupPage />} />
+        <Route path="checkout/preview" element={<CheckoutPreview />} />
+        <Route path="webhook-simulator" element={<WebhookSimulator />} />
+        <Route path="analytics/retry-payment" element={<PaymentRetryAnalytics />} />
+        <Route path="credit-cards" element={<CreditCardsPage />} />
       </Route>
-      
-      {/* Rota de fallback para páginas administrativas não encontradas */}
-      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

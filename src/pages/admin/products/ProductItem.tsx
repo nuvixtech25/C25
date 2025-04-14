@@ -14,7 +14,7 @@ interface ProductItemProps {
 
 const ProductItem = ({ product, onDeleteClick }: ProductItemProps) => {
   // Create checkout URL using the product slug
-  const checkoutUrl = `/checkout/${product.slug || product.id}`;
+  const checkoutUrl = `/checkout/${product.slug}`;
   
   return (
     <TableRow key={product.id}>

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema, ProductFormValues } from '../ProductSchema';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { getProductBySlug, updateProduct } from '@/services/productService';
 
 export const useProductEdit = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -13,6 +14,7 @@ export const useProductEdit = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [productId, setProductId] = useState<string | null>(null);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -47,40 +49,32 @@ export const useProductEdit = () => {
         setIsLoading(true);
         console.log('Fetching product with slug:', slug);
         
-        const { data, error: supaError } = await supabase
-          .from('products')
-          .select('*')
-          .eq('slug', slug)
-          .single();
-
-        if (supaError) {
-          console.error('Error fetching product:', supaError);
-          throw new Error(`Erro ao buscar produto: ${supaError.message}`);
-        }
-
-        if (!data) {
+        const product = await getProductBySlug(slug);
+        
+        if (!product) {
           console.error('Product not found for slug:', slug);
           throw new Error('Produto não encontrado');
         }
 
-        console.log('Product data loaded:', data);
+        console.log('Product data loaded:', product);
+        setProductId(product.id);
 
         // Map database data to the form
         form.reset({
-          name: data.name,
-          slug: data.slug,
-          description: data.description || '',
-          price: data.price,
-          image_url: data.image_url || '',
-          banner_image_url: data.banner_image_url || '',
-          type: data.type,
-          use_global_colors: data.use_global_colors === false ? false : true, // If null or undefined, assume true
-          button_color: data.button_color || '#28A745',
-          heading_color: data.heading_color || '#000000',
-          banner_color: data.banner_color || '#000000',
-          status: data.status,
-          has_whatsapp_support: data.has_whatsapp_support || false,
-          whatsapp_number: data.whatsapp_number || '',
+          name: product.name,
+          slug: product.slug,
+          description: product.description || '',
+          price: product.price,
+          image_url: product.image_url || '',
+          banner_image_url: product.banner_image_url || '',
+          type: product.type,
+          use_global_colors: product.use_global_colors === false ? false : true, // If null or undefined, assume true
+          button_color: product.button_color || '#28A745',
+          heading_color: product.heading_color || '#000000',
+          banner_color: product.banner_color || '#000000',
+          status: product.status,
+          has_whatsapp_support: product.has_whatsapp_support || false,
+          whatsapp_number: product.whatsapp_number || '',
         });
 
         setIsLoading(false);
@@ -95,10 +89,10 @@ export const useProductEdit = () => {
   }, [slug, form]);
 
   const onSubmit = async (data: ProductFormValues) => {
-    if (!slug) {
+    if (!productId) {
       toast({
         title: "Erro",
-        description: "Slug não informado. Não é possível atualizar o produto.",
+        description: "ID do produto não encontrado. Não é possível atualizar o produto.",
         variant: "destructive",
       });
       return;
@@ -118,33 +112,25 @@ export const useProductEdit = () => {
         banner_color: data.use_global_colors ? null : data.banner_color,
       });
       
-      const { error } = await supabase
-        .from('products')
-        .update({
-          name: data.name,
-          description: data.description || null,
-          price: data.price,
-          image_url: data.image_url || null,
-          banner_image_url: data.banner_image_url || null,
-          type: data.type,
-          status: data.status,
-          has_whatsapp_support: data.has_whatsapp_support,
-          whatsapp_number: data.has_whatsapp_support ? whatsapp_number : null,
-          use_global_colors: data.use_global_colors,
-          button_color: data.use_global_colors ? null : data.button_color,
-          heading_color: data.use_global_colors ? null : data.heading_color,
-          banner_color: data.use_global_colors ? null : data.banner_color,
-        })
-        .eq('slug', slug);
+      const updatedProduct = await updateProduct(productId, {
+        name: data.name,
+        description: data.description || null,
+        price: data.price,
+        image_url: data.image_url || null,
+        banner_image_url: data.banner_image_url || null,
+        type: data.type,
+        status: data.status,
+        slug: data.slug,
+        has_whatsapp_support: data.has_whatsapp_support,
+        whatsapp_number: data.has_whatsapp_support ? whatsapp_number : null,
+        use_global_colors: data.use_global_colors,
+        button_color: data.use_global_colors ? null : data.button_color,
+        heading_color: data.use_global_colors ? null : data.heading_color,
+        banner_color: data.use_global_colors ? null : data.banner_color,
+      });
 
-      if (error) {
-        console.error('[EditProductPage] Erro ao atualizar produto:', error);
-        toast({
-          title: 'Erro ao atualizar produto',
-          description: error.message,
-          variant: 'destructive',
-        });
-        return;
+      if (!updatedProduct) {
+        throw new Error('Falha ao atualizar produto');
       }
 
       toast({

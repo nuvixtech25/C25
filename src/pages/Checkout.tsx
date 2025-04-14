@@ -7,15 +7,17 @@ import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { CheckoutNav } from '@/components/checkout/CheckoutNav';
 import { useCheckoutCustomization } from '@/hooks/useCheckoutCustomization';
 import { LoadingState } from '@/components/shared/LoadingState';
+import { ErrorState } from '@/components/shared/ErrorState';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { getProductBySlug } from '@/services/productService';
 import { Product } from '@/types/checkout';
 import { mapProductToCustomization } from '@/utils/propertyMappers';
 
 const Checkout = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { productSlug } = useParams<{ productSlug: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   
   const customization = useCheckoutCustomization(product || undefined);
@@ -33,29 +35,17 @@ const Checkout = () => {
   // Fetch product by slug
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!slug) {
+      if (!productSlug) {
         console.error("Slug não informado");
-        toast({
-          title: "Erro",
-          description: "Produto não encontrado",
-          variant: "destructive",
-        });
+        setError("Produto não encontrado. O código do produto (slug) não foi informado na URL.");
         setLoading(false);
         return;
       }
       
       try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('slug', slug)
-          .eq('status', true)
-          .single();
+        console.log("Fetching product with slug:", productSlug);
+        const data = await getProductBySlug(productSlug);
           
-        if (error) {
-          throw error;
-        }
-        
         if (!data) {
           throw new Error("Produto não encontrado");
         }
@@ -85,6 +75,7 @@ const Checkout = () => {
         
       } catch (error: any) {
         console.error("Erro ao carregar produto:", error);
+        setError("Não foi possível carregar o produto. Por favor, tente novamente.");
         toast({
           title: "Erro",
           description: "Não foi possível carregar o produto. Por favor, tente novamente.",
@@ -96,7 +87,7 @@ const Checkout = () => {
     };
     
     fetchProduct();
-  }, [slug, toast]);
+  }, [productSlug, toast]);
   
   // If loading or no product found
   if (loading) {
@@ -107,13 +98,15 @@ const Checkout = () => {
     );
   }
   
-  if (!product) {
+  if (error || !product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Produto não encontrado</h2>
-          <p className="text-gray-600">O produto que você está procurando não está disponível ou não existe.</p>
-        </div>
+        <ErrorState 
+          title="Produto não encontrado" 
+          message={error || "O produto que você está procurando não está disponível ou não existe."}
+          actionLink="/"
+          actionLabel="Voltar para a página inicial"
+        />
       </div>
     );
   }

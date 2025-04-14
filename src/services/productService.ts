@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export const getProducts = async () => {
@@ -21,6 +22,7 @@ export const getProducts = async () => {
 
 export const getProductBySlug = async (slug: string) => {
   try {
+    console.log('Fetching product by slug in service:', slug);
     const { data, error } = await supabase
       .from('products')
       .select('*')
@@ -116,5 +118,31 @@ export const deleteProduct = async (id: string): Promise<boolean> => {
   } catch (error) {
     console.error("Error deleting product:", error);
     return false;
+  }
+};
+
+// Adding fetchProducts function for backwards compatibility
+export const fetchProducts = async () => {
+  return getProducts();
+};
+
+// Adding handleDeleteProduct for compatibility
+export const handleDeleteProduct = async (
+  product: any, 
+  onSuccess?: () => void
+): Promise<void> => {
+  try {
+    if (!product || !product.id) {
+      console.error('Invalid product data');
+      return;
+    }
+
+    const deleted = await deleteProduct(product.id);
+    
+    if (deleted && onSuccess) {
+      onSuccess();
+    }
+  } catch (error) {
+    console.error('Error handling product deletion:', error);
   }
 };
