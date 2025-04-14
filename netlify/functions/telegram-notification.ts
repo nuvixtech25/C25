@@ -1,5 +1,11 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { Handler } from '@netlify/functions';
+import { createClient } from '@supabase/supabase-js';
+
+// Inicializar cliente Supabase
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function sendTelegramNotification(message: string) {
   try {
@@ -19,12 +25,12 @@ export async function sendTelegramNotification(message: string) {
 
     if (tokenError || chatIdError) {
       console.error('Telegram configuration not found', { tokenError, chatIdError });
-      return;
+      return false;
     }
 
     if (!tokenData?.value || !chatIdData?.value) {
       console.warn('Telegram settings are incomplete');
-      return;
+      return false;
     }
 
     const token = tokenData.value;
@@ -36,18 +42,57 @@ export async function sendTelegramNotification(message: string) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         chat_id, 
-        text: message 
+        text: message,
+        parse_mode: 'HTML' // Enable HTML formatting
       }),
     });
 
     if (!response.ok) {
       const errorBody = await response.text();
       console.error('Failed to send Telegram notification', errorBody);
+      return false;
     }
     
-    return response.ok;
+    console.log('Telegram notification sent successfully');
+    return true;
   } catch (error) {
     console.error('Error sending Telegram notification', error);
     return false;
   }
 }
+
+// Handler para permitir testes diretos através de chamadas à função
+export const handler: Handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ message: 'Method Not Allowed' }),
+    };
+  }
+
+  try {
+    const { message } = JSON.parse(event.body || '{}');
+    
+    if (!message) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: 'Missing required field: message' }),
+      };
+    }
+
+    const success = await sendTelegramNotification(message);
+    
+    return {
+      statusCode: success ? 200 : 500,
+      body: JSON.stringify({
+        success,
+        message: success ? 'Notification sent successfully' : 'Failed to send notification',
+      }),
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Internal server error', error: String(error) }),
+    };
+  }
+};
