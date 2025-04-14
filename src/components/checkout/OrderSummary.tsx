@@ -1,14 +1,20 @@
+
 import React from 'react';
 import { Product } from '@/types/checkout';
-import { Shield } from 'lucide-react';
+import { Shield, Truck } from 'lucide-react';
 import { SectionTitle } from './SectionTitle';
 
 interface OrderSummaryProps {
   product: Product;
   isDigitalProduct?: boolean;
+  showFreeShipping?: boolean;
 }
 
-export const OrderSummary: React.FC<OrderSummaryProps> = ({ product, isDigitalProduct = true }) => {
+export const OrderSummary: React.FC<OrderSummaryProps> = ({ 
+  product, 
+  isDigitalProduct = true,
+  showFreeShipping = false
+}) => {
   return (
     <section id="order-summary-section" className="mb-8">
       <SectionTitle number={4} title="Resumo do pedido" />
@@ -46,6 +52,17 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ product, isDigitalPr
             <span>Subtotal:</span>
             <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}</span>
           </div>
+          
+          {/* Display free shipping message if it's a physical product and shipping is available */}
+          {!isDigitalProduct && showFreeShipping && (
+            <div className="flex justify-between text-sm text-green-600 font-medium">
+              <span className="flex items-center">
+                <Truck className="h-4 w-4 mr-1" />
+                Frete:
+              </span>
+              <span>Grátis</span>
+            </div>
+          )}
           
           <div className="flex justify-between text-lg font-bold">
             <span>TOTAL:</span>

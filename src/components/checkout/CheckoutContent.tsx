@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from 'react';
 import { CheckoutCustomization, CustomerData, PaymentMethod, Product, AddressData } from '@/types/checkout';
 import { PersonalInfoSection } from './PersonalInfoSection';
@@ -5,6 +6,7 @@ import { TestimonialSection } from './TestimonialSection';
 import { PaymentMethodSection } from './payment-methods/PaymentMethodSection';
 import { OrderSummary } from './OrderSummary';
 import { AddressForm } from './address/AddressForm';
+import { useShippingMessage } from './address/useShippingMessage';
 
 interface CheckoutContentProps {
   product: Product;
@@ -31,12 +33,16 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
 }) => {
   const customerFormRef = useRef<HTMLFormElement>(null);
   const [addressData, setAddressData] = useState<AddressData | null>(null);
+  const [showFreeShipping, setShowFreeShipping] = useState(false);
   
   // Determine if product is physical based on the product type
   const isPhysicalProduct = product.type === 'physical';
   
   const handleAddressSubmit = (data: AddressData) => {
     setAddressData(data);
+    if (data.cep && data.number) {
+      setShowFreeShipping(true);
+    }
     if (onAddressSubmit) {
       onAddressSubmit(data);
     }
@@ -82,6 +88,7 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
       <OrderSummary 
         product={product}
         isDigitalProduct={!isPhysicalProduct}
+        showFreeShipping={showFreeShipping}
       />
     </div>
   );
