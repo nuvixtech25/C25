@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Paintbrush, LayoutTemplate, Clock, Text, Store } from 'lucide-react';
+import { Paintbrush, Text, Clock, Store } from 'lucide-react';
 import { CheckoutCustomizationSettings } from '@/types/customization';
 import { AppearanceTab } from './customization/AppearanceTab';
 import { ContentTab } from './customization/ContentTab';
@@ -22,7 +22,7 @@ export const AdminToolsTabs: React.FC<AdminToolsTabsProps> = ({
   handleSwitchChange
 }) => {
   return (
-    <Tabs defaultValue="appearance">
+    <Tabs defaultValue="appearance" className="w-full">
       <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="appearance">
           <Paintbrush className="h-4 w-4 mr-2" />
@@ -74,3 +74,5 @@ export const AdminToolsTabs: React.FC<AdminToolsTabsProps> = ({
   );
 };
 
+// Adicionar também exportação default para compatibilidade
+export default AdminToolsTabs;
