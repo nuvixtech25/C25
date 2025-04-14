@@ -1,3 +1,4 @@
+
 // Payment related types
 export type PaymentStatus = 'PENDING' | 'CONFIRMED' | 'RECEIVED' | 'OVERDUE' | 'REFUNDED' | 'CANCELLED' | 'FAILED' | 'DECLINED';
 export type PaymentMethod = 'pix' | 'creditCard';
@@ -38,6 +39,7 @@ export interface Product {
   whatsapp_number?: string;
   slug?: string;
   status?: boolean;
+  bannerImageUrl?: string; // Added for product-specific banner
 }
 
 // Customer data

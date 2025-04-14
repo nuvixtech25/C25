@@ -18,6 +18,7 @@ const NewProductPage = () => {
       description: '',
       price: 0,
       image_url: '',
+      banner_image_url: '',
       type: 'physical',
       status: true,
       has_whatsapp_support: false,
@@ -35,6 +36,7 @@ const NewProductPage = () => {
         slug,
         has_whatsapp_support: data.has_whatsapp_support,
         whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
+        banner_image_url: data.banner_image_url
       });
       
       // Use type assertion to tell TypeScript we know what we're doing
@@ -42,6 +44,7 @@ const NewProductPage = () => {
         name: data.name,
         description: data.description || null,
         image_url: data.image_url || null,
+        banner_image_url: data.banner_image_url || null,
         price: data.price,
         type: data.type,
         status: data.status,

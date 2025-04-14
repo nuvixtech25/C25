@@ -7,6 +7,7 @@ export const productSchema = z.object({
   description: z.string().optional(),
   price: z.coerce.number().min(0.01, 'Preço deve ser maior que zero'),
   image_url: z.string().url('URL inválida').optional().nullable(),
+  banner_image_url: z.string().url('URL inválida').optional().nullable(),
   type: z.enum(['digital', 'physical'], {
     required_error: 'Por favor, selecione o tipo do produto',
   }),

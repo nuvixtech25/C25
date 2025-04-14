@@ -87,7 +87,8 @@ const Checkout: React.FC = () => {
             imageUrl: data.image_url,
             has_whatsapp_support: data.has_whatsapp_support,
             whatsapp_number: data.whatsapp_number,
-            type: data.type || 'digital'
+            type: data.type || 'digital',
+            bannerImageUrl: data.banner_image_url // Added product-specific banner
           });
         }
       } catch (err) {
@@ -121,7 +122,7 @@ const Checkout: React.FC = () => {
     headingColor: '#000000',
     buttonColor: '#28A745',
     buttonText: 'Finalizar Compra',
-    bannerImageUrl: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png',
+    bannerImageUrl: product.bannerImageUrl || '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png', // Use product-specific banner if available
     topMessage: 'Oferta por tempo limitado!',
     countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     isDigitalProduct: product.type === 'digital',

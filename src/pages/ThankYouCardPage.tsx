@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
 import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
 import { PhysicalProductTestimonials } from '@/components/success-page/PhysicalProductTestimonials';
+import { CountdownBanner } from '@/components/CountdownBanner';
 
 const ThankYouCardPage = () => {
   const { state } = useLocation();
@@ -19,6 +20,11 @@ const ThankYouCardPage = () => {
   const isDigitalProduct = state?.product?.type === 'digital' || 
                            state?.isDigitalProduct ||
                            order?.productType === 'digital';
+                           
+  // Get product-specific banner if available
+  const bannerImageUrl = state?.product?.bannerImageUrl || 
+                         state?.bannerImageUrl || 
+                         '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png';
 
   // Log para depuração
   useEffect(() => {
@@ -26,14 +32,25 @@ const ThankYouCardPage = () => {
     console.log('[ThankYouCardPage] Número WhatsApp:', whatsappNumber);
     console.log('[ThankYouCardPage] Order:', order);
     console.log('[ThankYouCardPage] É produto digital:', isDigitalProduct);
+    console.log('[ThankYouCardPage] Banner Image URL:', bannerImageUrl);
     if (state?.product) {
       console.log('[ThankYouCardPage] Product data:', state.product);
     }
-  }, [state, whatsappNumber, order, isDigitalProduct]);
+  }, [state, whatsappNumber, order, isDigitalProduct, bannerImageUrl]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-white to-blue-50">
-      <Card className="max-w-md w-full shadow-xl border border-blue-100 rounded-xl overflow-hidden">
+      {bannerImageUrl && (
+        <div className="fixed top-0 left-0 right-0 z-10">
+          <CountdownBanner 
+            message="Oferta por tempo limitado!"
+            endTime={new Date(Date.now() + 24 * 60 * 60 * 1000)}
+            bannerImageUrl={bannerImageUrl}
+          />
+        </div>
+      )}
+      
+      <Card className="max-w-md w-full shadow-xl border border-blue-100 rounded-xl overflow-hidden mt-28">
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 w-full" />
         <CardHeader className="text-center">
           <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 ring-4 ring-blue-100">

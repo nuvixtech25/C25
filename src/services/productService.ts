@@ -47,14 +47,16 @@ export const fetchProductBySlug = async (slug: string): Promise<Product | null> 
       status: data.status,
       slug: data.slug,
       has_whatsapp_support: data.has_whatsapp_support || false,
-      whatsapp_number: data.whatsapp_number || undefined
+      whatsapp_number: data.whatsapp_number || undefined,
+      bannerImageUrl: data.banner_image_url || undefined // Added for product-specific banner
     };
 
-    console.log("[productService] Mapped product with WhatsApp details:", {
+    console.log("[productService] Mapped product with details:", {
       id: product.id,
       name: product.name,
       has_whatsapp_support: product.has_whatsapp_support,
-      whatsapp_number: product.whatsapp_number
+      whatsapp_number: product.whatsapp_number,
+      bannerImageUrl: product.bannerImageUrl
     });
 
     return product;

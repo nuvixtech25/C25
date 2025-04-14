@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -16,6 +17,7 @@ type ProductData = {
   description: string | null;
   price: number;
   image_url: string | null;
+  banner_image_url: string | null;
   type: 'digital' | 'physical';
   status: boolean;
   slug: string;
@@ -34,6 +36,7 @@ const EditProductPage = () => {
       description: '',
       price: 0,
       image_url: '',
+      banner_image_url: '',
       type: 'physical',
       status: true,
       has_whatsapp_support: false,
@@ -66,12 +69,7 @@ const EditProductPage = () => {
       const productData = data as ProductData;
       
       console.log('[EditProductPage] Product data from DB:', productData);
-      console.log('[EditProductPage] WhatsApp support details:', {
-        has_whatsapp_support: productData.has_whatsapp_support,
-        whatsapp_number: productData.whatsapp_number,
-        supportType: typeof productData.has_whatsapp_support,
-        numberType: typeof productData.whatsapp_number
-      });
+      console.log('[EditProductPage] Banner image URL:', productData.banner_image_url);
 
       // Set form values
       form.reset({
@@ -79,6 +77,7 @@ const EditProductPage = () => {
         description: productData.description || '',
         price: productData.price,
         image_url: productData.image_url || '',
+        banner_image_url: productData.banner_image_url || '',
         type: productData.type,
         status: productData.status,
         slug: productData.slug,
@@ -103,6 +102,7 @@ const EditProductPage = () => {
         slug,
         has_whatsapp_support: data.has_whatsapp_support,
         whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
+        banner_image_url: data.banner_image_url
       });
       
       const { data: updatedData, error } = await supabase
@@ -112,6 +112,7 @@ const EditProductPage = () => {
           description: data.description || null,
           price: data.price,
           image_url: data.image_url || null,
+          banner_image_url: data.banner_image_url || null,
           type: data.type,
           status: data.status,
           slug: slug,
