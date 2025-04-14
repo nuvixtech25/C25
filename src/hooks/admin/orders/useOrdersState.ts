@@ -24,6 +24,7 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
   const isFirstRender = useRef(true);
   const previousFilterRef = useRef<string>('');
   const fetchingRef = useRef<boolean>(false);
+  const requestIdRef = useRef<number>(0);
 
   // Calcular filtros de data baseados na seleção
   const dateFilters = calculateDateFilters(filters.dateRange, filters.customDateRange);
@@ -40,12 +41,15 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
         return;
       }
 
+      // Criar ID de solicitação único para esta chamada
+      const currentRequestId = ++requestIdRef.current;
+
       // Preparar dados para comparação
       const filterForComparison = {
         paymentMethod: filters.paymentMethod,
         statusFilter: filters.statusFilter,
-        startDate: dateFilters.startDate,
-        endDate: dateFilters.endDate
+        startDate: dateFilters.startDate ? new Date(dateFilters.startDate).getTime() : undefined,
+        endDate: dateFilters.endDate ? new Date(dateFilters.endDate).getTime() : undefined
       };
       
       // Criar uma string para comparação de filtros
@@ -75,9 +79,13 @@ export function useOrdersState(initialPaymentMethod: "pix" | "creditCard" = "pix
         endDate: dateFilters.endDate,
       });
       
-      console.log("Pedidos obtidos:", data);
+      // Ignorar resultado se outro pedido mais recente foi feito ou o componente foi desmontado
+      if (!isMounted.current || currentRequestId !== requestIdRef.current) {
+        console.log("Ignorando resultado de busca obsoleta ou componente desmontado");
+        return;
+      }
       
-      if (!isMounted.current) return;
+      console.log("Pedidos obtidos:", data);
       
       // Converter OrderTransformed[] para Order[]
       const transformedOrders: Order[] = data.map(order => ({

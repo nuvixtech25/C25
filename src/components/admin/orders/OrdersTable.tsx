@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Eye, Trash2, Edit, DollarSign, CreditCard, AlertTriangle } from "lucide-react";
+import { Eye, Trash2, Edit, DollarSign, CreditCard, AlertTriangle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Order } from "@/types/checkout";
 import StatusBadge from "./StatusBadge";
@@ -49,8 +49,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   if (loading) {
     return (
       <div className="py-10 text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <p className="mt-2 text-gray-500">Carregando pedidos...</p>
+        <div className="flex justify-center items-center space-x-2">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-gray-500 font-medium">Carregando pedidos...</p>
+        </div>
       </div>
     );
   }

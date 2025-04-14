@@ -28,18 +28,25 @@ export const getOrders = async ({
 
     // Aplicar filtro de data se ambas as datas forem fornecidas
     if (startDate && endDate) {
-      // Converter datas para strings ISO de forma segura e simples
-      const startDateStr = typeof startDate === 'string' 
-        ? startDate 
-        : startDate instanceof Date 
-          ? startDate.toISOString() 
-          : new Date(startDate).toISOString();
-          
-      const endDateStr = typeof endDate === 'string' 
-        ? endDate 
-        : endDate instanceof Date 
-          ? endDate.toISOString() 
-          : new Date(endDate).toISOString();
+      // Garantir que as datas sejam convertidas corretamente para strings ISO
+      const formatDate = (date: string | Date) => {
+        if (typeof date === 'string') {
+          return date; // Já é uma string
+        } else if (date instanceof Date) {
+          return date.toISOString(); // É um objeto Date
+        } else {
+          try {
+            // Tentativa de conversão segura
+            return new Date(date).toISOString();
+          } catch (err) {
+            console.error("Erro ao converter data:", date, err);
+            return new Date().toISOString(); // Fallback para data atual
+          }
+        }
+      };
+      
+      const startDateStr = formatDate(startDate);
+      const endDateStr = formatDate(endDate);
       
       console.log("Aplicando filtros de data:", { startDateStr, endDateStr });
       
