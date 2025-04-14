@@ -4,6 +4,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/comp
 import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
 import { AddressData } from '@/types/checkout';
+import { handleCepChange } from '@/utils/formatters';
 
 interface CepSearchProps {
   form: UseFormReturn<AddressData>;
@@ -16,20 +17,22 @@ export const CepSearch: React.FC<CepSearchProps> = ({ form, isSearching, onSearc
     <FormField
       control={form.control}
       name="cep"
-      render={({ field }) => (
+      render={({ field: { onChange, value, ...rest } }) => (
         <FormItem className="col-span-2 sm:col-span-1">
           <FormLabel>CEP</FormLabel>
           <FormControl>
             <Input 
               placeholder="00000-000" 
-              {...field} 
+              value={value}
+              {...rest}
               onChange={(e) => {
-                field.onChange(e);
-                if (e.target.value.length >= 8) {
+                handleCepChange(e, onChange);
+                if (e.target.value.replace(/\D/g, '').length >= 8) {
                   onSearch(e.target.value);
                 }
               }}
               disabled={isSearching}
+              maxLength={9}
             />
           </FormControl>
           <FormMessage />

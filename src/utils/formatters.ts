@@ -1,4 +1,3 @@
-
 export const formatCurrency = (value: number): string => {
   return value.toLocaleString('pt-BR', {
     style: 'currency',
@@ -131,6 +130,58 @@ export const formatPhone = (value: string): string => {
  */
 export const formatTime = (minutes: number, seconds: number): string => {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
+
+/**
+ * Format CEP as 00000-000
+ */
+export const formatCep = (value: string): string => {
+  const cleanValue = value.replace(/\D/g, '');
+  
+  if (cleanValue.length >= 5) {
+    return cleanValue.replace(/(\d{5})(\d{0,3})/, '$1-$2');
+  }
+  
+  return cleanValue;
+};
+
+/**
+ * Handles the CEP input formatting with proper cursor positioning
+ */
+export const handleCepChange = (
+  e: React.ChangeEvent<HTMLInputElement>, 
+  onChange: (...event: any[]) => void
+): void => {
+  const cursorPos = e.target.selectionStart ?? e.target.value.length;
+  const { value } = e.target;
+  
+  // Count special chars before cursor
+  const specialCharsBefore = (value.substring(0, cursorPos).match(/[-]/g) || []).length;
+  
+  // Format the value
+  const formatted = formatCep(value);
+  
+  // Update form value
+  onChange(formatted);
+  e.target.value = formatted;
+  
+  // Calculate new cursor position
+  const cleanValue = value.replace(/\D/g, '');
+  let newCursorPos = cursorPos;
+  
+  // CEP format: 00000-000
+  if (cleanValue.length > 5) newCursorPos += 1; // After dash
+  
+  // Adjust for deleted characters
+  const specialCharsAfter = (formatted.substring(0, newCursorPos).match(/[-]/g) || []).length;
+  newCursorPos -= Math.max(0, specialCharsBefore - specialCharsAfter);
+  
+  // Set cursor position
+  if (document.activeElement === e.target) {
+    setTimeout(() => {
+      e.target.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  }
 };
 
 /**

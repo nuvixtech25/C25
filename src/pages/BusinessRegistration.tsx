@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { handleCpfCnpjChange, handlePhoneChange } from '@/utils/formatters';
+import { handleCpfCnpjChange, handlePhoneChange, handleCepChange } from '@/utils/formatters';
 
 const businessSchema = z.object({
   name: z.string().min(2, 'Nome da empresa é obrigatório'),
@@ -160,9 +159,12 @@ const BusinessRegistration = () => {
                     <div className="space-y-2">
                       <label className="text-sm text-gray-300">CEP</label>
                       <Input
-                        {...form.register('zipCode')}
+                        {...form.register('zipCode', {
+                          onChange: (e) => handleCepChange(e, form.setValue.bind(null, 'zipCode'))
+                        })}
                         className="bg-gray-800 border-gray-700 text-white"
                         placeholder="00000-000"
+                        maxLength={9}
                       />
                       {form.formState.errors.zipCode && (
                         <p className="text-red-500 text-xs">{form.formState.errors.zipCode.message}</p>
