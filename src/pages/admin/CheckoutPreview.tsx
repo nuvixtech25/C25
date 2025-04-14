@@ -36,7 +36,8 @@ const CheckoutPreview: React.FC = () => {
   const updatedCustomization = {
     ...customization,
     topMessage: 'Oferta por tempo limitado!',
-    bannerImageUrl: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png'
+    bannerImageUrl: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png',
+    showRandomVisitors: true // Enable random visitors by default in preview
   };
 
   return (

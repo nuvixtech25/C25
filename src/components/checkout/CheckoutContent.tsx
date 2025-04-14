@@ -7,6 +7,7 @@ import { PaymentMethodSection } from './payment-methods/PaymentMethodSection';
 import { OrderSummary } from './OrderSummary';
 import { AddressForm } from './address/AddressForm';
 import { useShippingMessage } from './address/useShippingMessage';
+import { RandomVisitorsMessage } from './RandomVisitorsMessage';
 
 interface CheckoutContentProps {
   product: Product;
@@ -50,6 +51,9 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Add the Random Visitors Message component just below the banner */}
+      <RandomVisitorsMessage min={1} max={20} />
+      
       <PersonalInfoSection 
         onSubmit={onCustomerSubmit}
         headingColor={customization.headingColor}

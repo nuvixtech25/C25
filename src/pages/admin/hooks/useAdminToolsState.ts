@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { CheckoutCustomizationSettings } from '@/types/customization';
@@ -15,7 +16,8 @@ export const useAdminToolsState = (initialCustomization: CheckoutCustomizationSe
     countdownEndTime: new Date(initialCustomization.countdownEndTime || 
       new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()).toISOString().substring(0, 16),
     isDigitalProduct: initialCustomization.isDigitalProduct === undefined ? true : initialCustomization.isDigitalProduct,
-    bannerColor: initialCustomization.bannerColor || '#000000'
+    bannerColor: initialCustomization.bannerColor || '#000000',
+    showRandomVisitors: initialCustomization.showRandomVisitors !== false, // Default to true if not specified
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +42,8 @@ export const useAdminToolsState = (initialCustomization: CheckoutCustomizationSe
         banner_image_url: settings.bannerImageUrl || null,
         header_message: settings.topMessage,
         show_banner: true,
-        banner_color: settings.bannerColor
+        banner_color: settings.bannerColor,
+        show_random_visitors: settings.showRandomVisitors
       };
       
       console.log('Saving checkout customization:', dbSettings);
