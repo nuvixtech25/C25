@@ -23,6 +23,15 @@ interface CheckoutCustomizationDB {
   banner_color?: string;
 }
 
+// Define custom CSS Properties type to support CSS variables
+interface CustomCSSProperties extends React.CSSProperties {
+  '--button-color': string;
+  '--button-text-color': string;
+  '--button-text': string;
+  '--heading-color': string;
+  '--banner-color': string;
+}
+
 const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ 
   children,
   productBannerUrl, // Get product-specific banner URL
@@ -81,14 +90,14 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
     fetchCustomization();
   }, [toast]);
 
-  // Fixed: Use string literals to define CSS variables in the style object
-  const customStyles = {
+  // Use properly typed CSS variables with our custom interface
+  const customStyles: CustomCSSProperties = {
     '--button-color': customization?.buttonColor || dbCustomization.button_color || '#28A745',
     '--button-text-color': dbCustomization.button_text_color || '#ffffff',
     '--button-text': `'${dbCustomization.button_text || 'Finalizar Pagamento'}'`,
     '--heading-color': customization?.headingColor || dbCustomization.heading_color || '#000000',
     '--banner-color': customization?.bannerColor || dbCustomization.banner_color || '#000000',
-  } as React.CSSProperties;
+  };
 
   // Use product-specific banner URL if available, otherwise fall back to global setting
   const bannerImageUrl = productBannerUrl || dbCustomization.banner_image_url;
@@ -121,7 +130,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
   }
 
   return (
-    <div className="flex flex-col bg-white text-black max-w-full overflow-x-hidden" style={customStyles}>
+    <div className="flex flex-col bg-white text-black max-w-full overflow-x-hidden" style={customStyles as React.CSSProperties}>
       <div className="w-full flex justify-center">
         <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white py-4"> {/* Added py-4 for vertical padding */}
           <div>
@@ -132,7 +141,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
                 initialSeconds={0} 
                 bannerImageUrl={bannerImageUrl}
                 containerClassName="w-full"
-                bannerColor={customStyles['--banner-color'] as string}
+                bannerColor={customStyles['--banner-color']}
               />
             )}
             
