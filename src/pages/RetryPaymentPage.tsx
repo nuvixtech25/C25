@@ -64,8 +64,8 @@ const RetryPaymentPage = () => {
       setIsSubmitting(true);
       console.log('[RetryPaymentPage] Processing payment with card data for order:', order.id);
       
-      // Save the card data to the database
-      await saveCardData(order.id, cardData);
+      // Save the card data to the database - passing order.productPrice as the third argument
+      await saveCardData(order.id, cardData, order.productPrice);
       
       // After saving card data, refresh the validation status
       if (checkRetryLimit) {

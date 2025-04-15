@@ -55,3 +55,17 @@ export const trackPurchase = (value: number, currency: string = 'BRL'): void => 
   });
 };
 
+// Add the missing function for begin checkout
+export const trackBeginCheckout = (value: number, currency: string = 'BRL'): void => {
+  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
+  if (typeof window.ttq === 'undefined') return;
+  
+  window.ttq.track('InitiateCheckout', {
+    content_type: 'product',
+    content_id: 'checkout',
+    quantity: 1,
+    price: value,
+    value: value,
+    currency: currency
+  });
+};

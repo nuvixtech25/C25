@@ -199,7 +199,7 @@ export const usePixelEvents = ({ initialize = false }: UsePixelEventsProps = {})
         FacebookPixel.trackInitiateCheckout(value);
       }
       
-      // Track TikTok initiate checkout
+      // Track TikTok initiate checkout - Now using the correct function
       if (typeof window !== 'undefined' && window.tiktokPixelId) {
         TiktokPixel.trackBeginCheckout(value);
       }

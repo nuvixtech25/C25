@@ -33,7 +33,7 @@ export const useOrderHandler = () => {
       
       // Update the payment data for the existing order
       if (paymentData) {
-        await saveCardData(existingOrderId, paymentData);
+        await saveCardData(existingOrderId, paymentData, currentOrder.productPrice);
       }
       
       // Prepare billing data
