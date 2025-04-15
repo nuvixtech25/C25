@@ -1,9 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
-import { CheckoutBanner } from '@/components/checkout/CheckoutBanner';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
-import { CheckoutNav } from '@/components/checkout/CheckoutNav';
 import { useCheckoutCustomization } from '@/hooks/useCheckoutCustomization';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { ErrorState } from '@/components/shared/ErrorState';
@@ -111,57 +110,25 @@ const Checkout = () => {
     );
   }
   
-  // Extract customization settings from product
-  const productCustomization = mapProductToCustomization(product);
-  
-  // Restore the original banner style function
-  const getBannerStyle = () => {
-    const styles: React.CSSProperties = {};
-    
-    // Apply banner background color based on settings
-    if (product.use_global_colors === false && product.banner_color) {
-      styles.backgroundColor = product.banner_color;
-    } else {
-      styles.backgroundColor = customization.bannerColor;
-    }
-    
-    // Apply banner image if available
-    if (product.banner_image_url) {
-      styles.backgroundImage = `url(${product.banner_image_url})`;
-      styles.backgroundSize = 'cover';
-      styles.backgroundPosition = 'center';
-    }
-    
-    return styles;
-  };
-  
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <CheckoutNav />
-      
-      <div 
-        className="w-full py-8 px-4 bg-cover bg-center"
-        style={getBannerStyle()}
-      >
-        {/* Top Message Banner with Countdown */}
-        {customization.topMessage && (
-          <TopMessageBanner 
-            message={customization.topMessage}
-            initialMinutes={24} 
-            initialSeconds={0}
-            bannerImageUrl={product.banner_image_url}
-            bannerColor={product.banner_color || customization.bannerColor}
-          />
-        )}
-        
-        <CheckoutBanner 
-          productName={product.name} 
-          headingColor={product.use_global_colors === false ? product.heading_color : customization.headingColor}
-        />
-      </div>
+      {/* Top Message Banner with Countdown - Always at the top */}
+      <TopMessageBanner 
+        message="Oferta por tempo limitado!"
+        initialMinutes={24} 
+        initialSeconds={0}
+      />
       
       <div className="flex-grow container mx-auto px-4 py-6">
         <div className="max-w-2xl mx-auto">
+          {/* Product name as heading */}
+          <h1 
+            className="text-2xl md:text-3xl font-bold text-center mb-6"
+            style={{ color: product.use_global_colors === false ? product.heading_color : customization.headingColor }}
+          >
+            {product.name}
+          </h1>
+          
           <CheckoutContent 
             product={product}
             customerData={customerData}
