@@ -44,7 +44,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
 
   const formatNumber = (num: number) => num.toString().padStart(2, '0');
 
-  // Use the banner image as a background if provided
+  // Use the banner image as a background or show a black banner
   const backgroundStyle = bannerImageUrl 
     ? { backgroundImage: `url(${bannerImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } 
     : { backgroundColor: bannerColor || '#000000' };

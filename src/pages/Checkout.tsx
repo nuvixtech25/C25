@@ -9,8 +9,8 @@ import { ErrorState } from '@/components/shared/ErrorState';
 import { useToast } from '@/hooks/use-toast';
 import { getProductBySlug } from '@/services/productService';
 import { Product } from '@/types/checkout';
-import { mapProductToCustomization } from '@/utils/propertyMappers';
 import { TopMessageBanner } from '@/components/checkout/TopMessageBanner';
+import CheckoutContainer from '@/components/checkout/CheckoutContainer';
 
 const Checkout = () => {
   const { productSlug } = useParams<{ productSlug: string }>();
@@ -111,52 +111,44 @@ const Checkout = () => {
   }
   
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Top Message Banner with the banner image passed as prop */}
-      <TopMessageBanner 
-        message="Oferta por tempo limitado!"
-        initialMinutes={24} 
-        initialSeconds={0}
-        bannerImageUrl={product.banner_image_url}
-        bannerColor={product.use_global_colors === false ? product.banner_color : customization.bannerColor}
-      />
-      
-      <div className="flex-grow container mx-auto px-4 py-6">
-        <div className="max-w-2xl mx-auto">
-          {/* Product name as heading */}
-          <h1 
-            className="text-2xl md:text-3xl font-bold text-center mb-6"
-            style={{ color: product.use_global_colors === false ? product.heading_color : customization.headingColor }}
-          >
-            {product.name}
-          </h1>
-          
-          <CheckoutContent 
-            product={product}
-            customerData={customerData}
-            paymentMethod={paymentMethod}
-            isSubmitting={isSubmitting}
-            customization={{
-              ...customization,
-              useGlobalColors: product.use_global_colors,
-              buttonColor: !product.use_global_colors ? product.button_color || customization.buttonColor : customization.buttonColor,
-              headingColor: !product.use_global_colors ? product.heading_color || customization.headingColor : customization.headingColor,
-              bannerColor: !product.use_global_colors ? product.banner_color || customization.bannerColor : customization.bannerColor,
-            }}
-            onCustomerSubmit={handleCustomerSubmit}
-            onAddressSubmit={handleAddressSubmit}
-            onPaymentMethodChange={setPaymentMethod}
-            onPaymentSubmit={handlePaymentSubmit}
-          />
-        </div>
+    <CheckoutContainer 
+      productBannerUrl={product.banner_image_url} 
+      customization={{
+        ...customization,
+        useGlobalColors: product.use_global_colors,
+        buttonColor: !product.use_global_colors ? product.button_color || customization.buttonColor : customization.buttonColor,
+        headingColor: !product.use_global_colors ? product.heading_color || customization.headingColor : customization.headingColor,
+        bannerColor: !product.use_global_colors ? product.banner_color || customization.bannerColor : customization.bannerColor,
+      }}
+    >
+      <div className="max-w-2xl mx-auto">
+        {/* Product name as heading */}
+        <h1 
+          className="text-2xl md:text-3xl font-bold text-center mb-6"
+          style={{ color: product.use_global_colors === false ? product.heading_color : customization.headingColor }}
+        >
+          {product.name}
+        </h1>
+        
+        <CheckoutContent 
+          product={product}
+          customerData={customerData}
+          paymentMethod={paymentMethod}
+          isSubmitting={isSubmitting}
+          customization={{
+            ...customization,
+            useGlobalColors: product.use_global_colors,
+            buttonColor: !product.use_global_colors ? product.button_color || customization.buttonColor : customization.buttonColor,
+            headingColor: !product.use_global_colors ? product.heading_color || customization.headingColor : customization.headingColor,
+            bannerColor: !product.use_global_colors ? product.banner_color || customization.bannerColor : customization.bannerColor,
+          }}
+          onCustomerSubmit={handleCustomerSubmit}
+          onAddressSubmit={handleAddressSubmit}
+          onPaymentMethodChange={setPaymentMethod}
+          onPaymentSubmit={handlePaymentSubmit}
+        />
       </div>
-      
-      <footer className="py-4 bg-gray-100 mt-8">
-        <div className="container mx-auto text-center text-gray-500 text-sm">
-          © {new Date().getFullYear()} Todos os direitos reservados
-        </div>
-      </footer>
-    </div>
+    </CheckoutContainer>
   );
 };
 

@@ -25,7 +25,7 @@ export const usePaymentPixelTracker = (
   useEffect(() => {
     if (order?.id && paymentStatus === 'CONFIRMED') {
       console.log('[PixelTracker] Tracking payment completed');
-      // When payment is confirmed, track purchase event
+      // When payment is confirmed, track purchase event across all pixels
       trackPurchase(
         order.id,
         order.productPrice

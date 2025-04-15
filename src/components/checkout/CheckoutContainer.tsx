@@ -43,7 +43,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
     button_text_color: '#ffffff',
     button_text: 'Finalizar Pagamento',
     header_message: 'Oferta por tempo limitado!',
-    banner_image_url: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png',
+    banner_image_url: '/lovable-uploads/0316cf52-2668-4bd5-8293-a0b8e5f3b8fb.png',
     show_banner: true,
     heading_color: '#000000',
     banner_color: '#000000'
@@ -117,19 +117,6 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
     finalBanner: bannerImageUrl 
   });
 
-  console.log('Colors being used:', { 
-    useProductCustomColors,
-    customButtonColor: customization?.buttonColor,
-    dbButtonColor: dbCustomization.button_color,
-    finalButtonColor: customStyles['--button-color'],
-    customHeadingColor: customization?.headingColor,
-    dbHeadingColor: dbCustomization.heading_color,
-    finalHeadingColor: customStyles['--heading-color'],
-    customBannerColor: customization?.bannerColor,
-    dbBannerColor: dbCustomization.banner_color,
-    finalBannerColor: customStyles['--banner-color'],
-  });
-
   // Show a simple loading state while customization is loading
   if (!isCustomizationLoaded) {
     return (
@@ -142,7 +129,7 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
   return (
     <div className="flex flex-col bg-white text-black max-w-full overflow-x-hidden" style={customStyles as React.CSSProperties}>
       <div className="w-full flex justify-center">
-        <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white py-4"> {/* Added py-4 for vertical padding */}
+        <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white py-4">
           <div>
             {dbCustomization.show_banner && (
               <TopMessageBanner 
