@@ -26,7 +26,15 @@ const AdminRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route element={<RequireAuth><AdminLayout /></RequireAuth>}>
+      <Route 
+        element={
+          <RequireAuth>
+            <AdminLayout>
+              <Outlet />
+            </AdminLayout>
+          </RequireAuth>
+        }
+      >
         <Route index element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="orders" element={<Orders />} />
@@ -49,4 +57,3 @@ const AdminRoutes: React.FC = () => {
 };
 
 export default AdminRoutes;
-
