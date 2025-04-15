@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
@@ -114,24 +113,26 @@ const Checkout = () => {
   // Extract customization settings from product
   const productCustomization = mapProductToCustomization(product);
   
-  // Create banner style
+  // Update the getBannerStyle function to create a more dynamic and visually appealing banner
   const getBannerStyle = () => {
-    const styles: React.CSSProperties = {};
-    
-    // Apply banner background color based on settings
-    if (product.use_global_colors === false && product.banner_color) {
-      styles.backgroundColor = product.banner_color;
-    } else {
-      styles.backgroundColor = customization.bannerColor;
-    }
-    
-    // Apply banner image if available
-    if (product.banner_image_url) {
-      styles.backgroundImage = `url(${product.banner_image_url})`;
+    const styles: React.CSSProperties = {
+      background: 'linear-gradient(90deg, #FF6B6B 0%, #FFD93D 100%)', // Vibrant gradient
+      padding: '20px 0',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+      textAlign: 'center',
+      position: 'relative'
+    };
+
+    // If a custom banner image is available, use it with the gradient overlay
+    if (product?.banner_image_url) {
+      styles.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${product.banner_image_url})`;
       styles.backgroundSize = 'cover';
       styles.backgroundPosition = 'center';
     }
-    
+
     return styles;
   };
   
@@ -140,7 +141,7 @@ const Checkout = () => {
       <CheckoutNav />
       
       <div 
-        className="w-full py-8 px-4 bg-cover bg-center"
+        className="w-full py-8 px-4"
         style={getBannerStyle()}
       >
         <CheckoutBanner 
