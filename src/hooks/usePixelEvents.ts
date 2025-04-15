@@ -143,6 +143,8 @@ export const usePixelEvents = ({ initialize = false }: UsePixelEventsProps = {})
   
   // Event tracking functions
   const trackPurchase = (orderId: string, value: number) => {
+    console.log(`Tracking purchase: OrderID=${orderId}, Value=${value}`);
+    
     if (process.env.NODE_ENV === 'production' && pixelInitialized) {
       // Track Google purchase for all pixels
       if (typeof window !== 'undefined' && window.googleAdsPixels) {
@@ -177,11 +179,38 @@ export const usePixelEvents = ({ initialize = false }: UsePixelEventsProps = {})
       if (typeof window !== 'undefined' && window.uolAdsId) {
         UolAdsPixel.trackPurchase(value, orderId);
       }
+    } else {
+      console.log('Purchase tracking skipped: development mode or pixels not initialized');
+    }
+  };
+  
+  // Added function to track initiate checkout
+  const trackInitiateCheckout = (value: number) => {
+    console.log(`Tracking initiate checkout: Value=${value}`);
+    
+    if (process.env.NODE_ENV === 'production' && pixelInitialized) {
+      // Track Google begin checkout
+      if (typeof window !== 'undefined' && window.googleAdsPixels) {
+        GooglePixel.trackBeginCheckout(value);
+      }
+      
+      // Track Facebook initiate checkout
+      if (typeof window !== 'undefined' && window.facebookPixels) {
+        FacebookPixel.trackInitiateCheckout(value);
+      }
+      
+      // Track TikTok initiate checkout
+      if (typeof window !== 'undefined' && window.tiktokPixelId) {
+        TiktokPixel.trackBeginCheckout(value);
+      }
+    } else {
+      console.log('Initiate checkout tracking skipped: development mode or pixels not initialized');
     }
   };
   
   return {
-    trackPurchase
+    trackPurchase,
+    trackInitiateCheckout
   };
 };
 
