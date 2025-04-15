@@ -396,10 +396,13 @@ export type Database = {
       }
       products: {
         Row: {
+          banner_color: string | null
           banner_image_url: string | null
+          button_color: string | null
           created_at: string
           description: string | null
           has_whatsapp_support: boolean | null
+          heading_color: string | null
           id: string
           image_url: string | null
           name: string
@@ -411,10 +414,13 @@ export type Database = {
           whatsapp_number: string | null
         }
         Insert: {
+          banner_color?: string | null
           banner_image_url?: string | null
+          button_color?: string | null
           created_at?: string
           description?: string | null
           has_whatsapp_support?: boolean | null
+          heading_color?: string | null
           id?: string
           image_url?: string | null
           name: string
@@ -426,10 +432,13 @@ export type Database = {
           whatsapp_number?: string | null
         }
         Update: {
+          banner_color?: string | null
           banner_image_url?: string | null
+          button_color?: string | null
           created_at?: string
           description?: string | null
           has_whatsapp_support?: boolean | null
+          heading_color?: string | null
           id?: string
           image_url?: string | null
           name?: string

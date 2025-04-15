@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import RequireAuth from '@/contexts/auth/RequireAuth';
 
 // Admin
@@ -49,3 +49,4 @@ const AdminRoutes: React.FC = () => {
 };
 
 export default AdminRoutes;
+
