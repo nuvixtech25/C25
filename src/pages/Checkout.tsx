@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getProductBySlug } from '@/services/productService';
 import { Product } from '@/types/checkout';
 import { mapProductToCustomization } from '@/utils/propertyMappers';
+import { TopMessageBanner } from '@/components/checkout/TopMessageBanner';
 
 const Checkout = () => {
   const { productSlug } = useParams<{ productSlug: string }>();
@@ -113,26 +114,24 @@ const Checkout = () => {
   // Extract customization settings from product
   const productCustomization = mapProductToCustomization(product);
   
-  // Update the getBannerStyle function to create a more dynamic and visually appealing banner
+  // Restore the original banner style function
   const getBannerStyle = () => {
-    const styles: React.CSSProperties = {
-      background: 'linear-gradient(90deg, #FF6B6B 0%, #FFD93D 100%)', // Vibrant gradient
-      padding: '20px 0',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: 'white',
-      textAlign: 'center',
-      position: 'relative'
-    };
-
-    // If a custom banner image is available, use it with the gradient overlay
-    if (product?.banner_image_url) {
-      styles.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${product.banner_image_url})`;
+    const styles: React.CSSProperties = {};
+    
+    // Apply banner background color based on settings
+    if (product.use_global_colors === false && product.banner_color) {
+      styles.backgroundColor = product.banner_color;
+    } else {
+      styles.backgroundColor = customization.bannerColor;
+    }
+    
+    // Apply banner image if available
+    if (product.banner_image_url) {
+      styles.backgroundImage = `url(${product.banner_image_url})`;
       styles.backgroundSize = 'cover';
       styles.backgroundPosition = 'center';
     }
-
+    
     return styles;
   };
   
@@ -141,9 +140,20 @@ const Checkout = () => {
       <CheckoutNav />
       
       <div 
-        className="w-full py-8 px-4"
+        className="w-full py-8 px-4 bg-cover bg-center"
         style={getBannerStyle()}
       >
+        {/* Top Message Banner with Countdown */}
+        {customization.topMessage && (
+          <TopMessageBanner 
+            message={customization.topMessage}
+            initialMinutes={24} 
+            initialSeconds={0}
+            bannerImageUrl={product.banner_image_url}
+            bannerColor={product.banner_color || customization.bannerColor}
+          />
+        )}
+        
         <CheckoutBanner 
           productName={product.name} 
           headingColor={product.use_global_colors === false ? product.heading_color : customization.headingColor}

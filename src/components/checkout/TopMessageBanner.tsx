@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Eye } from 'lucide-react';
 
 interface TopMessageBannerProps {
   message: string;
@@ -7,18 +8,19 @@ interface TopMessageBannerProps {
   initialSeconds: number;
   bannerImageUrl?: string | null;
   containerClassName?: string;
-  bannerColor?: string; // Add bannerColor prop
+  bannerColor?: string;
 }
 
 export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
-  message,
+  message = "Oferta por tempo limitado!",
   initialMinutes,
   initialSeconds,
   bannerImageUrl,
   containerClassName = "",
-  bannerColor = "#000000" // Default color is black
+  bannerColor = "#000000"
 }) => {
-  const [minutes, setMinutes] = useState(initialMinutes);
+  const [hours, setHours] = useState(Math.floor(initialMinutes / 60));
+  const [minutes, setMinutes] = useState(initialMinutes % 60);
   const [seconds, setSeconds] = useState(initialSeconds);
 
   useEffect(() => {
@@ -28,35 +30,38 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
       } else if (minutes > 0) {
         setMinutes(minutes - 1);
         setSeconds(59);
+      } else if (hours > 0) {
+        setHours(hours - 1);
+        setMinutes(59);
+        setSeconds(59);
       } else {
         clearInterval(timer);
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [minutes, seconds]);
+  }, [hours, minutes, seconds]);
 
-  // Set timer styles based on whether a banner image is provided
-  const bannerStyle = bannerImageUrl
-    ? {
-        backgroundImage: `url(${bannerImageUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundColor: 'transparent'
-      }
-    : {
-        backgroundColor: bannerColor || 'var(--banner-color, #000000)'
-      };
+  const formatNumber = (num: number) => num.toString().padStart(2, '0');
 
   return (
-    <div 
-      className={`${containerClassName} rounded-md overflow-hidden mb-6`}
-      style={bannerStyle}
-    >
-      <div className="bg-black bg-opacity-60 text-white p-3 text-center">
-        <div className="text-sm md:text-base font-medium">{message}</div>
-        <div className="text-xs md:text-sm mt-1">
-          Termina em: <span className="font-bold">{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}</span>
+    <div className="w-full bg-black py-2 px-4 flex items-center justify-center">
+      <Eye className="text-white h-5 w-5 mr-2" />
+      <div className="text-white text-sm md:text-base mr-2">{message}</div>
+      <div className="flex items-center">
+        <div className="flex flex-col items-center">
+          <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(hours)}</span>
+          <span className="text-white text-[8px] md:text-xs uppercase">HORAS</span>
+        </div>
+        <span className="text-white text-xl md:text-2xl font-bold mx-1">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(minutes)}</span>
+          <span className="text-white text-[8px] md:text-xs uppercase">MIN</span>
+        </div>
+        <span className="text-white text-xl md:text-2xl font-bold mx-1">:</span>
+        <div className="flex flex-col items-center">
+          <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(seconds)}</span>
+          <span className="text-white text-[8px] md:text-xs uppercase">SEG</span>
         </div>
       </div>
     </div>
