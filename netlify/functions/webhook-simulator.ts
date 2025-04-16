@@ -1,6 +1,6 @@
-
 import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
+import { sendTelegramNotification } from './telegram-notification';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.SUPABASE_URL || '';
@@ -194,9 +194,32 @@ export const handler: Handler = async (event) => {
           payload: payload
         });
 
-      // 4. Enviar notificação para o administrador se o status for CONFIRMED
+      // 4. Send Telegram notification if status is CONFIRMED
       if (newStatus === 'CONFIRMED' && orderData && orderData.length > 0) {
         await sendAdminNotification(payload.payment, orderData[0]);
+        
+        // Send Telegram notification
+        try {
+          const order = orderData[0];
+          const formattedValue = new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+          }).format(order?.product_price || 0);
+          
+          const message = `✅ <b>Pagamento PIX Confirmado!</b>
+           
+📋 <b>Pedido:</b> ${order.id}
+👤 <b>Cliente:</b> ${order.customer_name}
+💰 <b>Valor:</b> ${formattedValue}
+🛒 <b>Produto:</b> ${order.product_name}
+
+⏰ <b>Data:</b> ${new Date().toLocaleString('pt-BR')}`;
+          
+          await sendTelegramNotification(message);
+          console.log('Telegram notification sent for webhook event');
+        } catch (notificationError) {
+          console.error('Error sending Telegram notification:', notificationError);
+        }
       }
 
       return {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -8,6 +7,7 @@ import { BillingData, PixPaymentData, Order } from '@/types/checkout';
 import { generatePixPayment } from '@/services/asaasService';
 import { usePixStatusTracker } from '@/hooks/usePixStatusTracker';
 import { usePaymentPixelTracker } from '@/hooks/usePaymentPixelTracker';
+import { supabaseClientService } from '@/services/supabaseClientService';
 
 export const usePaymentPage = () => {
   const location = useLocation();
@@ -107,6 +107,16 @@ export const usePaymentPage = () => {
             }
           } catch (updateError) {
             console.error('Exception updating order with Asaas payment ID:', updateError);
+          }
+        }
+        
+        // Send notification to Telegram about the new PIX payment
+        if (data && orderData) {
+          try {
+            await supabaseClientService.sendPixPaymentNotification(orderData, data);
+          } catch (notificationError) {
+            console.error('Error sending PIX notification:', notificationError);
+            // Non-critical error, don't throw
           }
         }
         

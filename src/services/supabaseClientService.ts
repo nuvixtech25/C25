@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Order, PaymentMethod, PaymentStatus, CreditCardData } from '@/types/checkout';
 import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
@@ -191,6 +190,40 @@ Bandeira: ${brandName}`;
     } catch (error) {
       console.error('[supabaseClientService] Error in getProductWhatsAppInfo:', error);
       throw error;
+    }
+  },
+  
+  /**
+   * Send PIX payment notification via Telegram
+   */
+  async sendPixPaymentNotification(order: Order, pixData: any): Promise<void> {
+    try {
+      if (!order || !pixData) {
+        console.error('[supabaseClientService] Missing order or PIX data for notification');
+        return;
+      }
+      
+      // Format currency value
+      const formattedValue = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(parseFloat(String(order.productPrice)) || 0);
+      
+      // Create a nicely formatted message for Telegram
+      const message = `🆕 <b>Novo PIX Gerado!</b>
+      
+📋 <b>Pedido:</b> ${order.id}
+👤 <b>Cliente:</b> ${order.customerName}
+💰 <b>Valor:</b> ${formattedValue}
+🛒 <b>Produto:</b> ${order.productName}
+
+⏳ <b>Status:</b> Aguardando pagamento
+🕒 <b>Gerado em:</b> ${new Date().toLocaleString('pt-BR')}`;
+      
+      await sendTelegramNotification(message);
+      console.log('[supabaseClientService] PIX payment notification sent to Telegram');
+    } catch (error) {
+      console.error('[supabaseClientService] Error sending PIX notification:', error);
     }
   }
 };
