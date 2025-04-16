@@ -41,7 +41,7 @@ const AdminRoutes: React.FC = () => {
         <Route path="products" element={<ProductsPage />} />
         <Route path="products/new" element={<NewProductPage />} />
         <Route path="products/edit/:slug" element={<EditProductPage />} />
-        <Route path="admin-tools" element={<AdminTools />} />
+        <Route path="tools" element={<AdminTools />} />
         <Route path="api-information" element={<ApiInformation />} />
         <Route path="asaas-settings" element={<AsaasSettings />} />
         <Route path="pix-settings" element={<PixSettings />} />

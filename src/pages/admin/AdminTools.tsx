@@ -42,7 +42,7 @@ const AdminTools = () => {
             <Button 
               variant="outline" 
               className="w-full"
-              onClick={() => window.open('/admin/checkout-preview', '_blank')}
+              onClick={() => window.open('/admin/checkout/preview', '_blank')}
             >
               Abrir Prévia do Checkout
             </Button>
