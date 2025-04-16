@@ -3,7 +3,7 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAdminToolsState } from './hooks/useAdminToolsState';
-import { AdminToolsHeader } from './components/AdminToolsHeader';
+import AdminToolsHeader from './components/AdminToolsHeader';
 import AdminToolsTabs from './components/AdminToolsTabs';
 
 const AdminTools = () => {
@@ -17,7 +17,7 @@ const AdminTools = () => {
 
   return (
     <div className="container py-6">
-      <AdminToolsHeader title="Personalizar Checkout" />
+      <AdminToolsHeader title="Personalizar Checkout" onSave={handleSave} />
       
       <Card className="p-6">
         <div className="space-y-6">
