@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { fetchPixelConfig } from '@/services/pixelConfigService';
+import { fetchPixelConfig, PixelConfig } from '@/services/pixelConfigService';
 import { initializeGoogleAdsPixels } from './initializers/googlePixelInitializer';
 import { initializeFacebookPixels } from './initializers/facebookPixelInitializer';
 import { initializeTiktokPixel } from './initializers/tiktokPixelInitializer';
@@ -10,7 +10,7 @@ import { initializeUolAdsPixel } from './initializers/uolAdsPixelInitializer';
 
 export const useInitializePixels = (shouldInitialize: boolean = false) => {
   const [pixelInitialized, setPixelInitialized] = useState(false);
-  const [pixelConfig, setPixelConfig] = useState(null);
+  const [pixelConfig, setPixelConfig] = useState<PixelConfig | null>(null);
   
   // Initialize pixels on component mount
   useEffect(() => {

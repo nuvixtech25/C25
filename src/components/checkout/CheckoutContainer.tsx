@@ -114,7 +114,8 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
   console.log('Banner image being used:', { 
     productBanner: productBannerUrl, 
     globalBanner: dbCustomization.banner_image_url,
-    finalBanner: bannerImageUrl 
+    finalBanner: bannerImageUrl,
+    showBanner: dbCustomization.show_banner
   });
 
   // Show a simple loading state while customization is loading
