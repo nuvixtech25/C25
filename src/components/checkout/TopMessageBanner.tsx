@@ -44,13 +44,24 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
 
   const formatNumber = (num: number) => num.toString().padStart(2, '0');
 
-  // Use the banner image as a background or show a black banner
-  const backgroundStyle = bannerImageUrl 
-    ? { backgroundImage: `url(${bannerImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } 
-    : { backgroundColor: bannerColor || '#000000' };
+  // Determine background style based on whether we have a banner image URL
+  const getBannerStyle = () => {
+    if (bannerImageUrl) {
+      console.log("Using banner image URL:", bannerImageUrl);
+      return { 
+        backgroundImage: `url(${bannerImageUrl})`, 
+        backgroundSize: 'cover', 
+        backgroundPosition: 'center' 
+      };
+    }
+    return { backgroundColor: bannerColor || '#000000' };
+  };
 
   return (
-    <div className="w-full py-2 flex items-center justify-center" style={backgroundStyle}>
+    <div 
+      className={`w-full py-2 flex items-center justify-center ${containerClassName}`} 
+      style={getBannerStyle()}
+    >
       <div className="container mx-auto max-w-2xl flex items-center justify-center">
         <Eye className="text-white h-5 w-5 mr-2" />
         <div className="text-white text-sm md:text-base mr-2">{message}</div>
