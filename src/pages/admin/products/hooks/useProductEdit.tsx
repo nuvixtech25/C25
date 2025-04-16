@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { productSchema, ProductFormValues } from '../ProductSchema';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { getProductBySlug, updateProduct } from '@/services/productService';
 
@@ -67,12 +66,12 @@ export const useProductEdit = () => {
           price: product.price,
           image_url: product.image_url || '',
           banner_image_url: product.banner_image_url || '',
-          type: product.type,
+          type: product.type || 'digital',
           use_global_colors: product.use_global_colors === false ? false : true, // If null or undefined, assume true
           button_color: product.button_color || '#28A745',
           heading_color: product.heading_color || '#000000',
           banner_color: product.banner_color || '#000000',
-          status: product.status,
+          status: product.status !== false,
           has_whatsapp_support: product.has_whatsapp_support || false,
           whatsapp_number: product.whatsapp_number || '',
         });
@@ -100,12 +99,8 @@ export const useProductEdit = () => {
     
     try {
       setIsSubmitting(true);
-      const { whatsapp_number, ...restData } = data;
-      
       console.log('[EditProductPage] Submitting product data:', {
-        ...restData,
-        has_whatsapp_support: data.has_whatsapp_support,
-        whatsapp_number: data.has_whatsapp_support ? whatsapp_number : null,
+        ...data,
         use_global_colors: data.use_global_colors,
         button_color: data.use_global_colors ? null : data.button_color,
         heading_color: data.use_global_colors ? null : data.heading_color, 
@@ -122,7 +117,7 @@ export const useProductEdit = () => {
         status: data.status,
         slug: data.slug,
         has_whatsapp_support: data.has_whatsapp_support,
-        whatsapp_number: data.has_whatsapp_support ? whatsapp_number : null,
+        whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
         use_global_colors: data.use_global_colors,
         button_color: data.use_global_colors ? null : data.button_color,
         heading_color: data.use_global_colors ? null : data.heading_color,

@@ -76,6 +76,9 @@ export const createProduct = async (productData: any): Promise<any> => {
 
 export const updateProduct = async (id: string, productData: any): Promise<any> => {
   try {
+    console.log('Updating product with ID:', id);
+    console.log('Product data being sent:', productData);
+    
     const { data, error } = await supabase
       .from('products')
       .update({
@@ -98,7 +101,10 @@ export const updateProduct = async (id: string, productData: any): Promise<any> 
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase update error:', error);
+      throw error;
+    }
     return data;
   } catch (error) {
     console.error("Error updating product:", error);

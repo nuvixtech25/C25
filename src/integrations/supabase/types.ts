@@ -411,6 +411,7 @@ export type Database = {
           status: boolean
           type: string
           updated_at: string
+          use_global_colors: boolean | null
           whatsapp_number: string | null
         }
         Insert: {
@@ -429,6 +430,7 @@ export type Database = {
           status?: boolean
           type: string
           updated_at?: string
+          use_global_colors?: boolean | null
           whatsapp_number?: string | null
         }
         Update: {
@@ -447,6 +449,7 @@ export type Database = {
           status?: boolean
           type?: string
           updated_at?: string
+          use_global_colors?: boolean | null
           whatsapp_number?: string | null
         }
         Relationships: []
