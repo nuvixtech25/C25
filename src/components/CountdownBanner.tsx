@@ -56,13 +56,15 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
 
   return (
     <div className={`flex flex-col items-center ${containerClassName}`}>
-      {/* Black bar with eye icon and countdown */}
-      <div className="w-full bg-black py-2 px-4 flex justify-center items-center">
-        <Eye className="text-white h-5 w-5 mr-2" />
-        <div className="text-white text-sm md:text-base mr-2">
-          {message}
+      {/* Black bar with eye icon and countdown - centralizado */}
+      <div className="w-full bg-black py-2 px-4 flex flex-col sm:flex-row justify-center items-center">
+        <div className="flex items-center justify-center mb-1 sm:mb-0">
+          <Eye className="text-white h-5 w-5 mr-2" />
+          <div className="text-white text-sm md:text-base">
+            {message}
+          </div>
         </div>
-        <div className="flex items-center ml-auto">
+        <div className="flex items-center ml-0 sm:ml-4">
           <div className="flex flex-col items-center">
             <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(timeLeft.hours)}</span>
             <span className="text-white text-[8px] md:text-xs uppercase">HORAS</span>

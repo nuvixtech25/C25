@@ -120,13 +120,7 @@ const Checkout = () => {
       }}
     >
       <div className="max-w-2xl mx-auto">
-        {/* Product name as heading */}
-        <h1 
-          className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6"
-          style={{ color: product.use_global_colors === false ? product.heading_color : customization.headingColor }}
-        >
-          {product.name}
-        </h1>
+        {/* Removido o título do produto que estava aqui */}
         
         <CheckoutContent 
           product={product}
