@@ -11,7 +11,7 @@ const defaultCustomization: CheckoutCustomization = {
   bannerColor: '#000000', // Cor padrão do banner
   bannerImageUrl: null,
   topMessage: 'Oferta por tempo limitado!',
-  countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
   isDigitalProduct: true,
   useGlobalColors: true
 };
@@ -41,6 +41,7 @@ export const useCheckoutCustomization = (product?: Product) => {
         buttonColor: product.button_color,
         headingColor: product.heading_color,
         bannerColor: product.banner_color,
+        bannerImageUrl: product.banner_image_url,
         appliedColors: {
           buttonColor: !product.use_global_colors && product.button_color ? product.button_color : defaultCustomization.buttonColor,
           headingColor: !product.use_global_colors && product.heading_color ? product.heading_color : defaultCustomization.headingColor,

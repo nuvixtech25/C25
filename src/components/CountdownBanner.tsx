@@ -56,13 +56,13 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
 
   return (
     <div className={`flex flex-col items-center ${containerClassName}`}>
-      {/* Black bar with eye icon, message, and countdown */}
+      {/* Black bar with eye icon and countdown - updated to match the example image */}
       <div className="w-full bg-black py-2 px-4 flex justify-center items-center">
         <Eye className="text-white h-5 w-5 mr-2" />
         <div className="text-white text-sm md:text-base mr-2">
           {message}
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center ml-auto">
           <div className="flex flex-col items-center">
             <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(timeLeft.hours)}</span>
             <span className="text-white text-[8px] md:text-xs uppercase">HORAS</span>
@@ -80,18 +80,12 @@ export const CountdownBanner: React.FC<CountdownBannerProps> = ({
         </div>
       </div>
 
-      {/* Banner image below the countdown - Adicionando mais espaço na versão desktop */}
+      {/* Banner image below the countdown - Full width, height controlled by the image */}
       {bannerImageUrl && (
-        <div 
-          className="w-full flex items-center justify-center mt-6 md:mt-12" 
-          style={{ 
-            backgroundImage: `url(${bannerImageUrl})`,
-            backgroundSize: 'contain',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-            height: isMobile ? '180px' : '250px',
-            maxWidth: '100%'
-          }}
+        <img
+          src={bannerImageUrl}
+          alt="Promotional banner"
+          className="w-full h-auto mt-0 max-w-full"
         />
       )}
     </div>

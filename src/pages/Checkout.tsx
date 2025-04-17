@@ -9,7 +9,6 @@ import { ErrorState } from '@/components/shared/ErrorState';
 import { useToast } from '@/hooks/use-toast';
 import { getProductBySlug } from '@/services/productService';
 import { Product } from '@/types/checkout';
-import { TopMessageBanner } from '@/components/checkout/TopMessageBanner';
 import CheckoutContainer from '@/components/checkout/CheckoutContainer';
 
 const Checkout = () => {

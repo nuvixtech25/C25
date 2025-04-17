@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { TopMessageBanner } from './TopMessageBanner';
+import { CountdownBanner } from '@/components/CountdownBanner';
 import { CheckoutFooter } from './CheckoutFooter';
 import { CheckoutCustomization } from '@/types/checkout';
 
@@ -127,25 +128,30 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
     );
   }
 
+  // Create countdown end time - 24 hours from now for example
+  const countdownEndTime = customization?.countdownEndTime 
+    ? new Date(customization.countdownEndTime) 
+    : new Date(Date.now() + 24 * 60 * 60 * 1000);
+
   return (
     <div className="flex flex-col bg-white text-black max-w-full overflow-x-hidden" style={customStyles as React.CSSProperties}>
       <div className="w-full flex justify-center">
-        <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white py-4">
+        <div className="w-full mx-auto bg-white">
           <div>
             {dbCustomization.show_banner && (
-              <TopMessageBanner 
+              <CountdownBanner 
                 message={dbCustomization.header_message || 'Oferta por tempo limitado!'} 
-                initialMinutes={5} 
-                initialSeconds={0} 
+                endTime={countdownEndTime}
                 bannerImageUrl={bannerImageUrl}
                 containerClassName="w-full"
-                bannerColor={customStyles['--banner-color']}
               />
             )}
             
-            <main>
-              {children}
-            </main>
+            <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 py-4">
+              <main>
+                {children}
+              </main>
+            </div>
           </div>
         </div>
       </div>

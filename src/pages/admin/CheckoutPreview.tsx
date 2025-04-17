@@ -6,7 +6,6 @@ import { usePreviewCustomization } from '@/hooks/usePreviewCustomization';
 import { CheckoutContent } from '@/components/checkout/CheckoutContent';
 import { PreviewLoading } from '@/components/preview/PreviewLoading';
 import { CountdownBanner } from '@/components/CountdownBanner';
-import { TopMessageBanner } from '@/components/checkout/TopMessageBanner';
 import CheckoutContainer from '@/components/checkout/CheckoutContainer';
 
 const CheckoutPreview: React.FC = () => {
@@ -36,42 +35,37 @@ const CheckoutPreview: React.FC = () => {
   const updatedCustomization = {
     ...customization,
     topMessage: 'Oferta por tempo limitado!',
-    bannerImageUrl: '/lovable-uploads/75584e12-d113-40d9-99bd-c222d0b06f29.png',
+    bannerImageUrl: '/lovable-uploads/f2d22187-5714-4830-9ea2-977031ef5e67.png', // Use the uploaded image
     showRandomVisitors: true // Enable random visitors by default in preview
   };
+
+  // Sample date for the countdown - 24 hours from now
+  const countdownEndTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
   return (
     <div className="flex flex-col bg-white max-w-full overflow-x-hidden">
       <div className="w-full flex justify-center">
-        <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white">
-          {/* Banners rendered inside the container that has the same width as the form */}
-          {updatedCustomization.topMessage && updatedCustomization.countdownEndTime ? (
-            <CountdownBanner 
-              message={updatedCustomization.topMessage}
-              endTime={new Date(updatedCustomization.countdownEndTime)}
-              bannerImageUrl={updatedCustomization.bannerImageUrl}
-              containerClassName="w-full"
-            />
-          ) : updatedCustomization.topMessage && (
-            <TopMessageBanner 
-              message={updatedCustomization.topMessage}
-              bannerImageUrl={updatedCustomization.bannerImageUrl}
-              initialMinutes={5}
-              initialSeconds={0}
-              containerClassName="w-full"
-            />
-          )}
-          
-          <CheckoutContent 
-            product={demoProduct}
-            customerData={customerData}
-            paymentMethod={paymentMethod}
-            isSubmitting={isSubmitting}
-            customization={updatedCustomization}
-            onCustomerSubmit={handleCustomerSubmit}
-            onPaymentMethodChange={setPaymentMethod}
-            onPaymentSubmit={handlePaymentSubmit}
+        <div className="w-full mx-auto bg-white">
+          {/* Banner at the top of the page */}
+          <CountdownBanner 
+            message="Oferta por tempo limitado!"
+            endTime={countdownEndTime}
+            bannerImageUrl={updatedCustomization.bannerImageUrl}
+            containerClassName="w-full"
           />
+          
+          <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white py-4">
+            <CheckoutContent 
+              product={demoProduct}
+              customerData={customerData}
+              paymentMethod={paymentMethod}
+              isSubmitting={isSubmitting}
+              customization={updatedCustomization}
+              onCustomerSubmit={handleCustomerSubmit}
+              onPaymentMethodChange={setPaymentMethod}
+              onPaymentSubmit={handlePaymentSubmit}
+            />
+          </div>
         </div>
       </div>
     </div>
