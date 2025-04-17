@@ -2,27 +2,44 @@
 import * as GooglePixel from '@/lib/pixels/googlePixel';
 import * as FacebookPixel from '@/lib/pixels/facebookPixel';
 import * as TiktokPixel from '@/lib/pixels/tiktokPixel';
+import * as TaboolaPixel from '@/lib/pixels/taboolaPixel';
 
 export const trackInitiateCheckout = (value: number, isInitialized: boolean) => {
-  console.log(`Tracking initiate checkout: Value=${value}`);
+  console.log(`[PIXEL AUDIT] Tracking initiate checkout: Value=${value}, Initialized=${isInitialized}`);
   
-  if (process.env.NODE_ENV !== 'production' || !isInitialized) {
-    console.log('Initiate checkout tracking skipped: development mode or pixels not initialized');
+  if (process.env.NODE_ENV !== 'production' && !isInitialized) {
+    console.log('[PIXEL AUDIT] Initiate checkout tracking skipped: development mode or pixels not initialized');
     return;
   }
   
-  // Track Google begin checkout
+  // Google Ads begin_checkout event
   if (typeof window !== 'undefined' && window.googleAdsPixels) {
-    GooglePixel.trackBeginCheckout(value);
+    window.googleAdsPixels.forEach(pixel => {
+      console.log(`[PIXEL AUDIT] Firing Google Ads begin_checkout for ID: ${pixel.googleAdsId}`);
+      GooglePixel.trackBeginCheckout(value);
+    });
+  } else {
+    console.log('[PIXEL AUDIT] No Google Ads pixels available in window object');
   }
   
-  // Track Facebook initiate checkout
+  // Facebook InitiateCheckout event
   if (typeof window !== 'undefined' && window.facebookPixels) {
-    FacebookPixel.trackInitiateCheckout(value);
+    window.facebookPixels.forEach(pixel => {
+      console.log(`[PIXEL AUDIT] Firing Facebook InitiateCheckout for ID: ${pixel.facebookPixelId}`);
+      FacebookPixel.trackInitiateCheckout(value);
+    });
+  } else {
+    console.log('[PIXEL AUDIT] No Facebook pixels available in window object');
   }
   
-  // Track TikTok initiate checkout
+  // TikTok InitiateCheckout event
   if (typeof window !== 'undefined' && window.tiktokPixelId) {
-    TiktokPixel.trackBeginCheckout(value);
+    console.log(`[PIXEL AUDIT] Firing TikTok InitiateCheckout for ID: ${window.tiktokPixelId}`);
+    TiktokPixel.trackInitiateCheckout(value);
+  }
+  
+  // Taboola Pixel - they don't have a specific InitiateCheckout event
+  if (typeof window !== 'undefined' && window.taboolaAccountId) {
+    console.log(`[PIXEL AUDIT] Taboola doesn't have InitiateCheckout event, skipping for ID: ${window.taboolaAccountId}`);
   }
 };

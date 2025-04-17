@@ -1,3 +1,4 @@
+
 import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 import { sendTelegramNotification } from './telegram-notification';
@@ -92,7 +93,7 @@ export const handler: Handler = async (event) => {
     };
   }
 
-  console.log('Webhook simulator function called');
+  console.log('[AUDIT] Webhook simulator function called');
 
   if (event.httpMethod !== 'POST') {
     return {
@@ -105,7 +106,7 @@ export const handler: Handler = async (event) => {
   try {
     // Parse the request body
     const payload = JSON.parse(event.body || '{}') as WebhookPayload;
-    console.log('Webhook simulator payload:', payload);
+    console.log('[AUDIT] Webhook simulator payload:', payload);
 
     if (payload.event && payload.payment) {
       // Check if this is a manual card payment (special case)
@@ -113,9 +114,9 @@ export const handler: Handler = async (event) => {
       
       // Log payload details for debugging
       if (isManualCardPayment) {
-        console.log(`Processing manual card webhook for order ${payload.orderId} with event ${payload.event}`);
+        console.log(`[AUDIT] Processing manual card webhook for order ${payload.orderId} with event ${payload.event}`);
       } else {
-        console.log(`Processing webhook for payment ${payload.payment.id} with event ${payload.event} and status ${payload.payment.status}`);
+        console.log(`[AUDIT] Processing webhook for payment ${payload.payment.id} with event ${payload.event} and status ${payload.payment.status}`);
       }
       
       const newStatus = payload.payment.status;
@@ -154,7 +155,7 @@ export const handler: Handler = async (event) => {
       }
 
       if (orderError) {
-        console.error('Error updating order:', orderError);
+        console.error('[AUDIT] Error updating order:', orderError);
         return {
           statusCode: 500,
           headers,
@@ -165,7 +166,7 @@ export const handler: Handler = async (event) => {
         };
       }
 
-      console.log('Successfully updated order:', orderData);
+      console.log('[AUDIT] Successfully updated order:', orderData);
       
       // 2. Update asaas_payments table if it exists and if this is not a manual card payment
       if (!isManualCardPayment) {
@@ -178,9 +179,9 @@ export const handler: Handler = async (event) => {
           .eq('payment_id', payload.payment.id);
           
         if (paymentsError) {
-          console.log('Note: Could not update asaas_payments table:', paymentsError.message);
+          console.log('[AUDIT] Note: Could not update asaas_payments table:', paymentsError.message);
         } else {
-          console.log('Successfully updated asaas_payments table');
+          console.log('[AUDIT] Successfully updated asaas_payments table');
         }
       }
 
@@ -206,19 +207,25 @@ export const handler: Handler = async (event) => {
             currency: 'BRL'
           }).format(order?.product_price || 0);
           
-          const message = `✅ <b>Pagamento PIX Confirmado!</b>
+          const paymentMethod = order.payment_method === 'pix' ? 'PIX' : 
+                               order.payment_method === 'creditCard' ? 'Cartão de Crédito' : 
+                               order.payment_method;
+          
+          const message = `✅ <b>Pagamento ${paymentMethod} Confirmado!</b>
            
 📋 <b>Pedido:</b> ${order.id}
 👤 <b>Cliente:</b> ${order.customer_name}
+📱 <b>Telefone:</b> ${order.customer_phone || 'Não informado'}
+📧 <b>Email:</b> ${order.customer_email || 'Não informado'}
 💰 <b>Valor:</b> ${formattedValue}
 🛒 <b>Produto:</b> ${order.product_name}
 
 ⏰ <b>Data:</b> ${new Date().toLocaleString('pt-BR')}`;
           
           await sendTelegramNotification(message);
-          console.log('Telegram notification sent for webhook event');
+          console.log('[AUDIT] Telegram notification sent for webhook event');
         } catch (notificationError) {
-          console.error('Error sending Telegram notification:', notificationError);
+          console.error('[AUDIT] Error sending Telegram notification:', notificationError);
         }
       }
 
@@ -241,7 +248,7 @@ export const handler: Handler = async (event) => {
       };
     }
   } catch (error) {
-    console.error('Error processing webhook:', error);
+    console.error('[AUDIT] Error processing webhook:', error);
     return {
       statusCode: 500,
       headers,

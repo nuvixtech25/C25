@@ -13,7 +13,7 @@ export const usePaymentPixelTracker = (
   // Track payment initiated (both PIX and card)
   useEffect(() => {
     if (order?.id && paymentData) {
-      console.log('[PixelTracker] Tracking payment initiated');
+      console.log('[AUDIT][PixelTracker] Tracking payment initiated for order:', order.id);
       // Track the start of the payment process
       trackInitiateCheckout(
         paymentData.value || order.productPrice
@@ -24,7 +24,7 @@ export const usePaymentPixelTracker = (
   // Track payment completed
   useEffect(() => {
     if (order?.id && paymentStatus === 'CONFIRMED') {
-      console.log('[PixelTracker] Tracking payment completed');
+      console.log('[AUDIT][PixelTracker] Tracking payment completed for order:', order.id);
       // When payment is confirmed, track purchase event across all pixels
       trackPurchase(
         order.id,

