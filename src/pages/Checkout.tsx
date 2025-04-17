@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCheckoutState } from '@/hooks/useCheckoutState';
@@ -123,7 +122,7 @@ const Checkout = () => {
       <div className="max-w-2xl mx-auto">
         {/* Product name as heading */}
         <h1 
-          className="text-2xl md:text-3xl font-bold text-center mb-6"
+          className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6"
           style={{ color: product.use_global_colors === false ? product.heading_color : customization.headingColor }}
         >
           {product.name}

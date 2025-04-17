@@ -35,7 +35,7 @@ const CheckoutPreview: React.FC = () => {
   const updatedCustomization = {
     ...customization,
     topMessage: 'Oferta por tempo limitado!',
-    bannerImageUrl: '/lovable-uploads/f2d22187-5714-4830-9ea2-977031ef5e67.png', // Use the uploaded image
+    bannerImageUrl: '/lovable-uploads/ccce08a6-444b-4ccf-8231-b7270b25fd30.png', // Usar a nova imagem
     showRandomVisitors: true // Enable random visitors by default in preview
   };
 
@@ -54,7 +54,8 @@ const CheckoutPreview: React.FC = () => {
             containerClassName="w-full"
           />
           
-          <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white py-4">
+          {/* Removido o espaço em branco no mobile */}
+          <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 bg-white py-2 md:py-4">
             <CheckoutContent 
               product={demoProduct}
               customerData={customerData}

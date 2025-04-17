@@ -9,8 +9,8 @@ import { CheckoutCustomization } from '@/types/checkout';
 
 interface CheckoutContainerProps {
   children: React.ReactNode;
-  productBannerUrl?: string; // Add prop for product-specific banner
-  customization?: CheckoutCustomization; // Add prop for custom colors
+  productBannerUrl?: string;
+  customization?: CheckoutCustomization;
 }
 
 interface CheckoutCustomizationDB {
@@ -35,8 +35,8 @@ interface CustomCSSProperties extends React.CSSProperties {
 
 const CheckoutContainer: React.FC<CheckoutContainerProps> = ({ 
   children,
-  productBannerUrl, // Get product-specific banner URL
-  customization // Get custom colors
+  productBannerUrl,
+  customization
 }) => {
   const { toast } = useToast();
   const [dbCustomization, setDbCustomization] = useState<CheckoutCustomizationDB>({
@@ -147,7 +147,8 @@ const CheckoutContainer: React.FC<CheckoutContainerProps> = ({
               />
             )}
             
-            <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 py-4">
+            {/* Ajustado para eliminar o espaço em branco no mobile */}
+            <div className="w-full md:w-3/4 max-w-4xl mx-auto px-4 md:px-6 py-2 md:py-4">
               <main>
                 {children}
               </main>
