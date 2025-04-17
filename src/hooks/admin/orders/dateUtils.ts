@@ -11,25 +11,33 @@ export const calculateDateFilters = (
 ) => {
   const today = new Date();
   
-  if (dateRange === "custom" && customDateRange.startDate && customDateRange.endDate) {
+  try {
+    if (dateRange === "custom" && customDateRange.startDate && customDateRange.endDate) {
+      return {
+        startDate: startOfDay(customDateRange.startDate),
+        endDate: endOfDay(customDateRange.endDate),
+      };
+    } else if (dateRange === "7days") {
+      return {
+        startDate: startOfDay(addDays(today, -7)),
+        endDate: endOfDay(today),
+      };
+    } else if (dateRange === "30days") {
+      return {
+        startDate: startOfDay(addDays(today, -30)),
+        endDate: endOfDay(today),
+      };
+    }
+    
     return {
-      startDate: startOfDay(customDateRange.startDate),
-      endDate: endOfDay(customDateRange.endDate),
+      startDate: undefined,
+      endDate: undefined,
     };
-  } else if (dateRange === "7days") {
+  } catch (error) {
+    console.error("Error in calculateDateFilters:", error);
     return {
-      startDate: startOfDay(addDays(today, -7)),
-      endDate: endOfDay(today),
-    };
-  } else if (dateRange === "30days") {
-    return {
-      startDate: startOfDay(addDays(today, -30)),
-      endDate: endOfDay(today),
+      startDate: undefined,
+      endDate: undefined,
     };
   }
-  
-  return {
-    startDate: undefined,
-    endDate: undefined,
-  };
 };

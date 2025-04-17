@@ -75,12 +75,19 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
     return !isNaN(numericPrice) ? formatCurrency(numericPrice) : "R$ --";
   };
 
-  // Helper function to safely format date
+  // Helper function to safely format date with better error handling
   const formatDate = (dateString: string | null | undefined): string => {
     if (!dateString) return "Data não disponível";
     
     try {
-      return format(new Date(dateString), "dd/MM/yyyy HH:mm", {
+      const date = new Date(dateString);
+      // Check if date is valid before formatting
+      if (isNaN(date.getTime())) {
+        console.error("Invalid date:", dateString);
+        return "Data inválida";
+      }
+      
+      return format(date, "dd/MM/yyyy HH:mm", {
         locale: ptBR,
       });
     } catch (error) {

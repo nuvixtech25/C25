@@ -42,6 +42,17 @@ const OrdersFilters: React.FC<OrdersFiltersProps> = ({
   customDateRange,
   setCustomDateRange,
 }) => {
+  // Safe date formatting helper
+  const safeFormatDate = (date: Date | undefined) => {
+    if (!date) return "";
+    try {
+      return format(date, "dd/MM/yyyy", { locale: ptBR });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Data inválida";
+    }
+  };
+
   return (
     <div className="bg-white p-4 rounded-md shadow-sm mb-4 space-y-4">
       <h2 className="text-lg font-medium mb-3">Filtros</h2>
@@ -111,9 +122,7 @@ const OrdersFilters: React.FC<OrdersFiltersProps> = ({
                 >
                   <Calendar className="mr-2 h-4 w-4" />
                   {customDateRange.startDate ? (
-                    format(customDateRange.startDate, "dd/MM/yyyy", {
-                      locale: ptBR,
-                    })
+                    safeFormatDate(customDateRange.startDate)
                   ) : (
                     <span>Selecione a data</span>
                   )}
@@ -147,9 +156,7 @@ const OrdersFilters: React.FC<OrdersFiltersProps> = ({
                 >
                   <Calendar className="mr-2 h-4 w-4" />
                   {customDateRange.endDate ? (
-                    format(customDateRange.endDate, "dd/MM/yyyy", {
-                      locale: ptBR,
-                    })
+                    safeFormatDate(customDateRange.endDate)
                   ) : (
                     <span>Selecione a data</span>
                   )}

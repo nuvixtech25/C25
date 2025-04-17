@@ -17,15 +17,24 @@ export default defineConfig(({ mode }) => ({
     outDir: "dist",
     // Generate manifest for better asset tracking
     manifest: true,
-    // Improve chunk naming for better caching
+    // Optimize chunks for better caching
     rollupOptions: {
       output: {
-        manualChunks: undefined,
+        manualChunks: (id) => {
+          // Put big dependencies in a vendor chunk
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
         assetFileNames: 'assets/[name]-[hash].[ext]',
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
       },
     },
+    // Set a reasonable chunk size warning limit
+    chunkSizeWarningLimit: 1000,
+    // Minify for production
+    minify: mode === 'production',
   },
   plugins: [
     react(),
@@ -36,5 +45,12 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  // Add specific optimizations for date-fns
+  optimizeDeps: {
+    include: ['date-fns'],
+    esbuildOptions: {
+      target: 'es2020'
+    }
   },
 }));
