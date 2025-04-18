@@ -9,9 +9,43 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      asaas_api_keys: {
+        Row: {
+          api_key: string
+          created_at: string
+          id: number
+          is_active: boolean
+          is_sandbox: boolean
+          key_name: string
+          priority: number
+          updated_at: string
+        }
+        Insert: {
+          api_key: string
+          created_at?: string
+          id?: number
+          is_active?: boolean
+          is_sandbox?: boolean
+          key_name: string
+          priority: number
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string
+          created_at?: string
+          id?: number
+          is_active?: boolean
+          is_sandbox?: boolean
+          key_name?: string
+          priority?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       asaas_config: {
         Row: {
           active: boolean | null
+          active_key_id: number | null
           card_enabled: boolean | null
           id: number
           manual_card_redirect_page: string | null
@@ -24,6 +58,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean | null
+          active_key_id?: number | null
           card_enabled?: boolean | null
           id?: number
           manual_card_redirect_page?: string | null
@@ -36,6 +71,7 @@ export type Database = {
         }
         Update: {
           active?: boolean | null
+          active_key_id?: number | null
           card_enabled?: boolean | null
           id?: number
           manual_card_redirect_page?: string | null
@@ -46,7 +82,15 @@ export type Database = {
           updated_at?: string | null
           use_netlify_functions?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "asaas_config_active_key_id_fkey"
+            columns: ["active_key_id"]
+            isOneToOne: false
+            referencedRelation: "asaas_api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       asaas_payments: {
         Row: {
@@ -507,7 +551,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_next_active_key: {
+        Args: { current_key_id: number; is_sandbox_mode: boolean }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
