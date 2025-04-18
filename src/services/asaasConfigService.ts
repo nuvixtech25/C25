@@ -12,6 +12,8 @@ export interface AsaasConfigData {
   use_netlify_functions?: boolean | null;
   manual_card_redirect_page?: string | null;
   updated_at?: string | null;
+  sandbox_key?: string | null;
+  production_key?: string | null;
 }
 
 export async function getAsaasConfig(): Promise<AsaasConfigData | null> {
