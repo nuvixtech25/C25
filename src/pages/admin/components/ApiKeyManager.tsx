@@ -129,7 +129,7 @@ const ApiKeyManager = () => {
                     Prioridade: {key.priority}
                   </p>
                   <div className="flex items-center space-x-2">
-                    <Badge variant={key.is_active ? "success" : "secondary"}>
+                    <Badge variant={key.is_active ? "default" : "secondary"}>
                       {key.is_active ? 'Ativa' : 'Inativa'}
                     </Badge>
                   </div>
@@ -182,3 +182,4 @@ const ApiKeyManager = () => {
 };
 
 export default ApiKeyManager;
+
