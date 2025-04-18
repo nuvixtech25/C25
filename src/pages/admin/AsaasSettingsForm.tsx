@@ -7,7 +7,7 @@ import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import OperationModeSettings from './components/OperationModeSettings';
-import ApiKeyFields from './components/ApiKeyFields';
+import ApiKeyManager from './components/ApiKeyManager';
 import PaymentMethodsToggles from './components/PaymentMethodsToggles';
 import NetlifyToggle from './components/NetlifyToggle';
 import RedirectPageSelector from './components/RedirectPageSelector';
@@ -32,7 +32,7 @@ const AsaasSettingsForm: React.FC<AsaasSettingsFormProps> = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <OperationModeSettings form={form} />
-        <ApiKeyFields form={form} />
+        <ApiKeyManager />
         <PaymentMethodsToggles form={form} />
         <NetlifyToggle form={form} />
         <RedirectPageSelector form={form} />
