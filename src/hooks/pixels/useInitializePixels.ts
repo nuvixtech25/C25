@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { fetchPixelConfig, PixelConfig } from '@/services/pixelConfigService';
 import { initializeGoogleAdsPixels } from './initializers/googlePixelInitializer';
@@ -7,6 +6,7 @@ import { initializeTiktokPixel } from './initializers/tiktokPixelInitializer';
 import { initializeTaboolaPixel } from './initializers/taboolaPixelInitializer';
 import { initializeOutbrainPixel } from './initializers/outbrainPixelInitializer';
 import { initializeUolAdsPixel } from './initializers/uolAdsPixelInitializer';
+import { PixelConfig } from '@/services/pixels/types';
 
 export const useInitializePixels = (shouldInitialize: boolean = false) => {
   const [pixelInitialized, setPixelInitialized] = useState(false);
