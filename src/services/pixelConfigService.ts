@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -59,56 +58,43 @@ export const fetchPixelConfig = async (): Promise<PixelConfig> => {
     
     if (error) throw error;
     
-    // Handle legacy format and convert to new format
+    // Convert database format to application format
     if (data) {
-      // Check if data is in legacy format
-      const isLegacyFormat = data.google_ads_id !== undefined || data.facebook_pixel_id !== undefined;
-      
-      if (isLegacyFormat) {
-        // Convert legacy format to new format
-        return {
-          id: data.id,
-          googleAdsPixels: data.google_ads_id ? [{
+      return {
+        id: data.id,
+        googleAdsPixels: data.google_ads_id ? [
+          {
             id: uuidv4(),
             googleAdsId: data.google_ads_id || '',
             conversionLabel: data.conversion_label || '',
             enabled: data.google_enabled || false
-          }] : [],
-          facebookPixels: data.facebook_pixel_id ? [{
+          }
+        ] : [],
+        facebookPixels: data.facebook_pixel_id ? [
+          {
             id: uuidv4(),
             facebookPixelId: data.facebook_pixel_id || '',
             facebookToken: data.facebook_token || '',
             enabled: data.facebook_enabled || false
-          }] : [],
-          taboolaPixel: {
-            taboolaAccountId: '',
-            enabled: false
-          },
-          tiktokPixel: {
-            tiktokPixelId: '',
-            enabled: false
-          },
-          outbrainPixel: {
-            outbrainPixelId: '',
-            enabled: false
-          },
-          uolAdsPixel: {
-            uolAdsId: '',
-            enabled: false
           }
-        };
-      } else {
-        // New format, just parse it
-        return {
-          id: data.id,
-          googleAdsPixels: data.google_ads_pixels || [],
-          facebookPixels: data.facebook_pixels || [],
-          taboolaPixel: data.taboola_pixel || { taboolaAccountId: '', enabled: false },
-          tiktokPixel: data.tiktok_pixel || { tiktokPixelId: '', enabled: false },
-          outbrainPixel: data.outbrain_pixel || { outbrainPixelId: '', enabled: false },
-          uolAdsPixel: data.uol_ads_pixel || { uolAdsId: '', enabled: false }
-        };
-      }
+        ] : [],
+        taboolaPixel: {
+          taboolaAccountId: '',
+          enabled: false
+        },
+        tiktokPixel: {
+          tiktokPixelId: '',
+          enabled: false
+        },
+        outbrainPixel: {
+          outbrainPixelId: '',
+          enabled: false
+        },
+        uolAdsPixel: {
+          uolAdsId: '',
+          enabled: false
+        }
+      };
     }
     
     // Return default empty configuration
@@ -162,20 +148,23 @@ export const updatePixelConfig = async (config: PixelConfig): Promise<PixelConfi
   try {
     let response;
     
+    // Check if we have multiple Google Ads pixels
+    const firstGoogleAds = config.googleAdsPixels[0] || { googleAdsId: '', conversionLabel: '', enabled: false };
+    
+    // Check if we have multiple Facebook pixels
+    const firstFacebook = config.facebookPixels[0] || { facebookPixelId: '', facebookToken: '', enabled: false };
+    
+    // Convert application format to database format
     const dbData = {
-      google_ads_pixels: config.googleAdsPixels.map(pixel => ({
-        ...pixel,
-        id: pixel.id || uuidv4()
-      })),
-      facebook_pixels: config.facebookPixels.map(pixel => ({
-        ...pixel,
-        id: pixel.id || uuidv4()
-      })),
-      taboola_pixel: config.taboolaPixel,
-      tiktok_pixel: config.tiktokPixel,
-      outbrain_pixel: config.outbrainPixel,
-      uol_ads_pixel: config.uolAdsPixel
+      google_ads_id: firstGoogleAds.googleAdsId,
+      conversion_label: firstGoogleAds.conversionLabel,
+      google_enabled: firstGoogleAds.enabled,
+      facebook_pixel_id: firstFacebook.facebookPixelId,
+      facebook_token: firstFacebook.facebookToken,
+      facebook_enabled: firstFacebook.enabled
     };
+    
+    console.log('Saving pixel config to database:', dbData);
     
     // If there's no ID, it's a new record
     if (!config.id) {
@@ -200,14 +189,41 @@ export const updatePixelConfig = async (config: PixelConfig): Promise<PixelConfi
       response = data;
     }
     
+    // Convert the response back to application format
     return {
       id: response.id,
-      googleAdsPixels: response.google_ads_pixels || [],
-      facebookPixels: response.facebook_pixels || [],
-      taboolaPixel: response.taboola_pixel || { taboolaAccountId: '', enabled: false },
-      tiktokPixel: response.tiktok_pixel || { tiktokPixelId: '', enabled: false },
-      outbrainPixel: response.outbrain_pixel || { outbrainPixelId: '', enabled: false },
-      uolAdsPixel: response.uol_ads_pixel || { uolAdsId: '', enabled: false }
+      googleAdsPixels: [
+        {
+          id: uuidv4(),
+          googleAdsId: response.google_ads_id || '',
+          conversionLabel: response.conversion_label || '',
+          enabled: response.google_enabled || false
+        }
+      ],
+      facebookPixels: [
+        {
+          id: uuidv4(),
+          facebookPixelId: response.facebook_pixel_id || '',
+          facebookToken: response.facebook_token || '',
+          enabled: response.facebook_enabled || false
+        }
+      ],
+      taboolaPixel: {
+        taboolaAccountId: '',
+        enabled: false
+      },
+      tiktokPixel: {
+        tiktokPixelId: '',
+        enabled: false
+      },
+      outbrainPixel: {
+        outbrainPixelId: '',
+        enabled: false
+      },
+      uolAdsPixel: {
+        uolAdsId: '',
+        enabled: false
+      }
     };
   } catch (error) {
     console.error('Error updating pixel config:', error);

@@ -16,8 +16,18 @@ export const usePixelConfigForm = () => {
   const form = useForm<PixelConfigFormValues>({
     resolver: zodResolver(pixelConfigSchema),
     defaultValues: {
-      googleAdsPixels: [],
-      facebookPixels: [],
+      googleAdsPixels: [{
+        id: uuidv4(),
+        googleAdsId: '',
+        conversionLabel: '',
+        enabled: false
+      }],
+      facebookPixels: [{
+        id: uuidv4(),
+        facebookPixelId: '',
+        facebookToken: '',
+        enabled: false
+      }],
       taboolaPixel: {
         taboolaAccountId: '',
         enabled: false
@@ -44,21 +54,14 @@ export const usePixelConfigForm = () => {
         setLoading(true);
         const config = await fetchPixelConfig();
         
-        // Ensure each pixel has an ID
-        const googleAdsPixels = config.googleAdsPixels.map(pixel => ({
-          ...pixel,
-          id: pixel.id || uuidv4()
-        }));
-        
-        const facebookPixels = config.facebookPixels.map(pixel => ({
-          ...pixel,
-          id: pixel.id || uuidv4()
-        }));
-        
         form.reset({
           id: config.id,
-          googleAdsPixels: googleAdsPixels.length ? googleAdsPixels : [{ id: uuidv4(), googleAdsId: '', conversionLabel: '', enabled: false }],
-          facebookPixels: facebookPixels.length ? facebookPixels : [{ id: uuidv4(), facebookPixelId: '', facebookToken: '', enabled: false }],
+          googleAdsPixels: config.googleAdsPixels.length 
+            ? config.googleAdsPixels 
+            : [{ id: uuidv4(), googleAdsId: '', conversionLabel: '', enabled: false }],
+          facebookPixels: config.facebookPixels.length 
+            ? config.facebookPixels 
+            : [{ id: uuidv4(), facebookPixelId: '', facebookToken: '', enabled: false }],
           taboolaPixel: config.taboolaPixel,
           tiktokPixel: config.tiktokPixel,
           outbrainPixel: config.outbrainPixel,

@@ -35,7 +35,7 @@ export const trackInitiateCheckout = (value: number, isInitialized: boolean) => 
   // TikTok InitiateCheckout event
   if (typeof window !== 'undefined' && window.tiktokPixelId) {
     console.log(`[PIXEL AUDIT] Firing TikTok InitiateCheckout for ID: ${window.tiktokPixelId}`);
-    TiktokPixel.trackBeginCheckout(value);  // Changed from trackInitiateCheckout to trackBeginCheckout
+    TiktokPixel.trackBeginCheckout(value);  // Using trackBeginCheckout which exists instead of trackInitiateCheckout
   }
   
   // Taboola Pixel - they don't have a specific InitiateCheckout event
