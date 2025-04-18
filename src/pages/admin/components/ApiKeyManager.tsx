@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { listApiKeys, addApiKey, toggleKeyStatus } from '@/services/asaasKeyService';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ApiKey {
   id: number;
@@ -15,6 +16,7 @@ interface ApiKey {
   api_key: string;
   is_active: boolean;
   priority: number;
+  is_sandbox: boolean;
 }
 
 const ApiKeyManager = () => {
@@ -30,8 +32,8 @@ const ApiKeyManager = () => {
 
   const loadKeys = async () => {
     try {
-      const productionKeys = await listApiKeys(false); // false para chaves de produção
-      setKeys(productionKeys);
+      const allKeys = await listApiKeys(false);
+      setKeys(allKeys);
     } catch (error) {
       console.error('Erro ao carregar chaves:', error);
       toast({
@@ -52,10 +54,11 @@ const ApiKeyManager = () => {
       return;
     }
 
-    if (keys.length >= 5) {
+    const productionKeys = keys.filter(k => !k.is_sandbox);
+    if (productionKeys.length >= 5) {
       toast({
         title: 'Limite atingido',
-        description: 'Você já atingiu o limite máximo de 5 chaves.',
+        description: 'Você já atingiu o limite máximo de 5 chaves de produção.',
         variant: 'destructive',
       });
       return;
@@ -66,8 +69,8 @@ const ApiKeyManager = () => {
       await addApiKey(
         newKeyName,
         newApiKey,
-        false, // false para produção
-        keys.length + 1 // prioridade baseada na quantidade atual de chaves
+        false,
+        productionKeys.length + 1
       );
       
       setNewKeyName('');
@@ -109,77 +112,117 @@ const ApiKeyManager = () => {
     }
   };
 
+  const sandboxKey = keys.find(key => key.is_sandbox);
+  const productionKeys = keys
+    .filter(key => !key.is_sandbox)
+    .sort((a, b) => a.priority - b.priority);
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Chaves de API de Produção</CardTitle>
-        <CardDescription>
-          Gerencie suas chaves de API do Asaas (máximo 5 chaves)
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {/* Lista de chaves existentes */}
-          <div className="space-y-4">
-            {keys.map((key) => (
-              <div key={key.id} className="flex items-center justify-between p-4 border rounded-lg">
+    <Tabs defaultValue="production" className="space-y-4">
+      <TabsList>
+        <TabsTrigger value="sandbox">Sandbox</TabsTrigger>
+        <TabsTrigger value="production">Produção</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="sandbox" className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Chave de Sandbox</CardTitle>
+            <CardDescription>
+              Chave para testes em ambiente de desenvolvimento
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {sandboxKey && (
+              <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="space-y-1">
-                  <p className="font-medium">{key.key_name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Prioridade: {key.priority}
-                  </p>
+                  <p className="font-medium">{sandboxKey.key_name}</p>
                   <div className="flex items-center space-x-2">
-                    <Badge variant={key.is_active ? "default" : "secondary"}>
-                      {key.is_active ? 'Ativa' : 'Inativa'}
+                    <Badge variant={sandboxKey.is_active ? "default" : "secondary"}>
+                      {sandboxKey.is_active ? 'Ativa' : 'Inativa'}
                     </Badge>
                   </div>
                 </div>
                 <Switch
-                  checked={key.is_active}
-                  onCheckedChange={() => handleToggleStatus(key.id, key.is_active)}
+                  checked={sandboxKey.is_active}
+                  onCheckedChange={() => handleToggleStatus(sandboxKey.id, sandboxKey.is_active)}
                 />
               </div>
-            ))}
-          </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
 
-          {/* Formulário para adicionar nova chave */}
-          {keys.length < 5 && (
-            <div className="space-y-4 pt-4 border-t">
-              <div className="space-y-2">
-                <Label htmlFor="keyName">Nome da Chave</Label>
-                <Input
-                  id="keyName"
-                  value={newKeyName}
-                  onChange={(e) => setNewKeyName(e.target.value)}
-                  placeholder="Ex: Chave Principal"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="apiKey">Chave API</Label>
-                <Input
-                  id="apiKey"
-                  value={newApiKey}
-                  onChange={(e) => setNewApiKey(e.target.value)}
-                  placeholder="$aas_..."
-                  type="password"
-                />
+      <TabsContent value="production">
+        <Card>
+          <CardHeader>
+            <CardTitle>Chaves de API de Produção</CardTitle>
+            <CardDescription>
+              Gerencie suas chaves de API do Asaas (máximo 5 chaves)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                {productionKeys.map((key) => (
+                  <div key={key.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="space-y-1">
+                      <p className="font-medium">{key.key_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Prioridade: {key.priority}
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant={key.is_active ? "default" : "secondary"}>
+                          {key.is_active ? 'Ativa' : 'Inativa'}
+                        </Badge>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={key.is_active}
+                      onCheckedChange={() => handleToggleStatus(key.id, key.is_active)}
+                    />
+                  </div>
+                ))}
               </div>
 
-              <Button 
-                onClick={handleAddKey} 
-                disabled={isLoading || !newKeyName || !newApiKey}
-                className="w-full"
-              >
-                {isLoading ? 'Adicionando...' : 'Adicionar Nova Chave'}
-              </Button>
+              {productionKeys.length < 5 && (
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="space-y-2">
+                    <Label htmlFor="keyName">Nome da Chave</Label>
+                    <Input
+                      id="keyName"
+                      value={newKeyName}
+                      onChange={(e) => setNewKeyName(e.target.value)}
+                      placeholder="Ex: Chave Principal"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="apiKey">Chave API</Label>
+                    <Input
+                      id="apiKey"
+                      value={newApiKey}
+                      onChange={(e) => setNewApiKey(e.target.value)}
+                      placeholder="$aas_..."
+                      type="password"
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={handleAddKey} 
+                    disabled={isLoading || !newKeyName || !newApiKey}
+                    className="w-full"
+                  >
+                    {isLoading ? 'Adicionando...' : 'Adicionar Nova Chave'}
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
   );
 };
 
 export default ApiKeyManager;
-
