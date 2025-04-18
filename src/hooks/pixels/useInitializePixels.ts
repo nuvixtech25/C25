@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from 'react';
-import { fetchPixelConfig, PixelConfig } from '@/services/pixelConfigService';
+import { fetchPixelConfig } from '@/services/pixelConfigService';
 import { initializeGoogleAdsPixels } from './initializers/googlePixelInitializer';
 import { initializeFacebookPixels } from './initializers/facebookPixelInitializer';
 import { initializeTiktokPixel } from './initializers/tiktokPixelInitializer';
