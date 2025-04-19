@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { listApiKeys, addApiKey, toggleKeyStatus } from '@/services/asaasKeyService';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Loader2 } from 'lucide-react';
 
 interface ApiKey {
   id: number;
@@ -28,6 +29,7 @@ const ApiKeyManager = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSandboxLoading, setIsSandboxLoading] = useState(false);
+  const [isLoadingKeys, setIsLoadingKeys] = useState(true);
 
   // Carrega as chaves ao montar o componente
   useEffect(() => {
@@ -35,6 +37,7 @@ const ApiKeyManager = () => {
   }, []);
 
   const loadKeys = async () => {
+    setIsLoadingKeys(true);
     try {
       // Load all keys at once, regardless of sandbox status
       const allKeys = await listApiKeys();
@@ -47,6 +50,8 @@ const ApiKeyManager = () => {
         description: 'Não foi possível carregar as chaves de API.',
         variant: 'destructive',
       });
+    } finally {
+      setIsLoadingKeys(false);
     }
   };
 
@@ -171,6 +176,17 @@ const ApiKeyManager = () => {
   const productionKeys = keys
     .filter(key => !key.is_sandbox)
     .sort((a, b) => a.priority - b.priority);
+
+  if (isLoadingKeys) {
+    return (
+      <Card className="w-full">
+        <CardContent className="pt-6 flex justify-center items-center h-32">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="ml-2">Carregando chaves de API...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Tabs defaultValue="production" className="space-y-4">
