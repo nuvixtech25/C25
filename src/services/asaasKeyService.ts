@@ -92,7 +92,8 @@ export const addApiKey = async (
         key_name: keyName,
         api_key: apiKey,
         is_sandbox: isSandbox,
-        priority: priority
+        priority: priority,
+        is_active: true // Set is_active to true by default
       }])
       .select()
       .single();
@@ -105,13 +106,20 @@ export const addApiKey = async (
   }
 };
 
-export const listApiKeys = async (isSandbox: boolean): Promise<AsaasApiKey[]> => {
+export const listApiKeys = async (isSandbox: boolean | null = null): Promise<AsaasApiKey[]> => {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('asaas_api_keys')
-      .select('*')
-      .eq('is_sandbox', isSandbox)
-      .order('priority');
+      .select('*');
+      
+    // Only filter by sandbox if the parameter is explicitly provided
+    if (isSandbox !== null) {
+      query = query.eq('is_sandbox', isSandbox);
+    }
+    
+    query = query.order('priority');
+    
+    const { data, error } = await query;
       
     if (error) throw error;
     return data || [];

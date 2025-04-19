@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,17 +23,21 @@ const ApiKeyManager = () => {
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [newKeyName, setNewKeyName] = useState('');
   const [newApiKey, setNewApiKey] = useState('');
+  const [newSandboxKeyName, setNewSandboxKeyName] = useState('');
+  const [newSandboxApiKey, setNewSandboxApiKey] = useState('');
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSandboxLoading, setIsSandboxLoading] = useState(false);
 
   // Carrega as chaves ao montar o componente
-  React.useEffect(() => {
+  useEffect(() => {
     loadKeys();
   }, []);
 
   const loadKeys = async () => {
     try {
-      const allKeys = await listApiKeys(false);
+      // Load all keys at once, regardless of sandbox status
+      const allKeys = await listApiKeys();
       console.log('Chaves carregadas:', allKeys);
       setKeys(allKeys);
     } catch (error) {
@@ -71,7 +75,7 @@ const ApiKeyManager = () => {
       await addApiKey(
         newKeyName,
         newApiKey,
-        false,
+        false, // production key
         productionKeys.length + 1
       );
       
@@ -92,6 +96,55 @@ const ApiKeyManager = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAddSandboxKey = async () => {
+    if (!newSandboxKeyName || !newSandboxApiKey) {
+      toast({
+        title: 'Campos obrigatórios',
+        description: 'Por favor, preencha o nome e a chave API de sandbox.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const sandboxKeys = keys.filter(k => k.is_sandbox);
+    if (sandboxKeys.length >= 1) {
+      toast({
+        title: 'Sandbox já configurado',
+        description: 'Você já tem uma chave de sandbox. Desative-a primeiro para adicionar uma nova.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSandboxLoading(true);
+    try {
+      await addApiKey(
+        newSandboxKeyName,
+        newSandboxApiKey,
+        true, // sandbox key
+        1 // priority doesn't matter for sandbox as there's only one
+      );
+      
+      setNewSandboxKeyName('');
+      setNewSandboxApiKey('');
+      await loadKeys();
+      
+      toast({
+        title: 'Chave Sandbox adicionada',
+        description: 'A chave de API Sandbox foi adicionada com sucesso.',
+      });
+    } catch (error) {
+      console.error('Erro ao adicionar chave sandbox:', error);
+      toast({
+        title: 'Erro ao adicionar chave',
+        description: 'Não foi possível adicionar a chave de API Sandbox.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSandboxLoading(false);
     }
   };
 
@@ -154,9 +207,42 @@ const ApiKeyManager = () => {
                 />
               </div>
             ) : (
-              <p className="text-muted-foreground text-center py-4">
-                Nenhuma chave de sandbox cadastrada
-              </p>
+              <div>
+                <p className="text-muted-foreground text-center py-4 mb-6">
+                  Nenhuma chave de sandbox cadastrada
+                </p>
+                
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="space-y-2">
+                    <Label htmlFor="sandboxKeyName">Nome da Chave Sandbox</Label>
+                    <Input
+                      id="sandboxKeyName"
+                      value={newSandboxKeyName}
+                      onChange={(e) => setNewSandboxKeyName(e.target.value)}
+                      placeholder="Ex: Chave Sandbox"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="sandboxApiKey">Chave API Sandbox</Label>
+                    <Input
+                      id="sandboxApiKey"
+                      value={newSandboxApiKey}
+                      onChange={(e) => setNewSandboxApiKey(e.target.value)}
+                      placeholder="$aas_sandbox_..."
+                      type="password"
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={handleAddSandboxKey} 
+                    disabled={isSandboxLoading || !newSandboxKeyName || !newSandboxApiKey}
+                    className="w-full"
+                  >
+                    {isSandboxLoading ? 'Adicionando...' : 'Adicionar Chave Sandbox'}
+                  </Button>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -173,28 +259,34 @@ const ApiKeyManager = () => {
           <CardContent>
             <div className="space-y-6">
               <div className="space-y-4">
-                {productionKeys.map((key) => (
-                  <div key={key.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="space-y-1">
-                      <p className="font-medium">{key.key_name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {key.api_key}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Prioridade: {key.priority}
-                      </p>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant={key.is_active ? "default" : "secondary"}>
-                          {key.is_active ? 'Ativa' : 'Inativa'}
-                        </Badge>
+                {productionKeys.length > 0 ? (
+                  productionKeys.map((key) => (
+                    <div key={key.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="space-y-1">
+                        <p className="font-medium">{key.key_name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {key.api_key}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Prioridade: {key.priority}
+                        </p>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant={key.is_active ? "default" : "secondary"}>
+                            {key.is_active ? 'Ativa' : 'Inativa'}
+                          </Badge>
+                        </div>
                       </div>
+                      <Switch
+                        checked={key.is_active}
+                        onCheckedChange={() => handleToggleStatus(key.id, key.is_active)}
+                      />
                     </div>
-                    <Switch
-                      checked={key.is_active}
-                      onCheckedChange={() => handleToggleStatus(key.id, key.is_active)}
-                    />
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-muted-foreground text-center py-4">
+                    Nenhuma chave de produção cadastrada
+                  </p>
+                )}
               </div>
 
               {productionKeys.length < 5 && (
