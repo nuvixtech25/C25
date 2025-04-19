@@ -120,8 +120,13 @@ export const listApiKeys = async (isSandbox: boolean | null = null): Promise<Asa
     query = query.order('priority');
     
     const { data, error } = await query;
-      
-    if (error) throw error;
+    
+    if (error) {
+      console.error('Error in listApiKeys:', error);
+      throw error;
+    }
+    
+    console.log('API keys fetched:', data);
     return data || [];
   } catch (error) {
     console.error('Error listing API keys:', error);
