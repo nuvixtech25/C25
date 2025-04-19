@@ -26,6 +26,7 @@ const ApiKeyManager = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
+  // Carrega as chaves ao montar o componente
   React.useEffect(() => {
     loadKeys();
   }, []);
@@ -33,6 +34,7 @@ const ApiKeyManager = () => {
   const loadKeys = async () => {
     try {
       const allKeys = await listApiKeys(false);
+      console.log('Chaves carregadas:', allKeys);
       setKeys(allKeys);
     } catch (error) {
       console.error('Erro ao carregar chaves:', error);
@@ -133,10 +135,13 @@ const ApiKeyManager = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {sandboxKey && (
+            {sandboxKey ? (
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="space-y-1">
                   <p className="font-medium">{sandboxKey.key_name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {sandboxKey.api_key}
+                  </p>
                   <div className="flex items-center space-x-2">
                     <Badge variant={sandboxKey.is_active ? "default" : "secondary"}>
                       {sandboxKey.is_active ? 'Ativa' : 'Inativa'}
@@ -148,6 +153,10 @@ const ApiKeyManager = () => {
                   onCheckedChange={() => handleToggleStatus(sandboxKey.id, sandboxKey.is_active)}
                 />
               </div>
+            ) : (
+              <p className="text-muted-foreground text-center py-4">
+                Nenhuma chave de sandbox cadastrada
+              </p>
             )}
           </CardContent>
         </Card>
@@ -168,6 +177,9 @@ const ApiKeyManager = () => {
                   <div key={key.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="space-y-1">
                       <p className="font-medium">{key.key_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {key.api_key}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         Prioridade: {key.priority}
                       </p>
