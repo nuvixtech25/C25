@@ -6,10 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { listApiKeys, addApiKey, toggleKeyStatus } from '@/services/asaasKeyService';
+import { listApiKeys, addApiKey, toggleKeyStatus, getActiveApiKey } from '@/services/asaasKeyService';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Check } from 'lucide-react';
 
 interface ApiKey {
   id: number;
@@ -22,6 +22,7 @@ interface ApiKey {
 
 const ApiKeyManager = () => {
   const [keys, setKeys] = useState<ApiKey[]>([]);
+  const [activeKeyId, setActiveKeyId] = useState<number | null>(null);
   const [newKeyName, setNewKeyName] = useState('');
   const [newApiKey, setNewApiKey] = useState('');
   const [newSandboxKeyName, setNewSandboxKeyName] = useState('');
@@ -39,6 +40,16 @@ const ApiKeyManager = () => {
   const loadKeys = async () => {
     setIsLoadingKeys(true);
     try {
+      // Primeiro, carregamos a chave ativa para cada ambiente
+      const activeProductionKey = await getActiveApiKey(false);
+      const activeSandboxKey = await getActiveApiKey(true);
+      
+      if (activeProductionKey) {
+        setActiveKeyId(activeProductionKey.id);
+      } else if (activeSandboxKey) {
+        setActiveKeyId(activeSandboxKey.id);
+      }
+      
       // Load all keys at once, regardless of sandbox status
       const allKeys = await listApiKeys();
       console.log('Chaves carregadas:', allKeys);
@@ -173,9 +184,18 @@ const ApiKeyManager = () => {
   };
 
   const sandboxKey = keys.find(key => key.is_sandbox);
+  
+  // Ordenamos as chaves de produção primeiro pela chave ativa, depois pela prioridade
   const productionKeys = keys
     .filter(key => !key.is_sandbox)
-    .sort((a, b) => a.priority - b.priority);
+    .sort((a, b) => {
+      // Se a é a chave ativa, ela vem primeiro
+      if (a.id === activeKeyId) return -1;
+      // Se b é a chave ativa, ela vem primeiro
+      if (b.id === activeKeyId) return 1;
+      // Caso contrário, ordenamos por prioridade
+      return a.priority - b.priority;
+    });
 
   if (isLoadingKeys) {
     return (
@@ -205,9 +225,16 @@ const ApiKeyManager = () => {
           </CardHeader>
           <CardContent>
             {sandboxKey ? (
-              <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div className={`flex items-center justify-between p-4 border rounded-lg ${sandboxKey.id === activeKeyId ? 'border-primary bg-primary/5' : ''}`}>
                 <div className="space-y-1">
-                  <p className="font-medium">{sandboxKey.key_name}</p>
+                  <div className="flex items-center">
+                    <p className="font-medium">{sandboxKey.key_name}</p>
+                    {sandboxKey.id === activeKeyId && (
+                      <Badge variant="outline" className="ml-2 bg-primary text-primary-foreground">
+                        <Check className="h-3 w-3 mr-1" /> Em uso
+                      </Badge>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     {sandboxKey.api_key}
                   </p>
@@ -277,9 +304,19 @@ const ApiKeyManager = () => {
               <div className="space-y-4">
                 {productionKeys.length > 0 ? (
                   productionKeys.map((key) => (
-                    <div key={key.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div 
+                      key={key.id} 
+                      className={`flex items-center justify-between p-4 border rounded-lg ${key.id === activeKeyId ? 'border-primary bg-primary/5' : ''}`}
+                    >
                       <div className="space-y-1">
-                        <p className="font-medium">{key.key_name}</p>
+                        <div className="flex items-center">
+                          <p className="font-medium">{key.key_name}</p>
+                          {key.id === activeKeyId && (
+                            <Badge variant="outline" className="ml-2 bg-primary text-primary-foreground">
+                              <Check className="h-3 w-3 mr-1" /> Em uso
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-sm text-muted-foreground">
                           {key.api_key}
                         </p>
