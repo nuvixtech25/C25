@@ -11,6 +11,7 @@ import ApiKeyManager from './components/ApiKeyManager';
 import PaymentMethodsToggles from './components/PaymentMethodsToggles';
 import NetlifyToggle from './components/NetlifyToggle';
 import RedirectPageSelector from './components/RedirectPageSelector';
+import AsaasKeyStats from './components/AsaasKeyStats';
 
 interface AsaasSettingsFormProps {
   defaultValues: AsaasSettingsFormValues;
@@ -32,7 +33,12 @@ const AsaasSettingsForm: React.FC<AsaasSettingsFormProps> = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <OperationModeSettings form={form} />
-        <ApiKeyManager />
+        
+        <div className="grid gap-6 md:grid-cols-2">
+          <ApiKeyManager />
+          <AsaasKeyStats />
+        </div>
+        
         <PaymentMethodsToggles form={form} />
         <NetlifyToggle form={form} />
         <RedirectPageSelector form={form} />

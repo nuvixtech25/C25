@@ -5,6 +5,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import AsaasSettingsForm from './AsaasSettingsForm';
 import { useAsaasSettings } from '@/hooks/useAsaasSettings';
 import AccessDeniedCard from './components/AccessDeniedCard';
+import AsaasKeySelector from './components/AsaasKeySelector';
 
 const AsaasSettings = () => {
   const { isAdmin } = useAuth();
@@ -36,6 +37,10 @@ const AsaasSettings = () => {
         <p className="text-muted-foreground">
           Configure a integração com a API de pagamentos do Asaas.
         </p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <AsaasKeySelector />
       </div>
 
       <AsaasSettingsForm 
