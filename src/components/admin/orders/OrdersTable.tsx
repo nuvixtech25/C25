@@ -1,5 +1,4 @@
-
-import React, { useEffect } from "react";
+import React from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Eye, Trash2, Edit, DollarSign, CreditCard, AlertTriangle, Loader2 } from "lucide-react";
@@ -15,36 +14,37 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatCurrency } from "@/utils/formatters";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
+import { useOrdersList } from "@/hooks/admin/orders/useOrdersList";
 
 interface OrdersTableProps {
-  orders: Order[];
   onViewCustomer: (order: Order) => void;
   onViewPayment: (order: Order) => void;
   onEditStatus: (order: Order) => void;
   onDeleteOrder: (orderId: string) => void;
-  loading: boolean;
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({
-  orders,
   onViewCustomer,
   onViewPayment,
   onEditStatus,
   onDeleteOrder,
-  loading,
 }) => {
-  // Adicionar logs para diagnóstico
-  useEffect(() => {
-    console.log("OrdersTable renderizado com estado:", { 
-      quantidadePedidos: orders?.length, 
-      carregando: loading,
-      tipoDosPedidos: orders && orders.length > 0 ? typeof orders[0] : 'sem pedidos'
-    });
-    
-    if (orders && orders.length > 0) {
-      console.log("Exemplo do primeiro pedido:", orders[0]);
-    }
-  }, [orders, loading]);
+  const { 
+    orders, 
+    totalOrders, 
+    loading, 
+    currentPage, 
+    itemsPerPage, 
+    paginate 
+  } = useOrdersList();
 
   if (loading) {
     return (
@@ -96,81 +96,116 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
     }
   };
 
+  const totalPages = Math.ceil(totalOrders / itemsPerPage);
+
   return (
-    <div className="bg-white rounded-md shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Valor</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {orders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell className="font-medium">
-                  {order.customerName || "Nome não disponível"}
-                </TableCell>
-                <TableCell>{order.customerEmail || "Email não disponível"}</TableCell>
-                <TableCell>
-                  {formatPrice(order.productPrice)}
-                </TableCell>
-                <TableCell>
-                  <StatusBadge status={order.status} />
-                </TableCell>
-                <TableCell>
-                  {formatDate(order.createdAt)}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end space-x-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => onViewCustomer(order)}
-                      title="Ver dados do cliente"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => onViewPayment(order)}
-                      title="Ver dados de pagamento"
-                    >
-                      {order.paymentMethod === "pix" ? (
-                        <DollarSign className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <CreditCard className="h-4 w-4 text-blue-600" />
-                      )}
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => onEditStatus(order)}
-                      title="Editar status"
-                    >
-                      <Edit className="h-4 w-4 text-amber-600" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => onDeleteOrder(order.id!)}
-                      title="Excluir pedido"
-                    >
-                      <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
-                  </div>
-                </TableCell>
+    <div className="space-y-4">
+      <div className="bg-white rounded-md shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Valor</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {orders.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell className="font-medium">
+                    {order.customerName || "Nome não disponível"}
+                  </TableCell>
+                  <TableCell>{order.customerEmail || "Email não disponível"}</TableCell>
+                  <TableCell>
+                    {formatPrice(order.productPrice)}
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={order.status} />
+                  </TableCell>
+                  <TableCell>
+                    {formatDate(order.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end space-x-2">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => onViewCustomer(order)}
+                        title="Ver dados do cliente"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => onViewPayment(order)}
+                        title="Ver dados de pagamento"
+                      >
+                        {order.paymentMethod === "pix" ? (
+                          <DollarSign className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <CreditCard className="h-4 w-4 text-blue-600" />
+                        )}
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => onEditStatus(order)}
+                        title="Editar status"
+                      >
+                        <Edit className="h-4 w-4 text-amber-600" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => onDeleteOrder(order.id!)}
+                        title="Excluir pedido"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-600" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
+
+      {totalPages > 1 && (
+        <Pagination className="justify-center">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => paginate(currentPage - 1)}
+                className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  onClick={() => paginate(page)}
+                  isActive={page === currentPage}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => paginate(currentPage + 1)}
+                className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 };
