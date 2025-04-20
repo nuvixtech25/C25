@@ -99,7 +99,8 @@ export const getNextApiKey = async (currentKeyId: number, isSandbox: boolean): P
     
     console.log(`Alternando para próxima chave (ID: ${keyData.id}, Nome: ${keyData.key_name})`);
     return keyData;
-  } catch (error) {
+  } catch (err) {
+    const error = err as Error;
     console.error('Error getting next API key:', error);
     trackKeyError(currentKeyId, error.message || 'Erro desconhecido', keyTracker);
     return null;

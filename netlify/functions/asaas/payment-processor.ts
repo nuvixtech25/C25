@@ -3,16 +3,22 @@ import { AsaasCustomerRequest, SupabasePaymentData } from './types';
 import { createAsaasCustomer, createAsaasPayment, getAsaasPixQrCode } from './asaas-api';
 import { savePaymentData, updateOrderAsaasPaymentId } from './supabase-operations';
 
-// Função para tentar processar o pagamento com uma determinada chave
-async function tryProcessPayment(
+// Função para processar o pagamento com a chave API fornecida
+export async function processPaymentFlow(
   requestData: AsaasCustomerRequest,
   apiKey: string,
   supabase: any,
-  apiUrl: string = 'https://sandbox.asaas.com/api/v3',
-  keyId: number | null = null
+  apiUrl: string = 'https://sandbox.asaas.com/api/v3'
 ) {
-  console.log(`Tentando processar pagamento com chave ${keyId || 'desconhecida'}`);
-  console.log(`API URL: ${apiUrl}`);
+  console.log(`Iniciando fluxo de pagamento com API URL: ${apiUrl}`);
+  console.log(`Valor do pagamento: ${requestData.value}`);
+  console.log('Usando chave API:', apiKey ? `${apiKey.substring(0, 8)}...` : 'Não definida');
+  
+  // Verificar se a chave API foi fornecida
+  if (!apiKey) {
+    console.error('Chave API do Asaas não fornecida');
+    throw new Error('Chave API do Asaas não configurada corretamente');
+  }
   
   try {
     // 1. Create customer in Asaas
@@ -66,61 +72,10 @@ async function tryProcessPayment(
       qrCodeImage: pixQrCode.encodedImage,
       qrCode: pixQrCode.payload,
       copyPasteKey: pixQrCode.payload,
-      expirationDate: pixQrCode.expirationDate,
-      usedKey: keyId
+      expirationDate: pixQrCode.expirationDate
     };
   } catch (error) {
-    console.error(`Erro com chave ${keyId || 'desconhecida'}:`, error);
+    console.error('Erro no processamento do pagamento:', error);
     throw error;
-  }
-}
-
-// Handler principal para processamento de pagamentos com fallback
-export async function processPaymentFlow(
-  requestData: AsaasCustomerRequest,
-  apiKey: string,
-  supabase: any,
-  apiUrl: string = 'https://sandbox.asaas.com/api/v3',
-  fallbackKeys: {id: number, key: string}[] = []
-) {
-  console.log(`Iniciando fluxo de pagamento com API URL: ${apiUrl}`);
-  console.log(`Valor do pagamento: ${requestData.value}`);
-  console.log('Usando chave API principal:', apiKey ? `${apiKey.substring(0, 8)}...` : 'Não definida');
-  console.log(`Número de chaves de fallback disponíveis: ${fallbackKeys.length}`);
-  
-  // Verificar se a chave API principal foi fornecida
-  if (!apiKey) {
-    console.error('Chave API do Asaas não fornecida');
-    throw new Error('Chave API do Asaas não configurada corretamente');
-  }
-  
-  try {
-    // Tentar com a chave principal primeiro
-    return await tryProcessPayment(requestData, apiKey, supabase, apiUrl, null);
-  } catch (mainError) {
-    console.error('Erro na chave principal, tentando fallback:', mainError);
-    
-    // Se temos chaves de fallback, tentamos uma por uma
-    if (fallbackKeys && fallbackKeys.length > 0) {
-      let lastError = mainError;
-      
-      for (const fallbackKey of fallbackKeys) {
-        try {
-          console.log(`Tentando com chave de fallback ID ${fallbackKey.id}`);
-          return await tryProcessPayment(requestData, fallbackKey.key, supabase, apiUrl, fallbackKey.id);
-        } catch (fallbackError) {
-          console.error(`Falha na chave de fallback ${fallbackKey.id}:`, fallbackError);
-          lastError = fallbackError;
-          // Continua para a próxima chave
-        }
-      }
-      
-      // Se chegamos aqui, todas as chaves falharam
-      console.error('Todas as chaves falharam. Último erro:', lastError);
-      throw new Error('Todas as chaves de API falharam ao processar o pagamento');
-    } else {
-      // Sem chaves de fallback, apenas propaga o erro original
-      throw mainError;
-    }
   }
 }

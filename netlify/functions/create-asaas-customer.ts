@@ -4,7 +4,7 @@ import { supabase } from './asaas/supabase-client';
 import { AsaasCustomerRequest } from './asaas/types';
 import { validateAsaasCustomerRequest } from './asaas/validation';
 import { processPaymentFlow } from './asaas/payment-processor';
-import { AsaasApiKey, getActiveApiKey, listApiKeys } from '../src/services/asaasKeyManager';
+import { getAsaasApiKey } from '../src/services/asaasKeyService';
 
 const handler: Handler = async (event: HandlerEvent) => {
   if (event.httpMethod !== 'POST') {
@@ -37,46 +37,27 @@ const handler: Handler = async (event: HandlerEvent) => {
       
     console.log(`Ambiente: ${isSandbox ? 'Sandbox' : 'Produção'}`);
     
-    // Obter a chave ativa e chaves de fallback
-    const activeKey = await getActiveApiKey(isSandbox);
-    if (!activeKey) {
-      console.error(`Nenhuma chave ${isSandbox ? 'sandbox' : 'produção'} ativa encontrada`);
+    // Obter a chave API com mecanismo de fallback
+    const apiKey = await getAsaasApiKey(isSandbox);
+    
+    if (!apiKey) {
+      console.error(`Nenhuma chave ${isSandbox ? 'sandbox' : 'produção'} encontrada`);
       return {
         statusCode: 500,
         body: JSON.stringify({ error: 'API key not configured' }),
       };
     }
     
-    // Obter as chaves de fallback (todas as chaves ativas exceto a principal)
-    const allKeys = await listApiKeys(isSandbox);
-    const fallbackKeysData = allKeys
-      .filter(k => k.is_active && k.id !== activeKey.id)
-      .map(k => ({
-        id: k.id,
-        key: k.api_key,
-        name: k.key_name
-      }));
+    console.log(`Chave API obtida com sucesso: ${apiKey.substring(0, 8)}...`);
     
-    console.log(`Usando chave principal: ${activeKey.key_name} (ID: ${activeKey.id})`);
-    console.log(`Chaves de fallback disponíveis: ${fallbackKeysData.length}`);
-
-    // Process payment with active key and fallback mechanism
+    // Process payment with the obtained API key
     const result = await processPaymentFlow(
       requestData,
-      activeKey.api_key,
+      apiKey,
       supabase,
-      apiBaseUrl,
-      fallbackKeysData
+      apiBaseUrl
     );
     
-    // Log the used key information
-    const usedKeyId = result.usedKey || activeKey.id;
-    const usedKeyName = usedKeyId === activeKey.id
-      ? activeKey.key_name
-      : fallbackKeysData.find(k => k.id === usedKeyId)?.name || 'Desconhecida';
-    
-    console.log(`Pagamento processado com sucesso usando chave: ${usedKeyName} (ID: ${usedKeyId})`);
-
     return {
       statusCode: 200,
       body: JSON.stringify(result),
