@@ -1,33 +1,29 @@
 
-import { PaymentStatus } from "@/types/checkout";
+import { Order, Product, PaymentStatus, PaymentMethod } from '@/types/checkout';
 
 export interface GetOrdersParams {
-  paymentMethod: "pix" | "creditCard";
-  status: PaymentStatus | "ALL";
-  startDate?: Date;
-  endDate?: Date;
-}
-
-export interface OrderTransformed {
-  id: string;
-  customerId: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  customerCpfCnpj: string;
-  productId: string;
-  productName: string;
-  productPrice: number;
-  paymentMethod: string;
-  createdAt: string;
-  updatedAt: string;
-  status: PaymentStatus;
-  asaasPaymentId: string | null;
-  [key: string]: any;
+  paymentMethod?: PaymentMethod;
+  status?: PaymentStatus | 'ALL';
+  startDate?: string | Date;
+  endDate?: string | Date;
 }
 
 export interface DeleteOrderResult {
   success: boolean;
-  count?: number;
+  count: number;
   errors?: Array<{ orderId: string; error: string }>;
+}
+
+export interface OrderTransformed extends Order {
+  customer_id: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  customer_cpf_cnpj: string;
+  product_id: string;
+  product_name: string;
+  product_price: number;
+  payment_method: PaymentMethod;
+  created_at: string;
+  updated_at?: string;
 }

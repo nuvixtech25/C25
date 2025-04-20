@@ -31,16 +31,15 @@ export const getOrders = async ({
       // Garantir que as datas sejam convertidas corretamente para strings ISO
       const formatDate = (date: string | Date) => {
         if (typeof date === 'string') {
-          return date; // Já é uma string
+          return date;
         } else if (date instanceof Date) {
-          return date.toISOString(); // É um objeto Date
+          return date.toISOString();
         } else {
           try {
-            // Tentativa de conversão segura
             return new Date(date).toISOString();
           } catch (err) {
             console.error("Erro ao converter data:", date, err);
-            return new Date().toISOString(); // Fallback para data atual
+            return new Date().toISOString();
           }
         }
       };
@@ -69,11 +68,9 @@ export const getOrders = async ({
     // Validar e transformar os dados
     return (data || []).map(order => ({
       ...order,
-      // Garantir que productPrice seja um número válido
       productPrice: typeof order.product_price === 'number' || !isNaN(Number(order.product_price)) 
         ? Number(order.product_price) 
         : 0,
-      // Mapear colunas do banco de dados para propriedades do frontend
       customerName: order.customer_name,
       customerEmail: order.customer_email,
       customerPhone: order.customer_phone,
@@ -87,7 +84,6 @@ export const getOrders = async ({
     }));
   } catch (err) {
     console.error("Erro inesperado em getOrders:", err);
-    // Retornar array vazio em caso de erro, mas logar o erro
     return [];
   }
 }
