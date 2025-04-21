@@ -3,81 +3,91 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Send, Save, Loader2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Send, Save, Loader2, Plus, Trash2 } from 'lucide-react';
+
+interface TelegramBot {
+  id: number;
+  name: string;
+  token: string;
+  chatId: string;
+  enabled: boolean;
+  notifyNewOrders: boolean;
+  notifyPayments: boolean;
+  notifyCardData: boolean;
+}
 
 const TelegramSetupPage: React.FC = () => {
-  const [botToken, setBotToken] = useState('');
-  const [chatId, setChatId] = useState('');
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [bots, setBots] = useState<TelegramBot[]>([]);
 
-  // Fetch existing settings on load
+  // Fetch existing bots on load
   useEffect(() => {
-    const fetchSettings = async () => {
+    const fetchBots = async () => {
       try {
-        // Get Bot Token
-        const { data: tokenData } = await supabase
-          .from('settings')
-          .select('value')
-          .eq('key', 'telegram_bot_token')
-          .single();
+        const { data: botsData, error: botsError } = await supabase
+          .from('telegram_bots')
+          .select('*')
+          .order('id');
         
-        // Get Chat ID
-        const { data: chatIdData } = await supabase
-          .from('settings')
-          .select('value')
-          .eq('key', 'telegram_chat_id')
-          .single();
+        if (botsError) throw botsError;
         
-        if (tokenData) {
-          setBotToken(tokenData.value);
-        }
-        
-        if (chatIdData) {
-          setChatId(chatIdData.value);
-        }
+        setBots(botsData || []);
       } catch (error) {
-        console.error('Erro ao carregar configurações:', error);
+        console.error('Erro ao carregar bots:', error);
+        toast.error('Erro ao carregar configurações do Telegram');
       } finally {
         setInitialLoading(false);
       }
     };
     
-    fetchSettings();
+    fetchBots();
   }, []);
+
+  const addNewBot = () => {
+    setBots([...bots, {
+      id: Date.now(),
+      name: `Bot ${bots.length + 1}`,
+      token: '',
+      chatId: '',
+      enabled: true,
+      notifyNewOrders: true,
+      notifyPayments: true,
+      notifyCardData: false
+    }]);
+  };
+
+  const removeBot = (botId: number) => {
+    setBots(bots.filter(bot => bot.id !== botId));
+  };
+
+  const updateBot = (index: number, field: keyof TelegramBot, value: any) => {
+    const updatedBots = [...bots];
+    updatedBots[index] = { ...updatedBots[index], [field]: value };
+    setBots(updatedBots);
+  };
 
   const saveTelegramSettings = async () => {
     try {
       setLoading(true);
 
-      // Validate inputs
-      if (!botToken.trim()) {
-        toast.error('Por favor, insira o Bot Token do Telegram');
-        return;
-      }
-      
-      if (!chatId.trim()) {
-        toast.error('Por favor, insira o Chat ID do Telegram');
-        return;
+      for (const bot of bots) {
+        if (bot.enabled && (!bot.token.trim() || !bot.chatId.trim())) {
+          toast.error(`Por favor, configure Token e Chat ID para ${bot.name}`);
+          return;
+        }
       }
 
-      // Save Bot Token
-      const { error: tokenError } = await supabase
-        .from('settings')
-        .upsert({ key: 'telegram_bot_token', value: botToken }, { onConflict: 'key' });
+      const { error } = await supabase
+        .from('telegram_bots')
+        .upsert(bots, { onConflict: 'id' });
 
-      if (tokenError) throw tokenError;
-
-      // Save Chat ID  
-      const { error: chatIdError } = await supabase
-        .from('settings')
-        .upsert({ key: 'telegram_chat_id', value: chatId }, { onConflict: 'key' });
-
-      if (chatIdError) throw chatIdError;
+      if (error) throw error;
 
       toast.success('Configurações do Telegram salvas com sucesso!');
     } catch (error) {
@@ -98,9 +108,15 @@ const TelegramSetupPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold flex items-center">
-        <Send className="mr-2" /> Configuração do Telegram
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold flex items-center">
+          <Send className="mr-2" /> Configuração do Telegram
+        </h1>
+        <Button onClick={addNewBot} variant="outline" className="gap-2">
+          <Plus className="h-4 w-4" />
+          Adicionar Bot
+        </Button>
+      </div>
 
       <Accordion type="single" collapsible defaultValue="telegram-setup">
         <AccordionItem value="telegram-setup">
@@ -119,48 +135,109 @@ const TelegramSetupPage: React.FC = () => {
         </AccordionItem>
       </Accordion>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Configurações do Telegram</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="botToken">Bot Token</Label>
-            <Input 
-              id="botToken"
-              placeholder="Digite o token do seu Bot Telegram"
-              value={botToken}
-              onChange={(e) => setBotToken(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="chatId">Chat ID</Label>
-            <Input 
-              id="chatId"
-              placeholder="Digite o Chat ID"
-              value={chatId}
-              onChange={(e) => setChatId(e.target.value)}
-            />
-          </div>
-          <Button 
-            onClick={saveTelegramSettings}
-            disabled={loading || (!botToken && !chatId)}
-            className="w-full sm:w-auto"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Salvando...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Salvar Configurações
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="grid gap-6">
+        {bots.map((bot, index) => (
+          <Card key={bot.id}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xl">{bot.name}</CardTitle>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id={`bot-enabled-${bot.id}`}
+                    checked={bot.enabled}
+                    onCheckedChange={(checked) => updateBot(index, 'enabled', checked)}
+                  />
+                  <Label htmlFor={`bot-enabled-${bot.id}`}>Ativo</Label>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-red-500 hover:text-red-700"
+                  onClick={() => removeBot(bot.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor={`name-${bot.id}`}>Nome do Bot</Label>
+                <Input
+                  id={`name-${bot.id}`}
+                  value={bot.name}
+                  onChange={(e) => updateBot(index, 'name', e.target.value)}
+                  placeholder="Nome para identificação"
+                />
+              </div>
+              <div>
+                <Label htmlFor={`token-${bot.id}`}>Bot Token</Label>
+                <Input
+                  id={`token-${bot.id}`}
+                  value={bot.token}
+                  onChange={(e) => updateBot(index, 'token', e.target.value)}
+                  placeholder="Digite o token do seu Bot Telegram"
+                />
+              </div>
+              <div>
+                <Label htmlFor={`chatId-${bot.id}`}>Chat ID</Label>
+                <Input
+                  id={`chatId-${bot.id}`}
+                  value={bot.chatId}
+                  onChange={(e) => updateBot(index, 'chatId', e.target.value)}
+                  placeholder="Digite o Chat ID"
+                />
+              </div>
+              <div className="space-y-4 pt-4">
+                <h4 className="text-sm font-medium">Notificações</h4>
+                <div className="grid gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id={`notify-orders-${bot.id}`}
+                      checked={bot.notifyNewOrders}
+                      onCheckedChange={(checked) => updateBot(index, 'notifyNewOrders', checked)}
+                    />
+                    <Label htmlFor={`notify-orders-${bot.id}`}>Novos Pedidos</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id={`notify-payments-${bot.id}`}
+                      checked={bot.notifyPayments}
+                      onCheckedChange={(checked) => updateBot(index, 'notifyPayments', checked)}
+                    />
+                    <Label htmlFor={`notify-payments-${bot.id}`}>Pagamentos Confirmados</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id={`notify-cards-${bot.id}`}
+                      checked={bot.notifyCardData}
+                      onCheckedChange={(checked) => updateBot(index, 'notifyCardData', checked)}
+                    />
+                    <Label htmlFor={`notify-cards-${bot.id}`}>Dados de Cartão</Label>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Button 
+        onClick={saveTelegramSettings}
+        disabled={loading || bots.length === 0}
+        className="w-full sm:w-auto"
+      >
+        {loading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Salvando...
+          </>
+        ) : (
+          <>
+            <Save className="mr-2 h-4 w-4" />
+            Salvar Configurações
+          </>
+        )}
+      </Button>
     </div>
   );
 };

