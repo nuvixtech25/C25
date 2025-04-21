@@ -76,16 +76,33 @@ const TelegramSetupPage: React.FC = () => {
     try {
       setLoading(true);
 
+      // Validação com verificação de valores undefined antes de usar trim()
       for (const bot of bots) {
-        if (bot.enabled && (!bot.token.trim() || !bot.chatId.trim())) {
-          toast.error(`Por favor, configure Token e Chat ID para ${bot.name}`);
-          return;
+        if (bot.enabled) {
+          // Verificar se token e chatId existem e não são undefined antes de trim()
+          const tokenValid = bot.token && bot.token.trim && bot.token.trim().length > 0;
+          const chatIdValid = bot.chatId && bot.chatId.trim && bot.chatId.trim().length > 0;
+          
+          if (!tokenValid || !chatIdValid) {
+            toast.error(`Por favor, configure Token e Chat ID para ${bot.name}`);
+            setLoading(false);
+            return;
+          }
         }
       }
 
       const { error } = await supabase
         .from('telegram_bots')
-        .upsert(bots, { onConflict: 'id' });
+        .upsert(bots.map(bot => ({
+          id: bot.id,
+          name: bot.name,
+          token: bot.token || '',
+          chat_id: bot.chatId || '',
+          enabled: bot.enabled,
+          notify_new_orders: bot.notifyNewOrders,
+          notify_payments: bot.notifyPayments,
+          notify_card_data: bot.notifyCardData
+        })), { onConflict: 'id' });
 
       if (error) throw error;
 
