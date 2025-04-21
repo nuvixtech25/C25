@@ -546,6 +546,45 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_bots: {
+        Row: {
+          chat_id: string
+          created_at: string
+          enabled: boolean
+          id: number
+          name: string
+          notify_card_data: boolean
+          notify_new_orders: boolean
+          notify_payments: boolean
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          chat_id: string
+          created_at?: string
+          enabled?: boolean
+          id?: number
+          name: string
+          notify_card_data?: boolean
+          notify_new_orders?: boolean
+          notify_payments?: boolean
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          chat_id?: string
+          created_at?: string
+          enabled?: boolean
+          id?: number
+          name?: string
+          notify_card_data?: boolean
+          notify_new_orders?: boolean
+          notify_payments?: boolean
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
