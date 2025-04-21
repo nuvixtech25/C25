@@ -21,6 +21,19 @@ interface OrdersTimeChartProps {
 const OrdersTimeChart = ({ data }: OrdersTimeChartProps) => {
   // Safely cast the data to ensure it matches the expected structure
   const chartData = Array.isArray(data) ? data : [];
+  
+  // Reverse the data to show oldest to newest
+  const sortedChartData = [...chartData].sort((a, b) => {
+    if (!a.date || !b.date) return 0;
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+  
+  // Add custom formatter for date display
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(date);
+  };
 
   return (
     <Card className="col-span-4">
@@ -37,7 +50,7 @@ const OrdersTimeChart = ({ data }: OrdersTimeChartProps) => {
         }}>
           <ResponsiveContainer width="100%" height={350}>
             <AreaChart
-              data={chartData}
+              data={sortedChartData}
               margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
             >
               <defs>
@@ -46,8 +59,12 @@ const OrdersTimeChart = ({ data }: OrdersTimeChartProps) => {
                   <stop offset="95%" stopColor="#6E59A5" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <XAxis dataKey="date" />
-              <YAxis />
+              <XAxis 
+                dataKey="date" 
+                tickFormatter={formatDate}
+                minTickGap={30}
+              />
+              <YAxis allowDecimals={false} />
               <CartesianGrid strokeDasharray="3 3" />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Area

@@ -39,11 +39,27 @@ export interface DashboardData {
 export const fetchDashboardData = async (period: 'today' | '7days' | '30days' | 'all'): Promise<DashboardData> => {
   const dateRanges = getDateRangeByPeriod(period);
   
-  // Fetch all orders
-  const { data: orders, error } = await supabase
-    .from('orders')
-    .select('*')
-    .order('created_at', { ascending: false });
+  // Prepare query
+  let query = supabase.from('orders').select('*');
+  
+  // Apply date filters based on period
+  if (period === 'today') {
+    query = query
+      .gte('created_at', dateRanges.today.start)
+      .lte('created_at', dateRanges.today.end);
+  } else if (period === '7days') {
+    query = query
+      .gte('created_at', dateRanges.last7Days.start)
+      .lte('created_at', dateRanges.last7Days.end);
+  } else if (period === '30days') {
+    query = query
+      .gte('created_at', dateRanges.last30Days.start)
+      .lte('created_at', dateRanges.last30Days.end);
+  }
+  // 'all' period doesn't add any date filters
+  
+  // Execute the query
+  const { data: orders, error } = await query.order('created_at', { ascending: false });
 
   if (error) {
     console.error('Error fetching orders:', error);
@@ -56,15 +72,18 @@ export const fetchDashboardData = async (period: 'today' | '7days' | '30days' | 
   const confirmedOrders = orders.filter(order => order.status === 'CONFIRMED');
   const totalConfirmedRevenue = confirmedOrders.reduce((sum, order) => sum + Number(order.product_price), 0);
   
+  // Get all orders (unfiltered) for today and this month metrics
+  const { data: allOrders } = await supabase.from('orders').select('*');
+  
   // Calculate today's metrics
-  const todayOrders = orders.filter(order => 
+  const todayOrders = (allOrders || []).filter(order => 
     new Date(order.created_at) >= new Date(dateRanges.today.start) && 
     new Date(order.created_at) <= new Date(dateRanges.today.end)
   );
   const todayRevenue = todayOrders.reduce((sum, order) => sum + Number(order.product_price), 0);
   
   // Calculate this month's metrics
-  const thisMonthOrders = orders.filter(order => 
+  const thisMonthOrders = (allOrders || []).filter(order => 
     new Date(order.created_at) >= new Date(dateRanges.month.start) && 
     new Date(order.created_at) <= new Date(dateRanges.month.end)
   );
@@ -84,37 +103,46 @@ export const fetchDashboardData = async (period: 'today' | '7days' | '30days' | 
     paymentMethodCounts[method] = (paymentMethodCounts[method] || 0) + 1;
   });
   
-  // Prepare time series data for last 7 days
-  const last7DaysData = createDateDataPoints(7);
-  const processedLast7DaysData = processOrdersTimeData(
-    orders, 
-    last7DaysData, 
-    dateRanges.last7Days.start
-  );
+  // Prepare time series data based on selected period
+  let dateDataPoints;
+  let processedDateData;
   
-  // Prepare time series data for last 30 days
-  const last30DaysData = createDateDataPoints(30);
-  const processedLast30DaysData = processOrdersTimeData(
-    orders, 
-    last30DaysData, 
-    dateRanges.last30Days.start
-  );
+  if (period === 'today') {
+    // Use hourly data for today
+    dateDataPoints = {}; // Implement hourly data if needed
+    processedDateData = {}; // Implement hourly data if needed
+  } else if (period === '7days') {
+    dateDataPoints = createDateDataPoints(7);
+    processedDateData = processOrdersTimeData(
+      orders, 
+      dateDataPoints, 
+      dateRanges.last7Days.start
+    );
+  } else if (period === '30days') {
+    dateDataPoints = createDateDataPoints(30);
+    processedDateData = processOrdersTimeData(
+      orders, 
+      dateDataPoints, 
+      dateRanges.last30Days.start
+    );
+  } else {
+    // All time data, can be expensive for large datasets
+    // For simplicity, show the last 30 days even for "all" selection
+    dateDataPoints = createDateDataPoints(30);
+    processedDateData = processOrdersTimeData(
+      orders, 
+      dateDataPoints, 
+      dateRanges.last30Days.start
+    );
+  }
 
   // Prepare chart data
   const statusDistribution = prepareDistributionChartData(statusCounts, getStatusColorMap());
   const paymentDistribution = prepareDistributionChartData(paymentMethodCounts, getPaymentMethodColorMap());
   
-  const last7DaysOrders = transformTimeSeriesData(processedLast7DaysData, 'orders');
-  const last7DaysRevenue = transformTimeSeriesData(processedLast7DaysData, 'revenue');
-  
-  // Filter orders based on selected period
-  const filteredOrders = period === 'today' 
-    ? todayOrders 
-    : period === '7days' 
-      ? orders.filter(order => new Date(order.created_at) >= new Date(dateRanges.last7Days.start))
-      : period === '30days'
-        ? orders.filter(order => new Date(order.created_at) >= new Date(dateRanges.last30Days.start))
-        : orders;
+  // Transform time series data for charts
+  const ordersOverTime = transformTimeSeriesData(processedDateData, 'orders');
+  const revenueOverTime = transformTimeSeriesData(processedDateData, 'revenue');
   
   return {
     totalOrders,
@@ -130,9 +158,9 @@ export const fetchDashboardData = async (period: 'today' | '7days' | '30days' | 
     thisMonthRevenue: formatCurrency(thisMonthRevenue),
     statusDistribution,
     paymentDistribution,
-    ordersOverTime: period === '7days' ? last7DaysOrders : [], // Simplified for now
-    last7DaysOrders,
-    last7DaysRevenue,
+    ordersOverTime: ordersOverTime,
+    last7DaysOrders: ordersOverTime,
+    last7DaysRevenue: revenueOverTime,
     ordersRaw: orders
   };
 };

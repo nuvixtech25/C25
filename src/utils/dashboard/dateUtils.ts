@@ -22,7 +22,8 @@ export const getDateRangeByPeriod = (period: 'today' | '7days' | '30days' | 'all
       today: { start: todayStart, end: todayEnd },
       last7Days: { start: last7DaysStart, end: todayEnd },
       last30Days: { start: last30DaysStart, end: todayEnd },
-      month: { start: monthStart, end: monthEnd }
+      month: { start: monthStart, end: monthEnd },
+      all: { start: null, end: null }
     };
   } catch (error) {
     console.error("Error in getDateRangeByPeriod:", error);
@@ -32,7 +33,8 @@ export const getDateRangeByPeriod = (period: 'today' | '7days' | '30days' | 'all
       today: { start: now, end: now },
       last7Days: { start: now, end: now },
       last30Days: { start: now, end: now },
-      month: { start: now, end: now }
+      month: { start: now, end: now },
+      all: { start: null, end: null }
     };
   }
 };

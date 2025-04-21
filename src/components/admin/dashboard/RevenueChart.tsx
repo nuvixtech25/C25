@@ -21,6 +21,27 @@ interface RevenueChartProps {
 const RevenueChart = ({ data }: RevenueChartProps) => {
   // Safely cast the data to ensure it matches the expected structure
   const chartData = Array.isArray(data) ? data : [];
+  
+  // Reverse the data to show oldest to newest
+  const sortedChartData = [...chartData].sort((a, b) => {
+    if (!a.date || !b.date) return 0;
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+  
+  // Add custom formatter for date display
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(date);
+  };
+  
+  // Add formatter for currency values
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
 
   return (
     <Card className="col-span-2">
@@ -36,7 +57,7 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
         }}>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart
-              data={chartData}
+              data={sortedChartData}
               margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
             >
               <defs>
@@ -45,11 +66,17 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
                   <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <XAxis dataKey="date" />
-              <YAxis />
+              <XAxis 
+                dataKey="date" 
+                tickFormatter={formatDate}
+                minTickGap={30}
+              />
+              <YAxis 
+                tickFormatter={(value) => `R$${value}`}
+              />
               <CartesianGrid strokeDasharray="3 3" />
               <ChartTooltip
-                formatter={(value) => [`R$ ${Number(value).toFixed(2)}`, "Receita"]}
+                formatter={(value: any) => [formatCurrency(value), "Receita"]}
                 content={<ChartTooltipContent />}
               />
               <Area
