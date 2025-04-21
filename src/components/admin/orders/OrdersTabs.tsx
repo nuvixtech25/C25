@@ -73,8 +73,6 @@ const OrdersTabs: React.FC<OrdersTabsProps> = ({
           />
           
           <OrdersTable
-            orders={orders}
-            loading={loading}
             onViewCustomer={onViewCustomer}
             onViewPayment={onViewPayment}
             onEditStatus={onEditStatus}
