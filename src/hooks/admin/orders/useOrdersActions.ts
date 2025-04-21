@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 export function useOrdersActions(
   orders: Order[],
   paymentMethod: "pix" | "creditCard",
-  fetchOrders: () => Promise<void>
+  fetchOrders: (filters?: any) => Promise<void>
 ) {
   const { toast } = useToast();
 

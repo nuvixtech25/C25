@@ -39,5 +39,5 @@ export interface UseOrdersReturn {
   updateOrderStatus: (orderId: string, status: PaymentStatus) => Promise<void>;
   deleteOrder: (orderId: string) => Promise<void>;
   deleteAllOrders: () => Promise<void>;
-  fetchOrders: () => Promise<void>;
+  fetchOrders: (filters?: any) => Promise<void>;
 }

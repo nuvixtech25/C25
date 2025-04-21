@@ -25,6 +25,8 @@ import {
 import { useOrdersList } from "@/hooks/admin/orders/useOrdersList";
 
 interface OrdersTableProps {
+  orders?: Order[]; // Make orders optional since we'll get them from the hook
+  loading?: boolean; // Make loading optional since we'll get it from the hook
   onViewCustomer: (order: Order) => void;
   onViewPayment: (order: Order) => void;
   onEditStatus: (order: Order) => void;
