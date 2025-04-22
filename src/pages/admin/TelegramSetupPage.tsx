@@ -50,8 +50,10 @@ const TelegramSetupPage: React.FC = () => {
   }, []);
 
   const addNewBot = () => {
+    // Generate a temporary negative ID to ensure it doesn't conflict with existing IDs
+    const tempId = -Date.now(); 
     setBots([...bots, {
-      id: Date.now(),
+      id: tempId,
       name: `Bot ${bots.length + 1}`,
       token: '',
       chatId: '',
@@ -63,7 +65,32 @@ const TelegramSetupPage: React.FC = () => {
   };
 
   const removeBot = (botId: number) => {
-    setBots(bots.filter(bot => bot.id !== botId));
+    // If it's a negative ID (new unsaved bot), just remove from state
+    if (botId < 0) {
+      setBots(bots.filter(bot => bot.id !== botId));
+      return;
+    }
+    
+    // If it's an existing bot, we need to delete from database
+    const confirmDelete = window.confirm("Tem certeza que deseja remover este bot?");
+    if (confirmDelete) {
+      setLoading(true);
+      
+      supabase
+        .from('telegram_bots')
+        .delete()
+        .eq('id', botId)
+        .then(({ error }) => {
+          if (error) {
+            console.error('Erro ao remover bot:', error);
+            toast.error('Erro ao remover bot');
+          } else {
+            setBots(bots.filter(bot => bot.id !== botId));
+            toast.success('Bot removido com sucesso!');
+          }
+        })
+        .finally(() => setLoading(false));
+    }
   };
 
   const updateBot = (index: number, field: keyof TelegramBot, value: any) => {
@@ -76,36 +103,65 @@ const TelegramSetupPage: React.FC = () => {
     try {
       setLoading(true);
 
-      // Validação com verificação de valores undefined antes de usar trim()
+      // Validate all bots before saving
       for (const bot of bots) {
         if (bot.enabled) {
-          // Verificar se token e chatId existem e não são undefined antes de trim()
-          const tokenValid = bot.token && bot.token.trim && bot.token.trim().length > 0;
-          const chatIdValid = bot.chatId && bot.chatId.trim && bot.chatId.trim().length > 0;
+          if (!bot.token || typeof bot.token !== 'string' || bot.token.trim() === '') {
+            toast.error(`Por favor, configure o Token para ${bot.name}`);
+            setLoading(false);
+            return;
+          }
           
-          if (!tokenValid || !chatIdValid) {
-            toast.error(`Por favor, configure Token e Chat ID para ${bot.name}`);
+          if (!bot.chatId || typeof bot.chatId !== 'string' || bot.chatId.trim() === '') {
+            toast.error(`Por favor, configure o Chat ID para ${bot.name}`);
             setLoading(false);
             return;
           }
         }
       }
 
-      const { error } = await supabase
+      // Prepare data for upsert
+      const botsToSave = bots.map(bot => ({
+        id: bot.id < 0 ? undefined : bot.id, // Remove ID for new bots so Supabase generates one
+        name: bot.name,
+        token: bot.token,
+        chat_id: bot.chatId,
+        enabled: bot.enabled,
+        notify_new_orders: bot.notifyNewOrders,
+        notify_payments: bot.notifyPayments,
+        notify_card_data: bot.notifyCardData
+      }));
+
+      // Insert new bots (those with negative IDs)
+      const newBots = botsToSave.filter(bot => bot.id === undefined);
+      if (newBots.length > 0) {
+        const { data: insertedData, error: insertError } = await supabase
+          .from('telegram_bots')
+          .insert(newBots)
+          .select();
+          
+        if (insertError) throw insertError;
+      }
+      
+      // Update existing bots
+      const existingBots = botsToSave.filter(bot => bot.id !== undefined);
+      if (existingBots.length > 0) {
+        const { error: updateError } = await supabase
+          .from('telegram_bots')
+          .upsert(existingBots, { onConflict: 'id' });
+          
+        if (updateError) throw updateError;
+      }
+
+      // Refresh bots data
+      const { data: refreshedBots, error: refreshError } = await supabase
         .from('telegram_bots')
-        .upsert(bots.map(bot => ({
-          id: bot.id,
-          name: bot.name,
-          token: bot.token || '',
-          chat_id: bot.chatId || '',
-          enabled: bot.enabled,
-          notify_new_orders: bot.notifyNewOrders,
-          notify_payments: bot.notifyPayments,
-          notify_card_data: bot.notifyCardData
-        })), { onConflict: 'id' });
-
-      if (error) throw error;
-
+        .select('*')
+        .order('id');
+        
+      if (refreshError) throw refreshError;
+      
+      setBots(refreshedBots || []);
       toast.success('Configurações do Telegram salvas com sucesso!');
     } catch (error) {
       console.error('Erro ao salvar configurações:', error);

@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface TelegramBot {
   id: number;
+  name: string;
   token: string;
   chat_id: string;
   enabled: boolean;
@@ -12,30 +13,28 @@ interface TelegramBot {
 }
 
 export async function sendTelegramNotification(
-  message: string,
-  notificationType: 'new_order' | 'payment' | 'card_data'
-) {
+  message: string, 
+  notificationType: 'new_order' | 'payment' | 'card_data' = 'new_order'
+): Promise<boolean> {
   try {
-    console.log('[AUDIT] Sending Telegram notification:', message.substring(0, 50) + '...');
-    
-    // Get all active Telegram bots from settings
+    // Get all active bots
     const { data: bots, error: botsError } = await supabase
       .from('telegram_bots')
       .select('*')
       .eq('enabled', true);
-
+      
     if (botsError) {
-      console.error('[AUDIT] Error fetching Telegram bots:', botsError);
-      return;
+      console.error('Error fetching Telegram bots:', botsError);
+      return false;
     }
-
+    
     if (!bots || bots.length === 0) {
-      console.warn('[AUDIT] No active Telegram bots configured');
-      return;
+      console.warn('No active Telegram bots found');
+      return false;
     }
-
+    
     // Filter bots based on notification type
-    const eligibleBots = bots.filter(bot => {
+    const filteredBots = bots.filter((bot: any) => {
       switch (notificationType) {
         case 'new_order':
           return bot.notify_new_orders;
@@ -47,43 +46,52 @@ export async function sendTelegramNotification(
           return false;
       }
     });
-
-    if (eligibleBots.length === 0) {
-      console.log('[AUDIT] No bots configured for this notification type:', notificationType);
-      return;
+    
+    if (filteredBots.length === 0) {
+      console.warn(`No bots configured to receive ${notificationType} notifications`);
+      return false;
     }
-
-    // Send notifications to all eligible bots
-    const sendPromises = eligibleBots.map(async (bot) => {
-      if (!bot.token || !bot.chat_id) {
-        console.warn(`[AUDIT] Incomplete configuration for bot ${bot.id}`);
-        return;
-      }
-
+    
+    // Send notification to all filtered bots
+    const sendPromises = filteredBots.map(async (bot: any) => {
       try {
+        // Ensure token and chat_id are not empty
+        if (!bot.token || !bot.chat_id) {
+          console.warn(`Bot ${bot.name} has incomplete configuration`);
+          return false;
+        }
+        
         const response = await fetch(`https://api.telegram.org/bot${bot.token}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             chat_id: bot.chat_id, 
             text: message,
-            parse_mode: 'HTML'
+            parse_mode: 'HTML' // Enable HTML formatting
           }),
         });
-
+        
         if (!response.ok) {
           const errorBody = await response.text();
-          console.error(`[AUDIT] Failed to send Telegram notification to bot ${bot.id}:`, errorBody);
-        } else {
-          console.log(`[AUDIT] Telegram notification sent successfully to bot ${bot.id}`);
+          console.error(`Failed to send Telegram notification to bot ${bot.name}:`, errorBody);
+          return false;
         }
+        
+        console.log(`Telegram notification sent successfully to bot ${bot.name}`);
+        return true;
       } catch (error) {
-        console.error(`[AUDIT] Error sending Telegram notification to bot ${bot.id}:`, error);
+        console.error(`Error sending Telegram notification to bot ${bot.name}:`, error);
+        return false;
       }
     });
-
-    await Promise.all(sendPromises);
+    
+    // Wait for all send operations to complete
+    const results = await Promise.all(sendPromises);
+    
+    // Return true if at least one notification was sent successfully
+    return results.some(result => result === true);
   } catch (error) {
-    console.error('[AUDIT] Error in sendTelegramNotification:', error);
+    console.error('Error in sendTelegramNotification:', error);
+    return false;
   }
 }
