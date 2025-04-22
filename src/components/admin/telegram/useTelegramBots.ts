@@ -22,7 +22,20 @@ export const useTelegramBots = () => {
       
       if (botsError) throw botsError;
       
-      setBots(botsData || []);
+      // Map database format to frontend format
+      const mappedBots = botsData?.map(bot => ({
+        id: bot.id,
+        name: bot.name,
+        token: bot.token,
+        chatId: bot.chat_id,
+        enabled: bot.enabled,
+        notifyNewOrders: bot.notify_new_orders,
+        notifyPayments: bot.notify_payments,
+        notifyCardData: bot.notify_card_data
+      })) || [];
+      
+      console.log('Bots carregados:', mappedBots);
+      setBots(mappedBots);
     } catch (error) {
       console.error('Erro ao carregar bots:', error);
       toast.error('Erro ao carregar configurações do Telegram');
@@ -86,25 +99,28 @@ export const useTelegramBots = () => {
   const saveTelegramSettings = async () => {
     try {
       setLoading(true);
+      console.log('Iniciando salvamento de bots:', bots);
 
       // Validação dos bots ativos
       for (const bot of bots) {
         if (bot.enabled) {
           if (!bot.token || typeof bot.token !== 'string' || bot.token.trim() === '') {
             toast.error(`Por favor, configure o Token para ${bot.name}`);
+            setLoading(false);
             return;
           }
           
           if (!bot.chatId || typeof bot.chatId !== 'string' || bot.chatId.trim() === '') {
             toast.error(`Por favor, configure o Chat ID para ${bot.name}`);
+            setLoading(false);
             return;
           }
         }
       }
 
-      // Preparar os dados para salvar
+      // Preparar os dados para salvar - formato que o banco espera
       const botsToSave = bots.map(bot => ({
-        id: bot.id < 0 ? undefined : bot.id,
+        id: bot.id < 0 ? undefined : bot.id, // Remove o ID para novos bots
         name: bot.name,
         token: bot.token,
         chat_id: bot.chatId,
@@ -114,6 +130,8 @@ export const useTelegramBots = () => {
         notify_card_data: bot.notifyCardData
       }));
 
+      console.log('Bots preparados para salvar:', botsToSave);
+
       // Separar bots novos e existentes
       const newBots = botsToSave.filter(bot => bot.id === undefined);
       const existingBots = botsToSave.filter(bot => bot.id !== undefined);
@@ -121,20 +139,23 @@ export const useTelegramBots = () => {
       // Inserir novos bots
       if (newBots.length > 0) {
         console.log('Inserindo novos bots:', newBots);
-        const { error: insertError } = await supabase
+        const { data: insertedData, error: insertError } = await supabase
           .from('telegram_bots')
-          .insert(newBots);
+          .insert(newBots)
+          .select();
           
         if (insertError) {
           console.error('Erro ao inserir novos bots:', insertError);
-          throw insertError;
+          throw new Error(`Erro ao inserir novos bots: ${insertError.message}`);
         }
+        
+        console.log('Novos bots inseridos com sucesso:', insertedData);
       }
       
       // Atualizar bots existentes
       for (const bot of existingBots) {
         console.log('Atualizando bot existente:', bot);
-        const { error: updateError } = await supabase
+        const { data: updatedData, error: updateError } = await supabase
           .from('telegram_bots')
           .update({
             name: bot.name,
@@ -145,37 +166,25 @@ export const useTelegramBots = () => {
             notify_payments: bot.notify_payments,
             notify_card_data: bot.notify_card_data
           })
-          .eq('id', bot.id);
+          .eq('id', bot.id)
+          .select();
           
         if (updateError) {
           console.error('Erro ao atualizar bot existente:', updateError);
-          throw updateError;
+          throw new Error(`Erro ao atualizar bot existente: ${updateError.message}`);
         }
+        
+        console.log('Bot atualizado com sucesso:', updatedData);
       }
 
-      // Recarregar bots após salvar
-      const { data: refreshedBots, error: refreshError } = await supabase
-        .from('telegram_bots')
-        .select('*')
-        .order('id');
-        
-      if (refreshError) throw refreshError;
-      
-      setBots(refreshedBots?.map(bot => ({
-        id: bot.id,
-        name: bot.name,
-        token: bot.token,
-        chatId: bot.chat_id,
-        enabled: bot.enabled,
-        notifyNewOrders: bot.notify_new_orders,
-        notifyPayments: bot.notify_payments,
-        notifyCardData: bot.notify_card_data
-      })) || []);
+      // Recarregar bots após salvar para ter os dados mais atualizados
+      await fetchBots();
       
       toast.success('Configurações do Telegram salvas com sucesso!');
     } catch (error) {
       console.error('Erro ao salvar configurações:', error);
-      toast.error('Erro ao salvar configurações do Telegram');
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast.error(`Erro ao salvar configurações do Telegram: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
