@@ -88,8 +88,13 @@ const TelegramSetupPage: React.FC = () => {
             setBots(bots.filter(bot => bot.id !== botId));
             toast.success('Bot removido com sucesso!');
           }
+          setLoading(false);
         })
-        .finally(() => setLoading(false));
+        .catch(error => {
+          console.error('Erro ao remover bot:', error);
+          toast.error('Erro ao remover bot');
+          setLoading(false);
+        });
     }
   };
 
