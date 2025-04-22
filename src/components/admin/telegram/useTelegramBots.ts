@@ -55,19 +55,25 @@ export const useTelegramBots = () => {
     if (confirmDelete) {
       setLoading(true);
       
-      const { error } = await supabase
-        .from('telegram_bots')
-        .delete()
-        .eq('id', botId);
-        
-      if (error) {
+      try {
+        const { error } = await supabase
+          .from('telegram_bots')
+          .delete()
+          .eq('id', botId);
+          
+        if (error) {
+          console.error('Erro ao remover bot:', error);
+          toast.error('Erro ao remover bot');
+        } else {
+          setBots(bots.filter(bot => bot.id !== botId));
+          toast.success('Bot removido com sucesso!');
+        }
+      } catch (error) {
         console.error('Erro ao remover bot:', error);
         toast.error('Erro ao remover bot');
-      } else {
-        setBots(bots.filter(bot => bot.id !== botId));
-        toast.success('Bot removido com sucesso!');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
   };
 
@@ -81,6 +87,7 @@ export const useTelegramBots = () => {
     try {
       setLoading(true);
 
+      // Validação dos bots ativos
       for (const bot of bots) {
         if (bot.enabled) {
           if (!bot.token || typeof bot.token !== 'string' || bot.token.trim() === '') {
@@ -95,6 +102,7 @@ export const useTelegramBots = () => {
         }
       }
 
+      // Preparar os dados para salvar
       const botsToSave = bots.map(bot => ({
         id: bot.id < 0 ? undefined : bot.id,
         name: bot.name,
@@ -106,25 +114,46 @@ export const useTelegramBots = () => {
         notify_card_data: bot.notifyCardData
       }));
 
+      // Separar bots novos e existentes
       const newBots = botsToSave.filter(bot => bot.id === undefined);
+      const existingBots = botsToSave.filter(bot => bot.id !== undefined);
+
+      // Inserir novos bots
       if (newBots.length > 0) {
+        console.log('Inserindo novos bots:', newBots);
         const { error: insertError } = await supabase
           .from('telegram_bots')
-          .insert(newBots)
-          .select();
+          .insert(newBots);
           
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error('Erro ao inserir novos bots:', insertError);
+          throw insertError;
+        }
       }
       
-      const existingBots = botsToSave.filter(bot => bot.id !== undefined);
-      if (existingBots.length > 0) {
+      // Atualizar bots existentes
+      for (const bot of existingBots) {
+        console.log('Atualizando bot existente:', bot);
         const { error: updateError } = await supabase
           .from('telegram_bots')
-          .upsert(existingBots, { onConflict: 'id' });
+          .update({
+            name: bot.name,
+            token: bot.token,
+            chat_id: bot.chat_id,
+            enabled: bot.enabled,
+            notify_new_orders: bot.notify_new_orders,
+            notify_payments: bot.notify_payments,
+            notify_card_data: bot.notify_card_data
+          })
+          .eq('id', bot.id);
           
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error('Erro ao atualizar bot existente:', updateError);
+          throw updateError;
+        }
       }
 
+      // Recarregar bots após salvar
       const { data: refreshedBots, error: refreshError } = await supabase
         .from('telegram_bots')
         .select('*')
@@ -132,7 +161,17 @@ export const useTelegramBots = () => {
         
       if (refreshError) throw refreshError;
       
-      setBots(refreshedBots || []);
+      setBots(refreshedBots?.map(bot => ({
+        id: bot.id,
+        name: bot.name,
+        token: bot.token,
+        chatId: bot.chat_id,
+        enabled: bot.enabled,
+        notifyNewOrders: bot.notify_new_orders,
+        notifyPayments: bot.notify_payments,
+        notifyCardData: bot.notify_card_data
+      })) || []);
+      
       toast.success('Configurações do Telegram salvas com sucesso!');
     } catch (error) {
       console.error('Erro ao salvar configurações:', error);
