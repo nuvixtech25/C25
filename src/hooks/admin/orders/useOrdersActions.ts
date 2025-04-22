@@ -57,11 +57,7 @@ export function useOrdersActions(
   const deleteAllOrders = async () => {
     try {
       console.log(`Attempting to delete all ${paymentMethod} orders`);
-      
-      // Make sure we're passing the correct payment method format
-      const method = paymentMethod === 'creditCard' ? 'creditCard' : 'pix';
-      
-      const result = await orderAdminService.deleteOrdersByPaymentMethod(method);
+      const result = await orderAdminService.deleteOrdersByPaymentMethod(paymentMethod);
       console.log("Delete all orders result:", result);
       
       toast({
