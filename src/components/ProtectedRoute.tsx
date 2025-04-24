@@ -14,22 +14,27 @@ const ProtectedRoute = ({ children, requireAdmin = true }: ProtectedRouteProps) 
   const { user, isLoading, isAdmin } = useAuth();
   const location = useLocation();
 
+  console.log('ProtectedRoute - auth state:', { user, isAdmin, isLoading });
+
   // While checking auth status, show loading
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Carregando autenticação...</span>
       </div>
     );
   }
 
   // If not authenticated, redirect to login
   if (!user) {
+    console.log('User not authenticated, redirecting to login');
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 
   // If admin access is required but user is not admin
   if (requireAdmin && !isAdmin) {
+    console.log('User is not admin but admin access is required');
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md text-center">
@@ -47,6 +52,7 @@ const ProtectedRoute = ({ children, requireAdmin = true }: ProtectedRouteProps) 
     );
   }
 
+  console.log('Auth checks passed, rendering protected content');
   // If all checks pass, render the protected content
   return <>{children}</>;
 };

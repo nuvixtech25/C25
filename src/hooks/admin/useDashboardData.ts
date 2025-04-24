@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDashboardData } from '@/services/dashboard/dashboardService';
 
@@ -8,12 +8,21 @@ export const useDashboardData = () => {
 
   const queryResult = useQuery({
     queryKey: ['dashboardData', period],
-    queryFn: () => fetchDashboardData(period),
+    queryFn: () => {
+      console.log('Fetching dashboard data for period:', period);
+      return fetchDashboardData(period);
+    },
     refetchInterval: 300000, // Refetch every 5 minutes
     refetchOnWindowFocus: true,
   });
   
-  const { data, isLoading } = queryResult;
+  const { data, isLoading, error } = queryResult;
+  
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching dashboard data:', error);
+    }
+  }, [error]);
   
   return {
     period,

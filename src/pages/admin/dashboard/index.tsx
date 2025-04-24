@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDashboardData } from '@/hooks/admin/useDashboardData';
 import DashboardHeader from '@/components/admin/dashboard/DashboardHeader';
 import DashboardStats from '@/components/admin/dashboard/DashboardStats';
@@ -11,6 +11,10 @@ import ActiveVisitorsCard from '@/components/admin/dashboard/ActiveVisitorsCard'
 import PaymentMethodCountCard from '@/components/admin/dashboard/PaymentMethodCountCard';
 
 const DashboardPage = () => {
+  useEffect(() => {
+    console.log('Dashboard component mounted');
+  }, []);
+
   const {
     period,
     setPeriod,
@@ -21,9 +25,15 @@ const DashboardPage = () => {
     statusDistribution
   } = useDashboardData();
 
-  // Extrair contagens específicas de método de pagamento
-  const pixOrdersCount = paymentDistribution.find(p => p.name === 'pix')?.value || 0;
-  const cardOrdersCount = paymentDistribution.find(p => p.name === 'creditCard')?.value || 0;
+  console.log('Dashboard data:', { 
+    stats, 
+    ordersOverTime: ordersOverTime?.length, 
+    paymentDistribution: paymentDistribution?.length
+  });
+
+  // Extract specific payment method counts
+  const pixOrdersCount = paymentDistribution?.find(p => p.name === 'pix')?.value || 0;
+  const cardOrdersCount = paymentDistribution?.find(p => p.name === 'creditCard')?.value || 0;
   
   return (
     <div className="flex-1 space-y-4 p-4 pt-6">
