@@ -8,33 +8,44 @@ import AsaasEmailSettings from '@/pages/admin/AsaasEmailSettings';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardPage from '@/pages/admin/dashboard';
 import Login from '@/pages/admin/Login';
+import AdminLayout from '@/layouts/AdminLayout';
 
 const AdminRoutes = () => {
   return (
     <Routes>
       <Route path="/admin/dashboard" element={
         <ProtectedRoute>
-          <DashboardPage />
+          <AdminLayout>
+            <DashboardPage />
+          </AdminLayout>
         </ProtectedRoute>
       } />
       <Route path="/admin/orders" element={
         <ProtectedRoute>
-          <OrdersPage />
+          <AdminLayout>
+            <OrdersPage />
+          </AdminLayout>
         </ProtectedRoute>
       } />
       <Route path="/admin/products" element={
         <ProtectedRoute>
-          <ProductsPage />
+          <AdminLayout>
+            <ProductsPage />
+          </AdminLayout>
         </ProtectedRoute>
       } />
       <Route path="/admin/asaas" element={
         <ProtectedRoute>
-          <AsaasSettings />
+          <AdminLayout>
+            <AsaasSettings />
+          </AdminLayout>
         </ProtectedRoute>
       } />
       <Route path="/admin/asaas-email" element={
         <ProtectedRoute>
-          <AsaasEmailSettings />
+          <AdminLayout>
+            <AsaasEmailSettings />
+          </AdminLayout>
         </ProtectedRoute>
       } />
       <Route path="/admin/login" element={<Login />} />
