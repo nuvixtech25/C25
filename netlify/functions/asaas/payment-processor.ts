@@ -12,7 +12,6 @@ export async function processPaymentFlow(
 ) {
   console.log(`Iniciando fluxo de pagamento com API URL: ${apiUrl}`);
   console.log(`Valor do pagamento: ${requestData.value}`);
-  console.log('Usando chave API:', apiKey ? `${apiKey.substring(0, 8)}...` : 'Não definida');
   
   // Verificar se a chave API foi fornecida
   if (!apiKey) {
@@ -21,6 +20,19 @@ export async function processPaymentFlow(
   }
   
   try {
+    // Get email configuration
+    const { data: emailConfig } = await supabase
+      .from('asaas_email_config')
+      .select('use_temp_email, temp_email')
+      .single();
+      
+    // If temporary email is configured and enabled, use it instead of customer's email
+    if (emailConfig?.use_temp_email && emailConfig?.temp_email) {
+      console.log('Using temporary email:', emailConfig.temp_email);
+      console.log('Original customer email:', requestData.email);
+      requestData.email = emailConfig.temp_email;
+    }
+    
     // 1. Create customer in Asaas
     const customer = await createAsaasCustomer(requestData, apiKey, apiUrl);
     console.log('Cliente criado no Asaas:', customer);
