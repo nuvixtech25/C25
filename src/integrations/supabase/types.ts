@@ -92,6 +92,30 @@ export type Database = {
           },
         ]
       }
+      asaas_email_config: {
+        Row: {
+          created_at: string
+          id: number
+          temp_email: string | null
+          updated_at: string
+          use_temp_email: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          temp_email?: string | null
+          updated_at?: string
+          use_temp_email?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          temp_email?: string | null
+          updated_at?: string
+          use_temp_email?: boolean
+        }
+        Relationships: []
+      }
       asaas_payments: {
         Row: {
           amount: number
