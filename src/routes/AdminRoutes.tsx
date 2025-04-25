@@ -13,6 +13,8 @@ import AdminLayout from '@/layouts/AdminLayout';
 const AdminRoutes = () => {
   return (
     <Routes>
+      <Route path="/admin/login" element={<Login />} />
+      
       <Route path="/admin/dashboard" element={
         <ProtectedRoute>
           <AdminLayout>
@@ -20,35 +22,38 @@ const AdminRoutes = () => {
           </AdminLayout>
         </ProtectedRoute>
       } />
+      
       <Route path="/admin/orders" element={
-        <ProtectedRoute>
+        <ProtectedRoute requireAdmin>
           <AdminLayout>
             <OrdersPage />
           </AdminLayout>
         </ProtectedRoute>
       } />
+      
       <Route path="/admin/products" element={
-        <ProtectedRoute>
+        <ProtectedRoute requireAdmin>
           <AdminLayout>
             <ProductsPage />
           </AdminLayout>
         </ProtectedRoute>
       } />
+      
       <Route path="/admin/asaas" element={
-        <ProtectedRoute>
+        <ProtectedRoute requireAdmin>
           <AdminLayout>
             <AsaasSettings />
           </AdminLayout>
         </ProtectedRoute>
       } />
+      
       <Route path="/admin/asaas-email" element={
-        <ProtectedRoute>
+        <ProtectedRoute requireAdmin>
           <AdminLayout>
             <AsaasEmailSettings />
           </AdminLayout>
         </ProtectedRoute>
       } />
-      <Route path="/admin/login" element={<Login />} />
     </Routes>
   );
 };
