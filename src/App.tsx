@@ -15,9 +15,7 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: true,
       retry: 1,
       staleTime: 5 * 60 * 1000,
-      onError: (error) => {
-        console.error('Query error:', error);
-      }
+      // Remove the onError property as it's not supported in the latest version
     },
   },
 });
