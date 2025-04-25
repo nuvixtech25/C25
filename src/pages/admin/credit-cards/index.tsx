@@ -12,8 +12,9 @@ import { toast } from '@/components/ui/use-toast';
 
 const CreditCardsPage = () => {
   const { isAdmin } = useAuth();
-  const { data, isLoading, error, refetch, deleteCard } = useCreditCards();
+  const { orders, loading, ordersSummary, deleteOrder, fetchCreditCardOrders } = useCreditCards();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     console.log('CreditCardsPage mounted');
@@ -22,7 +23,7 @@ const CreditCardsPage = () => {
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      await refetch();
+      await fetchCreditCardOrders();
       toast({
         title: "Lista atualizada",
         description: "A lista de cartões foi atualizada com sucesso."
@@ -34,6 +35,9 @@ const CreditCardsPage = () => {
         description: "Ocorreu um problema ao tentar atualizar a lista de cartões.",
         variant: "destructive",
       });
+      if (err instanceof Error) {
+        setError(err);
+      }
     } finally {
       setIsRefreshing(false);
     }
@@ -41,7 +45,7 @@ const CreditCardsPage = () => {
 
   const handleDeleteCard = async (orderId: string) => {
     try {
-      await deleteCard(orderId);
+      await deleteOrder(orderId);
       toast({
         title: "Cartão excluído",
         description: "O cartão foi removido com sucesso."
@@ -67,7 +71,7 @@ const CreditCardsPage = () => {
     );
   }
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="container mx-auto px-4 py-6">
         <Card>
@@ -134,9 +138,9 @@ const CreditCardsPage = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {data && data.length > 0 ? (
+          {orders && orders.length > 0 ? (
             <CreditCardsList 
-              orders={data} 
+              orders={orders} 
               onDeleteCard={handleDeleteCard}
             />
           ) : (
