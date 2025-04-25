@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import OrdersPage from '@/pages/admin/orders';
 import ProductsPage from '@/pages/admin/products';
 import AsaasSettings from '@/pages/admin/AsaasSettings';
@@ -11,10 +11,15 @@ import Login from '@/pages/admin/Login';
 import AdminLayout from '@/layouts/AdminLayout';
 
 const AdminRoutes = () => {
+  console.log('Rendering AdminRoutes component');
+  
   return (
     <Routes>
+      {/* Public admin routes */}
       <Route path="/admin/login" element={<Login />} />
+      <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
       
+      {/* Protected admin routes */}
       <Route path="/admin/dashboard" element={
         <ProtectedRoute>
           <AdminLayout>

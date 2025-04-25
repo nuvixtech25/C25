@@ -1,14 +1,22 @@
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { useAuthProvider } from './auth/useAuthProvider';
 import { AuthContextType } from './auth/authTypes';
 
-// Criando o contexto com um valor inicial undefined
+// Create the context with an initial undefined value
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Componente Provider como função React explícita 
+// Provider component as explicit React function
 export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   const auth = useAuthProvider();
+  
+  useEffect(() => {
+    console.log('AuthProvider rendered with auth state:', { 
+      isLoggedIn: !!auth.user, 
+      isAdmin: auth.isAdmin,
+      isLoading: auth.isLoading
+    });
+  }, [auth.user, auth.isAdmin, auth.isLoading]);
 
   return (
     <AuthContext.Provider value={auth}>
@@ -17,7 +25,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   );
 };
 
-// Hook customizado para usar o contexto
+// Custom hook to use the context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

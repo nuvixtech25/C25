@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
@@ -8,13 +8,25 @@ import AdminRoutes from './routes/AdminRoutes';
 import PublicRoutes from './routes/PublicRoutes';
 import { Toaster } from "@/components/ui/toaster";
 
-// Create a client
-const queryClient = new QueryClient();
+// Create a client with better error handling
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: true,
+      retry: 1,
+      staleTime: 5 * 60 * 1000,
+    },
+  },
+});
 
-// Root App component to initialize pixels
+// Root App component to initialize pixels and logs component tree loading
 const AppWithPixels = () => {
   // Initialize pixels on app mount
   usePixelEvents({ initialize: true });
+  
+  useEffect(() => {
+    console.log('Application initialized');
+  }, []);
   
   return (
     <>

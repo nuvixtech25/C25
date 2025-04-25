@@ -4,6 +4,7 @@ import { Navigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -14,14 +15,36 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
   const { user, isLoading, isAdmin } = useAuth();
   const location = useLocation();
 
-  console.log('ProtectedRoute - auth state:', { user, isAdmin, isLoading });
+  useEffect(() => {
+    console.log('ProtectedRoute - auth state:', { 
+      user: !!user, 
+      isAdmin, 
+      isLoading, 
+      path: location.pathname,
+      requireAdmin 
+    });
+    
+    if (!isLoading && !user) {
+      toast({
+        title: "Acesso negado",
+        description: "Você precisa fazer login para acessar esta página",
+        variant: "destructive",
+      });
+    } else if (!isLoading && requireAdmin && !isAdmin) {
+      toast({
+        title: "Acesso restrito",
+        description: "Seu usuário não possui permissões de administrador",
+        variant: "destructive",
+      });
+    }
+  }, [user, isAdmin, isLoading, location.pathname, requireAdmin]);
 
   // While checking auth status, show loading
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2">Carregando autenticação...</span>
+      <div className="flex flex-col justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <span className="text-gray-600">Verificando autenticação...</span>
       </div>
     );
   }
@@ -43,8 +66,8 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
             Seu usuário não possui permissões de administrador para acessar esta área.
           </p>
           <Button asChild variant="outline">
-            <Link to="/admin/tools">
-              Ir para ferramentas de administração
+            <Link to="/admin/dashboard">
+              Ir para Dashboard
             </Link>
           </Button>
         </div>

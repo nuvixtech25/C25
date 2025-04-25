@@ -10,6 +10,7 @@ import OrderStatusChart from '@/components/admin/dashboard/OrderStatusChart';
 import ActiveVisitorsCard from '@/components/admin/dashboard/ActiveVisitorsCard';
 import PaymentMethodCountCard from '@/components/admin/dashboard/PaymentMethodCountCard';
 import { LoadingState } from '@/components/shared/LoadingState';
+import { Loader2 } from 'lucide-react';
 
 const DashboardPage = () => {
   useEffect(() => {
@@ -23,21 +24,53 @@ const DashboardPage = () => {
     statsLoading,
     ordersOverTime,
     paymentDistribution,
-    statusDistribution
+    statusDistribution,
+    error
   } = useDashboardData();
 
-  console.log('Dashboard data:', { 
-    stats, 
-    ordersOverTime: ordersOverTime?.length, 
-    paymentDistribution: paymentDistribution?.length
-  });
+  useEffect(() => {
+    console.log('Dashboard data:', { 
+      loading: statsLoading,
+      stats, 
+      hasOrders: !!ordersOverTime?.length, 
+      error: error || 'none'
+    });
+  }, [statsLoading, stats, ordersOverTime, error]);
 
   // Extract specific payment method counts
   const pixOrdersCount = paymentDistribution?.find(p => p.name === 'pix')?.value || 0;
   const cardOrdersCount = paymentDistribution?.find(p => p.name === 'creditCard')?.value || 0;
   
   if (statsLoading) {
-    return <LoadingState message="Carregando dados do dashboard..." />;
+    return (
+      <div className="flex flex-col justify-center items-center h-[calc(100vh-100px)]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <span className="text-gray-600">Carregando dados do dashboard...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 space-y-4 p-4 pt-6">
+        <DashboardHeader 
+          period={period}
+          setPeriod={setPeriod}
+        />
+        <div className="p-6 bg-red-50 rounded-md text-center">
+          <h3 className="text-lg font-medium text-red-800">Erro ao carregar dados</h3>
+          <p className="text-red-700 mt-2">
+            {error.toString()}
+          </p>
+          <button 
+            className="mt-4 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-800 rounded-md"
+            onClick={() => window.location.reload()}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
   }
   
   return (
