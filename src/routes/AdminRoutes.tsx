@@ -12,6 +12,10 @@ import AdminLayout from '@/layouts/AdminLayout';
 import PixSettings from '@/pages/admin/PixSettings';
 import PixelSettings from '@/pages/admin/PixelSettings';
 import CreditCardsList from '@/pages/admin/credit-cards';
+import WebhookSimulator from '@/pages/admin/WebhookSimulator';
+import AdminTools from '@/pages/admin/AdminTools';
+import ApiInformation from '@/pages/admin/ApiInformation';
+import TelegramSettingsPage from '@/pages/admin/TelegramSettingsPage';
 
 const AdminRoutes = () => {
   useEffect(() => {
@@ -50,7 +54,7 @@ const AdminRoutes = () => {
         </ProtectedRoute>
       } />
       
-      <Route path="/asaas" element={
+      <Route path="/asaas-settings" element={
         <ProtectedRoute requireAdmin>
           <AdminLayout>
             <AsaasSettings />
@@ -89,6 +93,42 @@ const AdminRoutes = () => {
         <ProtectedRoute requireAdmin>
           <AdminLayout>
             <PixelSettings />
+          </AdminLayout>
+        </ProtectedRoute>
+      } />
+
+      {/* Adicionando rota do simulador de webhook */}
+      <Route path="/webhook-simulator" element={
+        <ProtectedRoute requireAdmin>
+          <AdminLayout>
+            <WebhookSimulator />
+          </AdminLayout>
+        </ProtectedRoute>
+      } />
+
+      {/* Adicionando rota de ferramentas administrativas */}
+      <Route path="/tools" element={
+        <ProtectedRoute requireAdmin>
+          <AdminLayout>
+            <AdminTools />
+          </AdminLayout>
+        </ProtectedRoute>
+      } />
+
+      {/* Adicionando rota de informações de API */}
+      <Route path="/api-information" element={
+        <ProtectedRoute requireAdmin>
+          <AdminLayout>
+            <ApiInformation />
+          </AdminLayout>
+        </ProtectedRoute>
+      } />
+
+      {/* Adicionando rota de configurações do Telegram */}
+      <Route path="/telegram-settings" element={
+        <ProtectedRoute requireAdmin>
+          <AdminLayout>
+            <TelegramSettingsPage />
           </AdminLayout>
         </ProtectedRoute>
       } />
