@@ -23,13 +23,15 @@ export const useDashboardData = () => {
     refetchInterval: 300000, // Refetch every 5 minutes
     refetchOnWindowFocus: true,
     retry: 2,
-    onError: (err: Error) => {
-      console.error('Dashboard query error:', err);
-      handleApiError(err, {
-        toast,
-        defaultMessage: "Não foi possível carregar os dados do dashboard.",
-        logError: true
-      });
+    meta: {
+      errorHandler: (err: Error) => {
+        console.error('Dashboard query error:', err);
+        handleApiError(err, {
+          toast,
+          defaultMessage: "Não foi possível carregar os dados do dashboard.",
+          logError: true
+        });
+      }
     }
   });
   
@@ -39,10 +41,15 @@ export const useDashboardData = () => {
     if (queryError) {
       console.error('Dashboard data error:', queryError);
       setError(queryError as Error);
+      
+      // Access the error handler from meta
+      if (queryResult.meta?.errorHandler) {
+        (queryResult.meta.errorHandler as Function)(queryError);
+      }
     } else {
       setError(null);
     }
-  }, [queryError]);
+  }, [queryError, queryResult.meta]);
 
   // Log the data received
   useEffect(() => {
