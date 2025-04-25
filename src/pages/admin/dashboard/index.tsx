@@ -9,13 +9,20 @@ import RevenueChart from '@/components/admin/dashboard/RevenueChart';
 import OrderStatusChart from '@/components/admin/dashboard/OrderStatusChart';
 import ActiveVisitorsCard from '@/components/admin/dashboard/ActiveVisitorsCard';
 import PaymentMethodCountCard from '@/components/admin/dashboard/PaymentMethodCountCard';
-import { LoadingState } from '@/components/shared/LoadingState';
-import { Loader2 } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { ErrorState } from '@/components/shared/ErrorState';
+import { useAuth } from '@/contexts/AuthContext';
 
 const DashboardPage = () => {
+  const { user, isAdmin } = useAuth();
+  
   useEffect(() => {
-    console.log('Dashboard component mounted');
-  }, []);
+    console.log('Dashboard mounting, auth state:', { 
+      isLoggedIn: !!user,
+      isAdmin,
+      userId: user?.id || 'none'
+    });
+  }, [user, isAdmin]);
 
   const {
     period,
@@ -29,46 +36,39 @@ const DashboardPage = () => {
   } = useDashboardData();
 
   useEffect(() => {
-    console.log('Dashboard data:', { 
+    console.log('Dashboard data loaded:', { 
       loading: statsLoading,
-      stats, 
-      hasOrders: !!ordersOverTime?.length, 
-      error: error || 'none'
+      hasStats: !!stats,
+      hasOrdersData: !!ordersOverTime?.length, 
+      error: error ? String(error) : 'none'
     });
   }, [statsLoading, stats, ordersOverTime, error]);
 
-  // Extract specific payment method counts
+  // Extract specific payment method counts with fallbacks
   const pixOrdersCount = paymentDistribution?.find(p => p.name === 'pix')?.value || 0;
   const cardOrdersCount = paymentDistribution?.find(p => p.name === 'creditCard')?.value || 0;
   
   if (statsLoading) {
     return (
-      <div className="flex flex-col justify-center items-center h-[calc(100vh-100px)]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-        <span className="text-gray-600">Carregando dados do dashboard...</span>
+      <div className="flex-1 p-4 pt-6">
+        <DashboardHeader period={period} setPeriod={setPeriod} />
+        <div className="flex justify-center items-center h-[70vh]">
+          <LoadingSpinner size="lg" message="Carregando dados do dashboard..." />
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex-1 space-y-4 p-4 pt-6">
-        <DashboardHeader 
-          period={period}
-          setPeriod={setPeriod}
+      <div className="flex-1 p-4 pt-6">
+        <DashboardHeader period={period} setPeriod={setPeriod} />
+        <ErrorState 
+          title="Erro ao carregar dados" 
+          message={`Ocorreu um erro ao carregar os dados: ${error.toString()}`}
+          actionLabel="Tentar novamente" 
+          actionLink="/admin/dashboard" 
         />
-        <div className="p-6 bg-red-50 rounded-md text-center">
-          <h3 className="text-lg font-medium text-red-800">Erro ao carregar dados</h3>
-          <p className="text-red-700 mt-2">
-            {error.toString()}
-          </p>
-          <button 
-            className="mt-4 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-800 rounded-md"
-            onClick={() => window.location.reload()}
-          >
-            Tentar novamente
-          </button>
-        </div>
       </div>
     );
   }

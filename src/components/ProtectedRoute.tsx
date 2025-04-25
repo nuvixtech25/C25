@@ -1,5 +1,4 @@
-
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
@@ -16,12 +15,12 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
   const location = useLocation();
 
   useEffect(() => {
-    console.log('ProtectedRoute - auth state:', { 
+    console.log('ProtectedRoute rendered with:', { 
       user: !!user, 
-      isAdmin, 
       isLoading, 
-      path: location.pathname,
-      requireAdmin 
+      isAdmin, 
+      requireAdmin,
+      path: location.pathname 
     });
     
     if (!isLoading && !user) {
@@ -37,9 +36,9 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
         variant: "destructive",
       });
     }
-  }, [user, isAdmin, isLoading, location.pathname, requireAdmin]);
+  }, [user, isAdmin, isLoading, requireAdmin, location.pathname]);
 
-  // While checking auth status, show loading
+  // Show loading state while checking authentication
   if (isLoading) {
     return (
       <div className="flex flex-col justify-center items-center h-screen">
@@ -49,15 +48,16 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
     );
   }
 
-  // If not authenticated, redirect to login
+  // Redirect to login if not authenticated
   if (!user) {
-    console.log('User not authenticated, redirecting to login');
+    console.log('Not authenticated, redirecting to login');
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 
-  // If admin access is required but user is not admin
+  // Check admin requirement
   if (requireAdmin && !isAdmin) {
     console.log('User is not admin but admin access is required');
+    
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md text-center">
@@ -75,8 +75,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
     );
   }
 
-  console.log('Auth checks passed, rendering protected content');
-  // If all checks pass, render the protected content
+  // If all checks pass, render protected content
   return <>{children}</>;
 };
 

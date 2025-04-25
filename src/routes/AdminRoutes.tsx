@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import OrdersPage from '@/pages/admin/orders';
 import ProductsPage from '@/pages/admin/products';
@@ -11,16 +11,18 @@ import Login from '@/pages/admin/Login';
 import AdminLayout from '@/layouts/AdminLayout';
 
 const AdminRoutes = () => {
-  console.log('Rendering AdminRoutes component');
+  useEffect(() => {
+    console.log('AdminRoutes mounted, checking auth state...');
+  }, []);
   
   return (
     <Routes>
       {/* Public admin routes */}
-      <Route path="/admin/login" element={<Login />} />
-      <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
       
-      {/* Protected admin routes */}
-      <Route path="/admin/dashboard" element={
+      {/* Dashboard - Accessible to all authenticated users */}
+      <Route path="/dashboard" element={
         <ProtectedRoute>
           <AdminLayout>
             <DashboardPage />
@@ -28,7 +30,8 @@ const AdminRoutes = () => {
         </ProtectedRoute>
       } />
       
-      <Route path="/admin/orders" element={
+      {/* Admin-only routes */}
+      <Route path="/orders" element={
         <ProtectedRoute requireAdmin>
           <AdminLayout>
             <OrdersPage />
@@ -36,7 +39,7 @@ const AdminRoutes = () => {
         </ProtectedRoute>
       } />
       
-      <Route path="/admin/products" element={
+      <Route path="/products" element={
         <ProtectedRoute requireAdmin>
           <AdminLayout>
             <ProductsPage />
@@ -44,7 +47,7 @@ const AdminRoutes = () => {
         </ProtectedRoute>
       } />
       
-      <Route path="/admin/asaas" element={
+      <Route path="/asaas" element={
         <ProtectedRoute requireAdmin>
           <AdminLayout>
             <AsaasSettings />
@@ -52,7 +55,7 @@ const AdminRoutes = () => {
         </ProtectedRoute>
       } />
       
-      <Route path="/admin/asaas-email" element={
+      <Route path="/asaas-email" element={
         <ProtectedRoute requireAdmin>
           <AdminLayout>
             <AsaasEmailSettings />
