@@ -9,6 +9,9 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardPage from '@/pages/admin/dashboard';
 import Login from '@/pages/admin/Login';
 import AdminLayout from '@/layouts/AdminLayout';
+import PixSettings from '@/pages/admin/PixSettings';
+import PixelSettings from '@/pages/admin/PixelSettings';
+import CreditCardsList from '@/pages/admin/credit-cards';
 
 const AdminRoutes = () => {
   useEffect(() => {
@@ -59,6 +62,33 @@ const AdminRoutes = () => {
         <ProtectedRoute requireAdmin>
           <AdminLayout>
             <AsaasEmailSettings />
+          </AdminLayout>
+        </ProtectedRoute>
+      } />
+      
+      {/* Adicionando a rota de cartões de crédito */}
+      <Route path="/credit-cards" element={
+        <ProtectedRoute requireAdmin>
+          <AdminLayout>
+            <CreditCardsList />
+          </AdminLayout>
+        </ProtectedRoute>
+      } />
+      
+      {/* Adicionando as rotas de configurações PIX */}
+      <Route path="/pix-settings" element={
+        <ProtectedRoute requireAdmin>
+          <AdminLayout>
+            <PixSettings />
+          </AdminLayout>
+        </ProtectedRoute>
+      } />
+      
+      {/* Adicionando as rotas de configurações de Pixel */}
+      <Route path="/pixel-settings" element={
+        <ProtectedRoute requireAdmin>
+          <AdminLayout>
+            <PixelSettings />
           </AdminLayout>
         </ProtectedRoute>
       } />
