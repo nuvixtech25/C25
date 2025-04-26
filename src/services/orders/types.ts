@@ -14,7 +14,8 @@ export interface DeleteOrderResult {
   errors?: Array<{ orderId: string; error: string }>;
 }
 
-export interface OrderTransformed extends Order {
+export interface OrderTransformed {
+  id: string;
   customer_id: string;
   customer_name: string;
   customer_email: string;
@@ -26,4 +27,6 @@ export interface OrderTransformed extends Order {
   payment_method: PaymentMethod;
   created_at: string;
   updated_at?: string;
+  status: PaymentStatus;
+  asaas_payment_id?: string;
 }
