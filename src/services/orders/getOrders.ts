@@ -76,27 +76,29 @@ export const getOrders = async ({
       });
     }
     
-    // Validar e transformar os dados
-    const transformedData = (data || []).map(order => ({
+    // Transform the data to match OrderTransformed type (snake_case keys)
+    const transformedData: OrderTransformed[] = (data || []).map(order => ({
       id: order.id,
-      productPrice: typeof order.product_price === 'number' || !isNaN(Number(order.product_price)) 
+      customer_id: order.customer_id,
+      customer_name: order.customer_name,
+      customer_email: order.customer_email,
+      customer_phone: order.customer_phone,
+      customer_cpf_cnpj: order.customer_cpf_cnpj,
+      product_id: order.product_id,
+      product_name: order.product_name,
+      product_price: typeof order.product_price === 'number' || !isNaN(Number(order.product_price)) 
         ? Number(order.product_price) 
         : 0,
-      customerName: order.customer_name,
-      customerEmail: order.customer_email,
-      customerPhone: order.customer_phone,
-      customerCpfCnpj: order.customer_cpf_cnpj,
-      customerId: order.customer_id,
-      productName: order.product_name,
-      paymentMethod: order.payment_method,
-      createdAt: order.created_at,
+      payment_method: order.payment_method,
+      created_at: order.created_at,
+      updated_at: order.updated_at,
       status: order.status,
-      asaasPaymentId: order.asaas_payment_id
+      asaas_payment_id: order.asaas_payment_id
     }));
     
     // Log transformed data payment methods for debugging
     if (transformedData.length > 0) {
-      const paymentMethods = transformedData.map(order => order.paymentMethod);
+      const paymentMethods = transformedData.map(order => order.payment_method);
       console.log("[getOrders] Transformed data payment methods:", paymentMethods);
     }
     
