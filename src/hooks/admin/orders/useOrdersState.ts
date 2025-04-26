@@ -27,6 +27,7 @@ export function useOrdersState() {
       console.log(`[useOrdersState] Received ${data.length} orders`);
       if (data.length > 0) {
         console.log('[useOrdersState] First order payment method:', data[0].paymentMethod);
+        console.log('[useOrdersState] All orders payment methods:', data.map(order => order.paymentMethod));
       }
       
       setOrders(data);

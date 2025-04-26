@@ -4,18 +4,20 @@ import { Order, PaymentStatus } from '@/types/checkout';
 import { orderAdminService } from '@/services/orders';
 import { useToast } from '@/hooks/use-toast';
 import { useFilterContext } from './OrderFilterContext';
-import { useOrdersState } from './useOrdersState';
 import { usePagination } from './usePagination';
 
 export function useOrdersList() {
   const { toast } = useToast();
-  const { orders, loading, setOrders, setLoading } = useOrdersState();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const { filters } = useFilterContext();
   const { currentPage, itemsPerPage, paginate } = usePagination();
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
+      console.log('[useOrdersList] Fetching orders with filters:', filters);
+      
       const data = await orderAdminService.getOrders({
         paymentMethod: filters.paymentMethod,
         status: filters.status,
@@ -23,9 +25,15 @@ export function useOrdersList() {
         endDate: filters.endDate
       });
       
+      console.log(`[useOrdersList] Received ${data.length} orders, payment method: ${filters.paymentMethod}`);
+      if (data.length > 0) {
+        const paymentMethods = data.map(order => order.paymentMethod);
+        console.log('[useOrdersList] Orders payment methods:', paymentMethods);
+      }
+      
       setOrders(data);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error('[useOrdersList] Error fetching orders:', error);
       toast({
         variant: "destructive",
         title: "Erro ao carregar pedidos",

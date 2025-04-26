@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OrdersFilters from "./OrdersFilters";
 import OrdersTable from "./OrdersTable";
 import OrdersFooter from "./OrdersFooter";
 import { Order, PaymentMethod, PaymentStatus } from "@/types/checkout";
+import { useFilterContext } from "@/hooks/admin/orders/OrderFilterContext";
 
 interface OrdersTabsProps {
   paymentMethod: PaymentMethod;
@@ -50,6 +51,16 @@ const OrdersTabs: React.FC<OrdersTabsProps> = ({
   onEditStatus,
   onDeleteOrder,
 }) => {
+  const { filters, setFilters } = useFilterContext();
+  
+  // Update filter context when tab changes
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      paymentMethod: paymentMethod
+    }));
+  }, [paymentMethod, setFilters]);
+
   return (
     <Tabs 
       defaultValue={paymentMethod} 

@@ -16,11 +16,18 @@ interface FilterContextType {
 
 const OrderFilterContext = createContext<FilterContextType | undefined>(undefined);
 
-export function OrderFilterProvider({ children }: { children: React.ReactNode }) {
+export function OrderFilterProvider({ children, initialPaymentMethod = 'pix' }: { 
+  children: React.ReactNode;
+  initialPaymentMethod?: PaymentMethod;
+}) {
   const [filters, setFilters] = useState<FilterState>({
-    paymentMethod: 'pix',
+    paymentMethod: initialPaymentMethod,
     status: 'ALL'
   });
+
+  useEffect(() => {
+    console.log('[OrderFilterContext] Filters changed:', filters);
+  }, [filters]);
 
   return (
     <OrderFilterContext.Provider value={{ filters, setFilters }}>

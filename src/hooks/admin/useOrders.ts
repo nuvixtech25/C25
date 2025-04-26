@@ -18,10 +18,17 @@ export function useOrders(initialPaymentMethod: PaymentMethod = "pix"): UseOrder
     endDate: undefined
   });
   
-  // Garantir que buscamos pedidos com o método de pagamento inicial quando o componente é montado
+  // Fetch orders when component mounts or when filters change
   useEffect(() => {
-    fetchOrders({ paymentMethod: initialPaymentMethod, status: statusFilter });
-  }, [initialPaymentMethod]);
+    console.log(`[useOrders] Fetching orders with payment method: ${paymentMethod}, status: ${statusFilter}`);
+    fetchOrders({ 
+      paymentMethod: paymentMethod, 
+      status: statusFilter,
+      startDate: customDateRange.startDate,
+      endDate: customDateRange.endDate
+    });
+  }, [paymentMethod, statusFilter, dateRange, 
+      customDateRange.startDate, customDateRange.endDate]);
   
   // Calculate summary based on filtered orders
   const ordersSummary = {
@@ -36,10 +43,8 @@ export function useOrders(initialPaymentMethod: PaymentMethod = "pix"): UseOrder
   );
 
   const changePaymentMethod = (method: PaymentMethod) => {
-    setPaymentMethod(method);
     console.log(`[useOrders] Changing payment method to: ${method}`);
-    // Refresh orders when payment method changes
-    fetchOrders({ paymentMethod: method, status: statusFilter });
+    setPaymentMethod(method);
   };
 
   return {

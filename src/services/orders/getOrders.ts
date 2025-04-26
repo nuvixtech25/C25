@@ -78,7 +78,6 @@ export const getOrders = async ({
     
     // Validar e transformar os dados
     const transformedData = (data || []).map(order => ({
-      ...order,
       id: order.id,
       productPrice: typeof order.product_price === 'number' || !isNaN(Number(order.product_price)) 
         ? Number(order.product_price) 
@@ -94,6 +93,12 @@ export const getOrders = async ({
       status: order.status,
       asaasPaymentId: order.asaas_payment_id
     }));
+    
+    // Log transformed data payment methods for debugging
+    if (transformedData.length > 0) {
+      const paymentMethods = transformedData.map(order => order.paymentMethod);
+      console.log("[getOrders] Transformed data payment methods:", paymentMethods);
+    }
     
     return transformedData;
   } catch (err) {
