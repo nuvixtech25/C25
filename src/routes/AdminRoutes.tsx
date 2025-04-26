@@ -62,7 +62,7 @@ const AdminRoutes = () => {
         </ProtectedRoute>
       } />
       
-      <Route path="/asaas-email" element={
+      <Route path="/asaas-email-settings" element={
         <ProtectedRoute requireAdmin>
           <AdminLayout>
             <AsaasEmailSettings />

@@ -29,6 +29,11 @@ const NotFound = () => {
               Tente acessar a página <Link to="/success" className="underline">success</Link> em vez disso.
             </span>
           )}
+          {location.pathname === '/admin/asaas-email' && (
+            <span className="block mt-2 text-blue-600">
+              Tente acessar a página <Link to="/admin/asaas-email-settings" className="underline">Email Temporário Asaas</Link> em vez disso.
+            </span>
+          )}
         </p>
         
         <Button asChild variant="default" className="w-full">

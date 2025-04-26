@@ -13,7 +13,8 @@ import {
   BarChart, 
   LineChart,
   Database,
-  Send
+  Send,
+  Mail
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -135,6 +136,17 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 >
                   <AsaasIcon className="h-4 w-4" />
                   <span>Configurações Asaas</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin/asaas-email-settings"
+                  className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/5 transition-colors ${
+                    location.pathname.includes('/admin/asaas-email-settings') ? 'bg-primary/10 font-medium' : ''
+                  }`}
+                >
+                  <Mail className="h-4 w-4" />
+                  <span>Email Temporário Asaas</span>
                 </Link>
               </li>
               <li>
