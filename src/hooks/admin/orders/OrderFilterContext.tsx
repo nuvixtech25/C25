@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { PaymentMethod, PaymentStatus } from '@/types/checkout';
 
 interface FilterState {
@@ -34,5 +34,6 @@ export function useFilterContext() {
   if (!context) {
     throw new Error('useFilterContext must be used within an OrderFilterProvider');
   }
+  
   return context;
 }

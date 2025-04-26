@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from "react";
-import { Order, PaymentStatus } from "@/types/checkout";
+import { Order, PaymentMethod, PaymentStatus } from "@/types/checkout";
 import { useOrders } from "./useOrders";
 
-export function useFilteredOrders(initialPaymentMethod: "pix" | "creditCard" = "pix") {
+export function useFilteredOrders(initialPaymentMethod: PaymentMethod = "pix") {
   const {
     orders,
     loading,
@@ -28,6 +28,19 @@ export function useFilteredOrders(initialPaymentMethod: "pix" | "creditCard" = "
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+  
+  // Log para depuração
+  useEffect(() => {
+    console.log('[useFilteredOrders] Current payment method:', paymentMethod);
+    console.log('[useFilteredOrders] Orders count:', orders.length);
+    if (orders.length > 0) {
+      const paymentMethodCounts = orders.reduce((acc, order) => {
+        acc[order.paymentMethod] = (acc[order.paymentMethod] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+      console.log('[useFilteredOrders] Orders by payment method:', paymentMethodCounts);
+    }
+  }, [orders, paymentMethod]);
   
   // Handlers for order actions
   const handleViewCustomer = (order: Order) => {

@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { OrderFilterProvider } from "@/hooks/admin/orders/OrderFilterContext";
 import { Trash2 } from "lucide-react";
@@ -11,7 +12,7 @@ import {
 } from "@/components/admin/orders/OrderModals";
 import { useFilteredOrders } from "@/hooks/admin/useFilteredOrders";
 import { usePaymentNotifications } from "@/hooks/admin/usePaymentNotifications";
-import { usePaymentSound } from "@/hooks/usePaymentSound"; // Adicione esta importação
+import { usePaymentSound } from "@/hooks/usePaymentSound";
 
 const OrdersPage: React.FC = () => {
   const {
@@ -61,9 +62,11 @@ const OrdersPage: React.FC = () => {
   usePaymentSound();
 
   useEffect(() => {
-    console.log("OrdersPage mounted or updated. Orders:", orders);
-    console.log("Loading state:", loading);
-  }, [orders, loading]);
+    console.log("OrdersPage mounted or updated");
+    console.log("Current payment method:", paymentMethod);
+    console.log("Orders count:", orders.length);
+    console.log("Orders by payment method:", orders.map(o => o.paymentMethod));
+  }, [orders, paymentMethod]);
 
   return (
     <OrderFilterProvider>

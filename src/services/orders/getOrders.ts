@@ -9,7 +9,12 @@ export const getOrders = async ({
   endDate,
 }: GetOrdersParams): Promise<OrderTransformed[]> => {
   try {
-    console.log("Iniciando busca de pedidos com parâmetros:", { paymentMethod, status, startDate, endDate });
+    console.log("[getOrders] Iniciando busca de pedidos com parâmetros:", { 
+      paymentMethod, 
+      status, 
+      startDate: startDate ? new Date(startDate).toISOString() : null, 
+      endDate: endDate ? new Date(endDate).toISOString() : null
+    });
     
     let query = supabase
       .from("orders")
@@ -18,11 +23,13 @@ export const getOrders = async ({
     
     // Aplicar filtro de método de pagamento se fornecido
     if (paymentMethod) {
+      console.log(`[getOrders] Filtrando por método de pagamento: ${paymentMethod}`);
       query = query.eq("payment_method", paymentMethod);
     }
 
     // Aplicar filtro de status se não for "ALL"
     if (status && status !== "ALL") {
+      console.log(`[getOrders] Filtrando por status: ${status}`);
       query = query.eq("status", status);
     }
 
@@ -38,7 +45,7 @@ export const getOrders = async ({
           try {
             return new Date(date).toISOString();
           } catch (err) {
-            console.error("Erro ao converter data:", date, err);
+            console.error("[getOrders] Erro ao converter data:", date, err);
             return new Date().toISOString();
           }
         }
@@ -47,7 +54,7 @@ export const getOrders = async ({
       const startDateStr = formatDate(startDate);
       const endDateStr = formatDate(endDate);
       
-      console.log("Aplicando filtros de data:", { startDateStr, endDateStr });
+      console.log("[getOrders] Aplicando filtros de data:", { startDateStr, endDateStr });
       
       query = query.gte("created_at", startDateStr);
       query = query.lte("created_at", endDateStr);
@@ -56,18 +63,23 @@ export const getOrders = async ({
     const { data, error } = await query;
 
     if (error) {
-      console.error("Erro ao buscar pedidos:", error);
+      console.error("[getOrders] Erro ao buscar pedidos:", error);
       throw new Error(`Falha ao buscar pedidos: ${error.message}`);
     }
 
-    console.log("Pedidos encontrados:", data?.length || 0);
+    console.log(`[getOrders] Pedidos encontrados: ${data?.length || 0}`);
     if (data && data.length > 0) {
-      console.log("Exemplo do primeiro pedido:", data[0]);
+      console.log("[getOrders] Primeiro pedido:", {
+        id: data[0].id,
+        paymentMethod: data[0].payment_method,
+        status: data[0].status
+      });
     }
     
     // Validar e transformar os dados
-    return (data || []).map(order => ({
+    const transformedData = (data || []).map(order => ({
       ...order,
+      id: order.id,
       productPrice: typeof order.product_price === 'number' || !isNaN(Number(order.product_price)) 
         ? Number(order.product_price) 
         : 0,
@@ -82,8 +94,10 @@ export const getOrders = async ({
       status: order.status,
       asaasPaymentId: order.asaas_payment_id
     }));
+    
+    return transformedData;
   } catch (err) {
-    console.error("Erro inesperado em getOrders:", err);
-    return [];
+    console.error("[getOrders] Erro inesperado:", err);
+    throw err;
   }
 }
