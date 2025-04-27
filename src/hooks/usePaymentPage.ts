@@ -136,7 +136,7 @@ export const usePaymentPage = () => {
           qrCode: data.qrCode || '',
           copyPasteKey: data.copyPasteKey || '',
           expirationDate: data.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-          paymentId: data.paymentId || data.payment?.id || '',
+          paymentId: data.paymentId || '',
           value: typeof data.value === 'number' ? data.value : 
                  typeof data.value === 'string' ? parseFloat(data.value) : 
                  formattedBillingData.value,
@@ -180,7 +180,7 @@ export const usePaymentPage = () => {
     };
     
     fetchPixPayment();
-  }, [location.state, navigate, toast]);
+  }, [error, loading, location.state, navigate, order, paymentData, toast]);
   
   // Debug what's being rendered
   console.log("Rendering PaymentPage:", { 

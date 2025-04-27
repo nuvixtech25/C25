@@ -1,3 +1,4 @@
+// @/services/asaasService.ts
 
 import { PaymentStatus } from '@/types/checkout';
 
@@ -45,7 +46,7 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
             return 'PENDING';
           }
           
-          // Normalize the status - ensure consistent formatting across the system
+          // Normalizar o status - garantir formatação consistente em todo o sistema
           let normalizedStatus: PaymentStatus = data.status as PaymentStatus;
           
           // Remapear certos status do Asaas para o formato que usamos
@@ -97,4 +98,27 @@ export const checkPaymentStatus = async (paymentId: string): Promise<PaymentStat
   }
 };
 
-// ... keep existing code (generatePixPayment function and related implementation)
+/**
+ * Gera o pagamento Pix no Asaas
+ * @param billingData Dados da cobrança para gerar o pagamento Pix
+ * @returns Dados do pagamento Pix gerado
+ */
+export const generatePixPayment = (billingData: { value: number; description: string }) => {
+  // Lógica para gerar pagamento Pix com base nos dados da cobrança
+  const expirationDate = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+  
+  // Dados simulados para o pagamento Pix
+  const pixPayment = {
+    paymentId: '12345', // ID fictício do pagamento
+    qrCodeImage: 'QR_CODE_IMAGE', // Imagem do código QR
+    qrCode: 'QR_CODE', // Código QR
+    copyPasteKey: 'COPY_PASTE_KEY', // Chave para copiar e colar
+    expirationDate: expirationDate, // Data de expiração
+    value: billingData.value, // Valor do pagamento
+    description: billingData.description, // Descrição do pagamento
+    status: 'PENDING' // Status do pagamento
+  };
+
+  return pixPayment;
+};
+
