@@ -1,10 +1,15 @@
-
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import LoginForm from './LoginForm';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LoginForm from "./LoginForm";
 
 const Login = () => {
   const { signIn, session } = useAuth();
@@ -14,7 +19,7 @@ const Login = () => {
   // Se o usuário já estiver autenticado, redireciona para o dashboard administrativo
   useEffect(() => {
     if (session) {
-      navigate('/admin/dashboard');
+      navigate("/admin/dashboard");
     }
   }, [session, navigate]);
 
@@ -39,10 +44,7 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <LoginForm 
-            onSubmit={handleSignIn}
-            isSubmitting={isSubmitting}
-          />
+          <LoginForm onSubmit={handleSignIn} isSubmitting={isSubmitting} />
         </CardContent>
       </Card>
     </div>

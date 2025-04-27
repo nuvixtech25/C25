@@ -1,8 +1,17 @@
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 interface PaymentMethodData {
   name: string;
@@ -24,10 +33,12 @@ const PaymentMethodsChart = ({ data }: PaymentMethodsChartProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={{
-          pix: { color: "#10B981" },
-          creditCard: { color: "#8B5CF6" }
-        }}>
+        <ChartContainer
+          config={{
+            pix: { color: "#10B981" },
+            creditCard: { color: "#8B5CF6" },
+          }}
+        >
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -35,7 +46,9 @@ const PaymentMethodsChart = ({ data }: PaymentMethodsChartProps) => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) =>
+                  `${name}: ${(percent * 100).toFixed(0)}%`
+                }
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"

@@ -1,4 +1,3 @@
-
 /**
  * Handles API errors in a standardized way
  */
@@ -12,12 +11,15 @@ interface ErrorHandlerOptions {
 /**
  * Handles API errors in a standardized way
  */
-export const handleApiError = (error: any, options: ErrorHandlerOptions = {}) => {
+export const handleApiError = (
+  error: any,
+  options: ErrorHandlerOptions = {},
+) => {
   const {
     toast,
     defaultMessage = "Ocorreu um erro inesperado. Tente novamente.",
     onError,
-    logError = true
+    logError = true,
   } = options;
 
   // Always log the error to console in development
@@ -30,19 +32,19 @@ export const handleApiError = (error: any, options: ErrorHandlerOptions = {}) =>
 
   if (error instanceof Error) {
     errorMessage = error.message;
-  } else if (typeof error === 'string') {
+  } else if (typeof error === "string") {
     errorMessage = error;
-  } else if (error && typeof error === 'object') {
+  } else if (error && typeof error === "object") {
     // Handle Supabase error
-    if ('code' in error && 'message' in error) {
+    if ("code" in error && "message" in error) {
       errorMessage = `Erro ${error.code}: ${error.message}`;
     }
     // Handle Fetch API error
-    else if ('status' in error && 'statusText' in error) {
+    else if ("status" in error && "statusText" in error) {
       errorMessage = `${error.status}: ${error.statusText}`;
     }
     // Handle error response from API
-    else if ('data' in error && error.data && typeof error.data === 'object') {
+    else if ("data" in error && error.data && typeof error.data === "object") {
       errorMessage = error.data.message || error.data.error || defaultMessage;
     }
   }
@@ -69,11 +71,11 @@ export const handleApiError = (error: any, options: ErrorHandlerOptions = {}) =>
  */
 export const getPaymentStatusErrorMessage = (status: string): string => {
   const statusMessages: Record<string, string> = {
-    'CANCELLED': 'O pagamento foi cancelado',
-    'REFUNDED': 'O pagamento foi estornado',
-    'OVERDUE': 'O prazo de pagamento expirou',
-    'ERROR': 'Ocorreu um erro no processamento do pagamento',
-    'DECLINED': 'O pagamento foi recusado pela operadora'
+    CANCELLED: "O pagamento foi cancelado",
+    REFUNDED: "O pagamento foi estornado",
+    OVERDUE: "O prazo de pagamento expirou",
+    ERROR: "Ocorreu um erro no processamento do pagamento",
+    DECLINED: "O pagamento foi recusado pela operadora",
   };
 
   return statusMessages[status] || `Status de pagamento: ${status}`;

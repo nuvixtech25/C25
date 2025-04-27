@@ -1,10 +1,9 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentStatus } from "@/types/checkout";
 
 export const updateOrderStatus = async (
   orderId: string,
-  status: PaymentStatus
+  status: PaymentStatus,
 ) => {
   const { data, error } = await supabase
     .from("orders")

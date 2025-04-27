@@ -1,16 +1,22 @@
-
-import React, { useState } from 'react';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import React, { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const loginSchema = z.object({
-  email: z.string().email('E-mail inválido'),
-  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -26,8 +32,8 @@ const LoginForm = ({ onSubmit, isSubmitting }: LoginFormProps) => {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -45,19 +51,19 @@ const LoginForm = ({ onSubmit, isSubmitting }: LoginFormProps) => {
             <FormItem>
               <FormLabel>E-mail</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="seu@email.com" 
+                <Input
+                  placeholder="seu@email.com"
                   type="email"
                   autoComplete="email"
-                  {...field} 
-                  disabled={isSubmitting} 
+                  {...field}
+                  disabled={isSubmitting}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="password"
@@ -66,12 +72,12 @@ const LoginForm = ({ onSubmit, isSubmitting }: LoginFormProps) => {
               <FormLabel>Senha</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input 
-                    placeholder="••••••••" 
+                  <Input
+                    placeholder="••••••••"
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
-                    {...field} 
-                    disabled={isSubmitting} 
+                    {...field}
+                    disabled={isSubmitting}
                   />
                   <button
                     type="button"
@@ -90,7 +96,7 @@ const LoginForm = ({ onSubmit, isSubmitting }: LoginFormProps) => {
             </FormItem>
           )}
         />
-        
+
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? (
             <>

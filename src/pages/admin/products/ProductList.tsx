@@ -1,8 +1,7 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Plus, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,10 +9,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Product } from '@/types/checkout';
-import ProductItem from './ProductItem';
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Product } from "@/types/checkout";
+import ProductItem from "./ProductItem";
 
 interface ProductListProps {
   products: Product[] | undefined;
@@ -21,7 +20,11 @@ interface ProductListProps {
   onDeleteClick: (product: Product) => void;
 }
 
-const ProductList = ({ products, isLoading, onDeleteClick }: ProductListProps) => {
+const ProductList = ({
+  products,
+  isLoading,
+  onDeleteClick,
+}: ProductListProps) => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -57,10 +60,10 @@ const ProductList = ({ products, isLoading, onDeleteClick }: ProductListProps) =
       </TableHeader>
       <TableBody>
         {products.map((product) => (
-          <ProductItem 
-            key={product.id} 
-            product={product} 
-            onDeleteClick={onDeleteClick} 
+          <ProductItem
+            key={product.id}
+            product={product}
+            onDeleteClick={onDeleteClick}
           />
         ))}
       </TableBody>

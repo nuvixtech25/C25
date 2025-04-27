@@ -1,18 +1,21 @@
-
 import { addDays, startOfDay, endOfDay } from "date-fns";
 import { DateRangeType } from "./types";
 
 export const calculateDateFilters = (
-  dateRange: DateRangeType, 
+  dateRange: DateRangeType,
   customDateRange: {
     startDate: Date | undefined;
     endDate: Date | undefined;
-  }
+  },
 ) => {
   const today = new Date();
-  
+
   try {
-    if (dateRange === "custom" && customDateRange.startDate && customDateRange.endDate) {
+    if (
+      dateRange === "custom" &&
+      customDateRange.startDate &&
+      customDateRange.endDate
+    ) {
       return {
         startDate: startOfDay(customDateRange.startDate),
         endDate: endOfDay(customDateRange.endDate),
@@ -28,7 +31,7 @@ export const calculateDateFilters = (
         endDate: endOfDay(today),
       };
     }
-    
+
     return {
       startDate: undefined,
       endDate: undefined,

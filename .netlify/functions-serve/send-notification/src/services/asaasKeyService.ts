@@ -1,9 +1,8 @@
-
 // Re-export everything from the new key manager
-export * from '@/services/asaasKeyManager';
+export * from "@/services/asaasKeyManager";
 
-import { supabase } from '@/integrations/supabase/client';
-import { getActiveApiKey, AsaasApiKey } from '@/services/asaasKeyManager';
+import { supabase } from "@/integrations/supabase/client";
+import { getActiveApiKey, AsaasApiKey } from "@/services/asaasKeyManager";
 
 /**
  * Estrutura para caching local de chaves
@@ -24,7 +23,7 @@ let keyCache: KeyCache = {
   production: null,
   legacySandbox: null,
   legacyProduction: null,
-  timestamp: 0
+  timestamp: 0,
 };
 
 /**
@@ -34,32 +33,32 @@ let keyCache: KeyCache = {
  * @returns a chave API ou null se não encontrada
  */
 export const getAsaasApiKey = async (
-  isSandbox: boolean, 
-  useCache: boolean = true
+  isSandbox: boolean,
+  useCache: boolean = true,
 ): Promise<string | null> => {
   // Verificar o cache se solicitado
   const now = Date.now();
   const cacheValid = useCache && now - keyCache.timestamp < KEY_CACHE_EXPIRY;
-  
+
   if (cacheValid) {
     if (isSandbox && keyCache.sandbox) {
-      console.log('Usando chave sandbox em cache (novo sistema)');
+      console.log("Usando chave sandbox em cache (novo sistema)");
       return keyCache.sandbox.api_key;
     } else if (!isSandbox && keyCache.production) {
-      console.log('Usando chave produção em cache (novo sistema)');
+      console.log("Usando chave produção em cache (novo sistema)");
       return keyCache.production.api_key;
     } else if (isSandbox && keyCache.legacySandbox) {
-      console.log('Usando chave sandbox em cache (sistema legado)');
+      console.log("Usando chave sandbox em cache (sistema legado)");
       return keyCache.legacySandbox;
     } else if (!isSandbox && keyCache.legacyProduction) {
-      console.log('Usando chave produção em cache (sistema legado)');
+      console.log("Usando chave produção em cache (sistema legado)");
       return keyCache.legacyProduction;
     }
   }
-  
+
   // Tentar obter chave do novo sistema primeiro
   const activeKey = await getActiveApiKey(isSandbox);
-  
+
   // Se encontrou uma chave no novo sistema, usa ela
   if (activeKey) {
     // Atualizar o cache
@@ -69,35 +68,43 @@ export const getAsaasApiKey = async (
       keyCache.production = activeKey;
     }
     keyCache.timestamp = now;
-    
-    console.log(`Usando chave do novo sistema: ${activeKey.key_name} (ID: ${activeKey.id})`);
+
+    console.log(
+      `Usando chave do novo sistema: ${activeKey.key_name} (ID: ${activeKey.id})`,
+    );
     return activeKey.api_key;
   }
-  
+
   // Fallback para o sistema legado
-  console.log('Chave não encontrada no novo sistema, tentando sistema legado...');
-  
+  console.log(
+    "Chave não encontrada no novo sistema, tentando sistema legado...",
+  );
+
   try {
     const { data: legacyConfig, error } = await supabase
-      .from('asaas_config')
-      .select('sandbox_key, production_key')
+      .from("asaas_config")
+      .select("sandbox_key, production_key")
       .maybeSingle();
-      
+
     if (error) throw error;
-    
+
     if (!legacyConfig) {
-      console.error('Nenhuma configuração encontrada no sistema legado');
+      console.error("Nenhuma configuração encontrada no sistema legado");
       return null;
     }
-    
+
     // Determinar qual chave usar
-    const legacyKey = isSandbox ? legacyConfig.sandbox_key : legacyConfig.production_key;
-    
+    const legacyKey = isSandbox
+      ? legacyConfig.sandbox_key
+      : legacyConfig.production_key;
+
     if (!legacyKey) {
-      console.error(`Nenhuma chave ${isSandbox ? 'sandbox' : 'produção'} encontrada no sistema legado`);
+      console.error(
+        `Nenhuma chave ${isSandbox ? "sandbox" : "produção"} encontrada no sistema legado`,
+      );
       return null;
     }
-    
+
     // Atualizar o cache
     if (isSandbox) {
       keyCache.legacySandbox = legacyKey;
@@ -105,12 +112,11 @@ export const getAsaasApiKey = async (
       keyCache.legacyProduction = legacyKey;
     }
     keyCache.timestamp = now;
-    
-    console.log('Usando chave do sistema legado');
+
+    console.log("Usando chave do sistema legado");
     return legacyKey;
-    
   } catch (error) {
-    console.error('Erro ao buscar chave do sistema legado:', error);
+    console.error("Erro ao buscar chave do sistema legado:", error);
     return null;
   }
 };
@@ -124,7 +130,7 @@ export const clearKeyCache = (): void => {
     production: null,
     legacySandbox: null,
     legacyProduction: null,
-    timestamp: 0
+    timestamp: 0,
   };
-  console.log('Cache de chaves API limpo');
+  console.log("Cache de chaves API limpo");
 };

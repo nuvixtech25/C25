@@ -1,10 +1,9 @@
-
-import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { Order, PaymentMethod } from '@/types/checkout';
-import { logPaymentError } from '@/utils/paymentErrorHandler';
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Order, PaymentMethod } from "@/types/checkout";
+import { logPaymentError } from "@/utils/paymentErrorHandler";
 
 export const useOrderData = () => {
   const [searchParams] = useSearchParams();
@@ -15,16 +14,16 @@ export const useOrderData = () => {
   const fetchOrderById = async (orderId: string) => {
     setLoading(true);
     try {
-      console.log('[useOrderData] Fetching order with ID:', orderId);
-      
+      console.log("[useOrderData] Fetching order with ID:", orderId);
+
       const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('id', orderId)
+        .from("orders")
+        .select("*")
+        .eq("id", orderId)
         .single();
-        
+
       if (error) {
-        logPaymentError('useOrderData', error, { orderId });
+        logPaymentError("useOrderData", error, { orderId });
         toast({
           title: "Erro ao carregar pedido",
           description: "Não foi possível recuperar os dados do seu pedido.",
@@ -32,7 +31,7 @@ export const useOrderData = () => {
         });
         return null;
       }
-      
+
       if (data) {
         const fetchedOrder: Order = {
           id: data.id,
@@ -48,16 +47,19 @@ export const useOrderData = () => {
           paymentMethod: data.payment_method as PaymentMethod,
           asaasPaymentId: data.asaas_payment_id,
           createdAt: data.created_at,
-          updatedAt: data.updated_at
+          updatedAt: data.updated_at,
         };
-        
-        console.log('[useOrderData] Fetched order from database:', fetchedOrder);
+
+        console.log(
+          "[useOrderData] Fetched order from database:",
+          fetchedOrder,
+        );
         return fetchedOrder;
       }
-      
+
       return null;
     } catch (error) {
-      logPaymentError('useOrderData', error, { orderId });
+      logPaymentError("useOrderData", error, { orderId });
       toast({
         title: "Erro ao carregar pedido",
         description: "Ocorreu um erro ao buscar os dados do pedido.",
@@ -70,7 +72,7 @@ export const useOrderData = () => {
   };
 
   const getOrderIdFromUrl = () => {
-    return searchParams.get('orderId');
+    return searchParams.get("orderId");
   };
 
   return {
@@ -79,6 +81,6 @@ export const useOrderData = () => {
     loading,
     setLoading,
     fetchOrderById,
-    getOrderIdFromUrl
+    getOrderIdFromUrl,
   };
 };

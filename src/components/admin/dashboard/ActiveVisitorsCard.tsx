@@ -1,8 +1,13 @@
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Users, CreditCard, Banknote } from "lucide-react";
-import { useCheckoutPresence } from '@/hooks/useCheckoutPresence';
+import { useCheckoutPresence } from "@/hooks/useCheckoutPresence";
 
 const ActiveVisitorsCard = () => {
   const { visitorCount } = useCheckoutPresence();
@@ -11,9 +16,7 @@ const ActiveVisitorsCard = () => {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium">Visitantes Ativos</CardTitle>
-        <CardDescription>
-          Visitantes no checkout agora
-        </CardDescription>
+        <CardDescription>Visitantes no checkout agora</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center">

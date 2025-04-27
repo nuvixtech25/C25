@@ -1,12 +1,11 @@
-
-import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Paintbrush, Text, Clock, Store } from 'lucide-react';
-import { CheckoutCustomizationSettings } from '@/types/customization';
-import { AppearanceTab } from './customization/AppearanceTab';
-import { ContentTab } from './customization/ContentTab';
-import { TimerTab } from './customization/TimerTab';
-import { ProductTab } from './customization/ProductTab';
+import React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Paintbrush, Text, Clock, Store } from "lucide-react";
+import { CheckoutCustomizationSettings } from "@/types/customization";
+import { AppearanceTab } from "./customization/AppearanceTab";
+import { ContentTab } from "./customization/ContentTab";
+import { TimerTab } from "./customization/TimerTab";
+import { ProductTab } from "./customization/ProductTab";
 
 interface AdminToolsTabsProps {
   settings: CheckoutCustomizationSettings;
@@ -19,7 +18,7 @@ export const AdminToolsTabs: React.FC<AdminToolsTabsProps> = ({
   settings,
   handleChange,
   handleColorChange,
-  handleSwitchChange
+  handleSwitchChange,
 }) => {
   return (
     <Tabs defaultValue="appearance" className="w-full">
@@ -41,7 +40,7 @@ export const AdminToolsTabs: React.FC<AdminToolsTabsProps> = ({
           Produto
         </TabsTrigger>
       </TabsList>
-      
+
       <TabsContent value="appearance" className="space-y-4 mt-4">
         <AppearanceTab
           settings={settings}
@@ -49,21 +48,15 @@ export const AdminToolsTabs: React.FC<AdminToolsTabsProps> = ({
           handleColorChange={handleColorChange}
         />
       </TabsContent>
-      
+
       <TabsContent value="content" className="space-y-4 mt-4">
-        <ContentTab
-          settings={settings}
-          handleChange={handleChange}
-        />
+        <ContentTab settings={settings} handleChange={handleChange} />
       </TabsContent>
-      
+
       <TabsContent value="timer" className="space-y-4 mt-4">
-        <TimerTab
-          settings={settings}
-          handleChange={handleChange}
-        />
+        <TimerTab settings={settings} handleChange={handleChange} />
       </TabsContent>
-      
+
       <TabsContent value="product" className="space-y-4 mt-4">
         <ProductTab
           settings={settings}

@@ -1,53 +1,76 @@
-
-import React, { useEffect, useState, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
-import { supabaseClientService } from '@/services/supabaseClientService';
-import { CheckCircle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { WhatsAppButton } from './SuccessPage/WhatsAppButton';
-import { EmailConfirmationSection } from './SuccessPage/EmailConfirmationSection';
-import { DigitalProductSection, DigitalProductButton } from './SuccessPage/DigitalProductSection';
-import { TestimonialsCarousel } from '@/components/TestimonialsCarousel';
-import { PhysicalProductTestimonials } from '@/components/success-page/PhysicalProductTestimonials';
+import React, { useEffect, useState, useCallback } from "react";
+import { useLocation } from "react-router-dom";
+import { supabaseClientService } from "@/services/supabaseClientService";
+import { CheckCircle } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { WhatsAppButton } from "./SuccessPage/WhatsAppButton";
+import { EmailConfirmationSection } from "./SuccessPage/EmailConfirmationSection";
+import {
+  DigitalProductSection,
+  DigitalProductButton,
+} from "./SuccessPage/DigitalProductSection";
+import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
+import { PhysicalProductTestimonials } from "@/components/success-page/PhysicalProductTestimonials";
 
 const SuccessPage = () => {
   const location = useLocation();
-  const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState("");
   const [isDigitalProduct, setIsDigitalProduct] = useState(false);
 
   const fetchWhatsAppInfo = useCallback(async () => {
     if (!location.state?.order) return;
 
     const { order } = location.state;
-    
-    try {
-      console.log('[SuccessPage] Iniciando fetchWhatsAppInfo com orderId:', order.id);
-      
-      if (order.productId) {
-        const productInfo = await supabaseClientService.getProductWhatsAppInfo(order.productId);
-      
-        const finalWhatsappNumber = 
-          location.state.whatsapp_number || 
-          order.whatsapp_number || 
-          productInfo.whatsappNumber || 
-          '';
 
-        console.log('[SuccessPage] Número WhatsApp final:', finalWhatsappNumber);
+    try {
+      console.log(
+        "[SuccessPage] Iniciando fetchWhatsAppInfo com orderId:",
+        order.id,
+      );
+
+      if (order.productId) {
+        const productInfo = await supabaseClientService.getProductWhatsAppInfo(
+          order.productId,
+        );
+
+        const finalWhatsappNumber =
+          location.state.whatsapp_number ||
+          order.whatsapp_number ||
+          productInfo.whatsappNumber ||
+          "";
+
+        console.log(
+          "[SuccessPage] Número WhatsApp final:",
+          finalWhatsappNumber,
+        );
 
         setWhatsappNumber(finalWhatsappNumber);
 
         // Persistir para localStorage para possíveis recarregamentos da página
         if (finalWhatsappNumber) {
-          localStorage.setItem('whatsapp_number', finalWhatsappNumber);
+          localStorage.setItem("whatsapp_number", finalWhatsappNumber);
         }
-        
+
         // Check if the product is digital
-        if (order.productType === 'digital' || location.state.isDigitalProduct) {
+        if (
+          order.productType === "digital" ||
+          location.state.isDigitalProduct
+        ) {
           setIsDigitalProduct(true);
         }
       }
     } catch (error) {
-      console.error('[SuccessPage] Erro ao buscar informações do WhatsApp:', error);
+      console.error(
+        "[SuccessPage] Erro ao buscar informações do WhatsApp:",
+        error,
+      );
     }
   }, [location.state]);
 
@@ -57,10 +80,13 @@ const SuccessPage = () => {
 
   // Fallback para localStorage se o state for perdido
   useEffect(() => {
-    const storedWhatsappNumber = localStorage.getItem('whatsapp_number');
+    const storedWhatsappNumber = localStorage.getItem("whatsapp_number");
 
     if (storedWhatsappNumber) {
-      console.log('[SuccessPage] Recuperando número do WhatsApp do localStorage:', storedWhatsappNumber);
+      console.log(
+        "[SuccessPage] Recuperando número do WhatsApp do localStorage:",
+        storedWhatsappNumber,
+      );
       setWhatsappNumber(storedWhatsappNumber);
     }
   }, []);
@@ -72,43 +98,50 @@ const SuccessPage = () => {
           <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-green-100">
             <CheckCircle className="h-10 w-10 text-green-500" />
           </div>
-          
-          <CardTitle className="text-2xl font-bold text-gray-800 mb-2">Pagamento Confirmado!</CardTitle>
+
+          <CardTitle className="text-2xl font-bold text-gray-800 mb-2">
+            Pagamento Confirmado!
+          </CardTitle>
           <CardDescription className="text-gray-600 text-lg">
             Seu pagamento foi processado com sucesso
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="text-center space-y-5 px-6 py-6 bg-white">
-          <p className="text-gray-700 text-lg">Obrigado pela sua compra. Seu pedido foi confirmado e está sendo processado.</p>
-          
+          <p className="text-gray-700 text-lg">
+            Obrigado pela sua compra. Seu pedido foi confirmado e está sendo
+            processado.
+          </p>
+
           <EmailConfirmationSection />
-          
+
           <DigitalProductSection isDigital={isDigitalProduct} />
-          
+
           {/* Show different testimonials based on product type */}
           {isDigitalProduct ? (
             <div className="mt-8 bg-gray-50 p-5 rounded-xl border border-gray-100">
-              <h3 className="font-medium text-gray-800 mb-4 text-lg">O que nossos clientes estão dizendo:</h3>
+              <h3 className="font-medium text-gray-800 mb-4 text-lg">
+                O que nossos clientes estão dizendo:
+              </h3>
               <TestimonialsCarousel />
             </div>
           ) : (
             <PhysicalProductTestimonials />
           )}
         </CardContent>
-        
+
         <CardFooter className="flex flex-col pb-6 gap-3 pt-4 bg-white">
           <DigitalProductButton isDigital={isDigitalProduct} />
-          
+
           {/* Exibir o botão de WhatsApp quando houver um número */}
           {whatsappNumber && (
             <div className="w-full">
               <p className="text-sm text-gray-500 mb-2 text-center">
                 Precisa de ajuda? Estamos aqui para suportar você!
               </p>
-              <WhatsAppButton 
-                whatsappNumber={whatsappNumber} 
-                message={`Olá! Acabei de fazer um pagamento para o pedido ${location.state?.order?.id || 'recente'} e gostaria de confirmar o recebimento.`}
+              <WhatsAppButton
+                whatsappNumber={whatsappNumber}
+                message={`Olá! Acabei de fazer um pagamento para o pedido ${location.state?.order?.id || "recente"} e gostaria de confirmar o recebimento.`}
                 fullWidth={true}
               />
             </div>

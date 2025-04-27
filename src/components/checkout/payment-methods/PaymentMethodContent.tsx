@@ -1,9 +1,8 @@
-
-import React from 'react';
-import PaymentOptions from './PaymentOptions';
-import { PaymentMethodForms } from './PaymentMethodForms';
-import { PaymentStatusMessage } from './PaymentStatusMessage';
-import { PaymentMethod } from '@/types/checkout';
+import React from "react";
+import PaymentOptions from "./PaymentOptions";
+import { PaymentMethodForms } from "./PaymentMethodForms";
+import { PaymentStatusMessage } from "./PaymentStatusMessage";
+import { PaymentMethod } from "@/types/checkout";
 
 interface PaymentMethodContentProps {
   paymentMethod: PaymentMethod;
@@ -28,18 +27,19 @@ export const PaymentMethodContent: React.FC<PaymentMethodContentProps> = ({
   productPrice,
   paymentSuccess,
   paymentError,
-  hasValidCustomerData
+  hasValidCustomerData,
 }) => {
   // Derive payment-specific button text
-  const finalButtonText = paymentMethod === 'pix' ? 'Pagar com PIX' : buttonText;
-  
+  const finalButtonText =
+    paymentMethod === "pix" ? "Pagar com PIX" : buttonText;
+
   return (
     <div className="space-y-6">
-      <PaymentOptions 
-        paymentMethod={paymentMethod} 
-        onPaymentMethodChange={onPaymentMethodChange} 
+      <PaymentOptions
+        paymentMethod={paymentMethod}
+        onPaymentMethodChange={onPaymentMethodChange}
       />
-      
+
       <PaymentMethodForms
         paymentMethod={paymentMethod}
         onSubmit={onSubmit}
@@ -50,7 +50,7 @@ export const PaymentMethodContent: React.FC<PaymentMethodContentProps> = ({
         showQrCode={paymentSuccess}
         hasValidCustomerData={hasValidCustomerData}
       />
-      
+
       <PaymentStatusMessage
         success={paymentSuccess}
         error={paymentError}

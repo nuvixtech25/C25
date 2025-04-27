@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, ShoppingCart, Shield, Star } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, ShoppingCart, Shield, Star } from "lucide-react";
 
 const Index: React.FC = () => {
   return (
@@ -17,9 +17,7 @@ const Index: React.FC = () => {
             </div>
             <div className="flex items-center">
               <Link to="/admin/dashboard">
-                <Button>
-                  Dashboard
-                </Button>
+                <Button>Dashboard</Button>
               </Link>
             </div>
           </div>
@@ -34,7 +32,8 @@ const Index: React.FC = () => {
               Soluções de pagamento simplificadas
             </h1>
             <p className="mt-5 max-w-xl mx-auto text-xl text-gray-500">
-              Aceite pagamentos via PIX e cartões de crédito com facilidade e segurança.
+              Aceite pagamentos via PIX e cartões de crédito com facilidade e
+              segurança.
             </p>
             <div className="mt-8 flex justify-center">
               <Link to="/checkout">
@@ -68,9 +67,12 @@ const Index: React.FC = () => {
                     <ShoppingCart className="h-8 w-8 text-indigo-600" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">Checkout Intuitivo</h3>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Checkout Intuitivo
+                    </h3>
                     <p className="mt-2 text-base text-gray-500">
-                      Experiência de checkout simplificada para aumentar suas conversões.
+                      Experiência de checkout simplificada para aumentar suas
+                      conversões.
                     </p>
                   </div>
                 </div>
@@ -83,9 +85,12 @@ const Index: React.FC = () => {
                     <Shield className="h-8 w-8 text-indigo-600" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">Pagamentos Seguros</h3>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Pagamentos Seguros
+                    </h3>
                     <p className="mt-2 text-base text-gray-500">
-                      Processamento de pagamentos seguro e confiável para sua tranquilidade.
+                      Processamento de pagamentos seguro e confiável para sua
+                      tranquilidade.
                     </p>
                   </div>
                 </div>
@@ -98,9 +103,12 @@ const Index: React.FC = () => {
                     <Star className="h-8 w-8 text-indigo-600" />
                   </div>
                   <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">Dashboard Completo</h3>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Dashboard Completo
+                    </h3>
                     <p className="mt-2 text-base text-gray-500">
-                      Acompanhe todas as suas vendas e transações em um único lugar.
+                      Acompanhe todas as suas vendas e transações em um único
+                      lugar.
                     </p>
                   </div>
                 </div>
@@ -115,14 +123,14 @@ const Index: React.FC = () => {
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             <span className="block">Pronto para começar?</span>
-            <span className="block text-indigo-200">Experimente nosso checkout hoje mesmo.</span>
+            <span className="block text-indigo-200">
+              Experimente nosso checkout hoje mesmo.
+            </span>
           </h2>
           <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
             <div className="inline-flex rounded-md shadow">
               <Link to="/checkout">
-                <Button className="px-6 py-6 text-lg">
-                  Ir para Checkout
-                </Button>
+                <Button className="px-6 py-6 text-lg">Ir para Checkout</Button>
               </Link>
             </div>
           </div>
@@ -142,15 +150,34 @@ const Index: React.FC = () => {
             <div>
               <h3 className="text-xl font-bold mb-4">Links</h3>
               <ul className="space-y-2">
-                <li><Link to="/" className="text-gray-300 hover:text-white">Home</Link></li>
-                <li><Link to="/checkout" className="text-gray-300 hover:text-white">Checkout</Link></li>
-                <li><Link to="/admin/dashboard" className="text-gray-300 hover:text-white">Dashboard</Link></li>
+                <li>
+                  <Link to="/" className="text-gray-300 hover:text-white">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/checkout"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Checkout
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/admin/dashboard"
+                    className="text-gray-300 hover:text-white"
+                  >
+                    Dashboard
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h3 className="text-xl font-bold mb-4">Contato</h3>
               <p className="text-gray-300">
-                contato@pixflow.com.br<br />
+                contato@pixflow.com.br
+                <br />
                 +55 (11) 99999-9999
               </p>
             </div>

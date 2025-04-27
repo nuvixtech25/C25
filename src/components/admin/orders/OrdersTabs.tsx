@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OrdersFilters from "./OrdersFilters";
@@ -52,18 +51,18 @@ const OrdersTabs: React.FC<OrdersTabsProps> = ({
   onDeleteOrder,
 }) => {
   const { filters, setFilters } = useFilterContext();
-  
+
   // Update filter context when tab changes
   useEffect(() => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      paymentMethod: paymentMethod
+      paymentMethod: paymentMethod,
     }));
   }, [paymentMethod, setFilters]);
 
   return (
-    <Tabs 
-      defaultValue={paymentMethod} 
+    <Tabs
+      defaultValue={paymentMethod}
       value={paymentMethod}
       onValueChange={(value) => onChangePaymentMethod(value as PaymentMethod)}
       className="w-full"
@@ -72,7 +71,7 @@ const OrdersTabs: React.FC<OrdersTabsProps> = ({
         <TabsTrigger value="pix">Pedidos PIX</TabsTrigger>
         <TabsTrigger value="creditCard">Pedidos Cartão</TabsTrigger>
       </TabsList>
-      
+
       <TabsContent value="pix" className="mt-4">
         <OrdersFilters
           statusFilter={statusFilter}
@@ -82,14 +81,14 @@ const OrdersTabs: React.FC<OrdersTabsProps> = ({
           customDateRange={customDateRange}
           setCustomDateRange={setCustomDateRange}
         />
-        
+
         <OrdersTable
           onViewCustomer={onViewCustomer}
           onViewPayment={onViewPayment}
           onEditStatus={onEditStatus}
           onDeleteOrder={onDeleteOrder}
         />
-        
+
         <OrdersFooter
           count={ordersSummary.count}
           totalValue={ordersSummary.totalValue}
@@ -105,14 +104,14 @@ const OrdersTabs: React.FC<OrdersTabsProps> = ({
           customDateRange={customDateRange}
           setCustomDateRange={setCustomDateRange}
         />
-        
+
         <OrdersTable
           onViewCustomer={onViewCustomer}
           onViewPayment={onViewPayment}
           onEditStatus={onEditStatus}
           onDeleteOrder={onDeleteOrder}
         />
-        
+
         <OrdersFooter
           count={ordersSummary.count}
           totalValue={ordersSummary.totalValue}

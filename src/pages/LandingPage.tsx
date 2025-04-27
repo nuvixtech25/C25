@@ -1,10 +1,15 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { CreditCard, CircleDollarSign, Lock, Smartphone, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { TestimonialsSection } from '@/components/TestimonialsSection';
+import React from "react";
+import { Link } from "react-router-dom";
+import {
+  CreditCard,
+  CircleDollarSign,
+  Lock,
+  Smartphone,
+  ArrowRight,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 
 const LandingPage: React.FC = () => {
   return (
@@ -12,7 +17,9 @@ const LandingPage: React.FC = () => {
       {/* Header */}
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-[#1E3A8A]">Checkout Seguro</div>
+          <div className="text-2xl font-bold text-[#1E3A8A]">
+            Checkout Seguro
+          </div>
           <Link to="/checkout/produto-exemplo">
             <Button className="bg-[#10B981] hover:bg-[#0D9668]">
               Começar agora
@@ -30,14 +37,18 @@ const LandingPage: React.FC = () => {
               Checkout 100% Seguro e Otimizado para Conversão
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 mb-8">
-              Processamos pagamentos via Cartão de Crédito e PIX com máxima agilidade.
+              Processamos pagamentos via Cartão de Crédito e PIX com máxima
+              agilidade.
             </p>
             <div className="flex items-center justify-center text-[#10B981] font-medium gap-2 mb-10">
               <Lock size={20} />
               <span>Ambiente protegido com criptografia SSL</span>
             </div>
             <Link to="/checkout/produto-exemplo">
-              <Button size="lg" className="bg-[#1E3A8A] hover:bg-[#15296D] text-lg">
+              <Button
+                size="lg"
+                className="bg-[#1E3A8A] hover:bg-[#15296D] text-lg"
+              >
                 Comece a usar agora
                 <ArrowRight size={18} />
               </Button>
@@ -53,22 +64,22 @@ const LandingPage: React.FC = () => {
             Benefícios do nosso checkout
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <BenefitCard 
+            <BenefitCard
               icon={<ArrowRight className="text-[#10B981]" />}
               title="Rápido e intuitivo"
               description="Processo de pagamento simplificado para conclusão rápida."
             />
-            <BenefitCard 
+            <BenefitCard
               icon={<CreditCard className="text-[#10B981]" />}
               title="Múltiplos métodos de pagamento"
               description="Suporte a cartão de crédito e PIX para maior conveniência."
             />
-            <BenefitCard 
+            <BenefitCard
               icon={<Smartphone className="text-[#10B981]" />}
               title="Otimizado para celular"
               description="Experiência perfeita em qualquer dispositivo móvel."
             />
-            <BenefitCard 
+            <BenefitCard
               icon={<CircleDollarSign className="text-[#10B981]" />}
               title="Redirecionamento automático"
               description="Confirmação instantânea após o pagamento."
@@ -85,8 +96,8 @@ const LandingPage: React.FC = () => {
           </h2>
           <div className="max-w-lg mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="h-48 bg-gradient-to-r from-blue-600 to-indigo-500 flex items-center justify-center">
-              <img 
-                src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3" 
+              <img
+                src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3"
                 alt="Curso de Marketing"
                 className="h-full w-full object-cover"
               />
@@ -96,10 +107,13 @@ const LandingPage: React.FC = () => {
                 Curso de Marketing Digital Completo
               </h3>
               <p className="text-gray-600 mb-4">
-                Acesse as melhores estratégias de marketing para alavancar seu negócio.
+                Acesse as melhores estratégias de marketing para alavancar seu
+                negócio.
               </p>
               <div className="flex justify-between items-center mb-6">
-                <span className="text-2xl font-bold text-[#1E3A8A]">R$ 297,00</span>
+                <span className="text-2xl font-bold text-[#1E3A8A]">
+                  R$ 297,00
+                </span>
                 <div className="flex items-center text-sm text-[#10B981]">
                   <Lock size={14} className="mr-1" />
                   Compra segura
@@ -151,7 +165,11 @@ interface BenefitCardProps {
   description: string;
 }
 
-const BenefitCard: React.FC<BenefitCardProps> = ({ icon, title, description }) => (
+const BenefitCard: React.FC<BenefitCardProps> = ({
+  icon,
+  title,
+  description,
+}) => (
   <Card className="border-none shadow-md hover:shadow-lg transition-shadow">
     <CardContent className="pt-6">
       <div className="flex flex-col items-center text-center">
@@ -171,10 +189,7 @@ interface FooterLinkProps {
 }
 
 const FooterLink: React.FC<FooterLinkProps> = ({ href, children }) => (
-  <a 
-    href={href} 
-    className="text-gray-300 hover:text-white transition-colors"
-  >
+  <a href={href} className="text-gray-300 hover:text-white transition-colors">
     {children}
   </a>
 );

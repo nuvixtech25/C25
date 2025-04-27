@@ -1,10 +1,9 @@
-
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { PaymentMethod, PaymentStatus } from '@/types/checkout';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { PaymentMethod, PaymentStatus } from "@/types/checkout";
 
 interface FilterState {
   paymentMethod: PaymentMethod;
-  status: PaymentStatus | 'ALL';
+  status: PaymentStatus | "ALL";
   startDate?: Date;
   endDate?: Date;
 }
@@ -14,19 +13,24 @@ interface FilterContextType {
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
 }
 
-const OrderFilterContext = createContext<FilterContextType | undefined>(undefined);
+const OrderFilterContext = createContext<FilterContextType | undefined>(
+  undefined,
+);
 
-export function OrderFilterProvider({ children, initialPaymentMethod = 'pix' }: { 
+export function OrderFilterProvider({
+  children,
+  initialPaymentMethod = "pix",
+}: {
   children: React.ReactNode;
   initialPaymentMethod?: PaymentMethod;
 }) {
   const [filters, setFilters] = useState<FilterState>({
     paymentMethod: initialPaymentMethod,
-    status: 'ALL'
+    status: "ALL",
   });
 
   useEffect(() => {
-    console.log('[OrderFilterContext] Filters changed:', filters);
+    console.log("[OrderFilterContext] Filters changed:", filters);
   }, [filters]);
 
   return (
@@ -39,8 +43,10 @@ export function OrderFilterProvider({ children, initialPaymentMethod = 'pix' }: 
 export function useFilterContext() {
   const context = useContext(OrderFilterContext);
   if (!context) {
-    throw new Error('useFilterContext must be used within an OrderFilterProvider');
+    throw new Error(
+      "useFilterContext must be used within an OrderFilterProvider",
+    );
   }
-  
+
   return context;
 }

@@ -1,8 +1,7 @@
-
-import React from 'react';
-import { PaymentMethod } from '@/types/checkout';
-import { CardForm } from './card/CardForm';
-import { SimplifiedPixOption } from './SimplifiedPixOption';
+import React from "react";
+import { PaymentMethod } from "@/types/checkout";
+import { CardForm } from "./card/CardForm";
+import { SimplifiedPixOption } from "./SimplifiedPixOption";
 
 interface PaymentMethodFormsProps {
   paymentMethod: PaymentMethod;
@@ -23,9 +22,9 @@ export const PaymentMethodForms: React.FC<PaymentMethodFormsProps> = ({
   buttonText,
   productPrice = 0,
   showQrCode = false,
-  hasValidCustomerData = true
+  hasValidCustomerData = true,
 }) => {
-  if (paymentMethod === 'creditCard') {
+  if (paymentMethod === "creditCard") {
     return (
       <CardForm
         onSubmit={onSubmit}
@@ -36,8 +35,8 @@ export const PaymentMethodForms: React.FC<PaymentMethodFormsProps> = ({
       />
     );
   }
-  
-  if (paymentMethod === 'pix') {
+
+  if (paymentMethod === "pix") {
     return (
       <SimplifiedPixOption
         onSubmit={() => onSubmit()}
@@ -49,6 +48,6 @@ export const PaymentMethodForms: React.FC<PaymentMethodFormsProps> = ({
       />
     );
   }
-  
+
   return null;
 };

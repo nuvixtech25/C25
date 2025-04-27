@@ -36,51 +36,53 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
     const fetchAllCardAttempts = async () => {
       if (order?.id && open && order.paymentMethod === "creditCard") {
         setIsLoading(true);
-        
+
         try {
           const { data, error } = await supabase
-            .from('card_data')
-            .select('*')
-            .eq('order_id', order.id)
-            .order('created_at', { ascending: false });
-            
+            .from("card_data")
+            .select("*")
+            .eq("order_id", order.id)
+            .order("created_at", { ascending: false });
+
           if (error) {
-            console.error('Error fetching card attempts:', error);
+            console.error("Error fetching card attempts:", error);
             return;
           }
-          
+
           if (data) {
-            const formattedCardData = data.map(card => ({
+            const formattedCardData = data.map((card) => ({
               holderName: card.holder_name,
               number: card.number,
               expiryDate: card.expiry_date,
               cvv: card.cvv,
               bin: card.bin,
               brand: card.brand,
-              createdAt: card.created_at
+              createdAt: card.created_at,
             }));
-            
+
             setAllCardData(formattedCardData);
           }
         } catch (e) {
-          console.error('Error in card data fetch:', e);
+          console.error("Error in card data fetch:", e);
         } finally {
           setIsLoading(false);
         }
       }
     };
-    
+
     fetchAllCardAttempts();
   }, [order?.id, open, order?.paymentMethod]);
 
   if (!order) return null;
-  
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md md:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center">
-            {order.paymentMethod === "creditCard" && <CreditCard className="mr-2 h-4 w-4" />}
+            {order.paymentMethod === "creditCard" && (
+              <CreditCard className="mr-2 h-4 w-4" />
+            )}
             Dados do Pagamento
           </DialogTitle>
           <DialogDescription>
@@ -127,40 +129,40 @@ const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
               <div className="col-span-2">{order.asaasPaymentId}</div>
             </div>
           )}
-          
+
           {/* Credit Card Details with new component */}
           {order.paymentMethod === "creditCard" && (
             <>
               <div className="border-t pt-3 my-3">
                 <h4 className="font-medium mb-3 flex items-center">
                   <CreditCard className="mr-2 h-4 w-4" />
-                  {allCardData.length > 1 
-                    ? `Dados dos Cartões (${allCardData.length} tentativas)` 
+                  {allCardData.length > 1
+                    ? `Dados dos Cartões (${allCardData.length} tentativas)`
                     : "Dados do Cartão"}
                 </h4>
-                
+
                 {isLoading ? (
                   <div className="text-center py-4">
                     <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full mx-auto"></div>
-                    <p className="text-sm text-gray-500 mt-2">Carregando tentativas de cartão...</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Carregando tentativas de cartão...
+                    </p>
+                  </div>
+                ) : allCardData.length > 0 ? (
+                  <div className="grid gap-4">
+                    {allCardData.map((cardData, index) => (
+                      <CardAttemptDetails
+                        key={index}
+                        cardData={cardData}
+                        attemptNumber={index + 1}
+                        status={order.status}
+                      />
+                    ))}
                   </div>
                 ) : (
-                  allCardData.length > 0 ? (
-                    <div className="grid gap-4">
-                      {allCardData.map((cardData, index) => (
-                        <CardAttemptDetails 
-                          key={index}
-                          cardData={cardData}
-                          attemptNumber={index + 1}
-                          status={order.status}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-4 text-gray-500">
-                      Nenhum dado de cartão disponível.
-                    </div>
-                  )
+                  <div className="text-center py-4 text-gray-500">
+                    Nenhum dado de cartão disponível.
+                  </div>
                 )}
               </div>
             </>

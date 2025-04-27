@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   AlertDialog,
@@ -33,8 +32,8 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {isDeleteAll 
-              ? `Excluir todos os pedidos de ${methodName}?` 
+            {isDeleteAll
+              ? `Excluir todos os pedidos de ${methodName}?`
               : "Excluir pedido?"}
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -45,7 +44,7 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction 
+          <AlertDialogAction
             onClick={onConfirm}
             className="bg-red-600 hover:bg-red-700"
           >

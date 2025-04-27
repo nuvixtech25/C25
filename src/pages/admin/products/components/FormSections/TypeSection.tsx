@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { ProductFormValues } from '../../ProductSchema';
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
+import { ProductFormValues } from "../../ProductSchema";
 import {
   FormField,
   FormItem,
@@ -9,15 +8,15 @@ import {
   FormControl,
   FormMessage,
   FormDescription,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 interface TypeSectionProps {
   form: UseFormReturn<ProductFormValues>;
@@ -32,10 +31,7 @@ const TypeSection: React.FC<TypeSectionProps> = ({ form }) => {
         render={({ field }) => (
           <FormItem>
             <FormLabel>Tipo do Produto</FormLabel>
-            <Select
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-            >
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
@@ -61,7 +57,7 @@ const TypeSection: React.FC<TypeSectionProps> = ({ form }) => {
               <Input
                 placeholder="nome-do-produto"
                 {...field}
-                value={field.value || ''}
+                value={field.value || ""}
               />
             </FormControl>
             <FormDescription>

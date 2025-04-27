@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
@@ -56,16 +55,19 @@ const OrdersFilters: React.FC<OrdersFiltersProps> = ({
   return (
     <div className="bg-white p-4 rounded-md shadow-sm mb-4 space-y-4">
       <h2 className="text-lg font-medium mb-3">Filtros</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Status filter */}
         <div className="space-y-2">
-          <label htmlFor="status-filter" className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="status-filter"
+            className="text-sm font-medium text-gray-700"
+          >
             Status do Pagamento
           </label>
           <Select
             value={statusFilter}
-            onValueChange={(value) => 
+            onValueChange={(value) =>
               setStatusFilter(value as PaymentStatus | "ALL")
             }
           >
@@ -86,12 +88,15 @@ const OrdersFilters: React.FC<OrdersFiltersProps> = ({
 
         {/* Date range filter */}
         <div className="space-y-2">
-          <label htmlFor="date-filter" className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="date-filter"
+            className="text-sm font-medium text-gray-700"
+          >
             Período
           </label>
           <Select
             value={dateRange}
-            onValueChange={(value) => 
+            onValueChange={(value) =>
               setDateRange(value as "7days" | "30days" | "custom")
             }
           >
@@ -143,7 +148,7 @@ const OrdersFilters: React.FC<OrdersFiltersProps> = ({
               </PopoverContent>
             </Popover>
           </div>
-          
+
           <div className="flex-1">
             <label className="text-sm font-medium text-gray-700 mb-1 block">
               Data final

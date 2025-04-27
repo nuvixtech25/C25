@@ -1,20 +1,19 @@
-
 // Configuração centralizada para integração com o Asaas
 
 /**
  * Define o ambiente de execução para as operações da API Asaas
  */
 export enum AsaasEnvironment {
-  PRODUCTION = 'production',
-  SANDBOX = 'sandbox'
+  PRODUCTION = "production",
+  SANDBOX = "sandbox",
 }
 
 /**
  * Configuração de URLs da API do Asaas
  */
 export const ASAAS_API_URLS = {
-  [AsaasEnvironment.PRODUCTION]: 'https://api.asaas.com/v3',
-  [AsaasEnvironment.SANDBOX]: 'https://sandbox.asaas.com/api/v3'
+  [AsaasEnvironment.PRODUCTION]: "https://api.asaas.com/v3",
+  [AsaasEnvironment.SANDBOX]: "https://sandbox.asaas.com/api/v3",
 };
 
 /**
@@ -45,10 +44,10 @@ export const trackKeyUsage = (keyId: number, tracker: ApiKeyTracker): void => {
       lastUsed: null,
       errors: 0,
       lastError: null,
-      lastErrorMessage: null
+      lastErrorMessage: null,
     };
   }
-  
+
   tracker[keyId].uses += 1;
   tracker[keyId].lastUsed = new Date();
 };
@@ -56,17 +55,21 @@ export const trackKeyUsage = (keyId: number, tracker: ApiKeyTracker): void => {
 /**
  * Registra erro em uma chave específica
  */
-export const trackKeyError = (keyId: number, errorMessage: string, tracker: ApiKeyTracker): void => {
+export const trackKeyError = (
+  keyId: number,
+  errorMessage: string,
+  tracker: ApiKeyTracker,
+): void => {
   if (!tracker[keyId]) {
     tracker[keyId] = {
       uses: 0,
       lastUsed: null,
       errors: 0,
       lastError: null,
-      lastErrorMessage: null
+      lastErrorMessage: null,
     };
   }
-  
+
   tracker[keyId].errors += 1;
   tracker[keyId].lastError = new Date();
   tracker[keyId].lastErrorMessage = errorMessage;

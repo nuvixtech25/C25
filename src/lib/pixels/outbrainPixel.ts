@@ -1,14 +1,14 @@
-
 /**
  * Outbrain Pixel implementation
  */
 
 // Initialize Outbrain Pixel
 export const initOutbrainPixel = (pixelId: string): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
-  
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
+
   // Add Outbrain Pixel base code
-  const script = document.createElement('script');
+  const script = document.createElement("script");
   script.innerHTML = `
     !function(_window, _document) {
       var OB_ADV_ID = '${pixelId}';
@@ -36,20 +36,20 @@ export const initOutbrainPixel = (pixelId: string): void => {
 
     obApi('track', 'PAGE_VIEW');
   `;
-  
+
   document.head.appendChild(script);
-  
-  console.log('Outbrain Pixel initialized');
+
+  console.log("Outbrain Pixel initialized");
 };
 
 // Track purchase event
 export const trackPurchase = (value: number): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
-  if (typeof window.obApi === 'undefined') return;
-  
-  window.obApi('track', 'PURCHASE', {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
+  if (typeof window.obApi === "undefined") return;
+
+  window.obApi("track", "PURCHASE", {
     value: value,
-    currency: 'BRL'
+    currency: "BRL",
   });
 };
-

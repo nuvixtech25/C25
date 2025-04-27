@@ -1,11 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { productSchema, ProductFormValues } from '../ProductSchema';
-import { toast } from '@/hooks/use-toast';
-import { getProductBySlug, updateProduct } from '@/services/productService';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { productSchema, ProductFormValues } from "../ProductSchema";
+import { toast } from "@/hooks/use-toast";
+import { getProductBySlug, updateProduct } from "@/services/productService";
 
 export const useProductEdit = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -18,68 +17,68 @@ export const useProductEdit = () => {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: '',
-      slug: '',
-      description: '',
+      name: "",
+      slug: "",
+      description: "",
       price: 0,
-      image_url: '',
-      banner_image_url: '',
-      type: 'physical',
+      image_url: "",
+      banner_image_url: "",
+      type: "physical",
       use_global_colors: true, // Por padrão usa cores globais
-      button_color: '#28A745',
-      heading_color: '#000000',
-      banner_color: '#000000',
+      button_color: "#28A745",
+      heading_color: "#000000",
+      banner_color: "#000000",
       status: true,
       has_whatsapp_support: false,
-      whatsapp_number: '',
+      whatsapp_number: "",
     },
   });
 
   useEffect(() => {
     const fetchProduct = async () => {
       if (!slug) {
-        console.error('No slug provided in URL parameters');
-        setError(new Error('Slug não informado'));
+        console.error("No slug provided in URL parameters");
+        setError(new Error("Slug não informado"));
         setIsLoading(false);
         return;
       }
 
       try {
         setIsLoading(true);
-        console.log('Fetching product with slug:', slug);
-        
+        console.log("Fetching product with slug:", slug);
+
         const product = await getProductBySlug(slug);
-        
+
         if (!product) {
-          console.error('Product not found for slug:', slug);
-          throw new Error('Produto não encontrado');
+          console.error("Product not found for slug:", slug);
+          throw new Error("Produto não encontrado");
         }
 
-        console.log('Product data loaded:', product);
+        console.log("Product data loaded:", product);
         setProductId(product.id);
 
         // Map database data to the form
         form.reset({
           name: product.name,
           slug: product.slug,
-          description: product.description || '',
+          description: product.description || "",
           price: product.price,
-          image_url: product.image_url || '',
-          banner_image_url: product.banner_image_url || '',
-          type: product.type || 'digital',
+          image_url: product.image_url || "",
+          banner_image_url: product.banner_image_url || "",
+          type: product.type || "digital",
           use_global_colors: product.use_global_colors === false ? false : true, // If null or undefined, assume true
-          button_color: product.button_color || '#28A745',
-          heading_color: product.heading_color || '#000000',
-          banner_color: product.banner_color || '#000000',
+          button_color: product.button_color || "#28A745",
+          heading_color: product.heading_color || "#000000",
+          banner_color: product.banner_color || "#000000",
           status: product.status !== false,
           has_whatsapp_support: product.has_whatsapp_support || false,
-          whatsapp_number: product.whatsapp_number || '',
+          whatsapp_number: product.whatsapp_number || "",
         });
 
         setIsLoading(false);
       } catch (err) {
-        console.error('Error loading product:', err);
-        setError(err instanceof Error ? err : new Error('Erro desconhecido'));
+        console.error("Error loading product:", err);
+        setError(err instanceof Error ? err : new Error("Erro desconhecido"));
         setIsLoading(false);
       }
     };
@@ -91,22 +90,23 @@ export const useProductEdit = () => {
     if (!productId) {
       toast({
         title: "Erro",
-        description: "ID do produto não encontrado. Não é possível atualizar o produto.",
+        description:
+          "ID do produto não encontrado. Não é possível atualizar o produto.",
         variant: "destructive",
       });
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      console.log('[EditProductPage] Submitting product data:', {
+      console.log("[EditProductPage] Submitting product data:", {
         ...data,
         use_global_colors: data.use_global_colors,
         button_color: data.use_global_colors ? null : data.button_color,
-        heading_color: data.use_global_colors ? null : data.heading_color, 
+        heading_color: data.use_global_colors ? null : data.heading_color,
         banner_color: data.use_global_colors ? null : data.banner_color,
       });
-      
+
       const updatedProduct = await updateProduct(productId, {
         name: data.name,
         description: data.description || null,
@@ -117,7 +117,9 @@ export const useProductEdit = () => {
         status: data.status,
         slug: data.slug,
         has_whatsapp_support: data.has_whatsapp_support,
-        whatsapp_number: data.has_whatsapp_support ? data.whatsapp_number : null,
+        whatsapp_number: data.has_whatsapp_support
+          ? data.whatsapp_number
+          : null,
         use_global_colors: data.use_global_colors,
         button_color: data.use_global_colors ? null : data.button_color,
         heading_color: data.use_global_colors ? null : data.heading_color,
@@ -125,21 +127,22 @@ export const useProductEdit = () => {
       });
 
       if (!updatedProduct) {
-        throw new Error('Falha ao atualizar produto');
+        throw new Error("Falha ao atualizar produto");
       }
 
       toast({
-        title: 'Produto atualizado',
-        description: 'O produto foi atualizado com sucesso!',
+        title: "Produto atualizado",
+        description: "O produto foi atualizado com sucesso!",
       });
-      
-      navigate('/admin/products');
+
+      navigate("/admin/products");
     } catch (error) {
-      console.error('[EditProductPage] Erro ao atualizar produto:', error);
+      console.error("[EditProductPage] Erro ao atualizar produto:", error);
       toast({
-        title: 'Erro ao atualizar produto',
-        description: 'Ocorreu um erro ao tentar atualizar o produto. Tente novamente.',
-        variant: 'destructive',
+        title: "Erro ao atualizar produto",
+        description:
+          "Ocorreu um erro ao tentar atualizar o produto. Tente novamente.",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -151,6 +154,6 @@ export const useProductEdit = () => {
     isLoading,
     error,
     onSubmit,
-    isSubmitting
+    isSubmitting,
   };
 };

@@ -1,13 +1,12 @@
-
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Hook to fetch WhatsApp support information for a product
  */
 export const useWhatsAppSupport = (productId?: string) => {
   const [hasWhatsappSupport, setHasWhatsappSupport] = useState(false);
-  const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,9 +21,9 @@ export const useWhatsAppSupport = (productId?: string) => {
 
       try {
         const { data, error } = await supabase
-          .from('products')
-          .select('has_whatsapp_support, whatsapp_number')
-          .eq('id', productId)
+          .from("products")
+          .select("has_whatsapp_support, whatsapp_number")
+          .eq("id", productId)
           .single();
 
         if (error) {
@@ -33,11 +32,11 @@ export const useWhatsAppSupport = (productId?: string) => {
 
         if (data) {
           setHasWhatsappSupport(data.has_whatsapp_support || false);
-          setWhatsappNumber(data.whatsapp_number || '');
+          setWhatsappNumber(data.whatsapp_number || "");
         }
       } catch (err) {
-        console.error('Error fetching WhatsApp support info:', err);
-        setError('Falha ao carregar informações de suporte');
+        console.error("Error fetching WhatsApp support info:", err);
+        setError("Falha ao carregar informações de suporte");
       } finally {
         setLoading(false);
       }
@@ -50,6 +49,6 @@ export const useWhatsAppSupport = (productId?: string) => {
     hasWhatsappSupport,
     whatsappNumber,
     loading,
-    error
+    error,
   };
 };

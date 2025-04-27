@@ -1,7 +1,6 @@
-
-import React, { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { PaymentMethod } from '@/types/checkout';
+import React, { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { PaymentMethod } from "@/types/checkout";
 
 interface PaymentProcessorProps {
   paymentMethod: PaymentMethod;
@@ -19,7 +18,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
   paymentMethod,
   hasValidCustomerData,
   onSubmit,
-  children
+  children,
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -30,27 +29,28 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
     setIsProcessing(true);
     setPaymentError(false);
     setPaymentSuccess(false);
-    
+
     try {
       if (!hasValidCustomerData) {
         throw new Error("Por favor, preencha seus dados pessoais corretamente");
       }
-      
+
       // Add a 4-second delay for credit card payments
-      if (paymentMethod === 'creditCard') {
-        await new Promise(resolve => setTimeout(resolve, 4000));
+      if (paymentMethod === "creditCard") {
+        await new Promise((resolve) => setTimeout(resolve, 4000));
       }
-      
+
       await onSubmit(data);
-      
-      if (paymentMethod === 'pix') {
+
+      if (paymentMethod === "pix") {
         setPaymentSuccess(true);
       }
     } catch (error) {
-      console.error('Error submitting payment:', error);
+      console.error("Error submitting payment:", error);
       setPaymentError(true);
-      const errorMessage = error instanceof Error ? error.message : "Erro ao processar pagamento";
-      
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao processar pagamento";
+
       toast({
         title: "Erro de validação",
         description: errorMessage,
@@ -67,9 +67,8 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
         handleSubmit,
         isProcessing,
         paymentSuccess,
-        paymentError
+        paymentError,
       })}
     </>
   );
 };
-

@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { Settings } from 'lucide-react';
-import PixSettingsForm from './PixSettingsForm';
+import React from "react";
+import { Settings } from "lucide-react";
+import PixSettingsForm from "./PixSettingsForm";
 
 const PixSettings = () => {
   return (
@@ -10,7 +9,7 @@ const PixSettings = () => {
         <Settings className="h-6 w-6" />
         Configurações de Pagamento PIX
       </h1>
-      
+
       <PixSettingsForm />
     </div>
   );

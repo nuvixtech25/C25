@@ -1,4 +1,3 @@
-
 export interface AsaasCustomerRequest {
   name: string;
   cpfCnpj: string;
@@ -50,7 +49,10 @@ export interface SupabasePaymentData {
 }
 
 export class AsaasApiError extends Error {
-  constructor(message: string, public details?: any) {
+  constructor(
+    message: string,
+    public details?: any,
+  ) {
     super(message);
     this.name = "AsaasApiError";
   }

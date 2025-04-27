@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { Star, Heart, ShieldCheck, CreditCard, Lock } from 'lucide-react';
+import React from "react";
+import { Star, Heart, ShieldCheck, CreditCard, Lock } from "lucide-react";
 
 export const PaymentFooter: React.FC = () => {
   return (
@@ -13,14 +12,14 @@ export const PaymentFooter: React.FC = () => {
           </div>
           <span className="text-xs text-gray-600">Compra Segura</span>
         </div>
-        
+
         <div className="flex flex-col items-center">
           <div className="bg-purple-50 p-2 rounded-full mb-2">
             <CreditCard className="h-6 w-6 text-purple-600" />
           </div>
           <span className="text-xs text-gray-600">Pagamento Protegido</span>
         </div>
-        
+
         <div className="flex flex-col items-center">
           <div className="bg-blue-50 p-2 rounded-full mb-2">
             <Lock className="h-6 w-6 text-blue-600" />
@@ -43,14 +42,16 @@ export const PaymentFooter: React.FC = () => {
         </p>
         <p className="text-sm text-gray-500">— Maria S.</p>
       </div>
-      
+
       {/* Support and copyright */}
       <div className="text-center text-xs text-gray-500 flex flex-col items-center mb-8">
         <div className="flex items-center justify-center mb-2">
           <Heart className="h-3 w-3 text-red-400 mr-1" />
           <p>Feito com amor para nossos clientes</p>
         </div>
-        <p className="mb-2">Se precisar de ajuda, entre em contato com nosso suporte</p>
+        <p className="mb-2">
+          Se precisar de ajuda, entre em contato com nosso suporte
+        </p>
         <p>© {new Date().getFullYear()} Asaas Payments</p>
       </div>
     </div>

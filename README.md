@@ -1,4 +1,3 @@
-
 # Payment Gateway Checkout Integration
 
 ## Project Overview
@@ -8,7 +7,8 @@ This project implements a complete checkout solution with integration to the Asa
 ## Features
 
 ### Payment Processing
-- **Multiple Payment Methods**: 
+
+- **Multiple Payment Methods**:
   - Credit Card processing with brand detection
   - PIX payments with QR code generation
 - **Real-time Payment Status**: Track payment status in real-time
@@ -16,19 +16,22 @@ This project implements a complete checkout solution with integration to the Asa
 - **Secure Transactions**: All payment data is securely processed
 
 ### User Experience
+
 - **Responsive Design**: Works seamlessly on mobile, tablet, and desktop
-- **Interactive UI**: 
+- **Interactive UI**:
   - Green highlighting for selected payment methods
   - Visual feedback during payment processing
   - Custom error handling with user-friendly messages
 - **Form Validation**: Comprehensive validation for all input fields
 
 ### Backend Integration
+
 - **Asaas API Integration**: Complete integration with Asaas payment gateway
 - **Supabase Database**: Secure storage of order and payment information
 - **Webhook Support**: Real-time payment status updates via webhooks
 
 ### Administration
+
 - **Order Management**: View and manage orders through an admin interface
 - **Payment Analytics**: Track payment conversion rates and methods
 - **Customization Options**: Easily customize the checkout appearance
@@ -86,6 +89,7 @@ To fully enable payment processing, you'll need to:
 ## Customization
 
 The checkout interface can be customized through the admin panel:
+
 - Button colors and text
 - Header messages
 - Banner images and colors

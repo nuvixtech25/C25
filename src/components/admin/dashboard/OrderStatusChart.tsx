@@ -1,8 +1,24 @@
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer } from 'recharts';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Cell,
+  ResponsiveContainer,
+} from "recharts";
 
 interface StatusData {
   name: string;
@@ -19,18 +35,18 @@ const OrderStatusChart = ({ data }: OrderStatusChartProps) => {
     <Card>
       <CardHeader>
         <CardTitle>Status dos Pedidos</CardTitle>
-        <CardDescription>
-          Distribuição de pedidos por status
-        </CardDescription>
+        <CardDescription>Distribuição de pedidos por status</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={{
-          pending: { color: "#F59E0B" },
-          completed: { color: "#10B981" },
-          cancelled: { color: "#EF4444" },
-          refunded: { color: "#6B7280" },
-          overdue: { color: "#EC4899" }
-        }}>
+        <ChartContainer
+          config={{
+            pending: { color: "#F59E0B" },
+            completed: { color: "#10B981" },
+            cancelled: { color: "#EF4444" },
+            refunded: { color: "#6B7280" },
+            overdue: { color: "#EC4899" },
+          }}
+        >
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data || []}>
               <XAxis dataKey="name" />

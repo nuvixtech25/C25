@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CreditCard } from "lucide-react";
@@ -7,7 +6,7 @@ import { Order } from "@/types/checkout";
 
 const TestPaymentModal: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
-  
+
   // Sample credit card order data with enhanced BIN information
   const sampleOrder: Order = {
     id: "sample-123",
@@ -18,7 +17,7 @@ const TestPaymentModal: React.FC = () => {
     customerPhone: "(11) 99999-9999",
     productId: "prod_123",
     productName: "Curso Premium",
-    productPrice: 299.90,
+    productPrice: 299.9,
     status: "CONFIRMED",
     paymentMethod: "creditCard",
     asaasPaymentId: "pay_123456789",
@@ -30,25 +29,23 @@ const TestPaymentModal: React.FC = () => {
       expiryDate: "12/25",
       cvv: "123",
       bin: "411111",
-      brand: "visa"
-    }
+      brand: "visa",
+    },
   };
-  
+
   return (
     <div className="p-4 border rounded-md shadow-sm">
       <h3 className="mb-4 font-medium">Testar Modal de Cartão de Crédito</h3>
       <p className="text-sm text-gray-600 mb-4">
-        Clique no botão abaixo para visualizar um exemplo de modal com dados completos de cartão de crédito:
+        Clique no botão abaixo para visualizar um exemplo de modal com dados
+        completos de cartão de crédito:
       </p>
-      
-      <Button 
-        onClick={() => setShowModal(true)}
-        className="flex items-center"
-      >
+
+      <Button onClick={() => setShowModal(true)} className="flex items-center">
         <CreditCard className="mr-2 h-4 w-4" />
         Ver Dados do Cartão
       </Button>
-      
+
       <PaymentDetailsModal
         order={sampleOrder}
         open={showModal}

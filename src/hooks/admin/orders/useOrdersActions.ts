@@ -1,4 +1,3 @@
-
 import { Order, PaymentStatus } from "@/types/checkout";
 import { orderAdminService } from "@/services/orders";
 import { useToast } from "@/hooks/use-toast";
@@ -6,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 export function useOrdersActions(
   orders: Order[],
   paymentMethod: "pix" | "creditCard",
-  fetchOrders: (filters?: any) => Promise<void>
+  fetchOrders: (filters?: any) => Promise<void>,
 ) {
   const { toast } = useToast();
 
@@ -24,7 +23,8 @@ export function useOrdersActions(
       toast({
         variant: "destructive",
         title: "Erro ao atualizar status",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   };
@@ -35,12 +35,12 @@ export function useOrdersActions(
       console.log("Attempting to delete order:", orderId);
       const result = await orderAdminService.deleteOrder(orderId);
       console.log("Delete order result:", result);
-      
+
       toast({
         title: "Pedido excluído",
         description: "O pedido foi excluído com sucesso",
       });
-      
+
       // Refresh orders after deletion
       fetchOrders();
     } catch (error) {
@@ -48,7 +48,8 @@ export function useOrdersActions(
       toast({
         variant: "destructive",
         title: "Erro ao excluir pedido",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   };
@@ -57,14 +58,15 @@ export function useOrdersActions(
   const deleteAllOrders = async () => {
     try {
       console.log(`Attempting to delete all ${paymentMethod} orders`);
-      const result = await orderAdminService.deleteOrdersByPaymentMethod(paymentMethod);
+      const result =
+        await orderAdminService.deleteOrdersByPaymentMethod(paymentMethod);
       console.log("Delete all orders result:", result);
-      
+
       toast({
         title: "Pedidos excluídos",
-        description: `Todos os pedidos de ${paymentMethod === 'pix' ? 'PIX' : 'Cartão de Crédito'} foram excluídos`,
+        description: `Todos os pedidos de ${paymentMethod === "pix" ? "PIX" : "Cartão de Crédito"} foram excluídos`,
       });
-      
+
       // Refresh the orders list
       fetchOrders();
     } catch (error) {
@@ -72,7 +74,8 @@ export function useOrdersActions(
       toast({
         variant: "destructive",
         title: "Erro ao excluir pedidos",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   };
@@ -80,6 +83,6 @@ export function useOrdersActions(
   return {
     updateOrderStatus,
     deleteOrder,
-    deleteAllOrders
+    deleteAllOrders,
   };
 }

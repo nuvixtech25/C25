@@ -1,7 +1,6 @@
-
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface AttemptStats {
   attemptNumber: number;
@@ -31,7 +30,7 @@ export const useRetryAnalytics = () => {
     brandStats: [],
     totalAttempts: 0,
     totalOrders: 0,
-    averageAttempts: 0
+    averageAttempts: 0,
   });
   const { toast } = useToast();
 
@@ -41,8 +40,8 @@ export const useRetryAnalytics = () => {
       try {
         // Fetch all card data
         const { data: cardData, error: cardError } = await supabase
-          .from('card_data')
-          .select('*, orders!fk_card_order(*)');
+          .from("card_data")
+          .select("*, orders!fk_card_order(*)");
 
         if (cardError) throw cardError;
 
@@ -52,7 +51,7 @@ export const useRetryAnalytics = () => {
             brandStats: [],
             totalAttempts: 0,
             totalOrders: 0,
-            averageAttempts: 0
+            averageAttempts: 0,
           });
           setLoading(false);
           return;
@@ -63,44 +62,53 @@ export const useRetryAnalytics = () => {
 
         // Get unique order IDs to calculate total orders
         const uniqueOrderIds = new Set();
-        cardData.forEach(card => {
+        cardData.forEach((card) => {
           if (card.order_id) uniqueOrderIds.add(card.order_id);
         });
         const totalOrders = uniqueOrderIds.size;
 
         // Calculate average attempts per order
-        const averageAttempts = uniqueOrderIds.size > 0 ? cardData.length / uniqueOrderIds.size : 0;
+        const averageAttempts =
+          uniqueOrderIds.size > 0 ? cardData.length / uniqueOrderIds.size : 0;
 
         // Process card data to get attempt statistics
-        const attemptsMap = new Map<string, { attempts: number; status: string }>();
+        const attemptsMap = new Map<
+          string,
+          { attempts: number; status: string }
+        >();
 
         // First pass: count attempts per order
-        cardData.forEach(card => {
+        cardData.forEach((card) => {
           const orderId = card.order_id;
           if (!orderId) return;
 
           if (!attemptsMap.has(orderId)) {
-            attemptsMap.set(orderId, { attempts: 1, status: card.orders?.status || 'PENDING' });
+            attemptsMap.set(orderId, {
+              attempts: 1,
+              status: card.orders?.status || "PENDING",
+            });
           } else {
             const current = attemptsMap.get(orderId)!;
-            attemptsMap.set(orderId, { 
+            attemptsMap.set(orderId, {
               attempts: current.attempts + 1,
-              status: card.orders?.status || current.status
+              status: card.orders?.status || current.status,
             });
           }
         });
 
         // Calculate attempt stats
-        const attemptCounts: { [key: number]: { total: number; success: number } } = {};
-        
+        const attemptCounts: {
+          [key: number]: { total: number; success: number };
+        } = {};
+
         attemptsMap.forEach(({ attempts, status }) => {
           if (!attemptCounts[attempts]) {
             attemptCounts[attempts] = { total: 0, success: 0 };
           }
-          
+
           attemptCounts[attempts].total++;
-          
-          if (status === 'CONFIRMED' || status === 'RECEIVED') {
+
+          if (status === "CONFIRMED" || status === "RECEIVED") {
             attemptCounts[attempts].success++;
           }
         });
@@ -112,7 +120,8 @@ export const useRetryAnalytics = () => {
             attemptNumber: parseInt(attempt, 10),
             count: counts.total,
             successCount: counts.success,
-            successRate: counts.total > 0 ? (counts.success / counts.total) * 100 : 0
+            successRate:
+              counts.total > 0 ? (counts.success / counts.total) * 100 : 0,
           });
         }
 
@@ -121,18 +130,18 @@ export const useRetryAnalytics = () => {
 
         // Process brand statistics
         const brandMap = new Map<string, { count: number; value: number }>();
-        
-        cardData.forEach(card => {
-          const brand = card.brand || 'Unknown';
+
+        cardData.forEach((card) => {
+          const brand = card.brand || "Unknown";
           const value = card.orders?.product_price || 0;
-          
+
           if (!brandMap.has(brand)) {
             brandMap.set(brand, { count: 1, value });
           } else {
             const current = brandMap.get(brand)!;
-            brandMap.set(brand, { 
+            brandMap.set(brand, {
               count: current.count + 1,
-              value: current.value + value
+              value: current.value + value,
             });
           }
         });
@@ -143,7 +152,7 @@ export const useRetryAnalytics = () => {
           brandStatsArray.push({
             brand,
             count: stats.count,
-            value: stats.value
+            value: stats.value,
           });
         });
 
@@ -155,15 +164,14 @@ export const useRetryAnalytics = () => {
           brandStats: brandStatsArray,
           totalAttempts,
           totalOrders,
-          averageAttempts
+          averageAttempts,
         });
-
       } catch (error) {
-        console.error('Error fetching analytics data:', error);
+        console.error("Error fetching analytics data:", error);
         toast({
-          title: 'Erro',
-          description: 'Não foi possível carregar os dados de análise',
-          variant: 'destructive',
+          title: "Erro",
+          description: "Não foi possível carregar os dados de análise",
+          variant: "destructive",
         });
       } finally {
         setLoading(false);

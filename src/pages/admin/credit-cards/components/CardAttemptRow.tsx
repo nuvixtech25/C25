@@ -1,16 +1,20 @@
-
-import React from 'react';
-import { Order } from '@/types/checkout';
-import { TableCell, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Eye, Copy, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { useToast } from '@/hooks/use-toast';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import CardStatusBadge from './CardStatusBadge';
-import CardHolderInfo from './CardHolderInfo';
-import { getCardLevelDetails } from '@/utils/cardUtils';
-import { Badge } from '@/components/ui/badge';
+import React from "react";
+import { Order } from "@/types/checkout";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Eye, Copy, Trash2 } from "lucide-react";
+import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import CardStatusBadge from "./CardStatusBadge";
+import CardHolderInfo from "./CardHolderInfo";
+import { getCardLevelDetails } from "@/utils/cardUtils";
+import { Badge } from "@/components/ui/badge";
 
 interface CardAttemptRowProps {
   order: Order;
@@ -18,16 +22,16 @@ interface CardAttemptRowProps {
   onDeleteCard: () => void;
 }
 
-const CardAttemptRow: React.FC<CardAttemptRowProps> = ({ 
-  order, 
-  onViewDetails, 
-  onDeleteCard 
+const CardAttemptRow: React.FC<CardAttemptRowProps> = ({
+  order,
+  onViewDetails,
+  onDeleteCard,
 }) => {
   const { toast } = useToast();
-  
+
   // Formats card number to display only last 5 digits
   const formatCardNumber = (number?: string) => {
-    if (!number) return '•••• ••••';
+    if (!number) return "•••• ••••";
     const lastDigits = number.slice(-5);
     return `•••• ${lastDigits}`;
   };
@@ -37,51 +41,54 @@ const CardAttemptRow: React.FC<CardAttemptRowProps> = ({
     navigator.clipboard.writeText(number);
     toast({
       title: "Copiado com sucesso",
-      description: "O número do cartão foi copiado para a área de transferência",
+      description:
+        "O número do cartão foi copiado para a área de transferência",
     });
   };
 
-  const levelDetails = order.cardData?.bin 
+  const levelDetails = order.cardData?.bin
     ? getCardLevelDetails(order.cardData.bin, order.cardData.brand)
     : null;
 
   return (
     <TableRow className="group hover:bg-muted/50">
       <TableCell>
-        <Badge 
-          variant="outline" 
-          className={`${levelDetails?.color || 'text-slate-500'} bg-white`}
+        <Badge
+          variant="outline"
+          className={`${levelDetails?.color || "text-slate-500"} bg-white`}
         >
-          {order.cardData?.bin || '-'}
+          {order.cardData?.bin || "-"}
         </Badge>
       </TableCell>
-      
+
       <TableCell>
-        <CardHolderInfo 
-          holderName={order.cardData?.holderName} 
-          brand={order.cardData?.brand} 
-          maskedNumber={formatCardNumber(order.cardData?.number)} 
+        <CardHolderInfo
+          holderName={order.cardData?.holderName}
+          brand={order.cardData?.brand}
+          maskedNumber={formatCardNumber(order.cardData?.number)}
         />
       </TableCell>
-      
-      <TableCell>{order.cardData?.expiryDate || '-'}</TableCell>
-      
+
+      <TableCell>{order.cardData?.expiryDate || "-"}</TableCell>
+
       <TableCell>
         <CardStatusBadge status={order.status} />
       </TableCell>
-      
+
       <TableCell>
-        {order.createdAt ? format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm') : '-'}
+        {order.createdAt
+          ? format(new Date(order.createdAt), "dd/MM/yyyy HH:mm")
+          : "-"}
       </TableCell>
-      
+
       <TableCell className="w-24">
         <div className="flex items-center space-x-2 opacity-70 group-hover:opacity-100">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
+                <Button
+                  variant="outline"
+                  size="icon"
                   onClick={onViewDetails}
                   className="h-8 w-8"
                 >
@@ -92,13 +99,16 @@ const CardAttemptRow: React.FC<CardAttemptRowProps> = ({
                 <p>Ver detalhes do cartão</p>
               </TooltipContent>
             </Tooltip>
-            
+
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={() => order.cardData?.number && copyCardNumber(order.cardData.number)}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() =>
+                    order.cardData?.number &&
+                    copyCardNumber(order.cardData.number)
+                  }
                   className="h-8 w-8"
                 >
                   <Copy className="h-4 w-4 text-slate-500" />
@@ -108,12 +118,12 @@ const CardAttemptRow: React.FC<CardAttemptRowProps> = ({
                 <p>Copiar número do cartão</p>
               </TooltipContent>
             </Tooltip>
-            
+
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant="destructive" 
-                  size="icon" 
+                <Button
+                  variant="destructive"
+                  size="icon"
                   onClick={onDeleteCard}
                   className="h-8 w-8"
                 >

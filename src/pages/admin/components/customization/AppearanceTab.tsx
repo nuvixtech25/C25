@@ -1,10 +1,15 @@
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ColorPicker } from '../../components/ColorPicker';
-import { CheckoutCustomizationSettings } from '@/types/customization';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ColorPicker } from "../../components/ColorPicker";
+import { CheckoutCustomizationSettings } from "@/types/customization";
 
 interface AppearanceTabProps {
   settings: CheckoutCustomizationSettings;
@@ -12,10 +17,10 @@ interface AppearanceTabProps {
   handleColorChange: (name: string, color: string) => void;
 }
 
-export const AppearanceTab: React.FC<AppearanceTabProps> = ({ 
-  settings, 
-  handleChange, 
-  handleColorChange 
+export const AppearanceTab: React.FC<AppearanceTabProps> = ({
+  settings,
+  handleChange,
+  handleColorChange,
 }) => (
   <Card>
     <CardHeader>
@@ -29,11 +34,11 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
         <div className="space-y-2">
           <Label htmlFor="buttonColor">Cor do Botão</Label>
           <div className="flex gap-2">
-            <ColorPicker 
-              color={settings.buttonColor} 
-              onChange={(color) => handleColorChange('buttonColor', color)} 
+            <ColorPicker
+              color={settings.buttonColor}
+              onChange={(color) => handleColorChange("buttonColor", color)}
             />
-            <Input 
+            <Input
               id="buttonColor"
               name="buttonColor"
               value={settings.buttonColor}
@@ -41,15 +46,15 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
             />
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="headingColor">Cor dos Títulos</Label>
           <div className="flex gap-2">
-            <ColorPicker 
-              color={settings.headingColor} 
-              onChange={(color) => handleColorChange('headingColor', color)} 
+            <ColorPicker
+              color={settings.headingColor}
+              onChange={(color) => handleColorChange("headingColor", color)}
             />
-            <Input 
+            <Input
               id="headingColor"
               name="headingColor"
               value={settings.headingColor}
@@ -58,30 +63,32 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
           </div>
         </div>
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="bannerColor">Cor do Banner</Label>
         <div className="flex gap-2">
-          <ColorPicker 
-            color={settings.bannerColor} 
-            onChange={(color) => handleColorChange('bannerColor', color)} 
+          <ColorPicker
+            color={settings.bannerColor}
+            onChange={(color) => handleColorChange("bannerColor", color)}
           />
-          <Input 
+          <Input
             id="bannerColor"
             name="bannerColor"
             value={settings.bannerColor}
             onChange={handleChange}
           />
         </div>
-        <p className="text-sm text-muted-foreground">Cor de fundo do banner de contagem regressiva no topo da página.</p>
+        <p className="text-sm text-muted-foreground">
+          Cor de fundo do banner de contagem regressiva no topo da página.
+        </p>
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="bannerImageUrl">URL da Imagem de Banner</Label>
-        <Input 
+        <Input
           id="bannerImageUrl"
           name="bannerImageUrl"
-          value={settings.bannerImageUrl || ''}
+          value={settings.bannerImageUrl || ""}
           onChange={handleChange}
           placeholder="https://exemplo.com/imagem.jpg"
         />

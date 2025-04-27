@@ -1,14 +1,10 @@
-
-import { useRef, useEffect } from 'react';
-import { UseFormReturn, FieldValues } from 'react-hook-form';
-import { CustomerData } from '@/types/checkout';
+import { useRef, useEffect } from "react";
+import { UseFormReturn, FieldValues } from "react-hook-form";
+import { CustomerData } from "@/types/checkout";
 
 export function useCustomerFormValidation<
-  TFieldValues extends FieldValues = CustomerData
->(
-  form: UseFormReturn<TFieldValues>,
-  onSubmit: (data: CustomerData) => void
-) {
+  TFieldValues extends FieldValues = CustomerData,
+>(form: UseFormReturn<TFieldValues>, onSubmit: (data: CustomerData) => void) {
   const lastSubmittedRef = useRef<CustomerData | null>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstRender = useRef(true);
@@ -16,10 +12,10 @@ export function useCustomerFormValidation<
 
   const isDataDifferent = (data: TFieldValues): boolean => {
     if (!lastSubmittedRef.current) return true;
-    
+
     const last = lastSubmittedRef.current;
     const current = data as unknown as CustomerData;
-    
+
     return (
       last.name !== current.name ||
       last.email !== current.email ||
@@ -41,14 +37,14 @@ export function useCustomerFormValidation<
     }
 
     const subscription = form.watch((value, { name, type }) => {
-      if (type === 'change' && form.formState.isValid) {
+      if (type === "change" && form.formState.isValid) {
         const data = form.getValues();
-        
+
         if (isDataDifferent(data) && canSubmit()) {
           if (debounceTimerRef.current) {
             clearTimeout(debounceTimerRef.current);
           }
-          
+
           debounceTimerRef.current = setTimeout(() => {
             lastSubmissionTime.current = Date.now();
             lastSubmittedRef.current = { ...(data as unknown as CustomerData) };
@@ -58,7 +54,7 @@ export function useCustomerFormValidation<
         }
       }
     });
-    
+
     return () => {
       subscription.unsubscribe();
       if (debounceTimerRef.current) {
@@ -68,6 +64,6 @@ export function useCustomerFormValidation<
   }, [form, onSubmit]);
 
   return {
-    isValid: form.formState.isValid
+    isValid: form.formState.isValid,
   };
 }

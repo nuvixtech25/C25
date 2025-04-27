@@ -1,7 +1,21 @@
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 interface AttemptStats {
   attemptNumber: number;
@@ -31,13 +45,48 @@ const AttemptDistributionChart = ({ data }: AttemptDistributionChartProps) => {
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="attemptNumber" label={{ value: 'Número de Tentativas', position: 'insideBottom', offset: -5 }} />
-              <YAxis yAxisId="left" orientation="left" stroke="#8884d8" label={{ value: 'Quantidade', angle: -90, position: 'insideLeft' }} />
-              <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" label={{ value: 'Taxa de Sucesso (%)', angle: -90, position: 'insideRight' }} />
+              <XAxis
+                dataKey="attemptNumber"
+                label={{
+                  value: "Número de Tentativas",
+                  position: "insideBottom",
+                  offset: -5,
+                }}
+              />
+              <YAxis
+                yAxisId="left"
+                orientation="left"
+                stroke="#8884d8"
+                label={{
+                  value: "Quantidade",
+                  angle: -90,
+                  position: "insideLeft",
+                }}
+              />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                stroke="#82ca9d"
+                label={{
+                  value: "Taxa de Sucesso (%)",
+                  angle: -90,
+                  position: "insideRight",
+                }}
+              />
               <Tooltip />
               <Legend />
-              <Bar yAxisId="left" dataKey="count" name="Quantidade de Pedidos" fill="#8884d8" />
-              <Bar yAxisId="right" dataKey="successRate" name="Taxa de Sucesso (%)" fill="#82ca9d" />
+              <Bar
+                yAxisId="left"
+                dataKey="count"
+                name="Quantidade de Pedidos"
+                fill="#8884d8"
+              />
+              <Bar
+                yAxisId="right"
+                dataKey="successRate"
+                name="Taxa de Sucesso (%)"
+                fill="#82ca9d"
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

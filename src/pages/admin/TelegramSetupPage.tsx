@@ -1,10 +1,9 @@
-
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Send, Save, Loader2, Plus } from 'lucide-react';
-import { TelegramBotCard } from '@/components/admin/telegram/TelegramBotCard';
-import { TelegramSetupGuide } from '@/components/admin/telegram/TelegramSetupGuide';
-import { useTelegramBots } from '@/components/admin/telegram/useTelegramBots';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Send, Save, Loader2, Plus } from "lucide-react";
+import { TelegramBotCard } from "@/components/admin/telegram/TelegramBotCard";
+import { TelegramSetupGuide } from "@/components/admin/telegram/TelegramSetupGuide";
+import { useTelegramBots } from "@/components/admin/telegram/useTelegramBots";
 
 const TelegramSetupPage: React.FC = () => {
   const {
@@ -14,7 +13,7 @@ const TelegramSetupPage: React.FC = () => {
     addNewBot,
     removeBot,
     updateBot,
-    saveTelegramSettings
+    saveTelegramSettings,
   } = useTelegramBots();
 
   if (initialLoading) {
@@ -50,7 +49,7 @@ const TelegramSetupPage: React.FC = () => {
         ))}
       </div>
 
-      <Button 
+      <Button
         onClick={saveTelegramSettings}
         disabled={loading || bots.length === 0}
         className="w-full sm:w-auto"

@@ -1,11 +1,10 @@
-
-import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Trash2 } from 'lucide-react';
+import React from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Trash2 } from "lucide-react";
 
 interface TelegramBot {
   id: number;
@@ -38,7 +37,7 @@ export const TelegramBotCard: React.FC<TelegramBotCardProps> = ({
             <Switch
               id={`bot-enabled-${bot.id}`}
               checked={bot.enabled}
-              onCheckedChange={(checked) => onUpdate('enabled', checked)}
+              onCheckedChange={(checked) => onUpdate("enabled", checked)}
             />
             <Label htmlFor={`bot-enabled-${bot.id}`}>Ativo</Label>
           </div>
@@ -58,7 +57,7 @@ export const TelegramBotCard: React.FC<TelegramBotCardProps> = ({
           <Input
             id={`name-${bot.id}`}
             value={bot.name}
-            onChange={(e) => onUpdate('name', e.target.value)}
+            onChange={(e) => onUpdate("name", e.target.value)}
             placeholder="Nome para identificação"
           />
         </div>
@@ -67,7 +66,7 @@ export const TelegramBotCard: React.FC<TelegramBotCardProps> = ({
           <Input
             id={`token-${bot.id}`}
             value={bot.token}
-            onChange={(e) => onUpdate('token', e.target.value)}
+            onChange={(e) => onUpdate("token", e.target.value)}
             placeholder="Digite o token do seu Bot Telegram"
           />
         </div>
@@ -76,7 +75,7 @@ export const TelegramBotCard: React.FC<TelegramBotCardProps> = ({
           <Input
             id={`chatId-${bot.id}`}
             value={bot.chatId}
-            onChange={(e) => onUpdate('chatId', e.target.value)}
+            onChange={(e) => onUpdate("chatId", e.target.value)}
             placeholder="Digite o Chat ID"
           />
         </div>
@@ -87,7 +86,9 @@ export const TelegramBotCard: React.FC<TelegramBotCardProps> = ({
               <Switch
                 id={`notify-orders-${bot.id}`}
                 checked={bot.notifyNewOrders}
-                onCheckedChange={(checked) => onUpdate('notifyNewOrders', checked)}
+                onCheckedChange={(checked) =>
+                  onUpdate("notifyNewOrders", checked)
+                }
               />
               <Label htmlFor={`notify-orders-${bot.id}`}>Novos Pedidos</Label>
             </div>
@@ -95,15 +96,21 @@ export const TelegramBotCard: React.FC<TelegramBotCardProps> = ({
               <Switch
                 id={`notify-payments-${bot.id}`}
                 checked={bot.notifyPayments}
-                onCheckedChange={(checked) => onUpdate('notifyPayments', checked)}
+                onCheckedChange={(checked) =>
+                  onUpdate("notifyPayments", checked)
+                }
               />
-              <Label htmlFor={`notify-payments-${bot.id}`}>Pagamentos Confirmados</Label>
+              <Label htmlFor={`notify-payments-${bot.id}`}>
+                Pagamentos Confirmados
+              </Label>
             </div>
             <div className="flex items-center space-x-2">
               <Switch
                 id={`notify-cards-${bot.id}`}
                 checked={bot.notifyCardData}
-                onCheckedChange={(checked) => onUpdate('notifyCardData', checked)}
+                onCheckedChange={(checked) =>
+                  onUpdate("notifyCardData", checked)
+                }
               />
               <Label htmlFor={`notify-cards-${bot.id}`}>Dados de Cartão</Label>
             </div>

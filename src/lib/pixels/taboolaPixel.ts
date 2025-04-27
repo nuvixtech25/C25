@@ -1,14 +1,14 @@
-
 /**
  * Taboola Pixel implementation
  */
 
 // Initialize Taboola Pixel
 export const initTaboolaPixel = (accountId: string): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
-  
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
+
   // Add Taboola Pixel base code
-  const script = document.createElement('script');
+  const script = document.createElement("script");
   script.innerHTML = `
     window._tfa = window._tfa || [];
     window._tfa.push({notify: 'event', name: 'page_view', id: '${accountId}'});
@@ -21,23 +21,23 @@ export const initTaboolaPixel = (accountId: string): void => {
       fjs.parentNode.insertBefore(js, fjs);
     })(document, window, 'tb_tfa_script', 'script');
   `;
-  
+
   document.head.appendChild(script);
-  
-  console.log('Taboola Pixel initialized');
+
+  console.log("Taboola Pixel initialized");
 };
 
 // Track purchase event
 export const trackPurchase = (value: number, orderId: string): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
-  if (typeof window._tfa === 'undefined') return;
-  
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
+  if (typeof window._tfa === "undefined") return;
+
   window._tfa.push({
-    notify: 'event',
-    name: 'purchase',
+    notify: "event",
+    name: "purchase",
     id: window.taboolaAccountId,
     revenue: value,
-    orderId: orderId
+    orderId: orderId,
   });
 };
-

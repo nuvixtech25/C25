@@ -1,7 +1,12 @@
-
-import React from 'react';
-import { Loader2 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React from "react";
+import { Loader2 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface PixelFormCardProps {
   title: string;
@@ -22,7 +27,7 @@ export const PixelFormCard: React.FC<PixelFormCardProps> = ({
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      
+
       <CardContent>
         {loading ? (
           <div className="flex justify-center items-center p-8">

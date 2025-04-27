@@ -1,14 +1,14 @@
-
 /**
  * TikTok Pixel implementation
  */
 
 // Initialize TikTok Pixel
 export const initTiktokPixel = (tiktokPixelId: string): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
-  
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
+
   // Add TikTok Pixel base code
-  const script = document.createElement('script');
+  const script = document.createElement("script");
   script.innerHTML = `
     !function (w, d, t) {
       w.TiktokAnalyticsObject=t;
@@ -26,46 +26,55 @@ export const initTiktokPixel = (tiktokPixelId: string): void => {
       ttq.page();
     }(window, document, 'ttq');
   `;
-  
+
   document.head.appendChild(script);
-  
-  console.log('TikTok Pixel initialized');
+
+  console.log("TikTok Pixel initialized");
 };
 
 // Track pageview event
 export const trackPageView = (): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
-  if (typeof window.ttq === 'undefined') return;
-  
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
+  if (typeof window.ttq === "undefined") return;
+
   window.ttq.page();
 };
 
 // Track purchase event
-export const trackPurchase = (value: number, currency: string = 'BRL'): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
-  if (typeof window.ttq === 'undefined') return;
-  
-  window.ttq.track('CompletePayment', {
-    content_type: 'product',
-    content_id: 'purchase',
+export const trackPurchase = (
+  value: number,
+  currency: string = "BRL",
+): void => {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
+  if (typeof window.ttq === "undefined") return;
+
+  window.ttq.track("CompletePayment", {
+    content_type: "product",
+    content_id: "purchase",
     quantity: 1,
     price: value,
     value: value,
-    currency: currency
+    currency: currency,
   });
 };
 
 // Add the missing function for begin checkout
-export const trackBeginCheckout = (value: number, currency: string = 'BRL'): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
-  if (typeof window.ttq === 'undefined') return;
-  
-  window.ttq.track('InitiateCheckout', {
-    content_type: 'product',
-    content_id: 'checkout',
+export const trackBeginCheckout = (
+  value: number,
+  currency: string = "BRL",
+): void => {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
+  if (typeof window.ttq === "undefined") return;
+
+  window.ttq.track("InitiateCheckout", {
+    content_type: "product",
+    content_id: "checkout",
     quantity: 1,
     price: value,
     value: value,
-    currency: currency
+    currency: currency,
   });
 };

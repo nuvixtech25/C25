@@ -1,26 +1,32 @@
-
-import React, { useState } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import React, { useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface ColorPickerProps {
   color: string;
   onChange: (color: string) => void;
 }
 
-export const ColorPicker: React.FC<ColorPickerProps> = ({ color, onChange }) => {
+export const ColorPicker: React.FC<ColorPickerProps> = ({
+  color,
+  onChange,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const presetColors = [
-    '#6E59A5', // Primary purple
-    '#10B981', // Green
-    '#1E3A8A', // Blue dark
-    '#3B82F6', // Blue medium
-    '#8B5CF6', // Vivid purple
-    '#EC4899', // Pink
-    '#F97316', // Orange
-    '#EF4444', // Red
-    '#000000', // Black
-    '#FFFFFF', // White
+    "#6E59A5", // Primary purple
+    "#10B981", // Green
+    "#1E3A8A", // Blue dark
+    "#3B82F6", // Blue medium
+    "#8B5CF6", // Vivid purple
+    "#EC4899", // Pink
+    "#F97316", // Orange
+    "#EF4444", // Red
+    "#000000", // Black
+    "#FFFFFF", // White
   ];
 
   return (

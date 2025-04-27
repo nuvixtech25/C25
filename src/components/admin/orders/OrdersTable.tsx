@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Loader2 } from "lucide-react";
 import {
@@ -9,13 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useOrdersList } from "@/hooks/admin/orders/useOrdersList";
 import OrdersTableRow from "./orders-table/OrdersTableRow";
@@ -35,14 +34,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   onEditStatus,
   onDeleteOrder,
 }) => {
-  const { 
-    orders, 
-    totalOrders, 
-    loading, 
-    currentPage, 
-    itemsPerPage, 
-    paginate 
-  } = useOrdersList();
+  const { orders, totalOrders, loading, currentPage, itemsPerPage, paginate } =
+    useOrdersList();
 
   if (loading) {
     return (
@@ -96,12 +89,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
         <Pagination className="justify-center">
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious 
+              <PaginationPrevious
                 onClick={() => paginate(currentPage - 1)}
-                className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                className={
+                  currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                }
               />
             </PaginationItem>
-            
+
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <PaginationItem key={page}>
                 <PaginationLink
@@ -112,11 +107,15 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                 </PaginationLink>
               </PaginationItem>
             ))}
-            
+
             <PaginationItem>
               <PaginationNext
                 onClick={() => paginate(currentPage + 1)}
-                className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                className={
+                  currentPage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
               />
             </PaginationItem>
           </PaginationContent>

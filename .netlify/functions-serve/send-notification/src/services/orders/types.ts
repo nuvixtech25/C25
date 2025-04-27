@@ -1,9 +1,8 @@
-
-import { Order, Product, PaymentStatus, PaymentMethod } from '@/types/checkout';
+import { Order, Product, PaymentStatus, PaymentMethod } from "@/types/checkout";
 
 export interface GetOrdersParams {
   paymentMethod?: PaymentMethod;
-  status?: PaymentStatus | 'ALL';
+  status?: PaymentStatus | "ALL";
   startDate?: string | Date;
   endDate?: string | Date;
 }

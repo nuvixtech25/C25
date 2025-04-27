@@ -1,9 +1,8 @@
-
-import React from 'react';
-import { CreditCardData, Order } from '@/types/checkout';
-import RetryPaymentForm from './RetryPaymentForm';
-import { RetryLimitMessage } from './RetryLimitMessage';
-import WhatsAppSupportLink from './WhatsAppSupportLink';
+import React from "react";
+import { CreditCardData, Order } from "@/types/checkout";
+import RetryPaymentForm from "./RetryPaymentForm";
+import { RetryLimitMessage } from "./RetryLimitMessage";
+import WhatsAppSupportLink from "./WhatsAppSupportLink";
 
 interface RetryCardSubmissionProps {
   order: Order | null;
@@ -30,7 +29,10 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
   // Se temos um número de WhatsApp, vamos logar para debug
   React.useEffect(() => {
     if (whatsappNumber) {
-      console.log('[RetryCardSubmission] WhatsApp number disponível:', whatsappNumber);
+      console.log(
+        "[RetryCardSubmission] WhatsApp number disponível:",
+        whatsappNumber,
+      );
     }
   }, [whatsappNumber]);
 
@@ -58,7 +60,7 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
             <p className="text-sm">Valor: R$ {order.productPrice.toFixed(2)}</p>
           </div>
         )}
-        
+
         <RetryPaymentForm
           order={order}
           validationResult={validationResult}
@@ -66,7 +68,7 @@ export const RetryCardSubmission: React.FC<RetryCardSubmissionProps> = ({
           isLoading={isLoading}
         />
       </div>
-      
+
       {/* Simplificamos a lógica para mostrar o suporte de WhatsApp sempre que o número estiver disponível */}
       {whatsappNumber && (
         <div className="mt-6 pt-4 border-t border-gray-100">

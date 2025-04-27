@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { Settings } from 'lucide-react';
-import PixelSettingsForm from './PixelSettingsForm';
+import React from "react";
+import { Settings } from "lucide-react";
+import PixelSettingsForm from "./PixelSettingsForm";
 
 const PixelSettings = () => {
   return (
@@ -10,7 +9,7 @@ const PixelSettings = () => {
         <Settings className="h-6 w-6" />
         Configurações de Pixels de Rastreamento
       </h1>
-      
+
       <PixelSettingsForm />
     </div>
   );

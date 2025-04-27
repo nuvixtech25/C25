@@ -1,13 +1,18 @@
-
-import React, { useRef, useState } from 'react';
-import { CheckoutCustomization, CustomerData, PaymentMethod, Product, AddressData } from '@/types/checkout';
-import { PersonalInfoSection } from './PersonalInfoSection';
-import { TestimonialSection } from './TestimonialSection';
-import { PaymentMethodSection } from './payment-methods/PaymentMethodSection';
-import { OrderSummary } from './OrderSummary';
-import { AddressForm } from './address/AddressForm';
-import { useShippingMessage } from './address/useShippingMessage';
-import { RandomVisitorsMessage } from './RandomVisitorsMessage';
+import React, { useRef, useState } from "react";
+import {
+  CheckoutCustomization,
+  CustomerData,
+  PaymentMethod,
+  Product,
+  AddressData,
+} from "@/types/checkout";
+import { PersonalInfoSection } from "./PersonalInfoSection";
+import { TestimonialSection } from "./TestimonialSection";
+import { PaymentMethodSection } from "./payment-methods/PaymentMethodSection";
+import { OrderSummary } from "./OrderSummary";
+import { AddressForm } from "./address/AddressForm";
+import { useShippingMessage } from "./address/useShippingMessage";
+import { RandomVisitorsMessage } from "./RandomVisitorsMessage";
 
 interface CheckoutContentProps {
   product: Product;
@@ -30,15 +35,15 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
   onCustomerSubmit,
   onPaymentMethodChange,
   onPaymentSubmit,
-  onAddressSubmit
+  onAddressSubmit,
 }) => {
   const customerFormRef = useRef<HTMLFormElement>(null);
   const [addressData, setAddressData] = useState<AddressData | null>(null);
   const [showFreeShipping, setShowFreeShipping] = useState(false);
-  
+
   // Determine if product is physical based on the product type
-  const isPhysicalProduct = product.type === 'physical';
-  
+  const isPhysicalProduct = product.type === "physical";
+
   const handleAddressSubmit = (data: AddressData) => {
     setAddressData(data);
     if (data.cep && data.number) {
@@ -53,20 +58,18 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
     <div className="space-y-4">
       {/* Add the Random Visitors Message component just below the banner */}
       <RandomVisitorsMessage min={1} max={20} />
-      
-      <PersonalInfoSection 
+
+      <PersonalInfoSection
         onSubmit={onCustomerSubmit}
         headingColor={customization.headingColor}
         formRef={customerFormRef}
       />
-      
+
       {/* Show testimonials only for digital products */}
       {!isPhysicalProduct && (
-        <TestimonialSection
-          headingColor={customization.headingColor}
-        />
+        <TestimonialSection headingColor={customization.headingColor} />
       )}
-      
+
       {/* Show address form only for physical products */}
       {isPhysicalProduct && (
         <AddressForm
@@ -74,7 +77,7 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
           headingColor={customization.headingColor}
         />
       )}
-      
+
       <PaymentMethodSection
         id="payment-section"
         paymentMethod={paymentMethod}
@@ -88,8 +91,8 @@ export const CheckoutContent: React.FC<CheckoutContentProps> = ({
         buttonText={customization.buttonText}
         productPrice={product.price}
       />
-      
-      <OrderSummary 
+
+      <OrderSummary
         product={product}
         isDigitalProduct={!isPhysicalProduct}
         showFreeShipping={showFreeShipping}

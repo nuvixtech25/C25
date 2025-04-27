@@ -1,4 +1,3 @@
-
 import React from "react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import StatusBadge from "../StatusBadge";
@@ -40,7 +39,9 @@ const OrdersTableRow: React.FC<OrdersTableRowProps> = ({
   onDeleteOrder,
 }) => (
   <TableRow>
-    <TableCell className="font-medium">{order.customerName || "Nome não disponível"}</TableCell>
+    <TableCell className="font-medium">
+      {order.customerName || "Nome não disponível"}
+    </TableCell>
     <TableCell>{order.customerEmail || "Email não disponível"}</TableCell>
     <TableCell>{formatPrice(order.productPrice)}</TableCell>
     <TableCell>

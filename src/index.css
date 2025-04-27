@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -73,7 +72,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 267 72% 50%;
-    
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -112,11 +111,11 @@
   .checkout-container {
     @apply max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg;
   }
-  
+
   .heading-gradient {
     @apply bg-gradient-to-r from-asaas-primary to-asaas-secondary bg-clip-text text-transparent;
   }
-  
+
   .pix-container {
     @apply bg-green-50/30 p-6 rounded-xl border border-green-200/20;
   }

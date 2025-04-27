@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { Lock, CreditCard, ShieldCheck, Package } from 'lucide-react';
+import React from "react";
+import { Lock, CreditCard, ShieldCheck, Package } from "lucide-react";
 
 export const CheckoutFooter: React.FC = () => {
   return (
@@ -11,25 +10,30 @@ export const CheckoutFooter: React.FC = () => {
             <ShieldCheck className="text-[#28A745] h-5 w-5" />
             <span className="text-sm text-gray-600">Pagamento 100% seguro</span>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Lock className="text-[#28A745] h-5 w-5" />
             <span className="text-sm text-gray-600">Dados protegidos</span>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <CreditCard className="text-[#28A745] h-5 w-5" />
-            <span className="text-sm text-gray-600">Pagamento processado pela Stripe</span>
+            <span className="text-sm text-gray-600">
+              Pagamento processado pela Stripe
+            </span>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Package className="text-[#28A745] h-5 w-5" />
-            <span className="text-sm text-gray-600">Todos pedidos possuem código de rastreio</span>
+            <span className="text-sm text-gray-600">
+              Todos pedidos possuem código de rastreio
+            </span>
           </div>
         </div>
-        
+
         <div className="text-xs text-gray-500">
-          © {new Date().getFullYear()} CineflickCard. Todos os direitos reservados.
+          © {new Date().getFullYear()} CineflickCard. Todos os direitos
+          reservados.
         </div>
       </div>
     </footer>

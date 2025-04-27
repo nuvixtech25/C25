@@ -1,8 +1,24 @@
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+} from "recharts";
 
 interface OrderTimeData {
   date: string;
@@ -21,18 +37,21 @@ interface OrdersTimeChartProps {
 const OrdersTimeChart = ({ data }: OrdersTimeChartProps) => {
   // Safely cast the data to ensure it matches the expected structure
   const chartData = Array.isArray(data) ? data : [];
-  
+
   // Reverse the data to show oldest to newest
   const sortedChartData = [...chartData].sort((a, b) => {
     if (!a.date || !b.date) return 0;
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
-  
+
   // Add custom formatter for date display
   const formatDate = (dateStr: string) => {
-    if (!dateStr) return '';
+    if (!dateStr) return "";
     const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(date);
+    return new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+    }).format(date);
   };
 
   return (
@@ -44,10 +63,12 @@ const OrdersTimeChart = ({ data }: OrdersTimeChartProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
-        <ChartContainer config={{
-          orders: { color: "#6E59A5" },
-          revenue: { color: "#10B981" }
-        }}>
+        <ChartContainer
+          config={{
+            orders: { color: "#6E59A5" },
+            revenue: { color: "#10B981" },
+          }}
+        >
           <ResponsiveContainer width="100%" height={350}>
             <AreaChart
               data={sortedChartData}
@@ -55,12 +76,12 @@ const OrdersTimeChart = ({ data }: OrdersTimeChartProps) => {
             >
               <defs>
                 <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6E59A5" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#6E59A5" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#6E59A5" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#6E59A5" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <XAxis 
-                dataKey="date" 
+              <XAxis
+                dataKey="date"
                 tickFormatter={formatDate}
                 minTickGap={30}
               />

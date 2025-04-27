@@ -1,20 +1,20 @@
 {
-	"geolocation": {
-		"data": {
-			"city": "Rio Grande",
-			"country": {
-				"code": "BR",
-				"name": "Brazil"
-			},
-			"subdivision": {
-				"code": "RS",
-				"name": "Rio Grande do Sul"
-			},
-			"timezone": "America/Sao_Paulo",
-			"latitude": -32.0766,
-			"longitude": -52.3542,
-			"postalCode": "96200"
-		},
-		"timestamp": 1745720535450
-	}
+  "geolocation": {
+    "data": {
+      "city": "Rio Grande",
+      "country": {
+        "code": "BR",
+        "name": "Brazil"
+      },
+      "subdivision": {
+        "code": "RS",
+        "name": "Rio Grande do Sul"
+      },
+      "timezone": "America/Sao_Paulo",
+      "latitude": -32.0766,
+      "longitude": -52.3542,
+      "postalCode": "96200"
+    },
+    "timestamp": 1745720535450
+  }
 }

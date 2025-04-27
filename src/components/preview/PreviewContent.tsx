@@ -1,9 +1,8 @@
-
-import React from 'react';
-import { CheckoutContent } from '@/components/checkout/CheckoutContent';
-import { CheckoutCustomization, Product, AddressData } from '@/types/checkout';
-import { PaymentMethod } from '@/types/checkout';
-import { CustomerData } from '@/types/checkout';
+import React from "react";
+import { CheckoutContent } from "@/components/checkout/CheckoutContent";
+import { CheckoutCustomization, Product, AddressData } from "@/types/checkout";
+import { PaymentMethod } from "@/types/checkout";
+import { CustomerData } from "@/types/checkout";
 
 interface PreviewContentProps {
   product: Product;
@@ -26,10 +25,10 @@ export const PreviewContent: React.FC<PreviewContentProps> = ({
   onCustomerSubmit,
   onAddressSubmit,
   onPaymentMethodChange,
-  onPaymentSubmit
+  onPaymentSubmit,
 }) => {
   return (
-    <CheckoutContent 
+    <CheckoutContent
       product={product}
       customerData={customerData}
       paymentMethod={paymentMethod}

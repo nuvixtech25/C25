@@ -1,16 +1,23 @@
-
-import React from 'react';
-import { Input } from '@/components/ui/input';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { handleCpfCnpjChange, handlePhoneChange } from '@/utils/formatters';
-import { Control } from 'react-hook-form';
-import { CustomerData } from '@/types/checkout';
+import React from "react";
+import { Input } from "@/components/ui/input";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { handleCpfCnpjChange, handlePhoneChange } from "@/utils/formatters";
+import { Control } from "react-hook-form";
+import { CustomerData } from "@/types/checkout";
 
 interface PersonalInfoFieldsProps {
   control: Control<CustomerData>;
 }
 
-export const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({ control }) => {
+export const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({
+  control,
+}) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormField
@@ -20,17 +27,17 @@ export const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({ control 
           <FormItem>
             <FormLabel className="text-gray-700">Nome completo</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Seu nome completo" 
-                {...field} 
-                className="border-gray-300 focus:border-primary" 
+              <Input
+                placeholder="Seu nome completo"
+                {...field}
+                className="border-gray-300 focus:border-primary"
               />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={control}
         name="email"
@@ -38,18 +45,18 @@ export const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({ control 
           <FormItem>
             <FormLabel className="text-gray-700">E-mail</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Seu e-mail" 
-                type="email" 
-                {...field} 
-                className="border-gray-300 focus:border-primary" 
+              <Input
+                placeholder="Seu e-mail"
+                type="email"
+                {...field}
+                className="border-gray-300 focus:border-primary"
               />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={control}
         name="cpfCnpj"
@@ -57,20 +64,20 @@ export const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({ control 
           <FormItem>
             <FormLabel className="text-gray-700">CPF/CNPJ</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Digite seu CPF" 
+              <Input
+                placeholder="Digite seu CPF"
                 value={value}
-                {...rest} 
+                {...rest}
                 onChange={(e) => handleCpfCnpjChange(e, onChange)}
-                maxLength={18} 
-                className="border-gray-300 focus:border-primary" 
+                maxLength={18}
+                className="border-gray-300 focus:border-primary"
               />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={control}
         name="phone"
@@ -82,13 +89,13 @@ export const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({ control 
                 +55
               </span>
               <FormControl>
-                <Input 
-                  placeholder="(00) 00000-0000" 
+                <Input
+                  placeholder="(00) 00000-0000"
                   value={value}
-                  {...rest} 
+                  {...rest}
                   onChange={(e) => handlePhoneChange(e, onChange)}
-                  maxLength={15} 
-                  className="border-gray-300 focus:border-primary rounded-l-none" 
+                  maxLength={15}
+                  className="border-gray-300 focus:border-primary rounded-l-none"
                 />
               </FormControl>
             </div>

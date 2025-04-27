@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { Order } from '@/types/checkout';
-import { ShoppingCart } from 'lucide-react';
+import React from "react";
+import { Order } from "@/types/checkout";
+import { ShoppingCart } from "lucide-react";
 
 interface OrderSummaryProps {
   order: Order | null;
@@ -9,7 +8,7 @@ interface OrderSummaryProps {
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
   if (!order) return null;
-  
+
   return (
     <div className="p-4 bg-white rounded-lg border border-purple-100 shadow-sm">
       <div className="flex items-center gap-3 mb-2">
@@ -18,7 +17,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
       </div>
       <p className="mt-1 font-medium text-gray-800">{order.productName}</p>
       <p className="mt-1 text-lg font-bold text-purple-700">
-        R$ {Number(order.productPrice).toFixed(2).replace('.', ',')}
+        R$ {Number(order.productPrice).toFixed(2).replace(".", ",")}
       </p>
     </div>
   );

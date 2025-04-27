@@ -1,6 +1,5 @@
-
-import React, { useState, useEffect } from 'react';
-import { Eye } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Eye } from "lucide-react";
 
 interface TimerBannerProps {
   initialMinutes: number;
@@ -8,10 +7,10 @@ interface TimerBannerProps {
   message?: string;
 }
 
-export const TimerBanner: React.FC<TimerBannerProps> = ({ 
-  initialMinutes, 
+export const TimerBanner: React.FC<TimerBannerProps> = ({
+  initialMinutes,
   initialSeconds,
-  message = "Oferta por tempo limitado!"
+  message = "Oferta por tempo limitado!",
 }) => {
   const [hours, setHours] = useState(Math.floor(initialMinutes / 60));
   const [minutes, setMinutes] = useState(initialMinutes % 60);
@@ -37,7 +36,7 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
   }, [hours, minutes, seconds]);
 
   // Format numbers to always have two digits
-  const formatNumber = (num: number) => num.toString().padStart(2, '0');
+  const formatNumber = (num: number) => num.toString().padStart(2, "0");
 
   return (
     <div className="w-full bg-black py-2 px-4 flex items-center justify-center">
@@ -45,18 +44,30 @@ export const TimerBanner: React.FC<TimerBannerProps> = ({
       <div className="text-white text-sm md:text-base mr-2">{message}</div>
       <div className="flex items-center">
         <div className="flex flex-col items-center">
-          <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(hours)}</span>
-          <span className="text-white text-[8px] md:text-xs uppercase">HORAS</span>
+          <span className="text-white text-xl md:text-2xl font-bold">
+            {formatNumber(hours)}
+          </span>
+          <span className="text-white text-[8px] md:text-xs uppercase">
+            HORAS
+          </span>
         </div>
         <span className="text-white text-xl md:text-2xl font-bold mx-1">:</span>
         <div className="flex flex-col items-center">
-          <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(minutes)}</span>
-          <span className="text-white text-[8px] md:text-xs uppercase">MIN</span>
+          <span className="text-white text-xl md:text-2xl font-bold">
+            {formatNumber(minutes)}
+          </span>
+          <span className="text-white text-[8px] md:text-xs uppercase">
+            MIN
+          </span>
         </div>
         <span className="text-white text-xl md:text-2xl font-bold mx-1">:</span>
         <div className="flex flex-col items-center">
-          <span className="text-white text-xl md:text-2xl font-bold">{formatNumber(seconds)}</span>
-          <span className="text-white text-[8px] md:text-xs uppercase">SEG</span>
+          <span className="text-white text-xl md:text-2xl font-bold">
+            {formatNumber(seconds)}
+          </span>
+          <span className="text-white text-[8px] md:text-xs uppercase">
+            SEG
+          </span>
         </div>
       </div>
     </div>

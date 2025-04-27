@@ -1,10 +1,27 @@
-
-import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { UseFormReturn } from 'react-hook-form';
-import { AsaasSettingsFormValues } from '../AsaasSettingsSchema';
+import React from "react";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { UseFormReturn } from "react-hook-form";
+import { AsaasSettingsFormValues } from "../AsaasSettingsSchema";
 
 interface RedirectPageSelectorProps {
   form: UseFormReturn<AsaasSettingsFormValues>;
@@ -12,15 +29,17 @@ interface RedirectPageSelectorProps {
 
 // Lista de opções de redirecionamento centralizada
 export const MANUAL_REDIRECT_OPTIONS = [
-  { value: '/success', label: '✅ Pagamento Concluído' },
-  { value: '/payment-pending', label: '⏳ Pagamento Pendente' },
-  { value: '/failed', label: '❌ Pagamento Falhou' },
-  { value: '/retry-payment', label: '🔄 Pagamento Falhou (Com Retry)' },
-  { value: '/payment-analysis', label: '🔍 Pagamento em Análise' },
-  { value: '/thank-you-card', label: '🙏 Agradecimento (Cartão)' },
+  { value: "/success", label: "✅ Pagamento Concluído" },
+  { value: "/payment-pending", label: "⏳ Pagamento Pendente" },
+  { value: "/failed", label: "❌ Pagamento Falhou" },
+  { value: "/retry-payment", label: "🔄 Pagamento Falhou (Com Retry)" },
+  { value: "/payment-analysis", label: "🔍 Pagamento em Análise" },
+  { value: "/thank-you-card", label: "🙏 Agradecimento (Cartão)" },
 ] as const;
 
-const RedirectPageSelector: React.FC<RedirectPageSelectorProps> = ({ form }) => {
+const RedirectPageSelector: React.FC<RedirectPageSelectorProps> = ({
+  form,
+}) => {
   return (
     <Card>
       <CardHeader>
@@ -36,10 +55,7 @@ const RedirectPageSelector: React.FC<RedirectPageSelectorProps> = ({ form }) => 
           render={({ field }) => (
             <FormItem>
               <FormLabel>Página de Redirecionamento para Cartão</FormLabel>
-              <Select 
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a página de redirecionamento" />
@@ -54,7 +70,8 @@ const RedirectPageSelector: React.FC<RedirectPageSelectorProps> = ({ form }) => 
                 </SelectContent>
               </Select>
               <FormDescription>
-                Escolha para onde os clientes serão redirecionados após o pagamento com cartão
+                Escolha para onde os clientes serão redirecionados após o
+                pagamento com cartão
               </FormDescription>
             </FormItem>
           )}

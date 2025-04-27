@@ -1,7 +1,12 @@
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { AlertCircle } from "lucide-react";
 
 const NoDataDisplay = () => {
   return (
@@ -9,7 +14,8 @@ const NoDataDisplay = () => {
       <CardHeader>
         <CardTitle>Dados insuficientes</CardTitle>
         <CardDescription>
-          Não há dados suficientes para gerar análises de tentativas de pagamento.
+          Não há dados suficientes para gerar análises de tentativas de
+          pagamento.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center py-8">

@@ -1,12 +1,17 @@
-
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getKeyStatistics } from '@/services/asaasKeyManager';
-import { KeyMetrics } from '@/config/asaas';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getKeyStatistics } from "@/services/asaasKeyManager";
+import { KeyMetrics } from "@/config/asaas";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface KeyStat {
   id: number;
@@ -18,47 +23,49 @@ const AsaasKeyStats: React.FC = () => {
   const [stats, setStats] = useState<KeyStat[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  
+
   const loadStats = async () => {
     setIsLoading(true);
     try {
       const rawStats = getKeyStatistics();
-      
+
       // Vamos buscar os nomes das chaves para exibição mais amigável
       // Em um caso real, você provavelmente buscaria isso do banco de dados
-      const formattedStats: KeyStat[] = Object.entries(rawStats).map(([id, metrics]) => ({
-        id: parseInt(id),
-        name: `Chave #${id}`, // Em uma implementação real, buscaria o nome da chave
-        metrics: metrics as KeyMetrics
-      }));
-      
+      const formattedStats: KeyStat[] = Object.entries(rawStats).map(
+        ([id, metrics]) => ({
+          id: parseInt(id),
+          name: `Chave #${id}`, // Em uma implementação real, buscaria o nome da chave
+          metrics: metrics as KeyMetrics,
+        }),
+      );
+
       setStats(formattedStats);
     } catch (error) {
-      console.error('Erro ao carregar estatísticas:', error);
+      console.error("Erro ao carregar estatísticas:", error);
       toast({
-        title: 'Erro',
-        description: 'Não foi possível carregar as estatísticas das chaves',
-        variant: 'destructive'
+        title: "Erro",
+        description: "Não foi possível carregar as estatísticas das chaves",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     loadStats();
-    
+
     // Atualiza as estatísticas a cada 30 segundos
     const intervalId = setInterval(loadStats, 30000);
-    
+
     return () => clearInterval(intervalId);
   }, []);
-  
+
   const formatDate = (date: Date | null) => {
-    if (!date) return 'Nunca';
-    return new Date(date).toLocaleString('pt-BR');
+    if (!date) return "Nunca";
+    return new Date(date).toLocaleString("pt-BR");
   };
-  
+
   return (
     <Card>
       <CardHeader>
@@ -69,8 +76,8 @@ const AsaasKeyStats: React.FC = () => {
               Dados de uso e erros das chaves de API
             </CardDescription>
           </div>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={loadStats}
             disabled={isLoading}
@@ -81,7 +88,7 @@ const AsaasKeyStats: React.FC = () => {
                 Atualizando...
               </>
             ) : (
-              'Atualizar'
+              "Atualizar"
             )}
           </Button>
         </div>
@@ -93,8 +100,14 @@ const AsaasKeyStats: React.FC = () => {
               <div key={stat.id} className="p-4 border rounded-md">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-medium">{stat.name}</h3>
-                  <Badge variant={stat.metrics.errors > 0 ? "destructive" : "default"}>
-                    {stat.metrics.errors > 0 ? `${stat.metrics.errors} Erros` : 'Sem Erros'}
+                  <Badge
+                    variant={
+                      stat.metrics.errors > 0 ? "destructive" : "default"
+                    }
+                  >
+                    {stat.metrics.errors > 0
+                      ? `${stat.metrics.errors} Erros`
+                      : "Sem Erros"}
                   </Badge>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -109,12 +122,18 @@ const AsaasKeyStats: React.FC = () => {
                   {stat.metrics.errors > 0 && (
                     <>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Último erro:</span>
+                        <span className="text-muted-foreground">
+                          Último erro:
+                        </span>
                         <span>{formatDate(stat.metrics.lastError)}</span>
                       </div>
                       <div className="mt-2">
-                        <span className="text-muted-foreground">Mensagem de erro:</span>
-                        <p className="text-red-500 mt-1">{stat.metrics.lastErrorMessage || 'Erro desconhecido'}</p>
+                        <span className="text-muted-foreground">
+                          Mensagem de erro:
+                        </span>
+                        <p className="text-red-500 mt-1">
+                          {stat.metrics.lastErrorMessage || "Erro desconhecido"}
+                        </p>
                       </div>
                     </>
                   )}
@@ -127,7 +146,10 @@ const AsaasKeyStats: React.FC = () => {
             {isLoading ? (
               <Loader2 className="h-8 w-8 animate-spin mx-auto mb-3" />
             ) : (
-              <p>Nenhuma estatística disponível. As estatísticas aparecerão aqui após o uso das chaves.</p>
+              <p>
+                Nenhuma estatística disponível. As estatísticas aparecerão aqui
+                após o uso das chaves.
+              </p>
             )}
           </div>
         )}

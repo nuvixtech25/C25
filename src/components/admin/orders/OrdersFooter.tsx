@@ -1,4 +1,3 @@
-
 import React from "react";
 import { formatCurrency } from "@/utils/formatters";
 
@@ -9,7 +8,9 @@ interface OrdersFooterProps {
 
 const OrdersFooter: React.FC<OrdersFooterProps> = ({ count, totalValue }) => {
   // Safely format the total value
-  const formattedTotal = !isNaN(totalValue) ? formatCurrency(totalValue) : "R$ --";
+  const formattedTotal = !isNaN(totalValue)
+    ? formatCurrency(totalValue)
+    : "R$ --";
 
   return (
     <div className="bg-white p-4 rounded-md shadow-sm mt-4 flex flex-col md:flex-row md:justify-between">
@@ -19,9 +20,7 @@ const OrdersFooter: React.FC<OrdersFooterProps> = ({ count, totalValue }) => {
       </div>
       <div>
         <span className="text-sm text-gray-500">Valor total:</span>{" "}
-        <span className="font-medium">
-          {formattedTotal}
-        </span>
+        <span className="font-medium">{formattedTotal}</span>
       </div>
     </div>
   );

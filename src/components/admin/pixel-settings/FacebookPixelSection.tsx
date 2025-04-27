@@ -1,13 +1,19 @@
-
-import React from 'react';
-import { Facebook, Plus, Trash2 } from 'lucide-react';
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { UseFormReturn } from 'react-hook-form';
-import { PixelConfigFormValues } from '@/pages/admin/PixelSettingsSchema';
+import React from "react";
+import { Facebook, Plus, Trash2 } from "lucide-react";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { UseFormReturn } from "react-hook-form";
+import { PixelConfigFormValues } from "@/pages/admin/PixelSettingsSchema";
 
 interface FacebookPixelSectionProps {
   form: UseFormReturn<PixelConfigFormValues>;
@@ -15,12 +21,12 @@ interface FacebookPixelSectionProps {
   onRemovePixel: (index: number) => void;
 }
 
-export const FacebookPixelSection: React.FC<FacebookPixelSectionProps> = ({ 
-  form, 
+export const FacebookPixelSection: React.FC<FacebookPixelSectionProps> = ({
+  form,
   onAddPixel,
-  onRemovePixel
+  onRemovePixel,
 }) => {
-  const facebookPixels = form.watch('facebookPixels') || [];
+  const facebookPixels = form.watch("facebookPixels") || [];
   const hasMultiplePixels = facebookPixels.length > 1;
 
   return (
@@ -30,9 +36,9 @@ export const FacebookPixelSection: React.FC<FacebookPixelSectionProps> = ({
           <Facebook className="h-5 w-5 text-blue-600" />
           <h3 className="text-lg font-medium">Facebook Pixel</h3>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onAddPixel}
           className="flex items-center gap-1"
         >
@@ -41,16 +47,18 @@ export const FacebookPixelSection: React.FC<FacebookPixelSectionProps> = ({
         </Button>
       </div>
       <Separator className="my-4" />
-      
+
       {facebookPixels.map((_, index) => (
         <div key={index} className="space-y-4 mb-6">
           {index > 0 && <Separator className="my-6" />}
           <div className="flex justify-between items-center">
-            <h4 className="font-medium text-sm text-gray-500">Pixel {index + 1}</h4>
+            <h4 className="font-medium text-sm text-gray-500">
+              Pixel {index + 1}
+            </h4>
             {hasMultiplePixels && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => onRemovePixel(index)}
                 className="text-red-500 hover:text-red-700 hover:bg-red-50 -mt-1"
               >
@@ -59,7 +67,7 @@ export const FacebookPixelSection: React.FC<FacebookPixelSectionProps> = ({
               </Button>
             )}
           </div>
-          
+
           <FormField
             control={form.control}
             name={`facebookPixels.${index}.enabled`}
@@ -75,7 +83,7 @@ export const FacebookPixelSection: React.FC<FacebookPixelSectionProps> = ({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name={`facebookPixels.${index}.facebookPixelId`}
@@ -92,7 +100,7 @@ export const FacebookPixelSection: React.FC<FacebookPixelSectionProps> = ({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name={`facebookPixels.${index}.facebookToken`}
@@ -103,7 +111,8 @@ export const FacebookPixelSection: React.FC<FacebookPixelSectionProps> = ({
                   <Input placeholder="Exemplo: EAAxxxxxxxxxxxxx" {...field} />
                 </FormControl>
                 <FormDescription>
-                  O token de acesso do Facebook é usado para autenticação avançada com o Facebook Pixel.
+                  O token de acesso do Facebook é usado para autenticação
+                  avançada com o Facebook Pixel.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

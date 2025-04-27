@@ -1,15 +1,22 @@
-
-import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { UseFormReturn } from 'react-hook-form';
-import { AddressData } from '@/types/checkout';
+import React from "react";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { UseFormReturn } from "react-hook-form";
+import { AddressData } from "@/types/checkout";
 
 interface AddressFormFieldsProps {
   form: UseFormReturn<AddressData>;
 }
 
-export const AddressFormFields: React.FC<AddressFormFieldsProps> = ({ form }) => {
+export const AddressFormFields: React.FC<AddressFormFieldsProps> = ({
+  form,
+}) => {
   return (
     <>
       <FormField
@@ -25,7 +32,7 @@ export const AddressFormFields: React.FC<AddressFormFieldsProps> = ({ form }) =>
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="number"
@@ -39,7 +46,7 @@ export const AddressFormFields: React.FC<AddressFormFieldsProps> = ({ form }) =>
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="complement"
@@ -53,7 +60,7 @@ export const AddressFormFields: React.FC<AddressFormFieldsProps> = ({ form }) =>
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="neighborhood"
@@ -67,7 +74,7 @@ export const AddressFormFields: React.FC<AddressFormFieldsProps> = ({ form }) =>
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="city"
@@ -81,7 +88,7 @@ export const AddressFormFields: React.FC<AddressFormFieldsProps> = ({ form }) =>
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="state"

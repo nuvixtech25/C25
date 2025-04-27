@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
@@ -8,7 +7,10 @@ export interface AdminToolsHeaderProps {
   onSave: () => Promise<void>;
 }
 
-const AdminToolsHeader: React.FC<AdminToolsHeaderProps> = ({ title, onSave }) => {
+const AdminToolsHeader: React.FC<AdminToolsHeaderProps> = ({
+  title,
+  onSave,
+}) => {
   return (
     <div className="flex items-center justify-between mb-6">
       <h1 className="text-2xl font-bold">{title}</h1>

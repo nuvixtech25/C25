@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { ProductFormValues } from '../../ProductSchema';
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
+import { ProductFormValues } from "../../ProductSchema";
 import {
   FormField,
   FormItem,
@@ -9,9 +8,9 @@ import {
   FormControl,
   FormMessage,
   FormDescription,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface BasicInfoSectionProps {
   form: UseFormReturn<ProductFormValues>;
@@ -67,7 +66,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ form }) => {
                 placeholder="Descreva o produto..."
                 className="min-h-[120px]"
                 {...field}
-                value={field.value || ''}
+                value={field.value || ""}
               />
             </FormControl>
             <FormMessage />

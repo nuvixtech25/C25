@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { Loader2, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { Loader2, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SubmitButtonProps {
   saving: boolean;

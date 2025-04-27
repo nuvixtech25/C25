@@ -1,21 +1,20 @@
-
-import React, { useState } from 'react';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useSmtpStatus } from '@/hooks/admin/useSmtpStatus';
-import { AlertCircle, CheckCircle, Mail } from 'lucide-react';
+import React, { useState } from "react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useSmtpStatus } from "@/hooks/admin/useSmtpStatus";
+import { AlertCircle, CheckCircle, Mail } from "lucide-react";
 
 export const SmtpStatusAlert: React.FC = () => {
   const { configured, message, loading, testEmail } = useSmtpStatus();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   const handleSendTest = async () => {
-    if (!email || !email.includes('@')) {
+    if (!email || !email.includes("@")) {
       return;
     }
-    
+
     setIsSending(true);
     await testEmail(email);
     setIsSending(false);
@@ -41,7 +40,8 @@ export const SmtpStatusAlert: React.FC = () => {
         <AlertDescription className="space-y-2">
           <p>{message}</p>
           <p className="text-sm text-gray-600">
-            Para ativar notificações por email, configure as seguintes variáveis de ambiente no seu painel do Netlify:
+            Para ativar notificações por email, configure as seguintes variáveis
+            de ambiente no seu painel do Netlify:
           </p>
           <ul className="list-disc pl-5 text-sm text-gray-600">
             <li>SMTP_HOST - Servidor SMTP (ex: smtp.gmail.com)</li>
@@ -62,7 +62,7 @@ export const SmtpStatusAlert: React.FC = () => {
       <AlertTitle>Notificações por Email Configuradas</AlertTitle>
       <AlertDescription className="space-y-3">
         <p>{message}</p>
-        
+
         <div className="flex items-end gap-2 mt-2">
           <div className="flex-1">
             <p className="text-sm mb-1 text-gray-600">Enviar email de teste:</p>
@@ -73,13 +73,13 @@ export const SmtpStatusAlert: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <Button 
-            onClick={handleSendTest} 
-            disabled={!email || !email.includes('@') || isSending}
+          <Button
+            onClick={handleSendTest}
+            disabled={!email || !email.includes("@") || isSending}
             size="sm"
             variant="outline"
           >
-            {isSending ? 'Enviando...' : 'Enviar teste'}
+            {isSending ? "Enviando..." : "Enviar teste"}
             <Mail className="ml-2 h-4 w-4" />
           </Button>
         </div>

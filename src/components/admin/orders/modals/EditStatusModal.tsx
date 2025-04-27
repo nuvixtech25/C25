@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Order, PaymentStatus } from "@/types/checkout";
 import StatusBadge from "../StatusBadge";
@@ -41,8 +40,8 @@ const EditStatusModal: React.FC<EditStatusModalProps> = ({
             Status atual: <StatusBadge status={order.status} />
           </div>
           <div className="grid grid-cols-1 gap-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 onChangeStatus("PENDING");
                 onClose();
@@ -51,12 +50,14 @@ const EditStatusModal: React.FC<EditStatusModalProps> = ({
             >
               <div className="flex flex-col items-start">
                 <span className="font-medium">Em Análise</span>
-                <span className="text-sm text-gray-500">Marca o pedido como pendente de análise.</span>
+                <span className="text-sm text-gray-500">
+                  Marca o pedido como pendente de análise.
+                </span>
               </div>
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={() => {
                 onChangeStatus("CONFIRMED");
                 onClose();
@@ -65,12 +66,14 @@ const EditStatusModal: React.FC<EditStatusModalProps> = ({
             >
               <div className="flex flex-col items-start">
                 <span className="font-medium">Confirmado</span>
-                <span className="text-sm text-gray-500">Marca o pedido como confirmado/aprovado.</span>
+                <span className="text-sm text-gray-500">
+                  Marca o pedido como confirmado/aprovado.
+                </span>
               </div>
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={() => {
                 onChangeStatus("RECEIVED" as PaymentStatus);
                 onClose();
@@ -79,12 +82,14 @@ const EditStatusModal: React.FC<EditStatusModalProps> = ({
             >
               <div className="flex flex-col items-start">
                 <span className="font-medium">Recebido</span>
-                <span className="text-sm text-gray-500">Marca o pagamento como recebido.</span>
+                <span className="text-sm text-gray-500">
+                  Marca o pagamento como recebido.
+                </span>
               </div>
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={() => {
                 onChangeStatus("FAILED");
                 onClose();
@@ -93,12 +98,14 @@ const EditStatusModal: React.FC<EditStatusModalProps> = ({
             >
               <div className="flex flex-col items-start">
                 <span className="font-medium text-red-600">Falhou</span>
-                <span className="text-sm text-gray-500">Marca o pagamento como falho.</span>
+                <span className="text-sm text-gray-500">
+                  Marca o pagamento como falho.
+                </span>
               </div>
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={() => {
                 onChangeStatus("CANCELLED" as PaymentStatus);
                 onClose();
@@ -113,7 +120,9 @@ const EditStatusModal: React.FC<EditStatusModalProps> = ({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

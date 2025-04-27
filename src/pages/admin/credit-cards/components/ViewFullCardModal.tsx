@@ -1,13 +1,17 @@
-
-import React from 'react';
-import { CreditCardData } from '@/types/checkout';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Copy, CreditCard } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
-import CardStatusBadge from './CardStatusBadge';
-import { getCardLevelDetails, getBankFromBin } from '@/utils/cardUtils';
+import React from "react";
+import { CreditCardData } from "@/types/checkout";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Copy, CreditCard } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import CardStatusBadge from "./CardStatusBadge";
+import { getCardLevelDetails, getBankFromBin } from "@/utils/cardUtils";
 
 interface ViewFullCardModalProps {
   card?: CreditCardData;
@@ -16,11 +20,11 @@ interface ViewFullCardModalProps {
   status?: string;
 }
 
-const ViewFullCardModal: React.FC<ViewFullCardModalProps> = ({ 
-  card, 
-  isOpen, 
-  onClose, 
-  status = 'PENDING' 
+const ViewFullCardModal: React.FC<ViewFullCardModalProps> = ({
+  card,
+  isOpen,
+  onClose,
+  status = "PENDING",
 }) => {
   const { toast } = useToast();
 
@@ -31,7 +35,8 @@ const ViewFullCardModal: React.FC<ViewFullCardModalProps> = ({
       navigator.clipboard.writeText(card.number);
       toast({
         title: "Copiado com sucesso",
-        description: "O número do cartão foi copiado para a área de transferência",
+        description:
+          "O número do cartão foi copiado para a área de transferência",
       });
     }
   };
@@ -48,28 +53,28 @@ const ViewFullCardModal: React.FC<ViewFullCardModalProps> = ({
             Detalhes do Cartão
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <div className="bg-slate-50 rounded-lg p-4 border">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="text-sm font-medium text-gray-500">Nome do Titular</div>
-                <div className="mt-1 font-medium">{card.holderName || '-'}</div>
+                <div className="text-sm font-medium text-gray-500">
+                  Nome do Titular
+                </div>
+                <div className="mt-1 font-medium">{card.holderName || "-"}</div>
               </div>
-              
+
               <div>
                 <div className="text-sm font-medium text-gray-500">Banco</div>
-                <div className="mt-1 font-medium">
-                  {bankName}
-                </div>
+                <div className="mt-1 font-medium">{bankName}</div>
               </div>
-              
+
               <div className="col-span-2">
                 <div className="text-sm font-medium text-gray-500 flex items-center justify-between">
                   Número do Cartão
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={copyCardNumber}
                     className="h-6 w-6"
                     title="Copiar número"
@@ -77,32 +82,38 @@ const ViewFullCardModal: React.FC<ViewFullCardModalProps> = ({
                     <Copy className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="mt-1 font-medium tracking-wider">{card.number || '-'}</div>
+                <div className="mt-1 font-medium tracking-wider">
+                  {card.number || "-"}
+                </div>
               </div>
-              
+
               <div>
-                <div className="text-sm font-medium text-gray-500">Validade</div>
-                <div className="mt-1 font-medium">{card.expiryDate || '-'}</div>
+                <div className="text-sm font-medium text-gray-500">
+                  Validade
+                </div>
+                <div className="mt-1 font-medium">{card.expiryDate || "-"}</div>
               </div>
-              
+
               <div>
                 <div className="text-sm font-medium text-gray-500">CVV</div>
-                <div className="mt-1 font-medium">{card.cvv || '-'}</div>
+                <div className="mt-1 font-medium">{card.cvv || "-"}</div>
               </div>
-              
+
               <div>
                 <div className="text-sm font-medium text-gray-500">BIN</div>
                 <div className="mt-1 font-medium flex items-center gap-2">
-                  {card.bin || '-'}
+                  {card.bin || "-"}
                   <Badge className={levelDetails.color}>
                     {levelDetails.level}
                   </Badge>
                 </div>
               </div>
-              
+
               <div>
-                <div className="text-sm font-medium text-gray-500">Bandeira</div>
-                <div className="mt-1 font-medium">{card.brand || '-'}</div>
+                <div className="text-sm font-medium text-gray-500">
+                  Bandeira
+                </div>
+                <div className="mt-1 font-medium">{card.brand || "-"}</div>
               </div>
 
               <div className="col-span-2">

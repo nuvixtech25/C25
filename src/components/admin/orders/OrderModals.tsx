@@ -1,4 +1,3 @@
-
 import CustomerDetailsModal from "./modals/CustomerDetailsModal";
 import PaymentDetailsModal from "./modals/PaymentDetailsModal";
 import EditStatusModal from "./modals/EditStatusModal";
@@ -10,5 +9,5 @@ export {
   PaymentDetailsModal as PaymentModal,
   EditStatusModal as StatusModal,
   ConfirmDeleteModal as DeleteConfirmModal,
-  TestPaymentModal
+  TestPaymentModal,
 };

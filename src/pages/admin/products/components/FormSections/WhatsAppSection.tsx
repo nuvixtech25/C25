@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { ProductFormValues } from '../../ProductSchema';
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
+import { ProductFormValues } from "../../ProductSchema";
 import {
   FormField,
   FormItem,
@@ -9,17 +8,17 @@ import {
   FormControl,
   FormDescription,
   FormMessage,
-} from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 
 interface WhatsAppSectionProps {
   form: UseFormReturn<ProductFormValues>;
 }
 
 const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({ form }) => {
-  const hasWhatsappSupport = form.watch('has_whatsapp_support');
-  
+  const hasWhatsappSupport = form.watch("has_whatsapp_support");
+
   return (
     <>
       <FormField
@@ -28,18 +27,14 @@ const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({ form }) => {
         render={({ field }) => (
           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
-              <FormLabel className="text-base">
-                Suporte via WhatsApp
-              </FormLabel>
+              <FormLabel className="text-base">Suporte via WhatsApp</FormLabel>
               <FormDescription>
-                Ative para disponibilizar botão de contato via WhatsApp na página de sucesso
+                Ative para disponibilizar botão de contato via WhatsApp na
+                página de sucesso
               </FormDescription>
             </div>
             <FormControl>
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
             </FormControl>
           </FormItem>
         )}
@@ -56,11 +51,12 @@ const WhatsAppSection: React.FC<WhatsAppSectionProps> = ({ form }) => {
                 <Input
                   placeholder="5511999999999"
                   {...field}
-                  value={field.value || ''}
+                  value={field.value || ""}
                 />
               </FormControl>
               <FormDescription>
-                Digite o número completo com código do país e DDD (ex: 5511999999999)
+                Digite o número completo com código do país e DDD (ex:
+                5511999999999)
               </FormDescription>
               <FormMessage />
             </FormItem>

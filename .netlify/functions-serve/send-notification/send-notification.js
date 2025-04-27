@@ -1,1 +1,1 @@
-module.exports = require('./netlify/functions/send-notification.js')
+module.exports = require("./netlify/functions/send-notification.js");

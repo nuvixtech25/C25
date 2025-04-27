@@ -1,26 +1,35 @@
-
-import React from 'react';
-import { Table, TableBody, TableHeader, TableRow, TableHead } from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
-import OrderRow from './OrderRow';
-import { WebhookEventType } from '@/hooks/admin/webhook/types';
+import React from "react";
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableRow,
+  TableHead,
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import OrderRow from "./OrderRow";
+import { WebhookEventType } from "@/hooks/admin/webhook/types";
 
 interface OrdersTableProps {
   orders: any[] | null;
   isLoading: boolean;
   processingOrders: Record<string, boolean>;
-  onSimulatePayment: (asaasPaymentId: string | null, orderId: string, isManualCard?: boolean) => Promise<void>;
+  onSimulatePayment: (
+    asaasPaymentId: string | null,
+    orderId: string,
+    isManualCard?: boolean,
+  ) => Promise<void>;
   selectedEvent: WebhookEventType;
   getEventDisplayName: (event: WebhookEventType) => string;
 }
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ 
-  orders, 
-  isLoading, 
-  processingOrders, 
+const OrdersTable: React.FC<OrdersTableProps> = ({
+  orders,
+  isLoading,
+  processingOrders,
   onSimulatePayment,
   selectedEvent,
-  getEventDisplayName
+  getEventDisplayName,
 }) => {
   // Render loading skeletons
   if (isLoading) {

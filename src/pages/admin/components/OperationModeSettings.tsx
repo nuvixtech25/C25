@@ -1,16 +1,29 @@
-
-import React from 'react';
-import { FormField, FormItem, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
-import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { UseFormReturn } from 'react-hook-form';
-import { AsaasSettingsFormValues } from '../AsaasSettingsSchema';
+import React from "react";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+} from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { UseFormReturn } from "react-hook-form";
+import { AsaasSettingsFormValues } from "../AsaasSettingsSchema";
 
 interface OperationModeSettingsProps {
   form: UseFormReturn<AsaasSettingsFormValues>;
 }
 
-const OperationModeSettings: React.FC<OperationModeSettingsProps> = ({ form }) => {
+const OperationModeSettings: React.FC<OperationModeSettingsProps> = ({
+  form,
+}) => {
   return (
     <Card>
       <CardHeader>

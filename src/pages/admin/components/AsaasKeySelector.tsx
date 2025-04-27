@@ -1,19 +1,24 @@
-
-import React from 'react';
-import { useAsaasKeyManager } from '@/hooks/useAsaasKeyManager';
-import { AsaasEnvironment } from '@/config/asaas';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import React from "react";
+import { useAsaasKeyManager } from "@/hooks/useAsaasKeyManager";
+import { AsaasEnvironment } from "@/config/asaas";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const AsaasKeySelector: React.FC = () => {
   const {
@@ -22,19 +27,22 @@ const AsaasKeySelector: React.FC = () => {
     activeKeyId,
     isLoading,
     changeEnvironment,
-    setActiveKey
+    setActiveKey,
   } = useAsaasKeyManager();
-  
+
   const handleEnvironmentChange = (value: string) => {
-    if (value === AsaasEnvironment.PRODUCTION || value === AsaasEnvironment.SANDBOX) {
+    if (
+      value === AsaasEnvironment.PRODUCTION ||
+      value === AsaasEnvironment.SANDBOX
+    ) {
       changeEnvironment(value as AsaasEnvironment);
     }
   };
-  
+
   const handleKeyChange = (value: string) => {
     setActiveKey(parseInt(value, 10));
   };
-  
+
   if (isLoading) {
     return (
       <Card>
@@ -48,10 +56,10 @@ const AsaasKeySelector: React.FC = () => {
       </Card>
     );
   }
-  
+
   // Filtra as chaves ativas para o ambiente atual
-  const activeKeys = keys.filter(key => key.is_active);
-  
+  const activeKeys = keys.filter((key) => key.is_active);
+
   return (
     <Card>
       <CardHeader>
@@ -63,8 +71,8 @@ const AsaasKeySelector: React.FC = () => {
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label>Ambiente</Label>
-          <ToggleGroup 
-            type="single" 
+          <ToggleGroup
+            type="single"
             variant="outline"
             value={environment}
             onValueChange={handleEnvironmentChange}
@@ -78,18 +86,21 @@ const AsaasKeySelector: React.FC = () => {
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
-        
+
         <div className="space-y-2">
           <Label>Chave Ativa</Label>
           {activeKeys.length > 0 ? (
-            <Select onValueChange={handleKeyChange} value={activeKeyId?.toString() || undefined}>
+            <Select
+              onValueChange={handleKeyChange}
+              value={activeKeyId?.toString() || undefined}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione uma chave" />
               </SelectTrigger>
               <SelectContent>
                 {activeKeys.map((key) => (
                   <SelectItem key={key.id} value={key.id.toString()}>
-                    {key.key_name} {' '}
+                    {key.key_name}{" "}
                     <span className="text-xs text-muted-foreground">
                       (Prioridade: {key.priority})
                     </span>
@@ -100,18 +111,21 @@ const AsaasKeySelector: React.FC = () => {
           ) : (
             <div className="p-3 border rounded-md bg-muted/20">
               <p className="text-sm text-muted-foreground text-center">
-                {`Nenhuma chave ${environment === AsaasEnvironment.SANDBOX ? 'sandbox' : 'produção'} ativa disponível`}
+                {`Nenhuma chave ${environment === AsaasEnvironment.SANDBOX ? "sandbox" : "produção"} ativa disponível`}
               </p>
             </div>
           )}
         </div>
-        
+
         <div className="pt-2">
           <p className="text-sm font-medium mb-2">Chave em uso:</p>
           {activeKeyId ? (
             <div className="p-3 border rounded-md bg-primary/5 border-primary/20">
-              {activeKeys.find(k => k.id === activeKeyId)?.key_name || 'Chave não encontrada'}
-              <Badge variant="outline" className="ml-2">Ativa</Badge>
+              {activeKeys.find((k) => k.id === activeKeyId)?.key_name ||
+                "Chave não encontrada"}
+              <Badge variant="outline" className="ml-2">
+                Ativa
+              </Badge>
             </div>
           ) : (
             <div className="p-3 border rounded-md bg-amber-50 border-amber-200">

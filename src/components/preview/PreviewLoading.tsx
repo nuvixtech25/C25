@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import React from "react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export const PreviewLoading: React.FC = () => {
   return (

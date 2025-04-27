@@ -1,32 +1,35 @@
-
-import { useEffect, useState } from 'react';
-import { fetchPixelConfig } from '@/services/pixelConfigService';
-import { initializeGoogleAdsPixels } from './initializers/googlePixelInitializer';
-import { initializeFacebookPixels } from './initializers/facebookPixelInitializer';
-import { initializeTiktokPixel } from './initializers/tiktokPixelInitializer';
-import { initializeTaboolaPixel } from './initializers/taboolaPixelInitializer';
-import { initializeOutbrainPixel } from './initializers/outbrainPixelInitializer';
-import { initializeUolAdsPixel } from './initializers/uolAdsPixelInitializer';
-import { PixelConfig } from '@/services/pixels/types';
+import { useEffect, useState } from "react";
+import { fetchPixelConfig } from "@/services/pixelConfigService";
+import { initializeGoogleAdsPixels } from "./initializers/googlePixelInitializer";
+import { initializeFacebookPixels } from "./initializers/facebookPixelInitializer";
+import { initializeTiktokPixel } from "./initializers/tiktokPixelInitializer";
+import { initializeTaboolaPixel } from "./initializers/taboolaPixelInitializer";
+import { initializeOutbrainPixel } from "./initializers/outbrainPixelInitializer";
+import { initializeUolAdsPixel } from "./initializers/uolAdsPixelInitializer";
+import { PixelConfig } from "@/services/pixels/types";
 
 export const useInitializePixels = (shouldInitialize: boolean = false) => {
   const [pixelInitialized, setPixelInitialized] = useState(false);
   const [pixelConfig, setPixelConfig] = useState<PixelConfig | null>(null);
-  
+
   // Initialize pixels on component mount
   useEffect(() => {
-    if (shouldInitialize && process.env.NODE_ENV === 'production' && !pixelInitialized) {
+    if (
+      shouldInitialize &&
+      process.env.NODE_ENV === "production" &&
+      !pixelInitialized
+    ) {
       initializeAllPixels();
     }
   }, [shouldInitialize, pixelInitialized]);
-  
+
   // Fetch pixel configuration and initialize all pixels
   const initializeAllPixels = async () => {
     try {
       // Fetch configuration from database
       const config = await fetchPixelConfig();
       setPixelConfig(config);
-      
+
       // Initialize each type of pixel
       initializeGoogleAdsPixels(config);
       initializeFacebookPixels(config);
@@ -34,15 +37,15 @@ export const useInitializePixels = (shouldInitialize: boolean = false) => {
       initializeTaboolaPixel(config);
       initializeOutbrainPixel(config);
       initializeUolAdsPixel(config);
-      
+
       setPixelInitialized(true);
     } catch (error) {
-      console.error('Error initializing pixels:', error);
+      console.error("Error initializing pixels:", error);
     }
   };
 
   return {
     pixelInitialized,
-    pixelConfig
+    pixelConfig,
   };
 };

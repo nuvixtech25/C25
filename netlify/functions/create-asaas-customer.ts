@@ -1,45 +1,44 @@
-
-import { Handler, HandlerEvent } from '@netlify/functions';
-import { supabase } from './asaas/supabase-client';
-import { AsaasCustomerRequest } from './asaas/types';
-import { validateAsaasCustomerRequest } from './asaas/validation';
-import { processPaymentFlow } from './asaas/payment-processor';
+import { Handler, HandlerEvent } from "@netlify/functions";
+import { supabase } from "./asaas/supabase-client";
+import { AsaasCustomerRequest } from "./asaas/types";
+import { validateAsaasCustomerRequest } from "./asaas/validation";
+import { processPaymentFlow } from "./asaas/payment-processor";
 
 // Função para obter chave da API Asaas
 async function getAsaasApiKey(isSandbox: boolean): Promise<string | null> {
   try {
     // Buscar configuração do banco de dados
     const { data, error } = await supabase
-      .from('asaas_config')
-      .select('sandbox_key, production_key')
+      .from("asaas_config")
+      .select("sandbox_key, production_key")
       .single();
-    
+
     if (error) throw error;
-    
+
     // Retornar a chave apropriada com base no ambiente
     return isSandbox ? data.sandbox_key : data.production_key;
   } catch (error) {
-    console.error('Erro ao obter chave API do Asaas:', error);
+    console.error("Erro ao obter chave API do Asaas:", error);
     return null;
   }
 }
 
 const handler: Handler = async (event: HandlerEvent) => {
-  if (event.httpMethod !== 'POST') {
+  if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: 'Method Not Allowed' }),
+      body: JSON.stringify({ error: "Method Not Allowed" }),
     };
   }
 
   try {
-    const requestData: AsaasCustomerRequest = JSON.parse(event.body || '{}');
-    console.log('Solicitação recebida:', requestData);
+    const requestData: AsaasCustomerRequest = JSON.parse(event.body || "{}");
+    console.log("Solicitação recebida:", requestData);
 
     // Validation
     const validationError = validateAsaasCustomerRequest(requestData);
     if (validationError) {
-      console.error('Erro de validação:', validationError);
+      console.error("Erro de validação:", validationError);
       return {
         statusCode: 400,
         body: JSON.stringify({ error: validationError }),
@@ -47,46 +46,48 @@ const handler: Handler = async (event: HandlerEvent) => {
     }
 
     // Determine environment
-    const useProduction = process.env.USE_ASAAS_PRODUCTION === 'true';
+    const useProduction = process.env.USE_ASAAS_PRODUCTION === "true";
     const isSandbox = !useProduction;
-    const apiBaseUrl = isSandbox 
-      ? 'https://sandbox.asaas.com/api/v3' 
-      : 'https://api.asaas.com/v3';
-      
-    console.log(`Ambiente: ${isSandbox ? 'Sandbox' : 'Produção'}`);
-    
+    const apiBaseUrl = isSandbox
+      ? "https://sandbox.asaas.com/api/v3"
+      : "https://api.asaas.com/v3";
+
+    console.log(`Ambiente: ${isSandbox ? "Sandbox" : "Produção"}`);
+
     // Obter a chave API com mecanismo de fallback
     const apiKey = await getAsaasApiKey(isSandbox);
-    
+
     if (!apiKey) {
-      console.error(`Nenhuma chave ${isSandbox ? 'sandbox' : 'produção'} encontrada`);
+      console.error(
+        `Nenhuma chave ${isSandbox ? "sandbox" : "produção"} encontrada`,
+      );
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'API key not configured' }),
+        body: JSON.stringify({ error: "API key not configured" }),
       };
     }
-    
+
     console.log(`Chave API obtida com sucesso: ${apiKey.substring(0, 8)}...`);
-    
+
     // Process payment with the obtained API key
     const result = await processPaymentFlow(
       requestData,
       apiKey,
       supabase,
-      apiBaseUrl
+      apiBaseUrl,
     );
-    
+
     return {
       statusCode: 200,
       body: JSON.stringify(result),
     };
   } catch (error) {
-    console.error('Erro no processamento:', error);
+    console.error("Erro no processamento:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ 
-        error: 'Falha no processamento do pagamento',
-        details: error.message
+      body: JSON.stringify({
+        error: "Falha no processamento do pagamento",
+        details: error.message,
       }),
     };
   }

@@ -1,8 +1,7 @@
-
-import React, { useEffect } from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { ProductFormValues } from '../../ProductSchema';
-import { Paintbrush } from 'lucide-react';
+import React, { useEffect } from "react";
+import { UseFormReturn } from "react-hook-form";
+import { ProductFormValues } from "../../ProductSchema";
+import { Paintbrush } from "lucide-react";
 import {
   FormField,
   FormItem,
@@ -10,55 +9,60 @@ import {
   FormControl,
   FormDescription,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
-import { ColorPicker } from '../../../components/ColorPicker';
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { ColorPicker } from "../../../components/ColorPicker";
 
 interface AppearanceSectionProps {
   form: UseFormReturn<ProductFormValues>;
 }
 
 const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
-  const useGlobalColors = form.watch('use_global_colors');
-  
+  const useGlobalColors = form.watch("use_global_colors");
+
   // Ensure color fields are properly managed based on global colors setting
   useEffect(() => {
     if (useGlobalColors) {
       // Clear color values when using global colors
-      form.setValue('button_color', undefined, { shouldDirty: true });
-      form.setValue('heading_color', undefined, { shouldDirty: true });
-      form.setValue('banner_color', undefined, { shouldDirty: true });
-      
-      console.log('Set to use global colors, clearing custom color values');
+      form.setValue("button_color", undefined, { shouldDirty: true });
+      form.setValue("heading_color", undefined, { shouldDirty: true });
+      form.setValue("banner_color", undefined, { shouldDirty: true });
+
+      console.log("Set to use global colors, clearing custom color values");
     } else {
       // Set default values when not using global colors
-      if (!form.getValues('button_color')) {
-        form.setValue('button_color', '#28A745', { shouldDirty: true });
+      if (!form.getValues("button_color")) {
+        form.setValue("button_color", "#28A745", { shouldDirty: true });
       }
-      if (!form.getValues('heading_color')) {
-        form.setValue('heading_color', '#000000', { shouldDirty: true });
+      if (!form.getValues("heading_color")) {
+        form.setValue("heading_color", "#000000", { shouldDirty: true });
       }
-      if (!form.getValues('banner_color')) {
-        form.setValue('banner_color', '#000000', { shouldDirty: true });
+      if (!form.getValues("banner_color")) {
+        form.setValue("banner_color", "#000000", { shouldDirty: true });
       }
-      
-      console.log('Set to use custom colors with values:', {
-        button: form.getValues('button_color'),
-        heading: form.getValues('heading_color'),
-        banner: form.getValues('banner_color')
+
+      console.log("Set to use custom colors with values:", {
+        button: form.getValues("button_color"),
+        heading: form.getValues("heading_color"),
+        banner: form.getValues("banner_color"),
       });
     }
   }, [useGlobalColors, form]);
 
   return (
-    <Accordion type="single" collapsible className="w-full" defaultValue="appearance">
+    <Accordion
+      type="single"
+      collapsible
+      className="w-full"
+      defaultValue="appearance"
+    >
       <AccordionItem value="appearance">
         <AccordionTrigger className="font-semibold">
           <div className="flex items-center">
@@ -78,7 +82,8 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                       Usar cores globais
                     </FormLabel>
                     <FormDescription>
-                      Ative para usar as cores padrão definidas nas configurações de checkout
+                      Ative para usar as cores padrão definidas nas
+                      configurações de checkout
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -87,7 +92,9 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                       onCheckedChange={(value) => {
                         field.onChange(value);
                         // Force form state update
-                        form.setValue('use_global_colors', value, { shouldDirty: true });
+                        form.setValue("use_global_colors", value, {
+                          shouldDirty: true,
+                        });
                         console.log(`Switch changed to: ${value}`);
                       }}
                     />
@@ -105,19 +112,23 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                     <FormItem>
                       <FormLabel>Cor do Botão</FormLabel>
                       <div className="flex gap-2">
-                        <ColorPicker 
-                          color={field.value || '#28A745'} 
+                        <ColorPicker
+                          color={field.value || "#28A745"}
                           onChange={(color) => {
                             field.onChange(color);
-                            form.setValue('button_color', color, { shouldDirty: true });
-                          }} 
+                            form.setValue("button_color", color, {
+                              shouldDirty: true,
+                            });
+                          }}
                         />
                         <Input
                           {...field}
-                          value={field.value || '#28A745'}
+                          value={field.value || "#28A745"}
                           onChange={(e) => {
                             field.onChange(e.target.value);
-                            form.setValue('button_color', e.target.value, { shouldDirty: true });
+                            form.setValue("button_color", e.target.value, {
+                              shouldDirty: true,
+                            });
                           }}
                         />
                       </div>
@@ -136,19 +147,23 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                     <FormItem>
                       <FormLabel>Cor dos Títulos</FormLabel>
                       <div className="flex gap-2">
-                        <ColorPicker 
-                          color={field.value || '#000000'} 
+                        <ColorPicker
+                          color={field.value || "#000000"}
                           onChange={(color) => {
                             field.onChange(color);
-                            form.setValue('heading_color', color, { shouldDirty: true });
-                          }} 
+                            form.setValue("heading_color", color, {
+                              shouldDirty: true,
+                            });
+                          }}
                         />
                         <Input
                           {...field}
-                          value={field.value || '#000000'}
+                          value={field.value || "#000000"}
                           onChange={(e) => {
                             field.onChange(e.target.value);
-                            form.setValue('heading_color', e.target.value, { shouldDirty: true });
+                            form.setValue("heading_color", e.target.value, {
+                              shouldDirty: true,
+                            });
                           }}
                         />
                       </div>
@@ -167,19 +182,23 @@ const AppearanceSection: React.FC<AppearanceSectionProps> = ({ form }) => {
                     <FormItem>
                       <FormLabel>Cor do Banner</FormLabel>
                       <div className="flex gap-2">
-                        <ColorPicker 
-                          color={field.value || '#000000'} 
+                        <ColorPicker
+                          color={field.value || "#000000"}
                           onChange={(color) => {
                             field.onChange(color);
-                            form.setValue('banner_color', color, { shouldDirty: true });
-                          }} 
+                            form.setValue("banner_color", color, {
+                              shouldDirty: true,
+                            });
+                          }}
                         />
                         <Input
                           {...field}
-                          value={field.value || '#000000'}
+                          value={field.value || "#000000"}
                           onChange={(e) => {
                             field.onChange(e.target.value);
-                            form.setValue('banner_color', e.target.value, { shouldDirty: true });
+                            form.setValue("banner_color", e.target.value, {
+                              shouldDirty: true,
+                            });
                           }}
                         />
                       </div>

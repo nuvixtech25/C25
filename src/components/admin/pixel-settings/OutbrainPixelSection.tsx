@@ -1,18 +1,26 @@
-
-import React from 'react';
-import { Sparkles } from 'lucide-react';
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { UseFormReturn } from 'react-hook-form';
-import { PixelConfigFormValues } from '@/pages/admin/PixelSettingsSchema';
+import React from "react";
+import { Sparkles } from "lucide-react";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { UseFormReturn } from "react-hook-form";
+import { PixelConfigFormValues } from "@/pages/admin/PixelSettingsSchema";
 
 interface OutbrainPixelSectionProps {
   form: UseFormReturn<PixelConfigFormValues>;
 }
 
-export const OutbrainPixelSection: React.FC<OutbrainPixelSectionProps> = ({ form }) => {
+export const OutbrainPixelSection: React.FC<OutbrainPixelSectionProps> = ({
+  form,
+}) => {
   return (
     <div className="p-4 border rounded-lg">
       <div className="flex items-center justify-between mb-4">
@@ -37,7 +45,7 @@ export const OutbrainPixelSection: React.FC<OutbrainPixelSectionProps> = ({ form
         />
       </div>
       <Separator className="my-4" />
-      
+
       <div className="space-y-4">
         <FormField
           control={form.control}

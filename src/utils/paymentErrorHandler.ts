@@ -1,6 +1,5 @@
-
-import { useToast } from '@/hooks/use-toast';
-import { PaymentStatus } from '@/types/checkout';
+import { useToast } from "@/hooks/use-toast";
+import { PaymentStatus } from "@/types/checkout";
 
 /**
  * Common error messages for payment failures
@@ -22,12 +21,12 @@ export const PaymentErrorMessages = {
  */
 export const getPaymentStatusErrorMessage = (status: PaymentStatus): string => {
   const statusMessages: Record<string, string> = {
-    'CANCELLED': 'O pagamento foi cancelado',
-    'REFUNDED': 'O pagamento foi estornado',
-    'OVERDUE': 'O prazo de pagamento expirou',
-    'ERROR': 'Ocorreu um erro no processamento do pagamento',
-    'DECLINED': 'O pagamento foi recusado pela operadora',
-    'PENDING': 'O pagamento está pendente de processamento'
+    CANCELLED: "O pagamento foi cancelado",
+    REFUNDED: "O pagamento foi estornado",
+    OVERDUE: "O prazo de pagamento expirou",
+    ERROR: "Ocorreu um erro no processamento do pagamento",
+    DECLINED: "O pagamento foi recusado pela operadora",
+    PENDING: "O pagamento está pendente de processamento",
   };
 
   return statusMessages[status] || `Status de pagamento: ${status}`;
@@ -37,9 +36,9 @@ export const getPaymentStatusErrorMessage = (status: PaymentStatus): string => {
  * Displays a payment error toast message
  */
 export const showPaymentErrorToast = (
-  toast: ReturnType<typeof useToast>['toast'],
+  toast: ReturnType<typeof useToast>["toast"],
   message: string,
-  title = "Erro no pagamento"
+  title = "Erro no pagamento",
 ) => {
   toast({
     title,
@@ -61,14 +60,14 @@ export const validateOrderData = (order: any) => {
   }
 
   if (!order.customerName || !order.customerEmail || !order.productPrice) {
-    return { 
-      valid: false, 
+    return {
+      valid: false,
       message: PaymentErrorMessages.INVALID_ORDER,
       missingFields: [
-        !order.customerName && 'customerName',
-        !order.customerEmail && 'customerEmail',
-        !order.productPrice && 'productPrice'
-      ].filter(Boolean)
+        !order.customerName && "customerName",
+        !order.customerEmail && "customerEmail",
+        !order.productPrice && "productPrice",
+      ].filter(Boolean),
     };
   }
 
@@ -78,9 +77,13 @@ export const validateOrderData = (order: any) => {
 /**
  * Logs payment errors with consistent format
  */
-export const logPaymentError = (source: string, error: any, additionalInfo?: any) => {
+export const logPaymentError = (
+  source: string,
+  error: any,
+  additionalInfo?: any,
+) => {
   console.error(`[${source}] Payment Error:`, error);
-  
+
   if (additionalInfo) {
     console.error(`[${source}] Additional Info:`, additionalInfo);
   }

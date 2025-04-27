@@ -1,24 +1,40 @@
-
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Product } from '@/types/checkout';
-import ProductList from './ProductList';
-import { fetchProducts, handleDeleteProduct } from '@/services/productAdminService';
-import { LoadingState } from '@/components/shared/LoadingState';
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Product } from "@/types/checkout";
+import ProductList from "./ProductList";
+import {
+  fetchProducts,
+  handleDeleteProduct,
+} from "@/services/productAdminService";
+import { LoadingState } from "@/components/shared/LoadingState";
 
 const ProductsPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  const [productTypeTab, setProductTypeTab] = useState<'all' | 'digital' | 'physical'>('all');
+  const [productTypeTab, setProductTypeTab] = useState<
+    "all" | "digital" | "physical"
+  >("all");
 
-  const { data: products = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['products'],
+  const {
+    data: products = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["products"],
     queryFn: fetchProducts,
   });
 
@@ -40,12 +56,16 @@ const ProductsPage = () => {
   // Filtrar produtos com base na aba selecionada
   const filteredProducts = React.useMemo(() => {
     if (!products || products.length === 0) return [];
-    
+
     switch (productTypeTab) {
-      case 'digital':
-        return products.filter((product: Product) => product.type === 'digital');
-      case 'physical':
-        return products.filter((product: Product) => product.type === 'physical');
+      case "digital":
+        return products.filter(
+          (product: Product) => product.type === "digital",
+        );
+      case "physical":
+        return products.filter(
+          (product: Product) => product.type === "physical",
+        );
       default:
         return products;
     }
@@ -55,7 +75,9 @@ const ProductsPage = () => {
     return (
       <div className="container mx-auto py-8">
         <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-          <h2 className="text-red-600 font-medium">Erro ao carregar produtos</h2>
+          <h2 className="text-red-600 font-medium">
+            Erro ao carregar produtos
+          </h2>
           <p className="text-red-500">{(error as Error).message}</p>
         </div>
       </div>
@@ -79,38 +101,40 @@ const ProductsPage = () => {
           <CardTitle>Lista de Produtos</CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs 
-            defaultValue="all" 
-            className="w-full" 
-            onValueChange={(value) => setProductTypeTab(value as 'all' | 'digital' | 'physical')}
+          <Tabs
+            defaultValue="all"
+            className="w-full"
+            onValueChange={(value) =>
+              setProductTypeTab(value as "all" | "digital" | "physical")
+            }
           >
             <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="all">Todos</TabsTrigger>
               <TabsTrigger value="digital">Digitais</TabsTrigger>
               <TabsTrigger value="physical">Físicos</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="all">
-              <ProductList 
-                products={filteredProducts} 
-                isLoading={isLoading} 
-                onDeleteClick={handleDeleteClick} 
+              <ProductList
+                products={filteredProducts}
+                isLoading={isLoading}
+                onDeleteClick={handleDeleteClick}
               />
             </TabsContent>
-            
+
             <TabsContent value="digital">
-              <ProductList 
-                products={filteredProducts} 
-                isLoading={isLoading} 
-                onDeleteClick={handleDeleteClick} 
+              <ProductList
+                products={filteredProducts}
+                isLoading={isLoading}
+                onDeleteClick={handleDeleteClick}
               />
             </TabsContent>
-            
+
             <TabsContent value="physical">
-              <ProductList 
-                products={filteredProducts} 
-                isLoading={isLoading} 
-                onDeleteClick={handleDeleteClick} 
+              <ProductList
+                products={filteredProducts}
+                isLoading={isLoading}
+                onDeleteClick={handleDeleteClick}
               />
             </TabsContent>
           </Tabs>
@@ -122,12 +146,15 @@ const ProductsPage = () => {
           <DialogHeader>
             <DialogTitle>Confirmar exclusão</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja excluir o produto "{productToDelete?.name}"? 
-              Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir o produto "{productToDelete?.name}
+              "? Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex space-x-2 justify-end">
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
               Cancelar
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>

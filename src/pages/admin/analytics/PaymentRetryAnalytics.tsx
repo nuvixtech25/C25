@@ -1,21 +1,20 @@
-
-import React from 'react';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import RetryPaymentHeader from '@/components/admin/analytics/retry-payment/RetryPaymentHeader';
-import NoDataDisplay from '@/components/admin/analytics/retry-payment/NoDataDisplay';
-import StatisticsSummary from '@/components/admin/analytics/retry-payment/StatisticsSummary';
-import AttemptDistributionChart from '@/components/admin/analytics/retry-payment/AttemptDistributionChart';
-import BrandDistributionChart from '@/components/admin/analytics/retry-payment/BrandDistributionChart';
-import { useRetryAnalytics } from '@/hooks/admin/useRetryAnalytics';
+import React from "react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import RetryPaymentHeader from "@/components/admin/analytics/retry-payment/RetryPaymentHeader";
+import NoDataDisplay from "@/components/admin/analytics/retry-payment/NoDataDisplay";
+import StatisticsSummary from "@/components/admin/analytics/retry-payment/StatisticsSummary";
+import AttemptDistributionChart from "@/components/admin/analytics/retry-payment/AttemptDistributionChart";
+import BrandDistributionChart from "@/components/admin/analytics/retry-payment/BrandDistributionChart";
+import { useRetryAnalytics } from "@/hooks/admin/useRetryAnalytics";
 
 const PaymentRetryAnalytics = () => {
-  const { 
-    loading, 
-    attemptStats, 
-    brandStats, 
-    totalAttempts, 
-    totalOrders, 
-    averageAttempts 
+  const {
+    loading,
+    attemptStats,
+    brandStats,
+    totalAttempts,
+    totalOrders,
+    averageAttempts,
   } = useRetryAnalytics();
 
   if (loading) {
@@ -37,12 +36,12 @@ const PaymentRetryAnalytics = () => {
 
   return (
     <div className="space-y-6">
-      <RetryPaymentHeader 
-        title="Análise de Retry Payment" 
+      <RetryPaymentHeader
+        title="Análise de Retry Payment"
         description="Visualize e analise as tentativas de pagamento e conversões."
       />
 
-      <StatisticsSummary 
+      <StatisticsSummary
         totalAttempts={totalAttempts}
         totalOrders={totalOrders}
         averageAttempts={averageAttempts}

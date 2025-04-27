@@ -1,12 +1,13 @@
-
-import React from 'react';
-import { Users } from 'lucide-react';
+import React from "react";
+import { Users } from "lucide-react";
 
 interface CheckoutActiveVisitorsProps {
   count: number;
 }
 
-export const CheckoutActiveVisitors: React.FC<CheckoutActiveVisitorsProps> = ({ count }) => {
+export const CheckoutActiveVisitors: React.FC<CheckoutActiveVisitorsProps> = ({
+  count,
+}) => {
   if (count <= 1) return null; // Don't show if only current user
 
   return (

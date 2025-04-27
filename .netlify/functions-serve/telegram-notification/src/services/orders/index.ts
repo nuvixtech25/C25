@@ -1,4 +1,3 @@
-
 import { getOrders } from "./getOrders";
 import { updateOrderStatus } from "./updateOrder";
 import { deleteOrder } from "./deleteOrder";
@@ -8,5 +7,5 @@ export const orderAdminService = {
   getOrders,
   updateOrderStatus,
   deleteOrder,
-  deleteOrdersByPaymentMethod
+  deleteOrdersByPaymentMethod,
 };

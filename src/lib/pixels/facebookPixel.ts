@@ -1,14 +1,17 @@
-
 /**
  * Facebook Pixel implementation
  */
 
 // Initialize Facebook Pixel
-export const initFacebookPixel = (pixelId: string, accessToken?: string): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
-  
+export const initFacebookPixel = (
+  pixelId: string,
+  accessToken?: string,
+): void => {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
+
   // Add Facebook Pixel base code
-  const script = document.createElement('script');
+  const script = document.createElement("script");
   script.innerHTML = `
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -19,54 +22,63 @@ export const initFacebookPixel = (pixelId: string, accessToken?: string): void =
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     
-    fbq('init', '${pixelId}'${accessToken ? `, {access_token: '${accessToken}'}` : ''});
+    fbq('init', '${pixelId}'${accessToken ? `, {access_token: '${accessToken}'}` : ""});
     fbq('track', 'PageView');
   `;
-  
+
   document.head.appendChild(script);
-  
+
   // Add noscript fallback
-  const noscript = document.createElement('noscript');
-  const img = document.createElement('img');
+  const noscript = document.createElement("noscript");
+  const img = document.createElement("img");
   img.height = 1;
   img.width = 1;
-  img.style.display = 'none';
+  img.style.display = "none";
   img.src = `https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`;
-  
+
   noscript.appendChild(img);
   document.head.appendChild(noscript);
-  
-  console.log('Facebook Pixel initialized');
+
+  console.log("Facebook Pixel initialized");
 };
 
 // Track pageview event
 export const trackPageView = (): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
   if (!window.fbq) return;
-  
-  window.fbq('track', 'PageView');
+
+  window.fbq("track", "PageView");
 };
 
 // Track initiate checkout event
-export const trackInitiateCheckout = (value?: number, currency: string = 'BRL'): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
+export const trackInitiateCheckout = (
+  value?: number,
+  currency: string = "BRL",
+): void => {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
   if (!window.fbq) return;
-  
+
   const eventParams: any = {
     currency,
-    value
+    value,
   };
-  
-  window.fbq('track', 'InitiateCheckout', eventParams);
+
+  window.fbq("track", "InitiateCheckout", eventParams);
 };
 
 // Track purchase event
-export const trackPurchase = (value: number, currency: string = 'BRL'): void => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
+export const trackPurchase = (
+  value: number,
+  currency: string = "BRL",
+): void => {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production")
+    return;
   if (!window.fbq) return;
-  
-  window.fbq('track', 'Purchase', {
+
+  window.fbq("track", "Purchase", {
     value,
-    currency
+    currency,
   });
 };

@@ -1,4 +1,3 @@
-
 # Pix Flow Checkout - Visão Geral da Arquitetura
 
 ## Introdução

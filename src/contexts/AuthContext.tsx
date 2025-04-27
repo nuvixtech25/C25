@@ -1,25 +1,26 @@
-
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useAuthProvider } from './auth/useAuthProvider';
-import { AuthContextType } from './auth/authTypes';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAuthProvider } from "./auth/useAuthProvider";
+import { AuthContextType } from "./auth/authTypes";
 
 // Create the context with default value
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const auth = useAuthProvider();
   const [isInitialized, setIsInitialized] = useState(false);
-  
+
   useEffect(() => {
     if (!auth.isLoading) {
       setIsInitialized(true);
     }
-    
-    console.log('AuthProvider state updated:', { 
-      isLoggedIn: !!auth.user, 
+
+    console.log("AuthProvider state updated:", {
+      isLoggedIn: !!auth.user,
       isAdmin: auth.isAdmin,
       isLoading: auth.isLoading,
-      userId: auth.user?.id || 'none'
+      userId: auth.user?.id || "none",
     });
   }, [auth.user, auth.isAdmin, auth.isLoading]);
 
@@ -27,11 +28,11 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!isInitialized) {
-        console.log('Auth initialization timeout reached, continuing anyway');
+        console.log("Auth initialization timeout reached, continuing anyway");
         setIsInitialized(true);
       }
     }, 3000); // 3 second timeout as fallback
-    
+
     return () => clearTimeout(timer);
   }, [isInitialized]);
 
@@ -44,18 +45,14 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     );
   }
 
-  return (
-    <AuthContext.Provider value={auth}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
 
 // Custom hook to use the context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

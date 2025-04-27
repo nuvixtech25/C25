@@ -1,11 +1,10 @@
-
-import React from 'react';
-import { CheckCircle, XCircle, ExternalLink, ShoppingCart } from 'lucide-react';
-import { TableCell, TableRow } from '@/components/ui/table';
-import { Product } from '@/types/checkout';
-import { formatCurrency } from '@/utils/formatters';
-import ProductActions from './ProductActions';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { CheckCircle, XCircle, ExternalLink, ShoppingCart } from "lucide-react";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { Product } from "@/types/checkout";
+import { formatCurrency } from "@/utils/formatters";
+import ProductActions from "./ProductActions";
+import { Button } from "@/components/ui/button";
 
 interface ProductItemProps {
   product: Product;
@@ -15,13 +14,13 @@ interface ProductItemProps {
 const ProductItem = ({ product, onDeleteClick }: ProductItemProps) => {
   // Create checkout URL using the product slug
   const checkoutUrl = `/checkout/${product.slug}`;
-  
+
   return (
     <TableRow key={product.id}>
       <TableCell className="font-medium">{product.name}</TableCell>
       <TableCell>{formatCurrency(product.price)}</TableCell>
       <TableCell>
-        {product.type === 'digital' || product.isDigital ? 'Digital' : 'Físico'}
+        {product.type === "digital" || product.isDigital ? "Digital" : "Físico"}
       </TableCell>
       <TableCell>
         {product.status !== false ? (

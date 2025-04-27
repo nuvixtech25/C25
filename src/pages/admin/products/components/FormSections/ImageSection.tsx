@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { ProductFormValues } from '../../ProductSchema';
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
+import { ProductFormValues } from "../../ProductSchema";
 import {
   FormField,
   FormItem,
@@ -9,8 +8,8 @@ import {
   FormControl,
   FormMessage,
   FormDescription,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 interface ImageSectionProps {
   form: UseFormReturn<ProductFormValues>;
@@ -29,7 +28,7 @@ const ImageSection: React.FC<ImageSectionProps> = ({ form }) => {
               <Input
                 placeholder="https://exemplo.com/imagem.jpg"
                 {...field}
-                value={field.value || ''}
+                value={field.value || ""}
               />
             </FormControl>
             <FormDescription>
@@ -39,7 +38,7 @@ const ImageSection: React.FC<ImageSectionProps> = ({ form }) => {
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="banner_image_url"
@@ -50,7 +49,7 @@ const ImageSection: React.FC<ImageSectionProps> = ({ form }) => {
               <Input
                 placeholder="https://exemplo.com/banner.jpg"
                 {...field}
-                value={field.value || ''}
+                value={field.value || ""}
               />
             </FormControl>
             <FormDescription>

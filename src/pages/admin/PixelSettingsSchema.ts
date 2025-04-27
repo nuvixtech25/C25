@@ -1,39 +1,38 @@
-
-import * as z from 'zod';
-import { PixelConfig } from '@/services/pixelConfigService';
+import * as z from "zod";
+import { PixelConfig } from "@/services/pixelConfigService";
 
 // Schema for individual pixel entries
 export const googleAdsPixelSchema = z.object({
   id: z.string().optional(),
-  googleAdsId: z.string().optional().default(''),
-  conversionLabel: z.string().optional().default(''),
+  googleAdsId: z.string().optional().default(""),
+  conversionLabel: z.string().optional().default(""),
   enabled: z.boolean().default(false),
 });
 
 export const facebookPixelSchema = z.object({
   id: z.string().optional(),
-  facebookPixelId: z.string().optional().default(''),
-  facebookToken: z.string().optional().default(''),
+  facebookPixelId: z.string().optional().default(""),
+  facebookToken: z.string().optional().default(""),
   enabled: z.boolean().default(false),
 });
 
 export const taboolaPixelSchema = z.object({
-  taboolaAccountId: z.string().optional().default(''),
+  taboolaAccountId: z.string().optional().default(""),
   enabled: z.boolean().default(false),
 });
 
 export const tiktokPixelSchema = z.object({
-  tiktokPixelId: z.string().optional().default(''),
+  tiktokPixelId: z.string().optional().default(""),
   enabled: z.boolean().default(false),
 });
 
 export const outbrainPixelSchema = z.object({
-  outbrainPixelId: z.string().optional().default(''),
+  outbrainPixelId: z.string().optional().default(""),
   enabled: z.boolean().default(false),
 });
 
 export const uolAdsPixelSchema = z.object({
-  uolAdsId: z.string().optional().default(''),
+  uolAdsId: z.string().optional().default(""),
   enabled: z.boolean().default(false),
 });
 

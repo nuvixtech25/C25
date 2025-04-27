@@ -1,17 +1,16 @@
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { RefreshCw, Filter, Trash2 } from 'lucide-react';
-import { useWebhookSimulator } from '@/hooks/admin/useWebhookSimulator';
-import OrdersTable from '@/components/admin/webhook/OrdersTable';
-import { 
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Filter, Trash2 } from "lucide-react";
+import { useWebhookSimulator } from "@/hooks/admin/useWebhookSimulator";
+import OrdersTable from "@/components/admin/webhook/OrdersTable";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { DeleteConfirmModal } from '@/components/admin/orders/OrderModals';
+} from "@/components/ui/select";
+import { DeleteConfirmModal } from "@/components/admin/orders/OrderModals";
 
 const WebhookSimulator = () => {
   const {
@@ -27,7 +26,7 @@ const WebhookSimulator = () => {
     simulatePaymentWebhook,
     refetch,
     deleteAllWebhookLogs,
-    getEventDisplayName
+    getEventDisplayName,
   } = useWebhookSimulator();
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -45,8 +44,8 @@ const WebhookSimulator = () => {
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <Select 
-              value={statusFilter} 
+            <Select
+              value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as any)}
             >
               <SelectTrigger className="w-[180px]">
@@ -63,8 +62,8 @@ const WebhookSimulator = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Select 
-              value={selectedEvent} 
+            <Select
+              value={selectedEvent}
               onValueChange={(value) => setSelectedEvent(value as any)}
             >
               <SelectTrigger className="w-full sm:w-[220px]">
@@ -80,12 +79,17 @@ const WebhookSimulator = () => {
             </Select>
           </div>
 
-          <Button onClick={() => refetch()} variant="outline" size="sm" className="ml-auto sm:ml-0">
+          <Button
+            onClick={() => refetch()}
+            variant="outline"
+            size="sm"
+            className="ml-auto sm:ml-0"
+          >
             <RefreshCw className="h-4 w-4 mr-2" />
             Atualizar
           </Button>
-          <Button 
-            onClick={() => setIsDeleteModalOpen(true)} 
+          <Button
+            onClick={() => setIsDeleteModalOpen(true)}
             variant="destructive"
             size="sm"
           >

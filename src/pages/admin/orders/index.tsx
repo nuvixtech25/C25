@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { OrderFilterProvider } from "@/hooks/admin/orders/OrderFilterContext";
 import { Trash2 } from "lucide-react";
@@ -28,7 +27,7 @@ const OrdersPage: React.FC = () => {
     setDateRange,
     setCustomDateRange,
     changePaymentMethod,
-    
+
     // Modal state
     selectedOrder,
     showCustomerModal,
@@ -36,7 +35,7 @@ const OrdersPage: React.FC = () => {
     showStatusModal,
     showDeleteConfirm,
     showDeleteAllConfirm,
-    
+
     // Handler functions
     handleViewCustomer,
     handleViewPayment,
@@ -46,7 +45,7 @@ const OrdersPage: React.FC = () => {
     handleConfirmDelete,
     handleDeleteAll,
     handleConfirmDeleteAll,
-    
+
     // Modal controls
     setShowCustomerModal,
     setShowPaymentModal,
@@ -57,7 +56,7 @@ const OrdersPage: React.FC = () => {
 
   // Ativar as notificações de pagamento no painel admin
   usePaymentNotifications();
-  
+
   // Adicionar hook de som de pagamento
   usePaymentSound();
 
@@ -65,7 +64,10 @@ const OrdersPage: React.FC = () => {
     console.log("OrdersPage mounted or updated");
     console.log("Current payment method:", paymentMethod);
     console.log("Orders count:", orders.length);
-    console.log("Orders by payment method:", orders.map(o => o.paymentMethod));
+    console.log(
+      "Orders by payment method:",
+      orders.map((o) => o.paymentMethod),
+    );
   }, [orders, paymentMethod]);
 
   return (
@@ -73,8 +75,8 @@ const OrdersPage: React.FC = () => {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Pedidos</h1>
-          <Button 
-            variant="destructive" 
+          <Button
+            variant="destructive"
             onClick={handleDeleteAll}
             className="flex items-center"
           >
@@ -83,7 +85,7 @@ const OrdersPage: React.FC = () => {
           </Button>
         </div>
 
-        <OrdersTabs 
+        <OrdersTabs
           paymentMethod={paymentMethod}
           orders={orders}
           loading={loading}
@@ -107,27 +109,27 @@ const OrdersPage: React.FC = () => {
           open={showCustomerModal}
           onClose={() => setShowCustomerModal(false)}
         />
-        
+
         <PaymentModal
           order={selectedOrder}
           open={showPaymentModal}
           onClose={() => setShowPaymentModal(false)}
         />
-        
+
         <StatusModal
           order={selectedOrder}
           open={showStatusModal}
           onClose={() => setShowStatusModal(false)}
           onChangeStatus={handleChangeStatus}
         />
-        
+
         <DeleteConfirmModal
           open={showDeleteConfirm}
           onClose={() => setShowDeleteConfirm(false)}
           onConfirm={handleConfirmDelete}
           isDeleteAll={false}
         />
-        
+
         <DeleteConfirmModal
           open={showDeleteAllConfirm}
           onClose={() => setShowDeleteAllConfirm(false)}

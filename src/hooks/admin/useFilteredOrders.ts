@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Order, PaymentMethod, PaymentStatus } from "@/types/checkout";
 import { useOrders } from "./useOrders";
@@ -28,20 +27,26 @@ export function useFilteredOrders(initialPaymentMethod: PaymentMethod = "pix") {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
-  
+
   // Log para depuração
   useEffect(() => {
-    console.log('[useFilteredOrders] Current payment method:', paymentMethod);
-    console.log('[useFilteredOrders] Orders count:', orders.length);
+    console.log("[useFilteredOrders] Current payment method:", paymentMethod);
+    console.log("[useFilteredOrders] Orders count:", orders.length);
     if (orders.length > 0) {
-      const paymentMethodCounts = orders.reduce((acc, order) => {
-        acc[order.paymentMethod] = (acc[order.paymentMethod] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-      console.log('[useFilteredOrders] Orders by payment method:', paymentMethodCounts);
+      const paymentMethodCounts = orders.reduce(
+        (acc, order) => {
+          acc[order.paymentMethod] = (acc[order.paymentMethod] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+      console.log(
+        "[useFilteredOrders] Orders by payment method:",
+        paymentMethodCounts,
+      );
     }
   }, [orders, paymentMethod]);
-  
+
   // Handlers for order actions
   const handleViewCustomer = (order: Order) => {
     setSelectedOrder(order);
@@ -65,7 +70,7 @@ export function useFilteredOrders(initialPaymentMethod: PaymentMethod = "pix") {
   };
 
   const handleDeleteOrder = (orderId: string) => {
-    setSelectedOrder(orders.find(o => o.id === orderId) || null);
+    setSelectedOrder(orders.find((o) => o.id === orderId) || null);
     setShowDeleteConfirm(true);
   };
 
@@ -98,7 +103,7 @@ export function useFilteredOrders(initialPaymentMethod: PaymentMethod = "pix") {
     setDateRange,
     setCustomDateRange,
     changePaymentMethod,
-    
+
     // Modal state
     selectedOrder,
     showCustomerModal,
@@ -106,7 +111,7 @@ export function useFilteredOrders(initialPaymentMethod: PaymentMethod = "pix") {
     showStatusModal,
     showDeleteConfirm,
     showDeleteAllConfirm,
-    
+
     // Handler functions
     handleViewCustomer,
     handleViewPayment,
@@ -116,7 +121,7 @@ export function useFilteredOrders(initialPaymentMethod: PaymentMethod = "pix") {
     handleConfirmDelete,
     handleDeleteAll,
     handleConfirmDeleteAll,
-    
+
     // Modal controls
     setShowCustomerModal,
     setShowPaymentModal,

@@ -1,13 +1,19 @@
-
-import React from 'react';
-import { BarChart, Plus, Trash2 } from 'lucide-react';
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { UseFormReturn } from 'react-hook-form';
-import { PixelConfigFormValues } from '@/pages/admin/PixelSettingsSchema';
+import React from "react";
+import { BarChart, Plus, Trash2 } from "lucide-react";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { UseFormReturn } from "react-hook-form";
+import { PixelConfigFormValues } from "@/pages/admin/PixelSettingsSchema";
 
 interface GoogleAdsSectionProps {
   form: UseFormReturn<PixelConfigFormValues>;
@@ -15,12 +21,12 @@ interface GoogleAdsSectionProps {
   onRemovePixel: (index: number) => void;
 }
 
-export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({ 
-  form, 
+export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({
+  form,
   onAddPixel,
-  onRemovePixel
+  onRemovePixel,
 }) => {
-  const googleAdsPixels = form.watch('googleAdsPixels') || [];
+  const googleAdsPixels = form.watch("googleAdsPixels") || [];
   const hasMultiplePixels = googleAdsPixels.length > 1;
 
   return (
@@ -30,9 +36,9 @@ export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({
           <BarChart className="h-5 w-5 text-red-500" />
           <h3 className="text-lg font-medium">Google Ads</h3>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onAddPixel}
           className="flex items-center gap-1"
         >
@@ -41,16 +47,18 @@ export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({
         </Button>
       </div>
       <Separator className="my-4" />
-      
+
       {googleAdsPixels.map((_, index) => (
         <div key={index} className="space-y-4 mb-6">
           {index > 0 && <Separator className="my-6" />}
           <div className="flex justify-between items-center">
-            <h4 className="font-medium text-sm text-gray-500">Pixel {index + 1}</h4>
+            <h4 className="font-medium text-sm text-gray-500">
+              Pixel {index + 1}
+            </h4>
             {hasMultiplePixels && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => onRemovePixel(index)}
                 className="text-red-500 hover:text-red-700 hover:bg-red-50 -mt-1"
               >
@@ -59,7 +67,7 @@ export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({
               </Button>
             )}
           </div>
-        
+
           <FormField
             control={form.control}
             name={`googleAdsPixels.${index}.enabled`}
@@ -75,7 +83,7 @@ export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name={`googleAdsPixels.${index}.googleAdsId`}
@@ -92,7 +100,7 @@ export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name={`googleAdsPixels.${index}.conversionLabel`}
@@ -103,7 +111,8 @@ export const GoogleAdsSection: React.FC<GoogleAdsSectionProps> = ({
                   <Input placeholder="Exemplo: AbCdEfGhIjK-123" {...field} />
                 </FormControl>
                 <FormDescription>
-                  O label de conversão é usado para rastrear conversões específicas no Google Ads.
+                  O label de conversão é usado para rastrear conversões
+                  específicas no Google Ads.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

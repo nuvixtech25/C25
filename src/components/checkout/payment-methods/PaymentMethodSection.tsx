@@ -1,13 +1,12 @@
-
-import React from 'react';
-import { SectionTitle } from '../SectionTitle';
-import { CreditCard } from 'lucide-react';
-import { PaymentMethod } from '@/types/checkout';
-import { CustomerData } from '@/types/checkout';
-import { useCustomerDataExtractor } from '@/hooks/useCustomerDataExtractor';
-import { PaymentMethodHeader } from './PaymentMethodHeader';
-import { PaymentMethodContent } from './PaymentMethodContent';
-import { PaymentProcessor } from './PaymentProcessor';
+import React from "react";
+import { SectionTitle } from "../SectionTitle";
+import { CreditCard } from "lucide-react";
+import { PaymentMethod } from "@/types/checkout";
+import { CustomerData } from "@/types/checkout";
+import { useCustomerDataExtractor } from "@/hooks/useCustomerDataExtractor";
+import { PaymentMethodHeader } from "./PaymentMethodHeader";
+import { PaymentMethodContent } from "./PaymentMethodContent";
+import { PaymentProcessor } from "./PaymentProcessor";
 
 interface PaymentMethodSectionProps {
   id: string;
@@ -34,24 +33,27 @@ export const PaymentMethodSection: React.FC<PaymentMethodSectionProps> = ({
   headingColor,
   buttonColor,
   buttonText,
-  productPrice = 0
+  productPrice = 0,
 }) => {
   const { customerData, hasValidCustomerData } = useCustomerDataExtractor(
-    customerFormRef, 
-    onCustomerDataSubmit
+    customerFormRef,
+    onCustomerDataSubmit,
   );
 
   return (
-    <section id={id} className="mb-4 bg-white rounded-lg border border-[#E0E0E0] p-6">
-      <SectionTitle 
-        title="Pagamento" 
-        showNumberBadge={false} 
-        icon={<CreditCard className="text-gray-700" size={20} />} 
+    <section
+      id={id}
+      className="mb-4 bg-white rounded-lg border border-[#E0E0E0] p-6"
+    >
+      <SectionTitle
+        title="Pagamento"
+        showNumberBadge={false}
+        icon={<CreditCard className="text-gray-700" size={20} />}
       />
-      
+
       <div className="mt-4">
         <PaymentMethodHeader paymentMethod={paymentMethod} />
-        
+
         <PaymentProcessor
           paymentMethod={paymentMethod}
           hasValidCustomerData={hasValidCustomerData}

@@ -1,4 +1,3 @@
-
 // Define payment statuses
 export type PaymentStatus =
   | "PENDING"
@@ -8,9 +7,9 @@ export type PaymentStatus =
   | "PARTIALLY_REFUNDED"
   | "AWAITING_RISK_ANALYSIS"
   | "AUTHORIZED"
-  | "RECEIVED" 
-  | "CANCELLED" 
-  | "DECLINED" 
+  | "RECEIVED"
+  | "CANCELLED"
+  | "DECLINED"
   | "OVERDUE";
 
 // Define payment methods
@@ -36,7 +35,7 @@ export interface Order {
   isManualCard?: boolean;
   has_whatsapp_support?: boolean;
   whatsapp_number?: string;
-  productType?: 'digital' | 'physical';
+  productType?: "digital" | "physical";
 }
 
 export interface OrderTransformed {
@@ -84,19 +83,19 @@ export interface CheckoutCustomization {
   bannerColor: string;
   bannerImageUrl: string | null;
   useGlobalColors?: boolean;
-  
+
   // Content
   buttonText: string;
   headerMessage?: string;
   topMessage: string;
-  
+
   // Timer
   showTimer?: boolean;
   timerEndDate?: string;
   timerMessage?: string;
   timerExpiredMessage?: string;
   countdownEndTime: string;
-  
+
   // Product
   isDigitalProduct: boolean;
   showProduct?: boolean;
@@ -104,7 +103,7 @@ export interface CheckoutCustomization {
   productDescription?: string;
   productPrice?: number;
   productImageUrl?: string;
-  
+
   // Additional settings
   showBanner?: boolean;
   showTestimonials?: boolean;

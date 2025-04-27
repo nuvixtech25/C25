@@ -1,11 +1,10 @@
-
-import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import AsaasSettingsForm from './AsaasSettingsForm';
-import { useAsaasSettings } from '@/hooks/useAsaasSettings';
-import AccessDeniedCard from './components/AccessDeniedCard';
-import AsaasKeySelector from './components/AsaasKeySelector';
+import React from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import AsaasSettingsForm from "./AsaasSettingsForm";
+import { useAsaasSettings } from "@/hooks/useAsaasSettings";
+import AccessDeniedCard from "./components/AccessDeniedCard";
+import AsaasKeySelector from "./components/AsaasKeySelector";
 
 const AsaasSettings = () => {
   const { isAdmin } = useAuth();
@@ -14,9 +13,9 @@ const AsaasSettings = () => {
   // Verificação de permissão de administrador
   if (!isAdmin) {
     return (
-      <AccessDeniedCard 
-        title="Configurações do Asaas" 
-        description="Você não tem permissão para acessar esta página." 
+      <AccessDeniedCard
+        title="Configurações do Asaas"
+        description="Você não tem permissão para acessar esta página."
       />
     );
   }
@@ -33,7 +32,9 @@ const AsaasSettings = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Configurações do Asaas</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Configurações do Asaas
+        </h1>
         <p className="text-muted-foreground">
           Configure a integração com a API de pagamentos do Asaas.
         </p>
@@ -43,10 +44,10 @@ const AsaasSettings = () => {
         <AsaasKeySelector />
       </div>
 
-      <AsaasSettingsForm 
-        defaultValues={formData} 
-        onSubmit={saveConfig} 
-        isLoading={isSaving} 
+      <AsaasSettingsForm
+        defaultValues={formData}
+        onSubmit={saveConfig}
+        isLoading={isSaving}
       />
     </div>
   );

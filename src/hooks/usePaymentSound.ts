@@ -1,31 +1,30 @@
-
-import { useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const usePaymentSound = () => {
   useEffect(() => {
     const channel = supabase
-      .channel('payment-status-changes')
+      .channel("payment-status-changes")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'orders',
-          filter: 'status=eq.CONFIRMED'
+          event: "UPDATE",
+          schema: "public",
+          table: "orders",
+          filter: "status=eq.CONFIRMED",
         },
         (payload) => {
           // Toca um som de dinheiro
-          const cashSound = new Audio('/cash-register.mp3');
+          const cashSound = new Audio("/cash-register.mp3");
           cashSound.play();
 
           // Mostra um toast personalizado
-          toast.success('Novo Pagamento Confirmado!', {
+          toast.success("Novo Pagamento Confirmado!", {
             description: `Pagamento de R$ ${payload.new.product_price} confirmado`,
-            icon: '💰'
+            icon: "💰",
           });
-        }
+        },
       )
       .subscribe();
 

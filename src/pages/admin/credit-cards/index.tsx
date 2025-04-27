@@ -1,23 +1,29 @@
-
-import React, { useState, useEffect } from 'react';
-import { useCreditCards } from '@/hooks/admin/useCreditCards';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import CreditCardsList from './CreditCardsList';
-import { Button } from '@/components/ui/button';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { ErrorState } from '@/components/shared/ErrorState';
-import { useAuth } from '@/contexts/AuthContext';
-import { CreditCard, RefreshCw, Trash } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import React, { useState, useEffect } from "react";
+import { useCreditCards } from "@/hooks/admin/useCreditCards";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import CreditCardsList from "./CreditCardsList";
+import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ErrorState } from "@/components/shared/ErrorState";
+import { useAuth } from "@/contexts/AuthContext";
+import { CreditCard, RefreshCw, Trash } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 const CreditCardsPage = () => {
   const { isAdmin } = useAuth();
-  const { orders, loading, ordersSummary, deleteOrder, fetchCreditCardOrders } = useCreditCards();
+  const { orders, loading, ordersSummary, deleteOrder, fetchCreditCardOrders } =
+    useCreditCards();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    console.log('CreditCardsPage mounted');
+    console.log("CreditCardsPage mounted");
   }, []);
 
   const handleRefresh = async () => {
@@ -26,13 +32,14 @@ const CreditCardsPage = () => {
       await fetchCreditCardOrders();
       toast({
         title: "Lista atualizada",
-        description: "A lista de cartões foi atualizada com sucesso."
+        description: "A lista de cartões foi atualizada com sucesso.",
       });
     } catch (err) {
-      console.error('Error refreshing cards:', err);
+      console.error("Error refreshing cards:", err);
       toast({
         title: "Erro ao atualizar",
-        description: "Ocorreu um problema ao tentar atualizar a lista de cartões.",
+        description:
+          "Ocorreu um problema ao tentar atualizar a lista de cartões.",
         variant: "destructive",
       });
       if (err instanceof Error) {
@@ -48,10 +55,10 @@ const CreditCardsPage = () => {
       await deleteOrder(orderId);
       toast({
         title: "Cartão excluído",
-        description: "O cartão foi removido com sucesso."
+        description: "O cartão foi removido com sucesso.",
       });
     } catch (err) {
-      console.error('Error deleting card:', err);
+      console.error("Error deleting card:", err);
       toast({
         title: "Erro ao excluir",
         description: "Ocorreu um problema ao tentar excluir o cartão.",
@@ -62,11 +69,11 @@ const CreditCardsPage = () => {
 
   if (!isAdmin) {
     return (
-      <ErrorState 
-        title="Acesso restrito" 
-        message="Você não tem permissão para acessar esta página." 
-        actionLink="/admin/dashboard" 
-        actionLabel="Voltar para Dashboard" 
+      <ErrorState
+        title="Acesso restrito"
+        message="Você não tem permissão para acessar esta página."
+        actionLink="/admin/dashboard"
+        actionLabel="Voltar para Dashboard"
       />
     );
   }
@@ -82,7 +89,10 @@ const CreditCardsPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center items-center py-12">
-            <LoadingSpinner size="lg" message="Carregando dados dos cartões..." />
+            <LoadingSpinner
+              size="lg"
+              message="Carregando dados dos cartões..."
+            />
           </CardContent>
         </Card>
       </div>
@@ -100,11 +110,11 @@ const CreditCardsPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ErrorState 
-              title="Erro ao carregar dados" 
+            <ErrorState
+              title="Erro ao carregar dados"
               message={`Ocorreu um erro ao carregar os cartões: ${error.message}`}
-              actionLabel="Tentar novamente" 
-              actionLink="/admin/credit-cards" 
+              actionLabel="Tentar novamente"
+              actionLink="/admin/credit-cards"
             />
           </CardContent>
         </Card>
@@ -126,23 +136,22 @@ const CreditCardsPage = () => {
                 Gerenciamento de tentativas de pagamento com cartão
               </CardDescription>
             </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleRefresh}
               disabled={isRefreshing}
               className="flex items-center gap-2"
             >
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+              />
               Atualizar
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {orders && orders.length > 0 ? (
-            <CreditCardsList 
-              orders={orders} 
-              onDeleteCard={handleDeleteCard}
-            />
+            <CreditCardsList orders={orders} onDeleteCard={handleDeleteCard} />
           ) : (
             <div className="text-center py-8 text-muted-foreground">
               Nenhuma tentativa de pagamento com cartão encontrada.

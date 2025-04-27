@@ -1,4 +1,3 @@
-
 export interface PixelConfig {
   id?: number;
   googleAdsPixels: GoogleAdsPixel[];

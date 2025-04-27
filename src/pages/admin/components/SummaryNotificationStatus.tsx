@@ -1,7 +1,13 @@
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { SmtpStatusAlert } from '@/components/admin/SmtpStatusAlert';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { SmtpStatusAlert } from "@/components/admin/SmtpStatusAlert";
 
 const SummaryNotificationStatus: React.FC = () => {
   return (
@@ -16,7 +22,8 @@ const SummaryNotificationStatus: React.FC = () => {
         <SmtpStatusAlert />
       </CardContent>
       <CardFooter className="text-sm text-gray-500">
-        As notificações são utilizadas para alertar sobre novos pagamentos e outras atividades importantes.
+        As notificações são utilizadas para alertar sobre novos pagamentos e
+        outras atividades importantes.
       </CardFooter>
     </Card>
   );

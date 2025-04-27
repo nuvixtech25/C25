@@ -1,6 +1,5 @@
-
-import { supabase } from '@/integrations/supabase/client';
-import { getActiveApiKey } from './asaasKeyService';
+import { supabase } from "@/integrations/supabase/client";
+import { getActiveApiKey } from "./asaasKeyService";
 
 export interface AsaasConfigData {
   id?: number;
@@ -19,13 +18,13 @@ export interface AsaasConfigData {
 export async function getAsaasConfig(): Promise<AsaasConfigData | null> {
   try {
     const { data, error } = await supabase
-      .from('asaas_config')
-      .select('*')
+      .from("asaas_config")
+      .select("*")
       .limit(1)
       .maybeSingle();
 
     if (error) {
-      console.error('Error fetching Asaas config:', error);
+      console.error("Error fetching Asaas config:", error);
       throw error;
     }
 
@@ -39,12 +38,14 @@ export async function getAsaasConfig(): Promise<AsaasConfigData | null> {
 
     return data as AsaasConfigData | null;
   } catch (error) {
-    console.error('Error in getAsaasConfig:', error);
+    console.error("Error in getAsaasConfig:", error);
     throw error;
   }
 }
 
-export async function updateAsaasConfig(config: Partial<AsaasConfigData>): Promise<AsaasConfigData> {
+export async function updateAsaasConfig(
+  config: Partial<AsaasConfigData>,
+): Promise<AsaasConfigData> {
   // Get the existing record ID if available
   const existingConfig = await getAsaasConfig();
   const id = existingConfig?.id;
@@ -59,10 +60,10 @@ export async function updateAsaasConfig(config: Partial<AsaasConfigData>): Promi
     if (id) {
       // Update existing record
       const { data, error } = await supabase
-        .from('asaas_config')
+        .from("asaas_config")
         .update(updateData)
-        .eq('id', id)
-        .select('*')
+        .eq("id", id)
+        .select("*")
         .single();
 
       if (error) throw error;
@@ -70,9 +71,9 @@ export async function updateAsaasConfig(config: Partial<AsaasConfigData>): Promi
     } else {
       // Create new record if none exists
       const { data, error } = await supabase
-        .from('asaas_config')
+        .from("asaas_config")
         .insert(updateData)
-        .select('*')
+        .select("*")
         .single();
 
       if (error) throw error;
@@ -81,7 +82,7 @@ export async function updateAsaasConfig(config: Partial<AsaasConfigData>): Promi
 
     return result as AsaasConfigData;
   } catch (error) {
-    console.error('Error updating Asaas config:', error);
+    console.error("Error updating Asaas config:", error);
     throw error;
   }
 }

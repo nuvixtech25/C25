@@ -1,4 +1,3 @@
-
 import { useState, useEffect, ChangeEvent } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { CheckoutCustomizationSettings } from "@/types/customization";
@@ -29,7 +28,7 @@ export const useAdminToolsState = () => {
     countdownEndTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Default to 24 hours from now
     isDigitalProduct: true,
   });
-  
+
   const { toast } = useToast();
 
   useEffect(() => {
@@ -70,7 +69,9 @@ export const useAdminToolsState = () => {
             showTestimonials: data.show_testimonials || true,
             // Add the missing properties
             topMessage: data.top_message || "Oferta exclusiva!",
-            countdownEndTime: data.countdown_end_time || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            countdownEndTime:
+              data.countdown_end_time ||
+              new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
             isDigitalProduct: data.is_digital_product || true,
           });
         }
@@ -138,14 +139,16 @@ export const useAdminToolsState = () => {
 
       toast({
         title: "Configurações Salvas",
-        description: "As configurações do checkout foram atualizadas com sucesso.",
+        description:
+          "As configurações do checkout foram atualizadas com sucesso.",
       });
     } catch (error) {
       console.error("Error saving settings:", error);
       toast({
         variant: "destructive",
         title: "Erro ao Salvar",
-        description: "Não foi possível salvar as configurações. Tente novamente.",
+        description:
+          "Não foi possível salvar as configurações. Tente novamente.",
       });
     }
   };

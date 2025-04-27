@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { AlertCircle } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { AlertCircle } from "lucide-react";
 
 interface ErrorStateProps {
   title?: string;
@@ -11,10 +10,10 @@ interface ErrorStateProps {
 }
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
-  title = 'Erro',
-  message = 'Ocorreu um erro inesperado.',
-  actionLink = '/',
-  actionLabel = 'Voltar para a página inicial',
+  title = "Erro",
+  message = "Ocorreu um erro inesperado.",
+  actionLink = "/",
+  actionLabel = "Voltar para a página inicial",
 }) => {
   return (
     <div className="flex flex-col items-center justify-center text-center py-12">
@@ -23,7 +22,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       </div>
       <h2 className="text-2xl font-bold text-gray-800 mb-2">{title}</h2>
       <p className="text-gray-600 max-w-md mb-6">{message}</p>
-      <Link 
+      <Link
         to={actionLink}
         className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
       >

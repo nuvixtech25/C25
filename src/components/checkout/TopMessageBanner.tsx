@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 interface TopMessageBannerProps {
   message: string;
@@ -15,8 +14,8 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
   bannerImageUrl,
   initialMinutes = 5,
   initialSeconds = 0,
-  containerClassName = '',
-  bannerColor
+  containerClassName = "",
+  bannerColor,
 }) => {
   const [minutes, setMinutes] = useState(initialMinutes);
   const [seconds, setSeconds] = useState(initialSeconds);
@@ -37,7 +36,7 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
 
   // Format timer display
   const formatTime = (mins: number, secs: number) => {
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   // Style with custom color if provided
@@ -45,24 +44,24 @@ export const TopMessageBanner: React.FC<TopMessageBannerProps> = ({
 
   return (
     <div className={`${containerClassName} py-2`}>
-      <div 
+      <div
         className="w-full px-4 py-2 flex flex-col md:flex-row items-center justify-between rounded-md text-white text-center"
-        style={bannerStyle || { backgroundColor: 'var(--banner-color, #000000)' }}
+        style={
+          bannerStyle || { backgroundColor: "var(--banner-color, #000000)" }
+        }
       >
         <div className="flex items-center">
           {bannerImageUrl && (
-            <img 
-              src={bannerImageUrl} 
-              alt="Banner" 
-              className="h-6 md:h-8 object-contain mr-3" 
+            <img
+              src={bannerImageUrl}
+              alt="Banner"
+              className="h-6 md:h-8 object-contain mr-3"
             />
           )}
           <span className="text-sm md:text-base font-medium">{message}</span>
         </div>
         <div className="text-sm font-bold mt-1 md:mt-0">
-          <span className="md:ml-2">
-            {formatTime(minutes, seconds)}
-          </span>
+          <span className="md:ml-2">{formatTime(minutes, seconds)}</span>
         </div>
       </div>
     </div>

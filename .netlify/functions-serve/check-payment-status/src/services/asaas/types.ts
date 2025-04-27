@@ -1,5 +1,4 @@
-
-import { KeyMetrics } from '@/config/asaas';
+import { KeyMetrics } from "@/config/asaas";
 
 export interface AsaasApiKey {
   id: number;
